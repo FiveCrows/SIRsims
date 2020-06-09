@@ -1,8 +1,9 @@
-module  FastSIR
+module FastSIR
 using LightGraphs
 import Random: seed!
 using Distributions
 using DataStructures
+using Plots
 
 # Exports come before indlude statements
 export watch
