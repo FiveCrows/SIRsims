@@ -13,10 +13,17 @@ using LightGraphs
 # So create a smaller graph and debug
 
 # const G = F.erdos_renyi(50000, 0.0002)
-# each call to processTransSIR: 0.000007 sec, 11 alloc, 210 bytes. WHY? 
+# each call to processTransSIR: 0.000007 sec, 11 alloc, 210 bytes. WHY?
 
 # t_max is mandatory parameter
 const G = F.erdos_renyi(50000, 0.0002)
+# Compute the maximum degree
+@time max_degree = Δ(G)  # no allocations
+@time neigh_list = zeros(Int, max_degree)
+@time adj = adjacency_matrix(G)
+println(adj[2])
+
+
 println("Graph: $(nv(G)) nodes, $(ne(G)) edges")
 
 #times, S, I = simulate()
@@ -41,3 +48,33 @@ In = I[end-n:end];
 Rn = R[end-n:end];
 F.myPlot(tn, Sn, In, Rn);
 F.myPlot(times, S, I, R);
+#----------------------------------------------------------------------
+include("parametrized_structs.jl")
+parametrized_experiment()
+
+include("non_parametrized_structs.jl")
+non_parametrized_experiment()
+
+
+
+
+
+
+
+
+# only 32 bytes allocated
+@time for i in nv(G)
+	neighbors(G, nodes[i].index)
+end
+
+#@time for n in nodes
+count = [3]
+count1 = [4]
+# No memory allocation
+@time for i in 1:nv(G) #(i,node) in enumerate(nodes)
+	count[1] = count1[1] - count[1]
+	count[1] = count1[1] + count[1]
+	#neighbors(G, getIndex(n)) #getIndex(node))
+	#print("gg")
+end
+print(count)

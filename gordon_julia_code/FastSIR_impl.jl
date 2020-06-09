@@ -94,13 +94,18 @@ function processTransSIR(G, node_u, t::Float64, τ::Float64, γ::Float64,
 	node_u.rec_time = t + rand(expo_γ)
 
 	if node_u.rec_time < t_max
-		new_event = Event(node_u, node_u.rec_time, :recover)
-		Q[new_event] = new_event.time
+		@time new_event = Event(node_u, node_u.rec_time, :recover)
+		println("after Event\n")
+		@time Q[new_event] = new_event.time
+		println("after Q\n")
 	end
-	for ν in neighbors(G, node_u.index)
-		findTransSIR(Q, t, τ, node_u, nodes[ν], t_max, nodes, expo_τ)
+	@time for ν in neighbors(G, node_u.index)
+		@time findTransSIR(Q, t, τ, node_u, nodes[ν], t_max, nodes, expo_τ)
+		println("after findTransSIR (within neighbor loop)\n")
 	end
+	println("after neighbors\n")
 end
+
 
 function findTransSIR(Q, t, τ, source, target, t_max, nodes, expo_τ)
 	if target.status == :S
