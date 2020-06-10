@@ -11,7 +11,7 @@ import math
 schoolGroupSize = 20 # GE
 epidemicSims = 5
 houseHolds = 500
-houseHoldSize = 5
+houseHoldSize = 20
 population = houseHoldSize*houseHolds
 classSize = 20
 workGroupSize = 10
@@ -88,15 +88,16 @@ def groupCitizens(graph, citizens, weight):
 
 
 #link population in the same households
+citizenHouses = list(zip(citizens,houseNumbers))
 for i in range(houseHolds):
     house = list(zip(*list(filter(lambda x: (x[1]==i),citizenHouses))))[0]
     groupCitizens(graph, house, houseInfectivity)
 
 #link population in the same work environmen
+assignmentGroups = list(zip(citizens, assignments))
 for i in range(environmentCount):
     environmentGroup = list(zip(*list(filter(lambda x:(x[1]==i),assignmentGroups))))[0]
     groupCitizens(graph, environmentGroup, workInfectivity)
-
 
 
 end = time.time()
@@ -104,9 +105,9 @@ print(end - start)
 start = time.time()
 #for i in range(epidemicSims):
 node_investigation = EoN.fast_SIR(graph, globalInfectionRate, recoveryRate, rho = 0.01, transmission_weight ='transmission_weight',return_full_data = True)
-plt.plot(node_investigation.summary(students)[1]['I']/len(students),label = "infected students")
-plt.plot(node_investigation.summary(working)[1]['I']/len(working),label = "infected workers")
-plt.plot(node_investigation.summary(unemployed)[1]['I']/len(unemployed),label = "infected unemployed")
+plt.plot(node_investigation.summary(students)[1]['I'],label = "infected students")
+plt.plot(node_investigation.summary(working)[1]['I'],label = "infected workers")
+plt.plot(node_investigation.summary(unemployed)[1]['I'],label = "infected unemployed")
 plt.legend()
 plt.show()
 #plt.plot(t,R)

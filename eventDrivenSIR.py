@@ -10,7 +10,7 @@ import itertools
 epidemicSims = 10
 houseHolds = 600
 houseHoldSize = 4
-communitySize = houseHoldSize * houseHolds
+people = houseHoldSize * houseHolds
 schoolGroupSize = 20
 workGroupSize = 10
 employmentRate = 0.9
@@ -22,6 +22,11 @@ workInfectivity = .05
 
 ageGroups = [[0,5], [5,8], [18,65], [65,90]]
 ageGroupWeights = [0.05, 0.119, 0.731, 0.1]  # from census.gov for tallahassee 2019
+
+
+attributes = {"age": ['[0,5]', '[5,18]', '[18,65]', '[65,90]'], "gender": ['M', 'F']}
+attribute_p = {"age": [0.05, 0.119, 0.731, 0.1], "gender": [0.5,0.5]}
+
 #incomeGroups =
 #incomeGroupWeights =
 
@@ -29,7 +34,8 @@ tau = 1 #transmission factor
 gamma = 1 #recovery rate
 initial_infected = 1
 
-
+class Person():
+    attributes = {}
 # a function which returns a list of tuples randomly assigning nodes to groups of size n
 def nGroupAssign(members, groupSize):
     length = len(members)
@@ -82,14 +88,25 @@ def clusterGroup(graph, groups, groupWeight):
 
 #for loading people objects from file
 def loadPickledPop(filename):
-    with open(filename) as file:
-        x = pickle.load(filename)
+    with open(filename,'rb') as file:
+        x = pickle.load(file)
+    return x
 # assign people to households
 
-def genPop(people, attributes, attribute_p):
-    for key in attributes:
-        p_attributeAssign(range(people), attributes[key],attribute_p[key])
-
+def genPop(people, attributeClasses, attributeClass_p):
+    population = {i: {} for i in range(people)}
+    for attributeClass in attributeClasses:
+        assignments = p_attributeAssign(list(range(people)), attributeClasses[attributeClass],attributeClass_p[attributeClass])
+        for  key in assignments:
+            for i in assignments[key]:
+                population[i][attributeClass]= key
+    return population
+populace = genPop(people, attributes, attribute_p)
+x = loadPickledPop("people_list_serialized.pkl")
+print("stop here ")
+#TODO
+def networkPopulace(populace):
+    print("stop here ")
 
 
 #idea: weight age groups to represent common household distribution, such as parents in same age group, + children
@@ -115,5 +132,3 @@ def genPop(people, attributes, attribute_p):
 
 
 
-attributes = {"ages": [[0,5], [5,18], [18,65], [65,90]], "gender": }
-attribute_p = {"ages": [0.05, 0.119, 0.731, 0.1],"gender": [0.5,0.5]}
