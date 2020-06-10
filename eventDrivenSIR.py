@@ -5,7 +5,7 @@ import pandas as pd
 import random
 import pickle
 import itertools
-
+import PersonClass, HouseholdClass, WorkplaceClass
 
 epidemicSims = 10
 houseHolds = 600
@@ -17,15 +17,13 @@ employmentRate = 0.9
 recoveryRate = 1
 globalInfectionRate = 1
 houseInfectivity = .1
-workClasses = ['default', 'unemployed', 'school']
 workInfectivity = .05
 
 ageGroups = [[0,5], [5,8], [18,65], [65,90]]
 ageGroupWeights = [0.05, 0.119, 0.731, 0.1]  # from census.gov for tallahassee 2019
-
-
 attributes = {"age": ['[0,5]', '[5,18]', '[18,65]', '[65,90]'], "gender": ['M', 'F']}
 attribute_p = {"age": [0.05, 0.119, 0.731, 0.1], "gender": [0.5,0.5]}
+duties = [None, 'school','work']
 
 #incomeGroups =
 #incomeGroupWeights =
@@ -81,10 +79,11 @@ def p_attributeAssign(memberIndices, attributes, probabilities):
 #TODO update to use a weight calculating function
 def clusterGroup(graph, groups, groupWeight):
     for key in groups.keys():
-        groupSize = len(groups[key])
+        memberCount = len(groups)
+        memberWeightScalar = np.sqrt(memberCount)
         for i in range(groupSize):
             for j in range(i):
-                graph.add_edge(groups[key][i],groups[key][j] ,transmission_weight = groupWeight)
+                graph.add_edge(groups[key][i],groups[key][j] ,transmission_weight = groupWeight/memberWeightScalar)
 
 #for loading people objects from file
 def loadPickledPop(filename):
@@ -92,6 +91,10 @@ def loadPickledPop(filename):
         x = pickle.load(file)
     return x
 # assign people to households
+
+
+
+
 
 def genPop(people, attributeClasses, attributeClass_p):
     population = {i: {} for i in range(people)}
@@ -104,8 +107,11 @@ def genPop(people, attributeClasses, attributeClass_p):
 populace = genPop(people, attributes, attribute_p)
 x = loadPickledPop("people_list_serialized.pkl")
 print("stop here ")
+
+def assignDuties(populace):
+
 #TODO
-def networkPopulace(populace):
+def networkPopulace(duties):
     print("stop here ")
 
 
@@ -118,8 +124,6 @@ def networkPopulace(populace):
 
 #TODO a function that returns the infection rate of neighborhoods and or city
 
-#TODO write function which takes a weight matrix, a small probability of initial infected, and performs the gillespie algorithm including risk from global contact,
-#and returns  t as a 1-d array, and S, I, R the states of each individual at each time
 
 
 
