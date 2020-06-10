@@ -81,7 +81,7 @@ def clusterGroup(graph, groups, groupWeight):
     for key in groups.keys():
         memberCount = len(groups)
         memberWeightScalar = np.sqrt(memberCount)
-        for i in range(groupSize):
+        for i in range(memberCount):
             for j in range(i):
                 graph.add_edge(groups[key][i],groups[key][j] ,transmission_weight = groupWeight/memberWeightScalar)
 
@@ -108,14 +108,12 @@ populace = genPop(people, attributes, attribute_p)
 x = loadPickledPop("people_list_serialized.pkl")
 print("stop here ")
 
-def assignDuties(populace):
+#def assignDuties(populace):
 
-#TODO
-def networkPopulace(duties):
-    print("stop here ")
+#def networkPopulace(duties):
 
 
-#idea: weight age groups to represent common household distribution, such as parents in same age group, + children
+
 
 
 #TODO assign households and nodes in households to neighborhoods:
