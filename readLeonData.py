@@ -22,7 +22,7 @@ filename="people.txt"
 people_list={}
 people_data=np.genfromtxt(home_folder+filename, skip_header=1, dtype=object)
 for count,row in enumerate(people_data):
-    people_list[row[0]]=Person(row)
+    people_list[row[0].decode('UTF-8')]=Person(row)
 #Save data into serialized object
 pickle.dump(people_list,open("people_list_serialized.pkl","wb"))
 
