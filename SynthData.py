@@ -8,7 +8,7 @@ class Person:
         self.sp_id=int(attrs[0].decode('UTF-8'))
         self.sp_hh_id=int(attrs[1].decode('UTF-8'))
         self.age=int(attrs[2].decode('UTF-8'))
-        self.sex=convertSex(attrs[3])
+        self.sex=convertSex(attrs[3].decode('UTF-8'))
         self.race=int(attrs[4].decode('UTF-8'))
         self.relate=int(attrs[5].decode('UTF-8'))
         self.school_id=convertCol(attrs[6])
