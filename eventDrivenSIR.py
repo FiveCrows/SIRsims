@@ -18,6 +18,9 @@ recoveryRate = 1
 globalInfectionRate = 1
 houseInfectivity = .1
 workInfectivity = .05
+tau = 1 #transmission factor
+gamma = 1 #recovery rate
+initial_infected = 1
 
 #ageGroups = [[0,5], [5,8], [18,65], [65,90]]
 #ageGroupWeights = [0.05, 0.119, 0.731, 0.1]  # from census.gov for tallahassee 2019
@@ -28,9 +31,6 @@ duties = [None, 'school','work']
 #incomeGroups =
 #incomeGroupWeights =
 
-tau = 1 #transmission factor
-gamma = 1 #recovery rate
-initial_infected = 1
 
 class Person():
     attributes = {}
@@ -83,7 +83,9 @@ def p_attributeAssign(memberIndices, attributes, probabilities):
 #TODO update to use a weight calculating function
 def clusterGroups(graph, groups, groupWeight):
     for key in groups.keys():
-        memberCount = len(groups)
+        if key ==0:
+            break
+        memberCount = len(groups[key])
         memberWeightScalar = np.sqrt(memberCount)
         for i in range(memberCount):
             for j in range(i):
@@ -124,7 +126,12 @@ def sortPopulace(populace, categories):
 #def sortAttributes(people,attributeClasses):
 #populace = genPop(people, attributes, attribute_p)
 populace = loadPickledPop("people_list_serialized.pkl")
-populaceGroups = sortPopulace(populace,['sp_hh_id','school_id'])
+populaceCategoryGroups = sortPopulace(populace,['sp_hh_id','school_id'])
+
+graph = nx.Graph()
+for category in populaceCategoryGroups:
+    clusterGroups(graph, populaceCategoryGroups[category], 0.1)
+
 print("stop here ")
 
 #def assignDuties(populace):
