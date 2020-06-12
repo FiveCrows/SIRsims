@@ -83,13 +83,14 @@ def p_attributeAssign(memberIndices, attributes, probabilities):
 #TODO update to use a weight calculating function
 def clusterGroups(graph, groups, groupWeight):
     for key in groups.keys():
-        if key ==0:
-            break
-        memberCount = len(groups[key])
-        memberWeightScalar = np.sqrt(memberCount)
-        for i in range(memberCount):
-            for j in range(i):
-                graph.add_edge(groups[key][i],groups[key][j] ,transmission_weight = groupWeight/memberWeightScalar)
+        print(key)
+        if key !=None:
+            memberCount = len(groups[key])
+            memberWeightScalar = np.sqrt(memberCount)
+            for i in range(memberCount):
+                for j in range(i):
+                    graph.add_edge(groups[key][i],groups[key][j] ,transmission_weight = groupWeight/memberWeightScalar)
+
 
 #for loading people objects from file
 def loadPickledPop(filename):
@@ -126,7 +127,7 @@ def sortPopulace(populace, categories):
 #def sortAttributes(people,attributeClasses):
 #populace = genPop(people, attributes, attribute_p)
 populace = loadPickledPop("people_list_serialized.pkl")
-populaceCategoryGroups = sortPopulace(populace,['sp_hh_id','school_id'])
+populaceCategoryGroups = sortPopulace(populace,['sp_hh_id','work_id'])
 
 graph = nx.Graph()
 for category in populaceCategoryGroups:
