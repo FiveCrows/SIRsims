@@ -19,8 +19,8 @@ globalInfectionRate = 1
 houseInfectivity = .1
 workInfectivity = .05
 
-ageGroups = [[0,5], [5,8], [18,65], [65,90]]
-ageGroupWeights = [0.05, 0.119, 0.731, 0.1]  # from census.gov for tallahassee 2019
+#ageGroups = [[0,5], [5,8], [18,65], [65,90]]
+#ageGroupWeights = [0.05, 0.119, 0.731, 0.1]  # from census.gov for tallahassee 2019
 attributes = {"age": ['[0,5]', '[5,18]', '[18,65]', '[65,90]'], "gender": ['M', 'F']}
 attribute_p = {"age": [0.05, 0.119, 0.731, 0.1], "gender": [0.5,0.5]}
 duties = [None, 'school','work']
@@ -50,7 +50,8 @@ def nGroupAssign(members, groupSize):
         pos = pos+groupSize
     return dict
 
-#a function which returns a list of tuples randomly assigning nodes to groups of size probability n
+
+# a function which returns a list of tuples randomly assigning nodes to groups of size probability n
 def p_nGroupAssign(memberIndices, p_n):
     length = len(memberIndices)
     random.shuffle(memberIndices)
@@ -75,9 +76,12 @@ def p_attributeAssign(memberIndices, attributes, probabilities):
         dict[assignment].append(index)
     return dict
 
+#takes a dict of dicts to represent populace and returns a list of dicts of lists to represent groups of people with the same
+#attributes
+
 #connect list of groups with weight
 #TODO update to use a weight calculating function
-def clusterGroup(graph, groups, groupWeight):
+def clusterGroups(graph, groups, groupWeight):
     for key in groups.keys():
         memberCount = len(groups)
         memberWeightScalar = np.sqrt(memberCount)
@@ -89,11 +93,9 @@ def clusterGroup(graph, groups, groupWeight):
 def loadPickledPop(filename):
     with open(filename,'rb') as file:
         x = pickle.load(file)
-    return x
+    #return represented by dict of dicts
+    return ({key: (vars(x[key])) for key in x})#.transpose()
 # assign people to households
-
-
-
 
 
 def genPop(people, attributeClasses, attributeClass_p):
@@ -102,10 +104,27 @@ def genPop(people, attributeClasses, attributeClass_p):
         assignments = p_attributeAssign(list(range(people)), attributeClasses[attributeClass],attributeClass_p[attributeClass])
         for  key in assignments:
             for i in assignments[key]:
-                population[i][attributeClass]= key
+                population[i][attributeClass] = key
+    
     return population
-populace = genPop(people, attributes, attribute_p)
-x = loadPickledPop("people_list_serialized.pkl")
+
+
+def sortPopulace(populace, categories):
+    groups = {category: {} for category in categories}
+    for person in populace:
+        for category in categories:
+            try:
+                groups[category][populace[person][category]].append(person)
+            except:
+                groups[category][populace[person][category]] = [person]
+    return groups
+
+
+
+#def sortAttributes(people,attributeClasses):
+#populace = genPop(people, attributes, attribute_p)
+populace = loadPickledPop("people_list_serialized.pkl")
+populaceGroups = sortPopulace(populace,['sp_hh_id','school_id'])
 print("stop here ")
 
 #def assignDuties(populace):

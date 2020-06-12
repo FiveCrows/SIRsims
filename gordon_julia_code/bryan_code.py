@@ -10,7 +10,7 @@ import math
 
 schoolGroupSize = 20 # GE
 epidemicSims = 5
-houseHolds = 500
+houseHolds = 5000
 houseHoldSize = 20
 population = houseHoldSize*houseHolds
 classSize = 20

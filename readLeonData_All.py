@@ -2,7 +2,7 @@ import pandas
 import numpy as np
 import pickle
 import os
-import synthdata
+import synthdata as synthdata
 home_folder="../Covid-19/Leon/"
 #Get data for people
 people_file="people.txt"
