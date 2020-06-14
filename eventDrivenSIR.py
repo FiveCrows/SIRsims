@@ -5,7 +5,6 @@ import pandas as pd
 import random
 import pickle
 import itertools
-import PersonClass, HouseholdClass, WorkplaceClass
 
 epidemicSims = 10
 houseHolds = 600
@@ -79,19 +78,6 @@ def p_attributeAssign(memberIndices, attributes, probabilities):
 #takes a dict of dicts to represent populace and returns a list of dicts of lists to represent groups of people with the same
 #attributes
 
-#connect list of groups with weight
-#TODO update to use a weight calculating function
-def clusterGroups(graph, groups, groupWeight):
-    for key in groups.keys():
-        print(key)
-        if key !=None:
-            memberCount = len(groups[key])
-            memberWeightScalar = np.sqrt(memberCount)
-            for i in range(memberCount):
-                for j in range(i):
-                    graph.add_edge(groups[key][i],groups[key][j] ,transmission_weight = groupWeight/memberWeightScalar)
-
-
 #for loading people objects from file
 def loadPickledPop(filename):
     with open(filename,'rb') as file:
@@ -124,14 +110,58 @@ def sortPopulace(populace, categories):
 
 
 
+#connect list of groups with weight
+#TODO update to use a weight calculating function
+def clusterDenseGroups(graph, groups, weight):
+    for key in groups.keys():
+        print(key)
+        if key !=None:
+            memberCount = len(groups[key])
+            memberWeightScalar = np.sqrt(memberCount)
+            for i in range(memberCount):
+                for j in range(i):
+                    graph.add_edge(groups[key][i],groups[key][j] ,transmission_weight = groupWeight/memberWeightScalar)
+
+
+def clusterByDegree_p(graph, groups, weight,degree_p):
+    #some random edges may be duplicates, best for large groups
+    connectorList = []
+
+    for key in groups.keys():
+        print(key)
+        if key !=None:
+            memberCount = len(groups[key])
+            for i in range(memberCount):
+                nodeDegree = random.choices(range(len(degree_p)), weights = degree_p)
+                connectorList.extend(i*degree_p)
+            random.shuffle(connectorList)
+
+            i = 0
+            while i < len(connectorList)-1:
+                graph.add_edge(connectorList[i],connectorList[i+1],transmission_weight = weight)
+                i = i+2
+
+def strogatzDemCatz(graph, groups, weight, local_k, rewire_p):
+    for key in groups.keys():
+        if key!=None:
+            memberCount = len(groups[key])
+            for i in range(memberCount):
+
+
+def clusteGroupsByPreferentialAttachment(graph, groups):
+    for key in groups.keys():
+        memberCount = len(groups[key])
+
 #def sortAttributes(people,attributeClasses):
 #populace = genPop(people, attributes, attribute_p)
 populace = loadPickledPop("people_list_serialized.pkl")
 populaceCategoryGroups = sortPopulace(populace,['sp_hh_id','work_id'])
 
 graph = nx.Graph()
-for category in populaceCategoryGroups:
-    clusterGroups(graph, populaceCategoryGroups[category], 0.1)
+
+clusterGroupsByDegree_p(graph, populaceCategoryGroups['sp_hh_id'], [0.2,0.2,0.2,0.2,0.2])
+clusterDenseGroups(graph, populaceCategoryGroups['sp_hh_id'], 0.1)
+
 
 print("stop here ")
 
