@@ -53,8 +53,8 @@ def genWorkType(age):    #school and employment
 workTypes = [genWorkType(age) for age in ages]
 citizenWorkTypes = list(zip(workTypes,citizens))
 #TODO put these in loops and arrays
-working = list(list(zip(*(filter(lambda x: x[0] == 'default',citizenWorkTypes))))[1])
-students = list(list(zip(*(filter(lambda x: x[0] == 'school',citizenWorkTypes))))[1])
+working    = list(list(zip(*(filter(lambda x: x[0] == 'default',citizenWorkTypes))))[1])
+students   = list(list(zip(*(filter(lambda x: x[0] == 'school',citizenWorkTypes))))[1])
 unemployed = list(list(zip(*(filter(lambda x: x[0] == 'none',citizenWorkTypes))))[1])
 random.shuffle(working)
 random.shuffle(students)
