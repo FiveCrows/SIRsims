@@ -10,7 +10,7 @@ import math
 
 schoolGroupSize = 20 # GE
 epidemicSims = 5
-houseHolds = 500
+houseHolds = 5000
 houseHoldSize = 20
 population = houseHoldSize*houseHolds
 classSize = 20
@@ -103,11 +103,16 @@ for i in range(environmentCount):
 end = time.time()
 print(end - start)
 start = time.time()
-for i in range(epidemicSims):
-    t,S,I,R = EoN.fast_SIR(graph, globalInfectionRate, recoveryRate, rho = 0.01, transmission_weight ='transmission_weight')
-plt.plot(t,R)
-plt.plot(t,I)
-plt.plot(t,S)
+#for i in range(epidemicSims):
+node_investigation = EoN.fast_SIR(graph, globalInfectionRate, recoveryRate, rho = 0.01, transmission_weight ='transmission_weight',return_full_data = True)
+plt.plot(node_investigation.summary(students)[1]['I'],label = "infected students")
+plt.plot(node_investigation.summary(working)[1]['I'],label = "infected workers")
+plt.plot(node_investigation.summary(unemployed)[1]['I'],label = "infected unemployed")
+plt.legend()
 plt.show()
+#plt.plot(t,R)
+#plt.plot(t,I)
+#plt.plot(t,S)
+#plt.show()
 end = time.time()
 print(end - start )

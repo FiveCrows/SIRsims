@@ -4,31 +4,37 @@ import scipy as sci
 import networkx as nx
 import pandas as pd
 import random
+import pickle
 import itertools
+import PersonClass, HouseholdClass, WorkplaceClass
+
 epidemicSims = 10
 houseHolds = 600
 houseHoldSize = 4
-communitySize = houseHoldSize * houseHolds
+people = houseHoldSize * houseHolds
 schoolGroupSize = 20
 workGroupSize = 10
 employmentRate = 0.9
 recoveryRate = 1
 globalInfectionRate = 1
 houseInfectivity = .1
-workClasses = ['default', 'unemployed', 'school']
 workInfectivity = .05
-
-ageGroups = [[0,5], [5,8], [18,65], [65,90]]
-ageGroupWeights = [0.05, 0.119, 0.731, 0.1]  # from census.gov for tallahassee 2019
-everyone = pd.DataFrame(data = [{'index' : i} for i in range(communitySize)])
-#incomeGroups =
-#incomeGroupWeights =
-
 tau = 1 #transmission factor
 gamma = 1 #recovery rate
 initial_infected = 1
 
+#ageGroups = [[0,5], [5,8], [18,65], [65,90]]
+#ageGroupWeights = [0.05, 0.119, 0.731, 0.1]  # from census.gov for tallahassee 2019
+attributes = {"age": ['[0,5]', '[5,18]', '[18,65]', '[65,90]'], "gender": ['M', 'F']}
+attribute_p = {"age": [0.05, 0.119, 0.731, 0.1], "gender": [0.5,0.5]}
+duties = [None, 'school','work']
 
+#incomeGroups =
+#incomeGroupWeights =
+
+
+class Person():
+    attributes = {}
 # a function which returns a list of tuples randomly assigning nodes to groups of size n
 def nGroupAssign(members, groupSize):
     length = len(members)
@@ -45,45 +51,97 @@ def nGroupAssign(members, groupSize):
         pos = pos+groupSize
     return dict
 
-#a function which returns a list of tuples randomly assigning nodes to groups of size probability n
-def p_nGroupAssign(members, p_n):
-    length = len(members)
-    random.shuffle(members)
+
+# a function which returns a list of tuples randomly assigning nodes to groups of size probability n
+def p_nGroupAssign(memberIndices, p_n):
+    length = len(memberIndices)
+    random.shuffle(memberIndices)
     pos = 0
     groupNumber = 0
     dict = {}
     while True:
         groupSize = random.choices(range(len(p_n)), weights=p_n)[0]+1
         if(pos+groupSize>length):
-            dict[groupNumber] = (itertools.islice(members, pos, pos + groupSize))
+            dict[groupNumber] = (itertools.islice(memberIndices, pos, pos + groupSize))
             break
-        dict[groupNumber] = list(itertools.islice(members, pos, pos + groupSize))
+        dict[groupNumber] = list(itertools.islice(memberIndices, pos, pos + groupSize))
         groupNumber = groupNumber + 1
         pos = pos+groupSize
     return dict
 
-def p_attributeAssign(members, attributes, probabilites):
-    random.shuffle(members)
-    for member in members:
-        node["ageGroup"] = random.choices(ageGroups, weights = ageGroupWeights)[0]
+def p_attributeAssign(memberIndices, attributes, probabilities):
+    random.shuffle(memberIndices)
+    dict = {attribute: [] for attribute in attributes}
+    for index in memberIndices:
+        assignment = random.choices(attributes, weights = probabilities)[0]
+        dict[assignment].append(index)
+    return dict
 
+#takes a dict of dicts to represent populace and returns a list of dicts of lists to represent groups of people with the same
+#attributes
 
-#TODO connect list of groups with weight
-def updateGraph(graph, groups, groupWeight):
+#connect list of groups with weight
+#TODO update to use a weight calculating function
+def clusterGroups(graph, groups, groupWeight):
     for key in groups.keys():
-        groupSize = len(groups[key])
-        for i in range(groupSize):
-            for j in range(i):
-                graph.add_edge(groups[key][i],groups[key][j] ,transmission_weight = groupWeight)
+        print(key)
+        if key !=None:
+            memberCount = len(groups[key])
+            memberWeightScalar = np.sqrt(memberCount)
+            for i in range(memberCount):
+                for j in range(i):
+                    graph.add_edge(groups[key][i],groups[key][j] ,transmission_weight = groupWeight/memberWeightScalar)
 
 
+#for loading people objects from file
+def loadPickledPop(filename):
+    with open(filename,'rb') as file:
+        x = pickle.load(file)
+    #return represented by dict of dicts
+    return ({key: (vars(x[key])) for key in x})#.transpose()
 # assign people to households
-houseMap = p_nGroupAssign(list(range(communitySize)), [0.1, 0.2, 0.3, 0.2, 0.1, 0.1])
 
-#idea: weight age groups to represent common household distribution, such as parents in same age group, + children
-#def assignAges(everyone, houseGroups):
-for node in everyone():
-    node["ageGroup"] = random.choices(ageGroups, weights = ageGroupWeights)[0]
+
+def genPop(people, attributeClasses, attributeClass_p):
+    population = {i: {} for i in range(people)}
+    for attributeClass in attributeClasses:
+        assignments = p_attributeAssign(list(range(people)), attributeClasses[attributeClass],attributeClass_p[attributeClass])
+        for  key in assignments:
+            for i in assignments[key]:
+                population[i][attributeClass] = key
+    
+    return population
+
+
+def sortPopulace(populace, categories):
+    groups = {category: {} for category in categories}
+    for person in populace:
+        for category in categories:
+            try:
+                groups[category][populace[person][category]].append(person)
+            except:
+                groups[category][populace[person][category]] = [person]
+    return groups
+
+
+
+#def sortAttributes(people,attributeClasses):
+#populace = genPop(people, attributes, attribute_p)
+populace = loadPickledPop("people_list_serialized.pkl")
+populaceCategoryGroups = sortPopulace(populace,['sp_hh_id','work_id'])
+
+graph = nx.Graph()
+for category in populaceCategoryGroups:
+    clusterGroups(graph, populaceCategoryGroups[category], 0.1)
+
+print("stop here ")
+
+#def assignDuties(populace):
+
+#def networkPopulace(duties):
+
+
+
 
 
 #TODO assign households and nodes in households to neighborhoods:
@@ -92,20 +150,15 @@ for node in everyone():
 
 #TODO a function that returns the infection rate of neighborhoods and or city
 
-#TODO assign children to schoolGroups by neighborhood
-
-#TODO write function which takes a weight matrix, a small probability of initial infected, and performs the gillespie algorithm including risk from global contact,
-#and returns  t as a 1-d array, and S, I, R the states of each individual at each time
 
 
-#TODO a function that will filter S,I,R to only subsets of nodes, picked by conditions
 
 
-#TODO write a function to condense S,I,R into 1-d arrays describing the portion at given times
-
+#TODO a function to animate a graph in time
 
 #TODO write a function to spline 1d t,S,I,R arrays into even time intervals so that multiple runs can be averaged
 
-
 #TODO a function to draw a sparse weights matrix in a graph
+
+
 
