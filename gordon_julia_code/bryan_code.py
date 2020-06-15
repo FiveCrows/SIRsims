@@ -63,7 +63,7 @@ random.shuffle(working)
 random.shuffle(students)
 
 classCount = int(math.ceil(len(students) / schoolGroupSize))
-workgroupCount = int(math.ceil(len(students) / schoolGroupSize))
+workgroupCount = int(math.ceil(len(working) / schoolGroupSize))
 environmentCount  = classCount+workgroupCount
 schoolAssignments = list(zip(students,[i%classCount for i in range(len(students))]))
 workAssignments   = list(zip(working,[i%workgroupCount+classCount for i in range(len(working))]))

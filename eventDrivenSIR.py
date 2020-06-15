@@ -174,11 +174,10 @@ def strogatzDemCatz(graph, groups, weight, local_k, rewire_p):
                         graph.add_edge(i, i - j, transmission_weight=weight)
 
 #WIP
-def clusterGroupsByPA(graph, groups):
+def clusteGroupsByPA(graph, groups):
     for key in groups.keys():
         memberCount = len(groups[key])
 
-#def mergeSubClusterGraph(graph,subgraph, nodeMap):
 #def sortAttributes(people,attributeClasses):
 #populace = genPop(people, attributes, attribute_p)
 populace = loadPickledPop("people_list_serialized.pkl")
@@ -196,7 +195,7 @@ node_investigation = EoN.fast_SIR(graph, globalInfectionRate, recoveryRate, rho 
 if not nx.is_connected(graph):
     print("warning: graph is not conneted, the are .2f{} components".format(nx.number_connected_components(graph)))
 
-plt.plot(node_investigation.summary(popsByCategory['work_id'][None])[1]['I'],label = "infected students")
+plt.plot(node_investigation.summary(populace)[1]['I'],label = "infected students")
 plt.legend()
 plt.show()
 
