@@ -63,9 +63,80 @@ def structureData(dates: list, data):
     #         print(c, end=" ")
     #     print()
     return (cumulativeData, county_list)
-#Find counties with more than a threshold no. of cases
 
-def main(threshold: int):
+def plotThreshold(threshold, dates, cumulativeData, county_list):
+    '''
+        This function plots cases over dates for all counties that have a cumulative case count more 
+        than the threshold value
+    '''
+    hr_counties=[]
+    for idx, r in enumerate(cumulativeData):
+        #print(r)
+        if r[-1]>=threshold:
+            hr_counties.append(idx)
+    plt.figure(figsize=(10,8))
+    for v in hr_counties:
+        plt.plot(sorted(dates), cumulativeData[v], label=county_list[v])
+    plt.xticks(rotation=45)
+    plt.legend()
+    title_temp="Counties with cumulative case count over "+ str(threshold)
+    plt.title(title_temp)
+    figname="Threshold_"+str(threshold)+datetime.now().strftime("%d%m%y%H%M")+".png"
+    plt.savefig(figname)
+    plt.show()
+    
+
+def plotCounty(county, dates, cumulativeData, county_list):
+    '''
+        This function plots cases over dates for the specified county
+    '''
+    idx=county_list.index(county)
+    plt.figure(figsize=(10,8))
+    plt.plot(sorted(dates),cumulativeData[idx])
+    title="Cumulative case count trend for "+county+" county"
+    plt.title(title)
+    figname=county+" County_"+datetime.now().strftime("%d%m%y%H%M")+".png"
+    plt.xticks(rotation=45)
+    plt.savefig(figname)
+    plt.show()
+    
+def plotZipcode(zipcode, dates, data):
+    '''
+        This function plots cases over dates for the specified county
+    '''
+    temp_data=[]
+    for date in sorted(dates):
+        temp_df=data[date][data[date]['ZIP']==zipcode]
+        temp_data.append(float(temp_df['Cases_1']))
+    plt.figure(figsize=(10,8))
+    plt.plot(sorted(dates),temp_data)
+    title="Cumulative case count for zipcode "+str(zipcode)
+    plt.title(title)
+    figname=str(zipcode)+" Zipcode_"+datetime.now().strftime("%d%m%y%H%M")+".png"
+    plt.xticks(rotation=45)
+    plt.savefig(figname)
+    plt.show()
+    
+
+def plotDefault(dates, cumulativeData, county_list):
+    '''
+        This function plots cases over dates for the top 10 counties in case count
+    '''
+    top_10_idxs=np.argsort(cumulativeData[:,-1])[-10:]
+    top_10=cumulativeData[top_10_idxs]
+    title="Top 10 counties in cumulative case count as of "+str(sorted(dates)[-1])
+    figname="Top 10_"+datetime.now().strftime("%d%m%y%H%M")+".png"
+    plt.figure(figsize=(10,8))
+    for i in range(10):
+        plt.plot(sorted(dates),top_10[i], label=county_list[top_10_idxs[i]])
+    plt.xticks(rotation=45)
+    plt.title(title)
+    plt.legend()
+    plt.savefig(figname)
+    plt.show()
+    
+
+def main(threshold: int=None, county: str=None, zipcode: int=None):
     '''
         To run this program, you will need files as given below:
         home_dir='zipcode_data/' - This will be the folder containing all the csv files
@@ -74,24 +145,30 @@ def main(threshold: int):
     '''
     dates,data=readData()
     cumulativeData,county_list=structureData(dates, data)
-    threshold=threshold
-    hr_counties=[]
-    for idx, r in enumerate(cumulativeData):
-        if r[-1]>=threshold:
-            hr_counties.append(idx)
-    for v in hr_counties:
-        plt.plot(sorted(dates), cumulativeData[v], label=county_list[v])
-    plt.xticks(rotation=45)
-    plt.legend()
-    title_temp="Counties with cumulative case count over "+ str(threshold)
-    plt.title(title_temp)
-    fig_suffix=datetime.now().strftime("%d%m%y%H%M")
-    #print(fig_suffix)
-    plt.show()
-    plt.savefig("CasesGraph"+fig_suffix)
+    if zipcode:
+        plotZipcode(zipcode, dates, data)
+    elif threshold:
+        plotThreshold(threshold, dates, cumulativeData, county_list)
+    elif county:
+        plotCounty(county, dates, cumulativeData, county_list)
+    else:
+        plotDefault(dates, cumulativeData, county_list)
 
 if __name__=="__main__":
     if len(sys.argv)==1:
-        print("Enter threshold for plotting graphs")
-    elif sys.argv[1].isnumeric():
-        main(int(sys.argv[1]))
+        main()
+        print("Other Usage:\n[-county|-c] countyname\nCounty name can be a full name or a prefix\n[-zipcode|-z] zipcode\n[-threshold|-t] threshold")
+    elif sys.argv[1]=='-county' or sys.argv[1]=='-c':
+        main(county=sys.argv[2])
+    elif sys.argv[1]=='-zipcode' or sys.argv[1]=='-z':
+        if sys.argv[2].isnumeric():
+            main(zipcode=int(sys.argv[2]))
+        else:
+            print("Invalid zipcode value")
+    elif sys.argv[1]=='-threshold' or sys.argv[1]=='-t':
+        if sys.argv[2].isnumeric():
+            main(int(sys.argv[2]))
+        else:
+            print("Invalid threshold value")
+
+    
