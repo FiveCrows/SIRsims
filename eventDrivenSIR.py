@@ -88,7 +88,7 @@ def loadPickledPop(filename):
     #return represented by dict of dicts
     populace = ({key: (vars(x[key])) for key in x})#.transpose()
     csv = pd.DataFrame.from_dict(populace)
-    csv.to_csv("./datasets/synthPopulace.csv")
+    #csv.to_csv("./datasets/synthPopulace.csv")
     return populace
 
 # assign people to households
