@@ -86,7 +86,11 @@ def loadPickledPop(filename):
     with open(filename,'rb') as file:
         x = pickle.load(file)
     #return represented by dict of dicts
-    return ({key: (vars(x[key])) for key in x})#.transpose()
+    populace = ({key: (vars(x[key])) for key in x})#.transpose()
+    csv = pd.DataFrame.from_dict(populace)
+    csv.to_csv("./datasets/synthPopulace.csv")
+    return populace
+
 # assign people to households
 
 
@@ -124,7 +128,7 @@ def clusterDenseGroups(graph, groups, weight):
             memberWeightScalar = np.sqrt(memberCount)
             for i in range(memberCount):
                 for j in range(i):
-                    graph.add_edge(groups[key][i],groups[key][j] ,transmission_weight = weight/memberWeightScalar)
+                    graph.add_edge(groups[key][i],groups[key][j], transmission_weight = weight/memberWeightScalar)
 
 
 def clusterByDegree_p(graph, groups, weight,degree_p):
@@ -151,7 +155,7 @@ def clusterWith_gnp_random(graph,groups,weight,avgDegree):
         if key !=None:
             memberCount = len(groups[key])
             edgeProb = (memberCount*avgDegree)/(memberCount*(memberCount-1))
-            graph2 = nx.fast_gnp_random_graph(memberCount)
+            graph2 = nx.fast_gnp_random_graph(memberCount,edgeProb)
             graph.add_edges_from(graph2.edges())
 
 
