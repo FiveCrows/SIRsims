@@ -8,6 +8,8 @@ import pickle
 import itertools
 import matplotlib.pyplot as plt
 import EoN
+import math
+
 
 epidemicSims = 10
 houseHolds = 10
@@ -78,15 +80,18 @@ def p_attributeAssign(memberIndices, attributes, probabilities):
         dict[assignment].append(index)
     return dict
 
-#takes a dict of dicts to represent populace and returns a list of dicts of lists to represent groups of people with the same
-#attributes
+
 
 #for loading people objects from file
 def loadPickledPop(filename):
     with open(filename,'rb') as file:
         x = pickle.load(file)
     #return represented by dict of dicts
-    return ({key: (vars(x[key])) for key in x})#.transpose()
+    populace = ({key: (vars(x[key])) for key in x})#.transpose()
+    csv = pd.DataFrame.from_dict(populace)
+    #csv.to_csv("./datasets/synthPopulace.csv")
+    return populace
+
 # assign people to households
 
 
@@ -101,6 +106,8 @@ def genPop(people, attributeClasses, attributeClass_p):
     return population
 
 
+#takes a dict of dicts to represent populace and returns a list of dicts of lists to represent groups of people with the same
+#attributes
 def sortPopulace(populace, categories):
     groups = {category: {} for category in categories}
     for person in populace:
@@ -122,7 +129,7 @@ def clusterDenseGroups(graph, groups, weight):
             memberWeightScalar = np.sqrt(memberCount)
             for i in range(memberCount):
                 for j in range(i):
-                    graph.add_edge(groups[key][i],groups[key][j] ,transmission_weight = weight/memberWeightScalar)
+                    graph.add_edge(groups[key][i],groups[key][j], transmission_weight = weight/memberWeightScalar)
 
 
 def clusterByDegree_p(graph, groups, weight,degree_p):
@@ -143,6 +150,16 @@ def clusterByDegree_p(graph, groups, weight,degree_p):
                 graph.add_edge(connectorList[i],connectorList[i+1],transmission_weight = weight)
                 i = i+2
 
+
+def clusterWith_gnp_random(graph,groups,weight,avgDegree):
+    for key in groups.keys():
+        if key !=None:
+            memberCount = len(groups[key])
+            edgeProb = (memberCount*avgDegree)/(memberCount*(memberCount-1))
+            graph2 = nx.fast_gnp_random_graph(memberCount,edgeProb)
+            graph.add_edges_from(graph2.edges())
+
+
 #clusters groups into strogatz small-worlds networks
 def strogatzDemCatz(graph, groups, weight, local_k, rewire_p):
     if(local_k%2!=0):
@@ -156,9 +173,10 @@ def strogatzDemCatz(graph, groups, weight, local_k, rewire_p):
                 continue
 
             group = groups[key]
-            #this unfinished won't rewire the same two nodes twice, but I decided to use a simpler alg anyways
+            #unfinished for different implementation to not leave any chance of randomly selecting the same edge twice
             #rewireCount = np.random.binomial(memberCount, rewire_p)
             #rewireList = np.choices(group, rewireCount)*2
+
             for i in range(memberCount):
                 if memberCount<5:
                     print("stop")
@@ -174,11 +192,13 @@ def strogatzDemCatz(graph, groups, weight, local_k, rewire_p):
                     else:
                         graph.add_edge(i, i - j, transmission_weight=weight)
 
+
 #WIP
-def clusteGroupsByPA(graph, groups):
+def clusterGroupsByPA(graph, groups):
     for key in groups.keys():
         memberCount = len(groups[key])
 
+#def mergeSubClusterGraph(graph,subgraph, nodeMap):
 #def sortAttributes(people,attributeClasses):
 #populace = genPop(people, attributes, attribute_p)
 populace = loadPickledPop("people_list_serialized.pkl")
@@ -189,14 +209,15 @@ clusterDenseGroups(graph, popsByCategory['sp_hh_id'],1)
 clusterByDegree_p(graph,popsByCategory['work_id'], 1, [0,0,0.2,0.3,0.5])
 clusterByDegree_p(graph,popsByCategory['school_id'], 1, [0,0,0.2,0.3,0.5])
 
-#strogatzDemCatz(graph, popsByCategory['work_id'], 1, 4, 0.2)
 
+#node_investigation = EoN.fast_SIR(graph, globalInfectionRate, recoveryRate, rho = 0.01, transmission_weight ='transmission_weight',return_full_data = True)
+#if not nx.is_connected(graph):
+#    print("warning: graph is not conneted, the are .2f{} components".format(nx.number_connected_components(graph)))
 
-node_investigation = EoN.fast_SIR(graph, globalInfectionRate, recoveryRate, rho = 0.01, transmission_weight ='transmission_weight',return_full_data = True)
-if not nx.is_connected(graph):
-    print("warning: graph is not conneted, the are .2f{} components".format(nx.number_connected_components(graph)))
-
-plt.plot(node_investigation.summary(populace)[1]['I'],label = "infected students")
+clusterWith_gnp_random(graph, {1:list(range(5))}, 1, 4)
+nx.draw(graph)
+plt.show()
+#plt.plot(node_investigation.summary(popsByCategory['work_id'][None])[1]['I'],label = "infected students")
 plt.legend()
 plt.show()
 
