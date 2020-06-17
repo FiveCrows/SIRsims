@@ -136,7 +136,7 @@ def plotDefault(dates, cumulativeData, county_list):
     plt.show()
     
 
-def main(threshold: int=None, county: str=None, zipcode: int=None):
+def main(default=None,threshold: int=None, county: str=None, zipcode: int=None):
     '''
         To run this program, you will need files as given below:
         home_dir='zipcode_data/' - This will be the folder containing all the csv files
@@ -151,7 +151,7 @@ def main(threshold: int=None, county: str=None, zipcode: int=None):
         plotThreshold(threshold, dates, cumulativeData, county_list)
     elif county:
         plotCounty(county, dates, cumulativeData, county_list)
-    else:
+    elif default:
         plotDefault(dates, cumulativeData, county_list)
 
 if __name__=="__main__":
@@ -160,6 +160,8 @@ if __name__=="__main__":
         print("Other Usage:\n[-county|-c] countyname\nCounty name can be a full name or a prefix\n[-zipcode|-z] zipcode\n[-threshold|-t] threshold")
     elif sys.argv[1]=='-county' or sys.argv[1]=='-c':
         main(county=sys.argv[2])
+    elif sys.argv[1]=='-default' or sys.argv[1]=='-d':
+        main(default=1)
     elif sys.argv[1]=='-zipcode' or sys.argv[1]=='-z':
         if sys.argv[2].isnumeric():
             main(zipcode=int(sys.argv[2]))
