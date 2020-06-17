@@ -102,7 +102,7 @@ def genPop(people, attributeClasses, attributeClass_p):
         for  key in assignments:
             for i in assignments[key]:
                 population[i][attributeClass] = key
-    
+
     return population
 
 
