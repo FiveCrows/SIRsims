@@ -4,7 +4,6 @@ This program restructures the data from existing serialized files so that the ke
 import gmplot
 import pickle
 import googlemaps
-api_key="AIzaSyC14_e1FhRczF31_3kZu9lLqvtSNgGzYF8"
 school_file="schools_list_serialized.pkl"
 workplace_file="workplaces_list_serialized.pkl"
 people_file="people_list_serialized.pkl"
