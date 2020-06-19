@@ -7,6 +7,7 @@ import pickle
 import itertools
 import matplotlib.pyplot as plt
 import EoN
+import time
 import math
 
 
@@ -205,23 +206,38 @@ def clusterGroupsByPA(graph, groups):
 #def mergeSubClusterGraph(graph,subgraph, nodeMap):
 #def sortAttributes(people,attributeClasses):
 #populace = genPop(people, attributes, attribute_p)
+
+print("loading and sorting populations")
+start = time.time()
 populace = loadPickledPop("people_list_serialized.pkl")
-popsByCategory = sortPopulace(populace, ['sp_hh_id', 'work_id', 'school_id'])
+popsByCategory = sortPopulace(populace, ['sp_hh_id', 'work_id', 'school_id', 'race'])
 graph = nx.Graph()
+stop = time.time()
+print("finished in {} seconds".format(stop - start))
 
-clusterDenseGroups(graph, popsByCategory['sp_hh_id'],2)
-#clusterByDegree_p(graph,popsByCategory['work_id'], 1, [0,0,0.2,0.3,0.5])
-#clusterByDegree_p(graph,popsByCategory['school_id'], 1, [0,0,0.2,0.3,0.5])
-strogatzDemCatz(graph, popsByCategory['work_id'], 1, 10, 0.1)
-strogatzDemCatz(graph, popsByCategory['school_id'], 1, 10,0.1)
+print("building populace into graphs")
+start = time.time()
+clusterDenseGroups(graph, popsByCategory['sp_hh_id'],1)
+clusterByDegree_p(graph,popsByCategory['work_id'], 1, [0,0,0.2,0.3,0.5])
+clusterByDegree_p(graph,popsByCategory['school_id'], 1, [0,0,0.2,0.3,0.5])
+#strogatzDemCatz(graph, popsByCategory['work_id'], .5, 8, 0.3)
+#strogatzDemCatz(graph, popsByCategory['school_id'], .5, 8,0.3)
+stop = time.time()
+print("finished in {} seconds".format(stop - start))
 
+start = time.time()
+print("running event-based simulation")
+node_investigation = EoN.fast_SIR(graph, globalInfectionRate, recoveryRate, rho = 0.0001, transmission_weight ='transmission_weight',return_full_data = True)
+stop = time.time()
+print("finished in {} seconds".format(stop - start))
 
-node_investigation = EoN.fast_SIR(graph, globalInfectionRate, recoveryRate, rho = 0.01, transmission_weight ='transmission_weight',return_full_data = True)
 if not nx.is_connected(graph):
     print("warning: graph is not conneted, the are {} components".format(nx.number_connected_components(graph.subgraph(popsByCategory['work_id'][505001334]))))
-
 plt.show()
-plt.plot(node_investigation.summary(popsByCategory['work_id'][None])[1]['I'],label = "infected students")
+racePops = [len(popsByCategory['race'][index]) for index in popsByCategory['race']]
+plt.plot(node_investigation.summary(popsByCategory['race'][1])[1]['I']/racePops[0],label = "infected students")
+plt.plot(node_investigation.summary(popsByCategory['race'][2])[1]['I']/racePops[1],label = "infected students")
+plt.plot(node_investigation.summary(popsByCategory['race'][3])[1]['I']/racePops[2],label = "infected students")
 #plt.plot(node_investigation.summary(graph,label = "infected students")
 plt.show()
 plt.plot("this")
