@@ -87,7 +87,7 @@ def loadPickledPop(filename):
         x = pickle.load(file)
     #return represented by dict of dicts
     populace = ({key: (vars(x[key])) for key in x})#.transpose()
-    csv = pd.DataFrame.from_dict(populace)
+    #csv = pd.DataFrame.from_dict(populace)
     #csv.to_csv("./datasets/synthPopulace.csv")
     return populace
 
@@ -118,7 +118,6 @@ def sortPopulace(populace, categories):
     return groups
 
 
-
 #connect list of groups with weight
 #TODO update to use a weight calculating function
 def clusterDenseGroups(graph, groups, weight):
@@ -129,6 +128,10 @@ def clusterDenseGroups(graph, groups, weight):
             for i in range(memberCount):
                 for j in range(i):
                     graph.add_edge(groups[key][i],groups[key][j], transmission_weight = weight/memberWeightScalar)
+
+
+
+
 
 
 def clusterByDegree_p(graph, groups, weight,degree_p):
