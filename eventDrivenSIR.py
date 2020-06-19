@@ -149,8 +149,10 @@ def clusterByDegree_p(graph, groups, weight,degree_p):
 
             i = 0
             while i < len(connectorList)-1:
-                graph.add_edge(connectorList[i],connectorList[i+1],transmission_weight = weight)
+                graph.add_edge(groups[key][connectorList[i]],groups[key][connectorList[i+1]],transmission_weight = weight)
                 i = i+2
+
+
 
 
 def clusterWith_gnp_random(graph,groups,weight,avgDegree):
@@ -171,8 +173,9 @@ def strogatzDemCatz(graph, groups, weight, local_k, rewire_p):
         if key!=None:
             memberCount = len(groups[key])
             if local_k >= memberCount:
-                print("warning: not enough members in group for .2f".format(local_k) + "local connections in strogatz net")
-                continue
+                print("warning: not enough members in group for {}".format(local_k) + "local connections in strogatz net")
+                local_k = memberCount-1
+
 
             group = groups[key]
             #unfinished for different implementation to not leave any chance of randomly selecting the same edge twice
@@ -180,20 +183,19 @@ def strogatzDemCatz(graph, groups, weight, local_k, rewire_p):
             #rewireList = np.choices(group, rewireCount)*2
 
             for i in range(memberCount):
-                if memberCount<5:
-                    print("stop")
-                for j in range(local_k//2):
+                nodeA = group[i]
+                for j in range(-local_k, local_k//2):
+                    if j == 0:
+                        continue
                     rewireRoll = random.uniform(0,1)
 
                     if rewireRoll<rewire_p:
-                        graph.add_edge(i, (i + random.choice(range(memberCount - 1))) % memberCount, transmission_weight=weight)
-                    else:
-                        graph.add_edge(i, i + j, transmission_weight=weight)
-                    if rewire_p<rewireRoll<2*rewire_p:
-                        graph.add_edge(i, (i + random.choice(range(memberCount - 1))) % memberCount,transmission_weight=weight)
-                    else:
-                        graph.add_edge(i, i - j, transmission_weight=weight)
+                        nodeB = group[(i + random.choice(range(memberCount - 1))) % memberCount]
+                        graph.add_edge(nodeA, nodeB, transmission_weight=weight)
 
+                    else:
+                        nodeB = group[(i+j)%memberCount]
+                    graph.add_edge(nodeA, nodeB, transmission_weight=weight)
 
 #WIP
 def clusterGroupsByPA(graph, groups):
@@ -207,23 +209,21 @@ populace = loadPickledPop("people_list_serialized.pkl")
 popsByCategory = sortPopulace(populace, ['sp_hh_id', 'work_id', 'school_id'])
 graph = nx.Graph()
 
-clusterDenseGroups(graph, popsByCategory['sp_hh_id'],1)
-clusterByDegree_p(graph,popsByCategory['work_id'], 1, [0,0,0.2,0.3,0.5])
-clusterByDegree_p(graph,popsByCategory['school_id'], 1, [0,0,0.2,0.3,0.5])
+clusterDenseGroups(graph, popsByCategory['sp_hh_id'],2)
+#clusterByDegree_p(graph,popsByCategory['work_id'], 1, [0,0,0.2,0.3,0.5])
+#clusterByDegree_p(graph,popsByCategory['school_id'], 1, [0,0,0.2,0.3,0.5])
+strogatzDemCatz(graph, popsByCategory['work_id'], 1, 10, 0.1)
+strogatzDemCatz(graph, popsByCategory['school_id'], 1, 10,0.1)
 
 
-#node_investigation = EoN.fast_SIR(graph, globalInfectionRate, recoveryRate, rho = 0.01, transmission_weight ='transmission_weight',return_full_data = True)
-#if not nx.is_connected(graph):
-#    print("warning: graph is not conneted, the are .2f{} components".format(nx.number_connected_components(graph)))
+node_investigation = EoN.fast_SIR(graph, globalInfectionRate, recoveryRate, rho = 0.01, transmission_weight ='transmission_weight',return_full_data = True)
+if not nx.is_connected(graph):
+    print("warning: graph is not conneted, the are {} components".format(nx.number_connected_components(graph.subgraph(popsByCategory['work_id'][505001334]))))
 
-clusterWith_gnp_random(graph, {1:list(range(5))}, 1, 4)
-nx.draw(graph)
 plt.show()
-#plt.plot(node_investigation.summary(popsByCategory['work_id'][None])[1]['I'],label = "infected students")
-plt.legend()
+plt.plot(node_investigation.summary(popsByCategory['work_id'][None])[1]['I'],label = "infected students")
+#plt.plot(node_investigation.summary(graph,label = "infected students")
 plt.show()
-
-
 plt.plot("this")
 
 
