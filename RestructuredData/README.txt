@@ -1,0 +1,1 @@
+The data from existing serialized files are restructured so that the key for each entry in each file is the corresponding sp_id. These files will be used to generate the maps for each person's daily travel
