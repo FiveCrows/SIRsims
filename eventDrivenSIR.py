@@ -205,11 +205,12 @@ def clusterGroupsByPA(graph, groups):
         memberCount = len(groups[key])
 
 
-def showGroupComparison(sim, category, groupTags, popsByCategory):
+def showGroupComparison(sim, category, groupTags, popsByCategory, title = None):
         for groupTag in groupTags:
             group = popsByCategory[category][groupTag]
-            plt.plot(node_investigation.summary(group)[1]['I']/len(group),label = "{}: {}".format(category,groupTag))
+            plt.plot(sim.summary(group)[1]['I']/len(group),label = "{}: {}".format(category,groupTag))
         plt.legend()
+        plt.title(title)
         plt.ylabel("percent infected")
         plt.xlabel("time steps")
         plt.show()
@@ -221,28 +222,33 @@ print("loading and sorting populations")
 start = time.time()
 populace = loadPickledPop("people_list_serialized.pkl")
 popsByCategory = sortPopulace(populace, ['sp_hh_id', 'work_id', 'school_id', 'race'])
-graph = nx.Graph()
+graph1 = nx.Graph()
+graph2 = nx.Graph()
 stop = time.time()
 print("finished in {} seconds".format(stop - start))
 
 print("building populace into graphs")
 start = time.time()
 
-clusterDenseGroups(graph, popsByCategory['sp_hh_id'],homeInfectivity)
-#clusterByDegree_p(graph,popsByCategory['work_id'], 1, [0,0,0.2,0.3,0.5])
-#clusterByDegree_p(graph,popsByCategory['school_id'], 1, [0,0,0.2,0.3,0.5])
-strogatzDemCatz(graph, popsByCategory['work_id'], workInfectivity, 8, 0.3)
-strogatzDemCatz(graph, popsByCategory['school_id'],schoolInfectivity, 8,0.3)
+clusterDenseGroups(graph1, popsByCategory['sp_hh_id'],homeInfectivity)
+clusterDenseGroups(graph2, popsByCategory['sp_hh_id'],homeInfectivity)
+clusterByDegree_p(graph1,popsByCategory['work_id'], 1, [0,0,0.2,0.3,0.5])
+clusterByDegree_p(graph1,popsByCategory['school_id'], 1, [0,0,0.2,0.3,0.5])
+strogatzDemCatz(graph2, popsByCategory['work_id'], workInfectivity, 8, 0.3)
+strogatzDemCatz(graph2, popsByCategory['school_id'],schoolInfectivity, 8,0.3)
 stop = time.time()
 print("finished in {} seconds".format(stop - start))
 
 start = time.time()
 print("running event-based simulation")
-node_investigation = EoN.fast_SIR(graph, globalInfectionRate, recoveryRate, rho = 0.0001, transmission_weight ='transmission_weight',return_full_data = True)
+node_investigation1 = EoN.fast_SIR(graph1, globalInfectionRate, recoveryRate, rho = 0.0001, transmission_weight ='transmission_weight',return_full_data = True)
+node_investigation2 = EoN.fast_SIR(graph2, globalInfectionRate, recoveryRate, rho = 0.0001, transmission_weight ='transmission_weight',return_full_data = True)
 stop = time.time()
 print("finished in {} seconds".format(stop - start))
 
-showGroupComparison(node_investigation, 'race', [1,2], popsByCategory)
+showGroupComparison(node_investigation1, 'race', [1,2], popsByCategory, "built with random nets")
+showGroupComparison(node_investigation2, 'race', [1,2], popsByCategory, "built with strogatz nets")
+
 #node_investigation.animate(popsByCategory['school_id'][450143554])
 
 #if not nx.is_connected(graph):
