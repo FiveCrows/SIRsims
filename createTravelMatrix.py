@@ -18,7 +18,8 @@ travel_matrix={} #Dictionary indexed by person's sp_id. People who go to work OR
 schoolAndWorkCount=0 #This data keeps track of all people who go to school AND work. For Leon, that number is 1469
 studentCount=0
 employedCount=0
-unemployedCount=0
+unemployedCount_F, unemployedCount_M=0,0
+oldCount,infantCount=0,0
 for person in people_data:
 	record=people_data[person]
 	home=households_data[record.sp_hh_id]
@@ -38,13 +39,17 @@ for person in people_data:
 		employedCount+=1
 		workplace=workplace_data[record.work_id]
 		workplace_loc=(workplace.latitude,workplace.longitude)
-	else:
-		unemployedCount+=1
+	elif 65>record.age>18:
+		if record.sex==0:
+			unemployedCount_M+=1
+		else:
+			unemployedCount_F+=1
+	if record.age<4:
+		infantCount+=1
+	elif record.age>65:
+		oldCount+=1
 	travel_matrix[record.sp_id]=Travel([home_loc, workplace_loc, school_loc])
-print("Student and Employed: ",schoolAndWorkCount,"\nStudent Only: ",studentCount,"\nEmployed Only: ", employedCount, "\nUnemployed: ", unemployedCount)
+# print("Student and Employed: ",schoolAndWorkCount,"\nStudent Only: ",studentCount,"\nEmployed Only: ", employedCount, "\nUnemployed: ", unemployedCount)
+# print(infantCount, oldCount)
+# print("Male unemployed: ", unemployedCount_M, "\nFemale unemployed: ",unemployedCount_F )
 pickle.dump(travel_matrix, open("travel_matrix_file",'wb'))
-# Statistics for Leon County
-# Student and Employed:  1469
-# Student Only:  43877 
-# Employed Only:  132816 
-# Unemployed:  82380
