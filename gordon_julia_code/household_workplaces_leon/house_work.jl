@@ -36,6 +36,12 @@ p = (
     initial_infected_perc = 0.05,
     initial_infected = 1,  # initial number of people infected
 )
+
+function loadPickledPop(filename)
+    populace_df = CSV.read(filename, delim=',')
+    return populace_df  # ???
+end
+
 #p.population = p.household_size * p.households
 people = p.household_size * p.households
 population = people
@@ -145,23 +151,12 @@ function listDict(dict)
     end
 end
 
-#for loading people objects from file
-# MUST DEBUG
-function loadPickledPop(filename)
-    populace_df = CSV.read(filename, delim=',')
-    #return represented by dict of dicts
-    #populace = ({key: (vars(x[key])) for key in x})#.transpose()
-    # Convert each row to a dictionary
-    #populace = Dict(key => key(x) for key in x)
-    #csv = pd.DataFrame.from_dict(populace)
-    #csv.to_csv("./datasets/synthPopulace.csv")
-    return populace_df  # ???
-end
-
-
 filename = "Leon_Formatted/people_formatted.csv"
 populace_df = loadPickledPop(filename)
 rename!(populace_df, :Column1 => :person_id)
+
+# replace 'X' by -1 so that columns are of the same type
+replace!(populace_df, "X" ==> -1)
 
 
 # for loading people objects from file
@@ -274,7 +269,7 @@ function breakupSchool(group; class_size::Int=20)
     breakupGroup(group, subgroup_size=class_size)
 end
 
-function breakupWorkplace(group, workplace_size)
+function breakupWorkplace(group; workplace_size::Int=30)
     breakupGroup(group, subgroup_size=workplace_size)
 end
 
@@ -287,30 +282,11 @@ schools = groups[:school_id]
 function createSchoolGraphs(schools)
     school_graphs = []
     for (i,grp) in enumerate(schools)
-        #println("typeof: ", typeof(grp.person))
-        #println("person: ", grp.person)
-        #println("grp.person size: $(length(grp.person))")
         groups_ = breakupSchool(grp.person; class_size=20)
-        #println("nb groups_= $(length(groups_))") # ==> 50, elngth=2
-        #println("groups_[1]= $(length(groups_[1]))") # ==> 50, elngth=2
-        #println(groups_)
-        #return
-        #println("groups[1]= ", groups_[1])
-        #println("groups[2]= ", groups_[2])
-        #println("groups[3]= ", groups_[3])
-        # return
-        #println("length(groups): ", length(groups))
-        # ATTN: grp.person counts from 0
         for k in keys(groups_)  # g is a dictionary
             g = groups_[k]
-            #println("length(g)= $(length(g))")
-            #println(" g = ", g)
-            #push!(school_graphs, createErdosRenyiGraph(grp.person, 10))
             push!(school_graphs, createErdosRenyiGraph(g, 20))
         end
-        #return school_graphs
-        # 1.34 sec to create all the school graphs with 8 nodes per class
-        # 3.74 sec to create all the school graphs with 20 nodes per class
     end
     return school_graphs
 end
@@ -332,9 +308,52 @@ end
 sum(nv.(school_graphs))
 sum(ne.(school_graphs))
 
+#----------------------------------------------
+function createWorkplaceGraphs(workplaces; group_size=20)
+    work_graphs = []
+    for (i,grp) in enumerate(workplaces)
+        #println(grp.person)
+        #println(length(grp.person))
+        # Remove lines with 'X' in :work_id
+        #grp[grp.work_id == 'X']
+        groups_ = breakupWorkplace(grp.person; workplace_size=group_size)
+        for k in keys(groups_)  # g is a dictionary
+            g = groups_[k]
+            G = createErdosRenyiGraph(g, 20)
+            if nv(G) > 1
+                push!(work_graphs, G)
+            end
+        end
+    end
+    return work_graphs
+end
+
+for (i,grp) in enumerate(workplaces_)
+    g = grp.work_id .== 'X'
+    if grp.work_id[1] == 'X'  # why aren't any with an 'X'? I DO NOT FOLLOW
+        #println("$i, $(grp.work_id[1])")
+    end
+    println("$i, $(grp.work_id[1])")
+end
+
+# Vector{SubDataFrame{DataFrame,DataFrames.Index,Array{Int64,1}}}
+workplaces_ = groups[:work_id]
+
+
+# perhaps small world Strogatz graph is better (as per Bryan Azbill)
+@time wp_graphs = createWorkplaceGraphs(workplaces_, group_size=20)
+
+for G in wp_graphs
+    print("[$(nv(G)), $(ne(G))], ")
+end
+sum(nv.(wp_graphs))
+sum(ne.(wp_graphs))
+
 a = 3
 
-function createWorkplaceGraphs()
+
+work_ = schools[2:end]
+createWorkplaceGraphs()
 
 a = 3
 
