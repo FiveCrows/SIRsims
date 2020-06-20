@@ -20,8 +20,9 @@ workGroupSize = 10
 employmentRate = 0.9
 recoveryRate = 1
 globalInfectionRate = 1
-houseInfectivity = .1
-workInfectivity = .05
+homeInfectivity = 1
+schoolInfectivity = 0.5
+workInfectivity = 0.5
 tau = 1 #transmission factor
 gamma = 1 #recovery rate
 initial_infected = 1
@@ -203,6 +204,15 @@ def clusterGroupsByPA(graph, groups):
     for key in groups.keys():
         memberCount = len(groups[key])
 
+
+def showGroupComparison(sim, category, groupTags, popsByCategory):
+        for groupTag in groupTags:
+            group = popsByCategory[category][groupTag]
+            plt.plot(node_investigation.summary(group)[1]['I']/len(group),label = "{}: {}".format(category,groupTag))
+        plt.legend()
+        plt.ylabel("percent infected")
+        plt.xlabel("time steps")
+        plt.show()
 #def mergeSubClusterGraph(graph,subgraph, nodeMap):
 #def sortAttributes(people,attributeClasses):
 #populace = genPop(people, attributes, attribute_p)
@@ -217,11 +227,12 @@ print("finished in {} seconds".format(stop - start))
 
 print("building populace into graphs")
 start = time.time()
-clusterDenseGroups(graph, popsByCategory['sp_hh_id'],1)
-clusterByDegree_p(graph,popsByCategory['work_id'], 1, [0,0,0.2,0.3,0.5])
-clusterByDegree_p(graph,popsByCategory['school_id'], 1, [0,0,0.2,0.3,0.5])
-#strogatzDemCatz(graph, popsByCategory['work_id'], .5, 8, 0.3)
-#strogatzDemCatz(graph, popsByCategory['school_id'], .5, 8,0.3)
+
+clusterDenseGroups(graph, popsByCategory['sp_hh_id'],homeInfectivity)
+#clusterByDegree_p(graph,popsByCategory['work_id'], 1, [0,0,0.2,0.3,0.5])
+#clusterByDegree_p(graph,popsByCategory['school_id'], 1, [0,0,0.2,0.3,0.5])
+strogatzDemCatz(graph, popsByCategory['work_id'], workInfectivity, 8, 0.3)
+strogatzDemCatz(graph, popsByCategory['school_id'],schoolInfectivity, 8,0.3)
 stop = time.time()
 print("finished in {} seconds".format(stop - start))
 
@@ -231,35 +242,19 @@ node_investigation = EoN.fast_SIR(graph, globalInfectionRate, recoveryRate, rho 
 stop = time.time()
 print("finished in {} seconds".format(stop - start))
 
-if not nx.is_connected(graph):
-    print("warning: graph is not conneted, the are {} components".format(nx.number_connected_components(graph.subgraph(popsByCategory['work_id'][505001334]))))
-plt.show()
-racePops = [len(popsByCategory['race'][index]) for index in popsByCategory['race']]
-plt.plot(node_investigation.summary(popsByCategory['race'][1])[1]['I']/racePops[0],label = "infected students")
-plt.plot(node_investigation.summary(popsByCategory['race'][2])[1]['I']/racePops[1],label = "infected students")
-plt.plot(node_investigation.summary(popsByCategory['race'][3])[1]['I']/racePops[2],label = "infected students")
+showGroupComparison(node_investigation, 'race', [1,2], popsByCategory)
+#node_investigation.animate(popsByCategory['school_id'][450143554])
+
+#if not nx.is_connected(graph):
+#    print("warning: graph is not connected, there are {} components".format(nx.number_connected_components(graph.subgraph(popsByCategory['work_id'][505001334]))))
+
+#node_investigation.animate()
+
+
+
+#plt.plot(node_investigation.summary(popsByCategory['race'][2])[1]['I']/racePops[1],label = "infected students")
+#plt.plot(node_investigation.summary(popsByCategory['race'][3])[1]['I']/racePops[2],label = "infected students")
 #plt.plot(node_investigation.summary(graph,label = "infected students")
-plt.show()
-plt.plot("this")
 
 
 
-print("stop here ")
-
-#def assignDuties(populace):
-
-#def networkPopulace(duties):
-
-
-
-
-
-#TODO assign households and nodes in households to neighborhoods:
-#Idea: track neighborhoods and whole city as 'global groups', groups which occur global infections to eachother, but aren't necessarily bigger risks because the group is bigger
-#these are contacts that occur between strangers who possibly share the same transit, gym, etc.
-
-
-
-#TODO a function to animate a graph in time
-
-#TODO write a function to spline 1d t,S,I,R arrays into even time intervals so that multiple runs can be averaged
