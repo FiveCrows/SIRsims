@@ -2,21 +2,17 @@
 include("./modules.jl")
 using Plots
 
-
 # Generate Household and Workplace graphs (one for each)
 # The idea is to apply multigraphs. Both Households and Workplace graphs
 # are composed of multiple disconnected graphs, one per household and one
 # per workplace
 function generateDemographicGraphs(params)
     p = params
-    population = p.household_size * p.households
+    #population = p.household_size * p.households
 
     # symbols take 8 bytes
-    work_classes = [:default, :unemployed, :school,]
-    duties = [:None, :school, :work,]
-
-    members = collect(1:100)
-    group_size = 23
+    #work_classes = [:default, :unemployed, :school,]
+    #duties = [:None, :school, :work,]
 
     # Id's are converted to integers. Missing data is -1 index
     df = readData()
@@ -42,7 +38,7 @@ function generateDemographicGraphs(params)
     printSchoolDF() = for r in 1:nrow(school_df) println(school_df[r,:]) end
 
     # The databases now have renumbered Ids
-    @time df_age = ageDistribution(df)
+    df_age = ageDistribution(df)
 
     # Categories is a list of categories
     #column1 in each group is the person_id. I should rename the colums of the DataFrame
@@ -54,12 +50,29 @@ function generateDemographicGraphs(params)
     # Every person is in a home
 
     # Create a Work Master Graph. Homes are disconnected
-    @time work_graph = createWorkGraph(df, groups[:work_id], 0.31)
-    @time home_graph = createHomeGraph(df, groups)
+    # Ideally the small world parameter 0.31, should come from a distribution
+    #println("starting home")
+    @time home_graph = createHomeGraph(nrow(df), groups)
+    #println("finished home")
+    # last argument is a weight
+    #println("starting work")
+    @time work_graph = createWorkGraph(df, groups[:work_id], 0.31, 0.8)
+    #println("finished work")
+    #println("starting school")
+    @time school_graph = createWorkGraph(df, groups[:school_id], 0.3, 0.7)
+    #println("finished school")
 
     # TODO: Must make all graphs weighted
 
-    return home_graph, work_graph
+    return home_graph, nothing, nothing
+    return home_graph, work_graph, school_graph
 end
 
-@time home_graph, work_graph = generateDemographicGraphs(p)
+# WEIGHTED GRAPHS TAKE FOREVER!!! TOTALLY INEFFICIENT. I must be using them wrong.
+@time home_graph = generateDemographicGraphs(p)
+@time home_graph, work_graph, school_graph = generateDemographicGraphs(p)
+@show school_graph
+@show work_graph
+@show home_graph
+graphs = [home_graph, work_graph, school_graph]
+@show total_edges = sum(ne.(graphs))

@@ -191,7 +191,7 @@ end
 #takes a dict of dicts to represent populace and returns a # list
 # of dicts of lists to represent groups of people with the
 # same attributes
-function sortPopulace(populace_df, categories)
+function sortPopulace(df, categories)
     groups = Dict()
     for c in categories
         groups[c] = []
@@ -296,21 +296,25 @@ function createWorkplaceGraphs(workplaces; group_size=20)
     return work_graphs
 end
 
-function myMerge!(master_graph, meta_graph)
+function myMerge!(master_graph::MetaGraph, meta_graph::MetaGraph, weight::Float64)
+    # a more general function will have a weight vector as the last argument
     n = get_prop(meta_graph, :nodes)
+    #@show master_graph
     for e in edges(meta_graph)
         i = src(e)
         j = dst(e)
-        add_edge!(master_graph, n[i], n[j])
+        add_edge!(master_graph, n[i], n[j], :weight, weight)
     end
 end
 
-function myMerge!(master_graph, simple_graph, node_ids)
+function myMerge!(master_graph, simple_graph, node_ids, weight)
+    # Add edges and a constant weight
+    # a more general function will have a weight vector as the last argument
     n = node_ids
     for e in edges(simple_graph)
         i = src(e)
         j = dst(e)
-        add_edge!(master_graph, n[i], n[j])  # really need a weight
+        add_edge!(master_graph, n[i], n[j], weight)  # really need a weight
     end
 end
 
@@ -318,15 +322,21 @@ end
 # A person is either at work or at home
 # Create a School Master Graph. Homes are disconnected
 # person_id starts from 0
-function createHomeGraph(df, groups)
-    mgh = SimpleGraph(nrow(df))
+function createHomeGraph(nb_nodes, groups)
+    mgh = MetaGraph(nb_nodes)  # 2,3x slower than SimpleGraph
+    #mgh = SimpleWeightedGraph(nb_nodes)
+    #mgh = SimpleGraph(nb_nodes)   # <<<< Should be weighted graph?
     homes = groups[:sp_hh_id]
+    weight = 0.3  # need more generality
     for r in 1:length(homes)
         person_ids = homes[r].person_id
         sz = length(person_ids)
+        #println("sz= $sz")
         for i in 1:sz
             for j in i+1:sz
-                add_edge!(mgh, person_ids[i]+1, person_ids[j]+1)
+                #add_edge!(mgh, person_ids[i]+1, person_ids[j]+1, weight)
+                #add_edge!(mgh, person_ids[i]+1, person_ids[j]+1)
+                add_edge!(mgh, person_ids[i]+1, person_ids[j]+1, :weigth, weight)
             end
         end
     end
@@ -334,9 +344,13 @@ function createHomeGraph(df, groups)
 end
 
 # person_id starts from 0
-function createWorkGraph(df, workplaces, β_strogatz)
+function createWorkGraph(df, workplaces, β_strogatz, weight::Float64)
     #graphs = []
-    master_graph = SimpleGraph(nrow(df))
+    # Unit weight by default
+    #println("createWorkGraph: before master_graph")
+    #master_graph = SimpleWeightedGraph(nrow(df))
+    master_graph = MetaGraph(nrow(df))
+    #println("createWorkGraph: master_graph is a weighted graph")
     #println("length(workplaces): $(length(workplaces))")
     # Create smallworld graph (follow Gryan)
     for r in 1:length(workplaces)
@@ -359,18 +373,20 @@ function createWorkGraph(df, workplaces, β_strogatz)
 
         if r % 200 == 0
             #println("graph $r")
-            println("graph $r, $master_graph")
+            #println("graph $r, $master_graph")
         end
 
         if sz > 1
-            #mg  = MetaGraph(mgh, sz)
-            #set_prop!(mg, :nodes, person_ids)
-            #myMerge!(master_graph, mg)
+            mg  = MetaGraph(mgh, weight)
+            set_prop!(mg, :nodes, person_ids)
+            #set_prop!(mg, :weight, weight)
+            myMerge!(master_graph, mg, weight)
             #println(typeof(person_ids))
-            myMerge!(master_graph, mgh, person_ids)
+            #weight = 0.7
+            #myMerge!(master_graph, mgh, person_ids, weight)
         end
     end
-    println("Master_graph: $master_graph")
+    #println("Master_graph: $master_graph")
     return master_graph
 end
 
