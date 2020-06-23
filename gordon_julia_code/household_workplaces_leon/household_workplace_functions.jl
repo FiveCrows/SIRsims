@@ -337,9 +337,9 @@ function createWorkGraph(df, workplaces, β_strogatz, weight::Float64)
     for r in 1:length(workplaces)
         person_ids = workplaces[r].person_id
         sz = length(person_ids)
-        if sz > 10000
+        if sz > 5000
             println("###################################")
-            println("sz > 10000 (= $sz), SKIP OVER")
+            println("sz > 5000 (= $sz), SKIP OVER")
             println("###################################")
             continue
         end
@@ -354,10 +354,10 @@ function createWorkGraph(df, workplaces, β_strogatz, weight::Float64)
             elseif sz < 25
                 mgh = createErdosRenyiGraph(person_ids, 10) #p::Float64)
             elseif sz < 500
-                println("==> $sz, ")
-                mgh = watts_strogatz(sz, m20, β_strogatz) # erdos-redyi
+                #println("==> $sz, ")
+                mgh = watts_strogatz(sz, 20, β_strogatz) # erdos-redyi
             else
-                println("==> $sz, ")
+                #println("==> $sz, ")
                 mgh = watts_strogatz(sz, 20, β_strogatz)
             end
         end
