@@ -13,6 +13,8 @@ class Person:
         self.relate=int(attrs[5].decode('UTF-8'))
         self.school_id=convertCol(attrs[6])
         self.work_id=convertCol(attrs[7])
+        self.comorbidities={'Hypertension': False,'Obesity': False, 'Lung disease':False,'Diabetes': False,'Heart disease':False,
+        'MaskUsage': False, 'Other': False}
 
 class Workplace():
     def __init__(self, attrs:list):
