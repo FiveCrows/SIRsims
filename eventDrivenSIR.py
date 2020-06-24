@@ -1,3 +1,4 @@
+# Written by Bryan Azbill, 2020-06-01
 import numpy as np
 import scipy as sci
 import networkx as nx
@@ -23,6 +24,7 @@ globalInfectionRate = 1
 homeInfectivity = 1
 schoolInfectivity = 0.5
 workInfectivity = 0.5
+workAvgDegree = 10
 tau = 1 #transmission factor
 gamma = 1 #recovery rate
 initial_infected = 1
@@ -89,10 +91,11 @@ def loadPickledPop(filename):
         x = pickle.load(file)
     #return represented by dict of dicts
     populace = ({key: (vars(x[key])) for key in x})#.transpose()
-    #csv = pd.DataFrame.from_dict(populace)
-    #csv.to_csv("./datasets/synthPopulace.csv")
+    csv = pd.DataFrame.from_dict(populace).transpose()
+    csv.to_csv("./datasets/synthPopulaceReformat.csv")
     return populace
 
+#def bubblePlot():
 # assign people to households
 
 
@@ -103,7 +106,7 @@ def genPop(people, attributeClasses, attributeClass_p):
         for  key in assignments:
             for i in assignments[key]:
                 population[i][attributeClass] = key
-    
+
     return population
 
 
@@ -123,6 +126,8 @@ def sortPopulace(populace, categories):
 #connect list of groups with weight
 #TODO update to use a weight calculating function
 def clusterDenseGroups(graph, groups, weight):
+    #totalWeightsAdded = 0
+
     for key in groups.keys():
         if key !=None:
             memberCount = len(groups[key])
@@ -130,7 +135,7 @@ def clusterDenseGroups(graph, groups, weight):
             for i in range(memberCount):
                 for j in range(i):
                     graph.add_edge(groups[key][i],groups[key][j], transmission_weight = weight/memberWeightScalar)
-
+                    #totalWeightsAdded = totalWeightsAdded+1
 
 
 
@@ -157,14 +162,21 @@ def clusterByDegree_p(graph, groups, weight,degree_p):
 
 
 
-def clusterWith_gnp_random(graph,groups,weight,avgDegree):
+def clusterWith_gnp_random(graph,classifier,weight,avgDegree):
+    groups = popsByCategory[classifier]
+    weightsAdded = 0
     for key in groups.keys():
         if key !=None:
             memberCount = len(groups[key])
+            if(memberCount<=avgDegree):
+                clusterDenseGroups(graph, {0:groups[key]}, weight)
+                weightsAdded = weightsAdded + memberCount*(memberCount-1)/2
+                continue
             edgeProb = (memberCount*avgDegree)/(memberCount*(memberCount-1))
-            graph2 = nx.fast_gnp_random_graph(memberCount,edgeProb)
-            graph.add_edges_from(graph2.edges())
-
+            subGraph = nx.fast_gnp_random_graph(memberCount,edgeProb)
+            graph.add_edges_from(subGraph.edges(), transmission_weight = weight)
+            weightsAdded = weightsAdded+1
+    print("{} weights of size {} have been added for {} work environments".format(weightsAdded, weight, len(popsByCategory[classifier].keys())))
 
 #clusters groups into strogatz small-worlds networks
 def strogatzDemCatz(graph, groups, weight, local_k, rewire_p):
@@ -178,6 +190,7 @@ def strogatzDemCatz(graph, groups, weight, local_k, rewire_p):
                 print("warning: not enough members in group for {}".format(local_k) + "local connections in strogatz net")
                 local_k = memberCount-1
 
+
             group = groups[key]
             #unfinished for different implementation to not leave any chance of randomly selecting the same edge twice
             #rewireCount = np.random.binomial(memberCount, rewire_p)
@@ -185,13 +198,15 @@ def strogatzDemCatz(graph, groups, weight, local_k, rewire_p):
 
             for i in range(memberCount):
                 nodeA = group[i]
-                for j in range(-local_k//2, local_k//2+1):
+                for j in range(-local_k, local_k//2):
                     if j == 0:
                         continue
                     rewireRoll = random.uniform(0,1)
 
                     if rewireRoll<rewire_p:
                         nodeB = group[(i + random.choice(range(memberCount - 1))) % memberCount]
+                        graph.add_edge(nodeA, nodeB, transmission_weight=weight)
+
                     else:
                         nodeB = group[(i+j)%memberCount]
                     graph.add_edge(nodeA, nodeB, transmission_weight=weight)
@@ -202,20 +217,16 @@ def clusterGroupsByPA(graph, groups):
         memberCount = len(groups[key])
 
 
-def showGroupComparison(sim, category, groupTags, popsByCategory, title = None):
+def showGroupComparison(sim, category, groupTags, popsByCategory, node_investigation):
         for groupTag in groupTags:
             group = popsByCategory[category][groupTag]
-            plt.plot(sim.summary(group)[1]['I']/len(group),label = "{}: {}".format(category,groupTag))
+            plt.plot(node_investigation.summary(group)[1]['I']/len(group),label = "{}: {}".format(category,groupTag))
         plt.legend()
-        plt.title(title)
         plt.ylabel("percent infected")
         plt.xlabel("time steps")
         plt.show()
 
-
-#def displayGroupNetwork():
-#def sumNodeWeights(graph, node):
-
+#def summarizeGroup(group):
 
 
 #def mergeSubClusterGraph(graph,subgraph, nodeMap):
@@ -226,33 +237,32 @@ print("loading and sorting populations")
 start = time.time()
 populace = loadPickledPop("people_list_serialized.pkl")
 popsByCategory = sortPopulace(populace, ['sp_hh_id', 'work_id', 'school_id', 'race'])
-graph1 = nx.Graph()
-graph2 = nx.Graph()
+graph = nx.Graph()
 stop = time.time()
 print("finished in {} seconds".format(stop - start))
 
 print("building populace into graphs")
 start = time.time()
 
-#clusterDenseGroups(graph1, popsByCategory['sp_hh_id'],homeInfectivity)
-clusterDenseGroups(graph2, popsByCategory['sp_hh_id'],homeInfectivity)
-#clusterByDegree_p(graph1,popsByCategory['work_id'], 1, [0,0,0.2,0.3,0.5])
-#clusterByDegree_p(graph1,popsByCategory['school_id'], 1, [0,0,0.2,0.3,0.5])
-strogatzDemCatz(graph2, popsByCategory['work_id'], workInfectivity, 4, 0.1)
-strogatzDemCatz(graph2, popsByCategory['school_id'],schoolInfectivity, 4,0.1)
+clusterDenseGroups(graph, popsByCategory['sp_hh_id'],homeInfectivity)
+print("{} weights of size {} have been added for {} work environments".format(graph.size(),1,len(popsByCategory['sp_hh_id'].keys())))
+homeWeightCount = graph.size()
+clusterWith_gnp_random(graph,'work_id', workInfectivity, workAvgDegree)
+clusterWith_gnp_random(graph,'school_id', schoolInfectivity, workAvgDegree)
+
+#strogatzDemCatz(graph, popsByCategory['work_id'], workInfectivity, workAvgDegree, 0.3)
+#strogatzDemCatz(graph, popsByCategory['school_id'],schoolInfectivity, workAvgDegree,0.3)
 stop = time.time()
 print("finished in {} seconds".format(stop - start))
-
+print("The final graph has {} edges".format(graph.size()))
 start = time.time()
 print("running event-based simulation")
-node_investigation1 = EoN.fast_SIR(graph1, globalInfectionRate, recoveryRate, rho = 0.0001, transmission_weight ='transmission_weight',return_full_data = True)
-node_investigation2 = EoN.fast_SIR(graph2, globalInfectionRate, recoveryRate, rho = 0.0001, transmission_weight ='transmission_weight',return_full_data = True)
+#node_investigation = EoN.fast_SIR(graph, globalInfectionRate, recoveryRate, rho = 0.0001, transmission_weight ='transmission_weight',return_full_data = True)
+t,S,I,R, = EoN.fast_SIR(graph, globalInfectionRate, recoveryRate, rho = 0.0001, transmission_weight ='transmission_weight',return_full_data = False)
 stop = time.time()
 print("finished in {} seconds".format(stop - start))
 
-#showGroupComparison(node_investigation1, 'race', [1,2], popsByCategory, "built with random nets")
-showGroupComparison(node_investigation2, 'race', [1,2], popsByCategory, "built with strogatz nets")
-
+#showGroupComparison(node_investigation, 'race', [1,2], popsByCategory)
 #node_investigation.animate(popsByCategory['school_id'][450143554])
 
 #if not nx.is_connected(graph):
@@ -262,7 +272,10 @@ showGroupComparison(node_investigation2, 'race', [1,2], popsByCategory, "built w
 
 
 
-#plt.plot(node_investigation.summary(popsByCategory['race'][2])[1]['I']/racePops[1],label = "infected students")
+plt.plot(t,I)
+plt.xlabel("time")
+plt.ylabel("infected count")
+plt.show()
 #plt.plot(node_investigation.summary(popsByCategory['race'][3])[1]['I']/racePops[2],label = "infected students")
 #plt.plot(node_investigation.summary(graph,label = "infected students")
 

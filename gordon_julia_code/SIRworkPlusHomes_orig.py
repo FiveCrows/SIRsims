@@ -1,4 +1,3 @@
-
 # Written by Bryan Azbill, 2020-06-01
 import EoN
 import networkx as nx

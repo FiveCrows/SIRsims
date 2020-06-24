@@ -1,0 +1,27 @@
+2020-06-04
+I received an update to LightGraphs and DiffEqBase, 
+that greatly sped up the JumpProblem() method on graphs. 
+#----------------------------------------------------------------------
+Experimentation with Julia code for SIR simultations
+Author: Gordon Erlebacher
+Some code is copied from Simon Frost (who wrote EpiRecipes)
+
+2020-06-08
+FastSIR_graphs.jl
+FastSIR_impl.jl
+FastSir_main.jl
+
+Fast SIR on a network. 
+Follow algorithm in Appendix A of book Mathematic Modeling of Epidemics on Networks
+----------------------------------------------------------------------
+Fast_SIR_grpahs
+SIRworkPlusHomes.py
+SIRworkPlusHomes_orig.py
+benchmarks.jl
+bryan_code.py
+eon.py
+graph_SSA_sir.jl
+graph_based.jl
+graph_gillepsie.jl
+graph_sir.jl
+module_explorations.jl
