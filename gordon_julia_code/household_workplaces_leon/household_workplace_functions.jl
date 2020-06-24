@@ -191,14 +191,13 @@ end
 #takes a dict of dicts to represent populace and returns a # list
 # of dicts of lists to represent groups of people with the
 # same attributes
-function sortPopulace(populace_df, categories)
+function sortPopulace(df, categories)
     groups = Dict()
     for c in categories
         groups[c] = []
     end
     for (i,c) in enumerate(categories)
         grps = groupby(df, c)
-        #grps = by(df, c)
         for g in grps
             push!(groups[c], g)
         end
@@ -277,40 +276,31 @@ function createSchoolGraphs(schools)
 end
 
 #----------------------------------------------
-function createWorkplaceGraphs(workplaces; group_size=20)
-    work_graphs = []
-    for (i,grp) in enumerate(workplaces)
-        #println(grp.person)
-        #println(length(grp.person))
-        # Remove lines with 'X' in :work_id
-        #grp[grp.work_id == 'X']
-        groups_ = breakupWorkplace(grp.person; workplace_size=group_size)
-        for k in keys(groups_)  # g is a dictionary
-            g = groups_[k]
-            G = createErdosRenyiGraph(g, 20)
-            if nv(G) > 1
-                push!(work_graphs, G)
-            end
-        end
-    end
-    return work_graphs
-end
 
-function myMerge!(master_graph, meta_graph)
+function myMerge!(master_graph::MetaGraph, meta_graph::MetaGraph, weight::Float64)
+    # a more general function will have a weight vector as the last argument
     n = get_prop(meta_graph, :nodes)
+    #@sho
     for e in edges(meta_graph)
         i = src(e)
         j = dst(e)
-        add_edge!(master_graph, n[i], n[j])
+        add_edge!(master_graph, n[i], n[j], :weight, weight)
     end
 end
 
-function myMerge!(master_graph, simple_graph, node_ids)
+function myMerge!(master_graph, simple_graph, node_ids, weight::Real)
+    # Add edges and a constant weight
+    # a more general function will have a weight vector as the last argument
     n = node_ids
     for e in edges(simple_graph)
         i = src(e)
         j = dst(e)
-        add_edge!(master_graph, n[i], n[j])  # really need a weight
+        #println("master_graph: $(typeof(master_graph))")
+        #println("simple_graph: $(typeof(simple_graph))")
+        #println("node_ids: $(typeof(node_ids))")
+        #println("weight: $(typeof(weight))")
+        #add_edge!(master_graph, n[i], n[j])  # really need a weight
+        add_edge!(master_graph, n[i], n[j], :weight, weight)  # really need a weight
     end
 end
 
@@ -318,15 +308,21 @@ end
 # A person is either at work or at home
 # Create a School Master Graph. Homes are disconnected
 # person_id starts from 0
-function createHomeGraph(df, groups)
-    mgh = SimpleGraph(nrow(df))
+function createHomeGraph(nb_nodes, groups)
+    mgh = MetaGraph(nb_nodes)  # 2,3x slower than SimpleGraph
+    #mgh = SimpleWeightedGraph(nb_nodes)
+    #mgh = SimpleGraph(nb_nodes)   # <<<< Should be weighted graph?
     homes = groups[:sp_hh_id]
+    weight = 0.3  # need more generality
     for r in 1:length(homes)
         person_ids = homes[r].person_id
         sz = length(person_ids)
+        #println("sz= $sz")
         for i in 1:sz
             for j in i+1:sz
-                add_edge!(mgh, person_ids[i]+1, person_ids[j]+1)
+                #add_edge!(mgh, person_ids[i]+1, person_ids[j]+1, weight)
+                #add_edge!(mgh, person_ids[i]+1, person_ids[j]+1)
+                add_edge!(mgh, person_ids[i]+1, person_ids[j]+1, :weigth, weight)
             end
         end
     end
@@ -334,43 +330,74 @@ function createHomeGraph(df, groups)
 end
 
 # person_id starts from 0
-function createWorkGraph(df, workplaces, β_strogatz)
-    #graphs = []
-    master_graph = SimpleGraph(nrow(df))
-    #println("length(workplaces): $(length(workplaces))")
-    # Create smallworld graph (follow Gryan)
+function createWorkGraph(df, workplaces, β_strogatz, weight::Float64)
+    master_graph = MetaGraph(nrow(df))
+    # Create smallworld graph (follow Bryan)
+    println("==> length(workplaces)= $(length(workplaces))")
     for r in 1:length(workplaces)
         person_ids = workplaces[r].person_id
-        # Should not need this
         sz = length(person_ids)
-        if sz == 1
+        if sz > 5000
+            println("###################################")
+            println("sz > 5000 (= $sz), SKIP OVER")
+            println("###################################")
             continue
-        elseif sz < 5
-            mgh = createDenseGraph(person_ids) #p::Float64)
-        elseif sz < 25
-            mgh = createErdosRenyiGraph(person_ids, 10) #p::Float64)
-        elseif sz < 100
-            #println("==> $sz, ")
-            mgh = watts_strogatz(sz, 15, β_strogatz) # erdos-redyi
-        else
-            #println("==> $sz, ")
-            mgh = watts_strogatz(sz, 10, β_strogatz)
+        end
+        #println("==> graph creation, sz: $sz")
+        begin
+            # Should not need this
+            #print("===> sz= $sz")
+            if sz == 1
+                continue
+            elseif sz < 5
+                mgh = createDenseGraph(person_ids) #p::Float64)
+            elseif sz < 25
+                mgh = createErdosRenyiGraph(person_ids, 10) #p::Float64)
+            elseif sz < 500
+                #println("==> $sz, ")
+                mgh = watts_strogatz(sz, 20, β_strogatz) # erdos-redyi
+            else
+                #println("==> $sz, ")
+                mgh = watts_strogatz(sz, 20, β_strogatz)
+            end
         end
 
-        if r % 200 == 0
+        #if r % 200 == 0
             #println("graph $r")
-            println("graph $r, $master_graph")
-        end
+            #println("graph $r, $master_graph")
+        #end
 
         if sz > 1
-            #mg  = MetaGraph(mgh, sz)
-            #set_prop!(mg, :nodes, person_ids)
-            #myMerge!(master_graph, mg)
-            #println(typeof(person_ids))
-            myMerge!(master_graph, mgh, person_ids)
+            #println("Metagraph")
+            begin
+                #mg  = MetaGraph(mgh, weight)
+                #println("before: ", typeof(person_ids))
+
+                # Convert allocates memory
+                #person_ids = convert(Vector{Int64}, person_ids)
+
+                #println("after: ", typeof(person_ids))
+                #set_prop!(mg, :nodes, person_ids)
+                #set_prop!(mg, :weight, weight)
+                #println("myMerge!")
+
+                #println("before myMerge!")
+                #println("typeof(master_graph): $(typeof(master_graph))")
+                #println("typeof(mgh): $(typeof(mgh))")
+                #println("call myMerge!")
+
+                myMerge!(master_graph, mgh, person_ids, weight)
+
+                #myMerge!(master_graph, mg, weight)
+
+                #println(typeof(person_ids))
+                #weight = 0.7
+                #myMerge!(master_graph, mgh, person_ids, weight)
+            end
+            #println("metagraph complete")
         end
     end
-    println("Master_graph: $master_graph")
+    #println("Master_graph: $master_graph")
     return master_graph
 end
 
