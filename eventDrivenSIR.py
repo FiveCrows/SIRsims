@@ -178,7 +178,6 @@ def strogatzDemCatz(graph, groups, weight, local_k, rewire_p):
                 print("warning: not enough members in group for {}".format(local_k) + "local connections in strogatz net")
                 local_k = memberCount-1
 
-
             group = groups[key]
             #unfinished for different implementation to not leave any chance of randomly selecting the same edge twice
             #rewireCount = np.random.binomial(memberCount, rewire_p)
@@ -186,15 +185,13 @@ def strogatzDemCatz(graph, groups, weight, local_k, rewire_p):
 
             for i in range(memberCount):
                 nodeA = group[i]
-                for j in range(-local_k, local_k//2):
+                for j in range(-local_k//2, local_k//2+1):
                     if j == 0:
                         continue
                     rewireRoll = random.uniform(0,1)
 
                     if rewireRoll<rewire_p:
                         nodeB = group[(i + random.choice(range(memberCount - 1))) % memberCount]
-                        graph.add_edge(nodeA, nodeB, transmission_weight=weight)
-
                     else:
                         nodeB = group[(i+j)%memberCount]
                     graph.add_edge(nodeA, nodeB, transmission_weight=weight)
@@ -214,6 +211,13 @@ def showGroupComparison(sim, category, groupTags, popsByCategory, title = None):
         plt.ylabel("percent infected")
         plt.xlabel("time steps")
         plt.show()
+
+
+#def displayGroupNetwork():
+#def sumNodeWeights(graph, node):
+
+
+
 #def mergeSubClusterGraph(graph,subgraph, nodeMap):
 #def sortAttributes(people,attributeClasses):
 #populace = genPop(people, attributes, attribute_p)
@@ -230,12 +234,12 @@ print("finished in {} seconds".format(stop - start))
 print("building populace into graphs")
 start = time.time()
 
-clusterDenseGroups(graph1, popsByCategory['sp_hh_id'],homeInfectivity)
+#clusterDenseGroups(graph1, popsByCategory['sp_hh_id'],homeInfectivity)
 clusterDenseGroups(graph2, popsByCategory['sp_hh_id'],homeInfectivity)
-clusterByDegree_p(graph1,popsByCategory['work_id'], 1, [0,0,0.2,0.3,0.5])
-clusterByDegree_p(graph1,popsByCategory['school_id'], 1, [0,0,0.2,0.3,0.5])
-strogatzDemCatz(graph2, popsByCategory['work_id'], workInfectivity, 8, 0.3)
-strogatzDemCatz(graph2, popsByCategory['school_id'],schoolInfectivity, 8,0.3)
+#clusterByDegree_p(graph1,popsByCategory['work_id'], 1, [0,0,0.2,0.3,0.5])
+#clusterByDegree_p(graph1,popsByCategory['school_id'], 1, [0,0,0.2,0.3,0.5])
+strogatzDemCatz(graph2, popsByCategory['work_id'], workInfectivity, 4, 0.1)
+strogatzDemCatz(graph2, popsByCategory['school_id'],schoolInfectivity, 4,0.1)
 stop = time.time()
 print("finished in {} seconds".format(stop - start))
 
@@ -246,7 +250,7 @@ node_investigation2 = EoN.fast_SIR(graph2, globalInfectionRate, recoveryRate, rh
 stop = time.time()
 print("finished in {} seconds".format(stop - start))
 
-showGroupComparison(node_investigation1, 'race', [1,2], popsByCategory, "built with random nets")
+#showGroupComparison(node_investigation1, 'race', [1,2], popsByCategory, "built with random nets")
 showGroupComparison(node_investigation2, 'race', [1,2], popsByCategory, "built with strogatz nets")
 
 #node_investigation.animate(popsByCategory['school_id'][450143554])
