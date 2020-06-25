@@ -1,5 +1,5 @@
 This file contains aggregate statistics for the synthetic data for Leon County. It will be updated as we run more analysis
-If you need any specific statistic, please email me at sb13m@my.fsu.edus
+If you need any specific statistic, please email me at sb13m@my.fsu.edu
 By employment:
 1.	# Student and Employed:  1469
 2.	# Student Only:  43877 
@@ -12,3 +12,4 @@ By employment:
 By age:
 1.	# Children under 5: 12602
 2.	# People above 65: 22494
+
