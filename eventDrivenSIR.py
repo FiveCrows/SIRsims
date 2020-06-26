@@ -1,4 +1,6 @@
 # Written by Bryan Azbill, 2020-06-01
+from os import mkdir
+
 import numpy as np
 import scipy as sci
 import networkx as nx
@@ -9,25 +11,36 @@ import itertools
 import matplotlib.pyplot as plt
 import EoN
 import time
+from datetime import datetime
 import math
 
 
-epidemicSims = 10
+#for generating population
 houseHolds = 10
 houseHoldSize = 500
 people = houseHoldSize * houseHolds
 schoolGroupSize = 20
 workGroupSize = 10
 employmentRate = 0.9
+
+#for generating graph
 recoveryRate = 1
 globalInfectionRate = 1
 homeInfectivity = 1
 schoolInfectivity = 0.5
 workInfectivity = 0.5
 workAvgDegree = 10
+schoolAvgDeree = 10
+timeCode = True
 tau = 1 #transmission factor
 gamma = 1 #recovery rate
 initial_infected = 1
+
+
+#for recording results
+recordStamp = datetime.now().strftime("%m_%d_%H_%M")
+mkdir("./simResults/{}".format(recordStamp))
+results_txt = open("./simResults/{}/output.txt".format(recordStamp),"w+")
 
 #ageGroups = [[0,5], [5,8], [18,65], [65,90]]
 #ageGroupWeights = [0.05, 0.119, 0.731, 0.1]  # from census.gov for tallahassee 2019
@@ -37,6 +50,12 @@ duties = [None, 'school','work']
 
 #incomeGroups =
 #incomeGroupWeights =
+
+def printAndRecord(string):
+    record_file = results_txt
+    print(string)
+    record_file.write(string)
+    record_file.write('\n')
 
 
 class Person():
@@ -84,7 +103,6 @@ def p_attributeAssign(memberIndices, attributes, probabilities):
     return dict
 
 
-
 #for loading people objects from file
 def loadPickledPop(filename):
     with open(filename,'rb') as file:
@@ -95,10 +113,12 @@ def loadPickledPop(filename):
     csv.to_csv("./datasets/synthPopulaceReformat.csv")
     return populace
 
+
 #def bubblePlot():
 # assign people to households
 
 
+#Work in progress
 def genPop(people, attributeClasses, attributeClass_p):
     population = {i: {} for i in range(people)}
     for attributeClass in attributeClasses:
@@ -128,16 +148,16 @@ def sortPopulace(populace, categories):
 def clusterDenseGroup(graph, group, memberCount, weight, params = None):
     subGraph = nx.complete_graph(memberCount)
     relabel = dict(zip(range(memberCount), group))
-    nx.relabel.relabel_nodes(subGraph,relabel)
-    graph.add_edges_from(subGraph, transmission_weight=weight)
+    subGraph = nx.relabel.relabel_nodes(subGraph,relabel)
+    graph.add_edges_from(subGraph.edges(), transmission_weight=weight)
 #supports dense (no params), degree_p (params is prob list), random (param is avg_degree), strogatz, (degree and rewire_p), and preferential attachment
 
 def clusterRandom(graph,group, memberCount, weight, params):
     avg_degree = params
     if avg_degree >= memberCount:
-        clusterDense(graph, group, weight, params)
+        clusterDense(graph, group, memberCount, weight, params)
         return
-    edgeProb = avg_degree / (memberCount - 1)
+    edgeProb = 2*avg_degree / (memberCount - 1)
     subGraph = nx.fast_gnp_random_graph(memberCount, edgeProb)
     relabel = dict(zip(range(memberCount), group))
     nx.relabel.relabel_nodes(subGraph, relabel)
@@ -165,18 +185,18 @@ def clusterDegree_p(graph,group, memberCount, weight, params):
 
 
 def clusterStrogatz(graph,group, memberCount, weight, params):
+    group.sort()
     local_k = params[0]
     rewire_p = params[1]
     if (local_k % 2 != 0):
-        print("Error: local_k must be even")
+        printAndRecord("Error: local_k must be even")
     if local_k >= memberCount:
-        print(
-            "warning: not enough members in group for {}".format(local_k) + "local connections in strogatz net")
-        local_k = memberCount - 1
+        clusterDense(graph, group, memberCount, weight, params)
+        return
 
     for i in range(memberCount):
         nodeA = group[i]
-        for j in range(-local_k, local_k // 2):
+        for j in range(1, local_k // 2+1):
             if j == 0:
                 continue
             rewireRoll = random.uniform(0, 1)
@@ -187,18 +207,6 @@ def clusterStrogatz(graph,group, memberCount, weight, params):
                 nodeB = group[(i + j) % memberCount]
             graph.add_edge(nodeA, nodeB, transmission_weight=weight)
 
-
-def clusterGroups(graph, classifier, weight, clusterAlg, params = None):
-
-    groups = popsByCategory[classifier]
-    initial_weights = graph.size()
-    for key in groups.keys():
-        if key == None:
-            continue
-        group = groups[key]
-        clusterAlg(graph, group, len(group), weight, params)
-    weights_added = graph.size() - initial_weights
-    print("{} weights of size {} have been added for {} work environments".format(weights_added, weight,len(popsByCategory[classifier].keys())))
 
 def clusterByDegree_p(graph, groups, weight,degree_p):
     #some random edges may be duplicates, best for large groups
@@ -219,7 +227,6 @@ def clusterByDegree_p(graph, groups, weight,degree_p):
                 i = i+2
 
 
-
 def clusterWith_gnp_random(graph, classifier, weight, avg_degree):
     groups = popsByCategory[classifier]
     initial_weights = graph.size()
@@ -235,10 +242,10 @@ def clusterWith_gnp_random(graph, classifier, weight, avg_degree):
 
     final_weights = graph.size()
     weights_added = initial_weights - final_weights
-    print("{} weights of size {} have been added for {} work environments".format(weights_added, weight, len(popsByCategory[classifier].keys())))
+    printAndRecordAndRecord("{} weights of size {} have been added for {} work environments".format(weights_added, weight, len(popsByCategory[classifier].keys())))
 
 
-#clusters groups into strogatz small-worlds networks
+#clusters groups into strogatz small-worlds networks, depricated
 def strogatzDemCatz(graph, classifier, weight, degree, rewire_p):
     weightsAdded = 0
     groups = popsByCategory[classifier]
@@ -247,7 +254,7 @@ def strogatzDemCatz(graph, classifier, weight, degree, rewire_p):
         if key!=None:
             memberCount = len(groups[key])
             if local_k >= memberCount:
-                print("warning: not enough members in group for {}".format(local_k) + "local connections in strogatz net")
+                #print("warning: not enough members in group for {}".format(local_k) + "local connections in strogatz net")
                 local_k = memberCount-1
 
             group = groups[key]
@@ -265,13 +272,72 @@ def strogatzDemCatz(graph, classifier, weight, degree, rewire_p):
                         nodeB = group[(i+j)%memberCount]
                     graph.add_edge(nodeA, nodeB, transmission_weight=weight)
                     weightsAdded = weightsAdded+1
-                    print("{} weights of size {} have been added for {} work environments".format(weightsAdded, weight,len(popsByCategory[classifier].keys())))
+                    printAndRecord("{} weights of size {} have been added for {} work environments".format(weightsAdded, weight,len(popsByCategory[classifier].keys())))
 
 
 #WIP
 def clusterGroupsByPA(graph, groups):
     for key in groups.keys():
         memberCount = len(groups[key])
+
+
+def clusterGroups(graph, classifier, weight, clusterAlg, params = None):
+    printAndRecord('\n')
+    printAndRecord("clustering {} groups with the {} algorithm".format(classifier, clusterAlg.__name__))
+    start = time.time()
+
+    groups = popsByCategory[classifier]
+    initial_weights = graph.size()
+    for key in groups.keys():
+        if key == None:
+            continue
+        group = groups[key]
+        try:
+            clusterAlg(graph, group, len(group), weight, params)
+        except:
+            print("catch debug here")
+    weights_added = graph.size() - initial_weights
+    stop = time.time()
+    printAndRecord("{} weights of size {} added for {} work environments in {} seconds".format(weights_added, weight,len(popsByCategory[classifier].keys()), stop-start))
+
+
+#def summarizeGroup(group):
+#def mergeSubClusterGraph(graph,subgraph, nodeMap):
+#def sortAttributes(people,attributeClasses):
+#populace = genPop(people, attributes, attribute_p)
+printAndRecord("loading and sorting synthetic populations")
+start = time.time()
+populace = loadPickledPop("people_list_serialized.pkl")
+popsByCategory = sortPopulace(populace, ['sp_hh_id', 'work_id', 'school_id', 'race'])
+stop = time.time()
+printAndRecord("finished in {} seconds".format(stop - start))
+
+def simulateGraph(clusteringAlg, params, full_data = False):
+    printAndRecord('\n')
+    printAndRecord("building populace into graphs with the  {} clustering algorithm".format(clusteringAlg.__name__))
+    start = time.time()
+
+    graph = nx.Graph()
+    clusterGroups(graph, 'sp_hh_id', homeInfectivity, clusterDenseGroup)
+    printAndRecord("{} weights of size {} have been added for {} homes".format(graph.size(), 1, len(popsByCategory['sp_hh_id'].keys())))
+
+
+    clusterGroups(graph, 'work_id', workInfectivity, clusteringAlg, params)
+    clusterGroups(graph, 'school_id', workInfectivity, clusteringAlg, params)
+
+    stop = time.time()
+    printAndRecord("The final graph finished in {} seconds with {} edges".format((stop - start), graph.size()))
+    return(graph)
+    printAndRecord("running event-based simulation")
+
+    if full_data:
+        simResult = EoN.fast_SIR(graph, globalInfectionRate, recoveryRate, rho=0.0001,transmission_weight='transmission_weight', return_full_data=True)
+    else:
+        simResult = EoN.fast_SIR(graph, globalInfectionRate, recoveryRate, rho=0.0001,transmission_weight='transmission_weight', return_full_data=False)
+    stop = time.time()
+    printAndRecord("finished in {} seconds".format(stop - start))
+    return simResult
+
 
 
 def showGroupComparison(sim, category, groupTags, popsByCategory, node_investigation):
@@ -284,46 +350,9 @@ def showGroupComparison(sim, category, groupTags, popsByCategory, node_investiga
         plt.show()
 
 
-#def summarizeGroup(group):
-#def mergeSubClusterGraph(graph,subgraph, nodeMap):
-#def sortAttributes(people,attributeClasses):
-#populace = genPop(people, attributes, attribute_p)
+graph = simulateGraph(clusterRandom,workAvgDegree)
 
-populace = loadPickledPop("people_list_serialized.pkl")
-popsByCategory = sortPopulace(populace, ['sp_hh_id', 'work_id', 'school_id', 'race'])
-
-def buildGraph(clusteringAlg, params):
-    print("loading and sorting populations")
-    start = time.time()
-
-    graph = nx.Graph()
-    stop = time.time()
-    print("finished in {} seconds".format(stop - start))
-    print("building populace into graphs")
-    start = time.time()
-
-    clusterGroups(graph, 'sp_hh_id', homeInfectivity, clusterDenseGroup)
-    print("{} weights of size {} have been added for {} homes".format(graph.size(), 1, len(popsByCategory['sp_hh_id'].keys())))
-    homeWeightCount = graph.size()
-
-    clusterGroups(graph, 'work_id', workInfectivity, clusteringAlg, params)
-    clusterGroups(graph, 'school_id', workInfectivity, clusteringAlg, params)
-
-    stop = time.time()
-    print("The final graph finished in {} seconds with {} edges".format((stop - start), graph.size()))
-    return(graph)
-
-
-graph = buildGraph('random',6)
-
-print("running event-based simulation")
-t,S,I,R, = EoN.fast_SIR(graph, globalInfectionRate, recoveryRate, rho = 0.0001, transmission_weight ='transmission_weight',return_full_data = False)
-stop = time.time()
-print("finished in {} seconds".format(stop - start))
-plt.plot(t,I,label = 'random')
-
-
-graph = buildGraph('strogatz',[6,0.3])
+graph = simulateGraph(clusterStrogatz,[workAvgDegree,10])
 start = time.time()
 print("running event-based simulation")
 t,S,I,R, = EoN.fast_SIR(graph, globalInfectionRate, recoveryRate, rho = 0.0001, transmission_weight ='transmission_weight',return_full_data = False)
@@ -341,10 +370,11 @@ plt.plot(t,I,label = 'strogatz')
 
 
 
-
+results_txt.close()
 plt.xlabel("time")
 plt.ylabel("infected count")
 plt.legend()
+plt.savefig("./{}/plot.png/".format(recordStamp))
 plt.show()
 #plt.plot(node_investigation.summary(popsByCategory['race'][3])[1]['I']/racePops[2],label = "infected students")
 #plt.plot(node_investigation.summary(graph,label = "infected students")

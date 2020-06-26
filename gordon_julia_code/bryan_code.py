@@ -101,7 +101,7 @@ for i in range(environmentCount):
 
 
 end = time.time()
-print(end - start)
+printAndRecord(end - start)
 start = time.time()
 #for i in range(epidemicSims):
 node_investigation = EoN.fast_SIR(graph, globalInfectionRate, recoveryRate, rho = 0.01, transmission_weight ='transmission_weight',return_full_data = True)
@@ -115,4 +115,4 @@ plt.show()
 #plt.plot(t,S)
 #plt.show()
 end = time.time()
-print(end - start )
+printAndRecord(end - start )
