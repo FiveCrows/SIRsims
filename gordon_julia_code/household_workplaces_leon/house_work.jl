@@ -31,3 +31,17 @@ nothing
 # These four parameters will have their own distributions.
 # Therefore, we can infer their parameters from various inference experiments.
 # For that, we may have to read papers on inference. That is for later.
+
+@time data = rand(1000, 1000)
+@time F.heatmap(data)
+
+#Take a function:
+
+function f(x, y)
+    exp(-x^2 + y)
+end
+
+x = rand(10000)
+y = rand(10000)
+fct = f.(x, y)
+F.heatmap(x, y)
