@@ -16,6 +16,12 @@ include("FastSIR_impl.jl")
 using .FastSIRWithWeightedNodes
 FWG = FastSIRWithWeightedNodes
 
+# import makes sure that the namespace prefix is used for safety since
+# method names are the sme s in FastSIR_impl.jl
+include("FastSIR_multiplex_impl.jl")
+import .FastSIRMultiplex
+FPLEX = FastSIRMultiplex
+
 include("./FastSIR_common.jl")
 using .FastSIRCommon
 F  = FastSIRCommon
