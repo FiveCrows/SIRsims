@@ -233,55 +233,6 @@ def clusterByDegree_p(graph, groups, weight,degree_p):
                 i = i+2
 
 
-def clusterWith_gnp_random(graph, classifier, weight, avg_degree):
-    groups = popsByCategory[classifier]
-    initial_weights = graph.size()
-    for key in groups.keys():
-        if key !=None:
-            memberCount = len(groups[key])
-            if(memberCount<=avg_degree):
-                clusterDenseGroup(graph, {0:groups[key]}, weight)
-                continue
-            edgeProb = (memberCount * avg_degree) / (memberCount * (memberCount - 1))
-            subGraph = nx.fast_gnp_random_graph(memberCount,edgeProb)
-            graph.add_edges_from(subGraph.edges(), transmission_weight = weight)
-
-    final_weights = graph.size()
-    weights_added = initial_weights - final_weights
-    record.printAndRecord("{} weights of size {} have been added for {} work environments".format(weights_added, weight, len(popsByCategory[classifier].keys())))
-
-
-#clusters groups into strogatz small-worlds networks, depricated
-def strogatzDemCatz(graph, classifier, weight, degree, rewire_p):
-    weightsAdded = 0
-    groups = popsByCategory[classifier]
-
-    for key in groups:
-        if key!=None:
-            memberCount = len(groups[key])
-            if local_k >= memberCount:
-                #print("warning: not enough members in group for {}".format(local_k) + "local connections in strogatz net")
-                local_k = memberCount-1
-
-            group = groups[key]
-            for i in range(memberCount):
-                nodeA = group[i]
-                for j in range(-local_k, local_k//2):
-                    if j == 0:
-                        continue
-                    rewireRoll = random.uniform(0,1)
-
-                    if rewireRoll<rewire_p:
-                        nodeB = group[(i + random.choice(range(memberCount - 1))) % memberCount]
-
-                    else:
-                        nodeB = group[(i+j)%memberCount]
-                    graph.add_edge(nodeA, nodeB, transmission_weight=weight)
-                    weightsAdded = weightsAdded+1
-                    record.print("{} weights of size {} have been added for {} work environments".format(weightsAdded, weight,len(popsByCategory[classifier].keys())))
-
-
-#WIP
 def clusterGroupsByPA(graph, groups):
     for key in groups.keys():
         memberCount = len(groups[key])
