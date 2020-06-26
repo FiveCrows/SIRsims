@@ -7,7 +7,7 @@
 # Use a const immutable named tuple for efficiency
 # I can change values within this constant, but I cannot add another member
 # When developing the code, use non-consts in the global space
-p = (
+const p = (
     epidemic_sims = 10,  # ???
     households = 10,     # number of households
     household_size = 4,
@@ -276,7 +276,6 @@ function createSchoolGraphs(schools)
 end
 
 #----------------------------------------------
-
 function myMerge!(master_graph::MetaGraph, meta_graph::MetaGraph, weight::Float64)
     # a more general function will have a weight vector as the last argument
     n = get_prop(meta_graph, :nodes)
@@ -308,12 +307,11 @@ end
 # A person is either at work or at home
 # Create a School Master Graph. Homes are disconnected
 # person_id starts from 0
-function createHomeGraph(nb_nodes, groups)
+function createHomeGraph(nb_nodes, df, groups, weight)
     mgh = MetaGraph(nb_nodes)  # 2,3x slower than SimpleGraph
     #mgh = SimpleWeightedGraph(nb_nodes)
     #mgh = SimpleGraph(nb_nodes)   # <<<< Should be weighted graph?
     homes = groups[:sp_hh_id]
-    weight = 0.3  # need more generality
     for r in 1:length(homes)
         person_ids = homes[r].person_id
         sz = length(person_ids)
@@ -322,82 +320,99 @@ function createHomeGraph(nb_nodes, groups)
             for j in i+1:sz
                 #add_edge!(mgh, person_ids[i]+1, person_ids[j]+1, weight)
                 #add_edge!(mgh, person_ids[i]+1, person_ids[j]+1)
-                add_edge!(mgh, person_ids[i]+1, person_ids[j]+1, :weigth, weight)
+                # person_id starts from 1
+                add_edge!(mgh, person_ids[i], person_ids[j], :weigth, weight)
             end
         end
     end
     return mgh
 end
 
-# person_id starts from 0
-function createWorkGraph(df, workplaces, β_strogatz, weight::Float64)
+function createOldWorkGraph(df, workplaces, β_strogatz, weight)
     master_graph = MetaGraph(nrow(df))
     # Create smallworld graph (follow Bryan)
-    println("==> length(workplaces)= $(length(workplaces))")
+    tot_sz = 0
+    tot_edges = 0
     for r in 1:length(workplaces)
         person_ids = workplaces[r].person_id
         sz = length(person_ids)
-        if sz > 5000
+        tot_sz += sz
+        if sz > 300000
             println("###################################")
             println("sz > 5000 (= $sz), SKIP OVER")
             println("###################################")
             continue
         end
-        #println("==> graph creation, sz: $sz")
-        begin
-            # Should not need this
-            #print("===> sz= $sz")
             if sz == 1
                 continue
             elseif sz < 5
                 mgh = createDenseGraph(person_ids) #p::Float64)
-            elseif sz < 25
+            elseif sz < 50
                 mgh = createErdosRenyiGraph(person_ids, 10) #p::Float64)
             elseif sz < 500
-                #println("==> $sz, ")
-                mgh = watts_strogatz(sz, 20, β_strogatz) # erdos-redyi
+                n_e = 10
+                mgh = watts_strogatz(sz, n_e, β_strogatz) # erdos-redyi
             else
-                #println("==> $sz, ")
-                mgh = watts_strogatz(sz, 20, β_strogatz)
+                n_e = 10
+                mgh = watts_strogatz(sz, n_e, β_strogatz)
             end
-        end
 
-        #if r % 200 == 0
-            #println("graph $r")
-            #println("graph $r, $master_graph")
-        #end
+        tot_edges += ne(mgh)
 
         if sz > 1
-            #println("Metagraph")
-            begin
-                #mg  = MetaGraph(mgh, weight)
-                #println("before: ", typeof(person_ids))
-
-                # Convert allocates memory
-                #person_ids = convert(Vector{Int64}, person_ids)
-
-                #println("after: ", typeof(person_ids))
-                #set_prop!(mg, :nodes, person_ids)
-                #set_prop!(mg, :weight, weight)
-                #println("myMerge!")
-
-                #println("before myMerge!")
-                #println("typeof(master_graph): $(typeof(master_graph))")
-                #println("typeof(mgh): $(typeof(mgh))")
-                #println("call myMerge!")
-
-                myMerge!(master_graph, mgh, person_ids, weight)
-
-                #myMerge!(master_graph, mg, weight)
-
-                #println(typeof(person_ids))
-                #weight = 0.7
-                #myMerge!(master_graph, mgh, person_ids, weight)
-            end
-            #println("metagraph complete")
+            #ne1 = ne(master_graph)
+            myMerge!(master_graph, mgh, person_ids, weight)
+            #ne2 = ne(master_graph)
+            #println("oldWorkGraph: added $(ne2-ne1) edges, mgh has $(ne(mgh)) edges")
         end
     end
-    #println("Master_graph: $master_graph")
+    println("tot_sz: $tot_sz,   tot_edges: $tot_edges")
+    println("tot edges master_graph: $(ne(master_graph))")
+    return master_graph
+end
+
+
+# person_id starts from 0
+function createWorkGraph(nb_nodes, df, workplaces, β_strogatz, weight)
+    master_graph = MetaGraph(nb_nodes)
+    # Create smallworld graph (follow Bryan)
+    tot_sz = 0
+    tot_edges = 0
+    for r in 1:length(workplaces)
+        person_ids = workplaces[r].person_id
+        sz = length(person_ids)
+        tot_sz += sz
+        if sz > 300000
+            println("###################################")
+            println("sz > 5000 (= $sz), SKIP OVER")
+            println("###################################")
+            continue
+        end
+            if sz == 1
+                continue
+            elseif sz < 5
+                mgh = createDenseGraph(person_ids) #p::Float64)
+            elseif sz < 50
+                mgh = createErdosRenyiGraph(person_ids, 10) #p::Float64)
+            elseif sz < 500
+                n_e = min(20, sz-20)
+                mgh = watts_strogatz(sz, n_e, β_strogatz) # erdos-redyi
+            else
+                n_e = min(20, sz-20)
+                mgh = watts_strogatz(sz, n_e, β_strogatz)
+            end
+
+        tot_edges += ne(mgh)
+
+        if sz > 1
+            #ne1 = ne(master_graph)
+            myMerge!(master_graph, mgh, person_ids, weight)
+            #ne2 = ne(master_graph)
+            #println("workGraph: added $(ne2-ne1) edges, mgh has $(ne(mgh)) edges")
+        end
+    end
+    println("tot_sz: $tot_sz,   tot_edges: $tot_edges")
+    println("tot edges master_graph: $(ne(master_graph))")
     return master_graph
 end
 
