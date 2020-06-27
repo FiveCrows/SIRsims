@@ -41,7 +41,115 @@ function f(x, y)
     exp(-x^2 + y)
 end
 
-x = rand(10000)
-y = rand(10000)
+x = randn(2000000)
+y = randn(2000000)
 fct = f.(x, y)
-F.heatmap(x, y)
+@time histogram2d(x, y, nbins=150)
+
+function readData()
+    filename = "Leon_Formatted/people_formatted.csv"
+    populace_df = loadPickledPop(filename)
+    rename!(populace_df, :Column1 => :person_id)
+
+    # replace 'X' by -1 so that columns are of the same type
+    df = copy(populace_df)
+    replace!(df.work_id, "X" => "-1")
+    replace!(df.school_id, "X" => "-1")
+
+    tryparsem(Int64, str) = something(tryparse(Int64,str), missing)
+    df.school_id = tryparsem.(Int64, df.school_id)
+    df.work_id   = tryparsem.(Int64, df.work_id)
+    return df
+end
+
+df = readData()
+filename = "Leon_Formatted/households_formatted.csv"
+dfh = CSV.read(filename, delim=',')
+lat = dfh.latitude .- 30.
+long = dfh.longitude .+ 84.
+
+filename = "Leon_Formatted/workplaces_formatted.csv"
+dfw = CSV.read(filename, delim=',')
+latw = dfw.latitude .- 30.
+longw = dfw.longitude .+ 84.
+
+filename = "Leon_Formatted/schools_formatted.csv"
+dfs = CSV.read(filename, delim=',')
+lats = dfs.latitude .- 30.
+longs = dfs.longitude .+ 84.
+
+#@time histogram2d(long, lat, nbins=100)
+@time ss = scatter(long, lat, xlabel="long", ylabel="lat",
+    markersize=.05, aspect_ratio=1, label="")
+
+xs = xlims(ss)
+ys = ylims(ss)
+@time scatter!(longs, lats, xlabel="long", ylabel="lat",
+    markersize=4, aspect_ratio=1, label="", alpha=.5,
+    xlims=xs, ylims=ys)
+
+@time scatter!(longw, latw, xlabel="long", ylabel="lat",
+    markersize=1, aspect_ratio=1, label="", alpha=.5,
+    xlims=xs, ylims=ys)
+
+# For each person, I need lat/long for workplace/school and for home.
+# lath/longh and latw/longw (which includes school)
+
+# Merge dfh and df
+# Merge dfs and df
+# perhaps join along
+#dfh.sp_id  and   df.sp_hh_id
+
+
+dfh.sp_hh_id = dfh.sp_id
+
+function DfDfh()
+    df = readData()
+    CSV.write("df.csv", df)
+    rename!(df, :sp_id => :sp_pp_id )  # persons
+    filename = "Leon_Formatted/households_formatted.csv"
+    dfh = CSV.read(filename, delim=',')
+    rename!(dfh, :longitude => :hlong)
+    rename!(dfh, :latitude => :hlat)
+    rename!(dfh, :sp_id => :sp_hh_id)
+    println("df: "); println(first(df,5))
+    println("dfh: "); println(first(dfh,5))
+    CSV.write("dfh.csv", dfh); println(first(dfh,5))
+    ddd = outerjoin(dfh[[:sp_hh_id,:hlat,:hlong]], df, on = :sp_hh_id)
+    println("dfd: "); println( first(ddd,5))
+    CSV.write("ddd.csv", ddd)
+    return ddd
+end
+
+function DddDfs(ddd)
+    filename = "Leon_Formatted/schools_formatted.csv";
+    dfs = CSV.read(filename, delim=',');
+    rename!(dfs, :latitude => :slat);
+    rename!(dfs, :longitude => :slong);
+    rename!(dfs, :sp_id => :school_id);
+    CSV.write("dfs.csv", dfs);
+    eee = outerjoin(dfs[[:school_id,:stco,:slat,:slong]], ddd, on = :school_id)
+    CSV.write("eee.csv", eee);
+    return eee
+end
+
+function EeeDfw(eee)
+    filename = "Leon_Formatted/workplaces_formatted.csv";
+    dfw = CSV.read(filename, delim=',');
+    rename!(dfw, :latitude => :wlat);
+    rename!(dfw, :longitude => :wlong);
+    rename!(dfw, :sp_id => :work_id);
+    CSV.write("dfw.csv", dfw);
+    fff = outerjoin(dfw[[:work_id,:wlat,:wlong]], eee, on=:work_id)
+    CSV.write("fff.csv", fff);
+    return fff
+end
+
+ddd = DfDfh();
+eee = DddDfs(ddd);
+fff = EeeDfw(ddd);
+
+filename = "Leon_Formatted/workplaces_formatted.csv"
+dfw = CSV.read(filename, delim=',')
+rename!(dfw, :latitude => :wlat)
+rename!(dfw, :longitude => :wlong)
