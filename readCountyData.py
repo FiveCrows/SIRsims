@@ -1,3 +1,8 @@
+'''
+This script does the following:
+1. Loads data from the DOH csv files
+2. creates plots for case counts by zipcode, county or just the top 10 counties by case count
+'''
 import numpy as np
 import seaborn, os, sys
 from datetime import datetime
@@ -157,7 +162,7 @@ def main(default=None,threshold: int=None, county: str=None, zipcode: int=None):
 if __name__=="__main__":
     if len(sys.argv)==1:
         main()
-        print("Other Usage:\n[-d|-default]\n[-county|-c] countyname\nCounty name can be a full name or a prefix\n[-zipcode|-z] zipcode\n[-threshold|-t] threshold")
+        print("Other Usage:\n[-d|-default]\n[-county|-c] countyname\n[-zipcode|-z] zipcode\n[-threshold|-t] threshold")
     elif sys.argv[1]=='-county' or sys.argv[1]=='-c':
         main(county=sys.argv[2])
     elif sys.argv[1]=='-default' or sys.argv[1]=='-d':
