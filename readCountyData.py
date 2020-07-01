@@ -187,11 +187,11 @@ if __name__=="__main__":
         main()
         print("Other Usage:\n[-d|-default]\n[-county|-c] countyname\n[-zipcode|-z] zipcode list(comma-separated without spaces)\n[-threshold|-t] threshold")
     elif sys.argv[1]=='-county' or sys.argv[1]=='-c':
-        main(county=sys.argv[2])
+        main(county=''.join(sys.argv[2:]))
     elif sys.argv[1]=='-default' or sys.argv[1]=='-d':
         main(default=1)
     elif sys.argv[1]=='-zipcode' or sys.argv[1]=='-z':
-            main(zipcode=sys.argv[2])
+            main(zipcode=''.join(sys.argv[2:]))
     elif sys.argv[1]=='-threshold' or sys.argv[1]=='-t':
         if sys.argv[2].isnumeric():
             main(int(sys.argv[2]))
