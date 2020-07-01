@@ -32,8 +32,8 @@ Run:
 python readCountyData.py
 Other Usage:
 [-d|-default]
-[-county|-c] countyname
-[-zipcode|-z] zipcode
+[-county|-c] countylist (Comma separated values, no spaces)
+[-zipcode|-z] zipcode_list (Comma separated values, no spaces)
 [-threshold|-t] threshold
 -------------------------------------------------------------------------------
 restructureData.py
