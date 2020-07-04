@@ -24,6 +24,7 @@ class Workplace():
         self.sp_id=int(attrs[0].decode('UTF-8'))
         self.latitude=float(attrs[1].decode('UTF-8'))
         self.longitude=float(attrs[2].decode('UTF-8'))
+        self.others={'zipcode': None, 'members_count': 0}
 
 class Household:
     def __init__(self, attrs: list):
@@ -36,6 +37,7 @@ class Household:
         self.hh_income=int(attrs[3].decode('UTF-8'))
         self.latitude=float(attrs[4].decode('UTF-8'))
         self.longitude=float(attrs[5].decode('UTF-8'))
+        self.others={'zipcode': None, 'members_count': 0}
 
 class School():
     def __init__(self, attrs:list):
@@ -46,3 +48,4 @@ class School():
         self.stco=int(attrs[1].decode('UTF-8'))
         self.latitude=float(attrs[2].decode('UTF-8'))
         self.longitude=float(attrs[3].decode('UTF-8'))
+        self.others={'zipcode': None, 'members_count': 0}
