@@ -106,3 +106,4 @@ class Populace:
         record.printAndRecord(
             "{} weights of size {} have been added for {} work environments".format(weights_added, weight, len(
                 popsByCategory[classifier].keys())))
+
