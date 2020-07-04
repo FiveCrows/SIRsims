@@ -38,6 +38,8 @@ tau = 1 #transmission factor
 gamma = 1 #recovery rate
 initial_infected = 1
 
+#for simulating graph
+recovery_rate = 1
 
 #for recording results
 #ageGroups = [[0,5], [5,8], [18,65], [65,90]]
@@ -69,6 +71,14 @@ class Record:
 
     def getComment(self):
         self.comments += input("Enter comment")
+
+    def printGraphStats(self, graph, statAlgs):
+        graphStats = "{"
+        for statAlg in statAlgs:
+            graphStats += statAlg.__name__
+            graphStats += ": {}, ".format(statAlg(graph))
+        graphStats+="}"
+        self.print(graphStats)
 
     def dump(self):
         mkdir("./simResults/{}".format(self.stamp))
@@ -210,7 +220,6 @@ def clusterRandomDepricated(graph, group, member_count, weight, params):
 
 
 def clusterRandom(graph, group, member_count, weight, params):
-
     avg_degree = params
     if avg_degree >= member_count:
         clusterDense(graph, group, member_count, weight, params)
@@ -231,7 +240,6 @@ def clusterRandom(graph, group, member_count, weight, params):
                 if random.random()<edgeProb:
                     nodeB = group[j]
                     graph.add_edge(nodeA,nodeB, transmission_weight = weight)
-
 
 
 def clusterPartitions(graph, group, member_count, weight, params):
@@ -314,7 +322,6 @@ def clusterGroupsByPA(graph, groups):
 
 
 def clusterGroups(graph, classifier, weight, clusterAlg, params = None, ):
-    record.print('\n')
     record.print("clustering {} groups with the {} algorithm".format(classifier, clusterAlg.__name__))
     start = time.time()
     # # stats = {"classifier": }
@@ -354,9 +361,9 @@ def showGroupComparison(sim, category, groupTags, popsByCategory, node_investiga
 
 
 
-def simulateGraph(clusteringAlg, params, full_data = False):
+def simulateGraph(clusteringAlg, simAlg, params, full_data = False):
     record.print('\n')
-    record.print("building populace into graphs with the  {} clustering algorithm".format(clusteringAlg.__name__))
+    record.print("building populace into graphs with the {} clustering algorithm".format(clusteringAlg.__name__))
     start = time.time()
 
     graph = nx.Graph()
@@ -364,18 +371,20 @@ def simulateGraph(clusteringAlg, params, full_data = False):
     clusterGroups(graph, 'work_id', workInfectivity, clusteringAlg, params)
     clusterGroups(graph, 'school_id', workInfectivity, clusteringAlg, params)
 
-    stop = time.time()
-    record.print("The final graph finished in {} seconds. with properties:".format((stop - start)))
-   # record.print("{edges: {}, nodes: }".format(graph.size()))
-    return(graph)
-    record.print("running event-based simulation")
+    stop_a = time.time()
+    record.print("Graph completed in {} seconds.".format((stop_a - start)))
+    record.printGraphStats(graph, [nx.average_clustering])
+    # record.print("{edges: {}, nodes: }".format(graph.size()))
+    record.print("running simulation with the {} algorithm".format(simAlg.__name__))
 
     if full_data:
-        simResult = EoN.fast_SIR(graph, globalInfectionRate, recoveryRate, rho=0.0001,transmission_weight='transmission_weight', return_full_data=True)
+        simResult = simAlg(graph, globalInfectionRate, recovery_rate, rho=0.0001,transmission_weight='transmission_weight', return_full_data=True)
     else:
-        simResult= EoN.fast_SIR(graph, globalInfectionRate, recoveryRate, rho=0.0001,transmission_weight='transmission_weight', return_full_data=False)
-    stop = time.time()
-    record.print("finished in {} seconds".format(stop - start))
+        simResult = simAlg(graph, globalInfectionRate, recovery_rate, rho=0.0001,transmission_weight='transmission_weight', return_full_data=False)
+    stop_b = time.time()
+
+    record.print("simulation completed in {} seconds".format(stop_b - stop_a))
+    record.print("total build and sim time: {}".format(stop_b-start))
     return simResult
 
 
@@ -394,11 +403,12 @@ record.print("finished in {} seconds".format(stop - start))
 
 #[t, S, I, R] = simulateGraph(clusterRandom2,workAvgDegree)
 #plt.plot(t,I,label = 'random')
-simresult = simulateGraph(clusterRandom, workAvgDegree)
+simresultA = simulateGraph(clusterStrogatz, EoN.fast_SIR,  [workAvgDegree, 0.3])
+simresultB = simulateGraph(clusterStrogatz, EoN.Gillespie_SIR,  [workAvgDegree, 0.3])
 
-#[t, S, I, R] = simulateGraph(clusterStrogatz,workAvgDegree)
-#simresult2 =  simulateGraph(clusterStrogatz,workAvgDegree)
-#plt.plot(t,I,label = 'strogatz')
+[t, S, I, R] = simresultA
+plt.plot(t,I,label = 'I')
+plt.plot(t,S,label = 'S')
 
 
 #node_investigation = EoN.fast_SIR(graph, globalInfectionRate, recoveryRate, rho = 0.0001, transmission_weight ='transmission_weight',return_full_data = True)
