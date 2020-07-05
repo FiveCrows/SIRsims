@@ -1,33 +1,29 @@
-using Makie
-using AbstractPlotting
-using Colors
+using Makie, GeometryTypes
 
-x₀=-5.
-gateState = false
-xRange = 10
+# Create a sphere with changing radius.
+# Understand `lift` method
 
-p₀(x) = x/2
+function setupCamera!(scene)
+    cam = cam3d!(scene)
+    eyepos = Makie.Vec3f0(5, 1.5, 0.5);
+    lookat = Makie.Vec3f0(0., 0., 0.);
+end
 
-nPts = 100.
-x = (x₀ .+ collect((-nPts/2.):(nPts/2.))/nPts*xRange)
-scene = lines(x, p₀(x),
-    linewidth =4,
-    color = :darkcyan,
-    leg = false
-)
-axis = scene[Axis]
-axis[:names][:axisnames] = ("x","y")
+# ----------------------------------------------------------------------
+marker_size = 0.0002
+scene = Scene();
+s1, radius = textslider(0.0f0:.1f0:0.5f0, "Radius", start = 0.1f0)
+rad = Float32(to_value(radius))
+Point3f0 = GeometryTypes.Point3f0
 
-HC_handle = scatter!([-4], [2], marker=:circle, markersize = .5, color = :red)[end]
+sphere = HyperSphere(Point3f0(0), 0.1f0)
+positions = GeometryTypes.decompose(Point3f0, sphere)
+#AP.meshscatter!(scene, positions, markersize=0.002, color=:blue, transparency=false)
+AP.mesh(HyperSphere(Point3f0(0), 0.1f0), makersize=0.2, color=:blue)
+AP.mesh!(scene, HyperSphere(Point3f0(0), 0.1f0), makersize=0.2, color=:blue)
 
-s1 = slider(LinRange(-5.0, 5.0, 101), raw = true, camera = campixel!, start = -5.0)
+parent_scene = Scene(resolution=(700, 700))
+vbox(hbox(s1, scene), parent=parent_scene)
 
-kx = s1[end][:value]
-
-scatter!(
-    scene, [kx; kx], lift(x-> [0.5; p₀(x)], kx), marker = :hexagon,
-    color = RGBA(.5,0.,.5,.5),
-    markersize = .35, strokewidth = 1, strokecolor = :black
-)
-Kc_handle = scene[end]
-hbox(scene, s1, parent = Scene(resolution = (800, 600)))
+setupCamera!(parent_scene)
+display(parent_scene)

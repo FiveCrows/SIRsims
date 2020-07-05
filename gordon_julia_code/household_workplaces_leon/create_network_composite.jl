@@ -12,6 +12,12 @@ const all_df = CSV.read("all_data.csv")
 const df_s = @where(all_df, :school_id .!== -1)
 const df_w = @where(all_df, :work_id .!== -1)
 const df_h = all_df
+const df_at_home = @where(all_df, (:work_id .== -1) .& (:school_id .== -1))
+# the sum of 45346+134285+82380 = 262011 (2k more than the size of all_df). Something not right.
+# What is age distribution in the df_at_home
+ddfg = groupby(df_at_home, :age)
+ddfyoung = @where(df_at_home, (:age .< 18))
+ddfold = @where(df_at_home, (:age .> 65))
 
 # Retrieve all businesses with nb_employees ∈ [lb, ub]
 function find(df::DataFrame, group_col::Symbol, selector::Symbol, lb::Int, ub::Int)
@@ -211,9 +217,12 @@ function getHomes(wid_df; hplane=0., wplane=1.)
     return [graph_s, graph_w]
 end
 
-function secondGeneration!(scene, graph_s, graph_w; marker_size=0.01)
+function secondGeneration!(scene, graph_s, graph_w, ld, la; marker_size=0.01, plane_width=.3)
+    #print(typeof(nothing))
+    println("2nd gen, plane_width= ", plane_width)
     xs, ys, zs = get_prop(graph_s, :ncoords_s);
     xh, yh, zh = get_prop(graph_s, :ncoords_h);
+    #fill!(zh, plane_width, length(xh))  # Inefficient?
     #home_sxy = [Set(xh), Set(yh)]
     #println("maximum coord_h: ", maximum.([xh, yh, zh]))
     #println("maximum coord_s: ", maximum.([xs, ys, zs]))
@@ -230,10 +239,12 @@ function secondGeneration!(scene, graph_s, graph_w; marker_size=0.01)
         zsegs[2*i]   = zs[i]
     end
 
+    scale_factor = 4
+
     w_col = :red
     linesegments!(scene, xsegs, ysegs, zsegs, color=w_col, edgewidth=1.)
-    AP.scatter!(scene, xs ,ys, zs, transparency=true, markersize=4*marker_size, color=w_col)
-    AP.scatter!(scene, xh ,yh, zh, transparency=true, markersize=marker_size, color=:darkgray)
+    AP.scatter!(scene, xs ,ys, zs, transparency=true, markersize=scale_factor*marker_size, color=w_col, diffuse=ld[], ambient=la[])
+    msh = AP.scatter!(scene, xh ,yh, zh, transparency=true, markersize=scale_factor*marker_size, color=:darkgreen)
     #meshscatter!(scene, xs ,ys, zs, transparency=true, markersize=4*marker_size, color=w_col)
     #meshscatter!(scene, xh ,yh, zh, transparency=true, markersize=marker_size, color=:darkgray)
 
@@ -256,13 +267,13 @@ function secondGeneration!(scene, graph_s, graph_w; marker_size=0.01)
         zsegs[2*i]   = zw[i]
     end
 
-    sch_col = :blue
+    sch_col = :darkred
     linesegments!(scene, xsegs, ysegs, zsegs, color=sch_col)
-    AP.scatter!(scene, xw ,yw, zw, transparency=true, markersize=4*marker_size, color=sch_col, alpha=.0, fillalpha=.0, markeralpha=0.0)
-    AP.scatter!(scene, xh ,yh, zh, transparency=true, markersize=marker_size, color=:darkgray, alpha=.0, fillalpha=.0, markeralpha=0.0)
+    AP.scatter!(scene, xw ,yw, zw, transparency=true, markersize=scale_factor*marker_size, color=sch_col, alpha=.0, fillalpha=.0, markeralpha=0.0)
+    AP.scatter!(scene, xh ,yh, zh, transparency=true, markersize=scale_factor*marker_size, color=:darkgreen, alpha=.0, fillalpha=.0, markeralpha=0.0)
     #meshscatter!(scene, xw ,yw, zw, transparency=true, markersize=4*marker_size, color=sch_col, alpha=.0, fillalpha=.0, markeralpha=0.0)
     #meshscatter!(scene, xh ,yh, zh, transparency=true, markersize=marker_size, color=:darkgray, alpha=.0, fillalpha=.0, markeralpha=0.0)
-    return
+    return msh
 end
 
 function setupCamera!(scene)
@@ -279,24 +290,115 @@ function plotCounty!(scene, all_df; county_plane=0.0, marker_size=0.0001)
     house_xy[:,1] .+= 84.
     house_xy[:,2] .-= 30.
     house_z = repeat([county_plane], nrow(all_df))  # waste of memory
-    print("house_z: ", house_z[1:10])
     AP.scatter!(scene, house_xy[:,1], house_xy[:,2], house_z,
         strokecolor=:gray, markersize=marker_size,color=:gray)
 end
 
 # ----------------------------------------------
+
+
+function makePlot(mgraph, graph_s, graph_w)
+    marker_size = 0.0002
+    parent_scene = Scene(show_axis=true)
+
+    # s1, s2, ... are scenes (i.e., subplots)
+    s_marker_radius, marker_radius = textslider(0.01f0:.02f0:1.0f0, "Radius", start = 0.03f0)
+    s_diffuse, diffuse = textslider(0.0f0:.025f0:2.0f0, "diffuse", start = 0.4f0)
+    s_ambient, ambient = textslider(0.0f0:.01f0:1.0f0, "ambient", start = 0.5f0)
+    s_plane_width, plane_width = textslider(0.0f0:.05f0:1.0f0, "Plane Width", start = 0.2f0)
+    #s_c_h_width, c_h_width = textslider(0.0f0:.01f0:1.0f0, "base_home_width", start = 0.01f0)
+    s_c_h_width, c_h_width = textslider(0.0f0:0.01f0:1.0f0, "base_home_width", start = 0.01f0)
+    s_h_w_width, h_w_width = textslider(0.0f0:.01f0:1.0f0, "home_work_width", start = 0.1f0)
+
+    sradius, radius = textslider(2f0.^(0.5f0:0.25f0:20f0), "light pos r", start=2f0^.5f0)
+    stheta, theta = textslider(0:5:180, "Light pos theta", start=30f0)
+    sphi, phi = textslider(0:5:360, "Light pos theta", start=45f0)
+
+    la = map(Makie.Vec3f0, ambient)
+    ld = map(Makie.Vec3f0, diffuse)
+    lp = map(radius, theta, phi) do r, theta, phi  # do not follow
+        r * Makie.Vec3f0(
+            cos(phi) * sind(theta),
+            sind(phi) * sin(theta),
+            cosd(theta)
+        )
+    end
+
+    #=
+    sphere = Makie.Sphere(Makie.Point3f0(0), marker_radius[])
+    sphere_scene = Scene(parent_scene, show_axis=false)
+    sphere_mesh = mesh!(sphere_scene, sphere, color=:red, scale=.4,
+        ambient=la, difuse=ld, lightposition = lp)
+    on(marker_radius) do x
+        scale!(sphere_mesh, x, x, x)
+    end
+    =#
+
+
+    #rad = to_value(radius)
+    x,y,z = get_prop(mgraph, :line_segments);
+    AP.linesegments!(parent_scene, x,y,z, color=:darkblue);
+    #linesegments!(scene, x,y,z, color=:darkblue);
+    # Must Observables be arguments that accept observables?
+    # single ball at original workplace
+    AP.scatter!(parent_scene, x[1:1], y[1:1], z[1:1], markersize=.03, color=:darkblue, transparency=true)
+    #on(marker_radius) do x
+        # Crashes. Why?
+        #AP.scatter!(parent_scene, x[1:1], y[1:1], z[1:1], markersize=.03, color=:darkblue, transparency=true)
+    #end
+    #AP.scatter!(scene, x[1:1], y[1:1], z[1:1], markersize=10*marker_size, color=:darkblue, transparency=false)
+    x,y,z = get_prop(mgraph, :ncoords);
+
+    # returns home coordinates connected to workplaces and homes as Sets
+    secondGeneration!(parent_scene, graph_s, graph_w, ld, la,
+            marker_size=6*marker_size, plane_width=0.2)
+
+    #onany(plane_width, ld, la) do x
+        #secondGeneration!(parent_scene, graph_s, graph_w, ld, la,
+            #marker_size=20*marker_size, plane_width=x[])
+    #end
+
+    #s_c_h_width, c_h_width = textslider(0.0f0:.01f0:1.0f0, "base_home_width", start = 0.01f0)
+    #s_h_w_width, h_w_width = textslider(0.0f0:.01f0:1.0f0, "home_work_width", start = 0.1f0)
+    county_scene = Scene(parent_scene, plot_axis=false)
+    plotCounty!(county_scene, all_df, county_plane=countyplane, marker_size=marker_size)
+    on(c_h_width) do x
+        county_plane = countyplane + c_h_width[]
+        translate!(county_scene, 0., 0., x[])
+    end
+
+    #=
+    Point3f0 = GeometryTypes.Point3f0
+    #sphere = HyperSphere(Point3f0(0), to_value(radius)*1f0)
+    sphere = HyperSphere(Point3f0(0), .1f0)
+    positions = GeometryTypes.decompose(Point3f0, sphere)
+    #view(positions, rand(1:length(positions), 100))
+    AP.meshscatter!(scene, positions, markersize=10. * .2, color=:blue, transparency=false)
+    #scatter!(scene, positions, transparency=true, strokewidth=.02, strokecolor=:blue, color=:blue)
+    =#
+
+    #parent_scene = Scene(resolution=(900, 900))
+
+    #hbox(vbox(s1), vbox(scene), parent=parent_scene)
+    parent = vbox(hbox(s_c_h_width, s_h_w_width, s_plane_width, s_marker_radius, s_diffuse, s_ambient), parent_scene)
+    setupCamera!(parent_scene);
+    return parent
+end
+nothing
+# -----------------------------------------------
 # Remove while debugging
-# the first node is the workplace, the others, the home
+# th:e first node is the workplace, the others, the home
 const hh = 3.
-hplane = 0.6
-wplane = 0.66
-countyplane = 0.598
 
+baseplane = 0.0
+countyplane = baseplane + .0
+hplane = countyplane + .00
+wplane = hplane + .10
 
-graph, wid_df = randomBusinessWorkToHomes(all_df, df_w, 50, 70)
-xx, yy = get_prop(graph, :node_coords)
+graph, wid_df = randomBusinessWorkToHomes(all_df, df_w, 50, 70);
+xx, yy = get_prop(graph, :node_coords);
 mgraph = collectGraphEdges(graph, hplane=hplane, wplane=wplane);
-graph_s, graph_w = getHomes(wid_df, hplane=hplane, wplane=wplane)
+graph_s, graph_w = getHomes(wid_df, hplane=hplane, wplane=wplane);
 
 # Could run in a separate thread
 # Empty scene takes a long time to create. Weird.
@@ -304,148 +406,4 @@ graph_s, graph_w = getHomes(wid_df, hplane=hplane, wplane=wplane)
 makePlot(mgraph, graph_s, graph_w)
 nothing
 
-function makePlot(mgraph, graph_s, graph_w)
-    marker_size = 0.0002
-    scene = Scene();
-    s1, radius = textslider(0.0f0:.4f0:4.0f0, "Radius", start = 2.6f0)
-    rad = to_value(radius)
-    x,y,z = get_prop(mgraph, :line_segments);
-    AP.linesegments!(scene, x,y,z, color=:darkblue);
-    #linesegments!(scene, x,y,z, color=:darkblue);
-    AP.scatter!(scene, x[1:1], y[1:1], z[1:1], markersize=30*marker_size, color=:darkblue, transparency=false)
-    x,y,z = get_prop(mgraph, :ncoords);
-
-    # returns home coordinates connected to workplaces and homes as Sets
-    secondGeneration!(scene, graph_s, graph_w,
-         marker_size=20*marker_size)
-
-    plotCounty!(scene, all_df, county_plane=countyplane, marker_size=marker_size)
-
-    Point3f0 = GeometryTypes.Point3f0
-    #sphere = HyperSphere(Point3f0(0), to_value(radius)*1f0)
-    sphere = HyperSphere(Point3f0(0), 1f0)
-    positions = GeometryTypes.decompose(Point3f0, sphere)
-    #view(positions, rand(1:length(positions), 100))
-    println("rad= ", rad)
-    AP.meshscatter!(scene, positions, markersize=rad*.2, color=:blue, transparency=false)
-    #scatter!(scene, positions, transparency=true, strokewidth=.02, strokecolor=:blue, color=:blue)
-
-    parent_scene = Scene(resolution=(900, 900))
-
-    #hbox(vbox(s1), vbox(scene), parent=parent_scene)
-    vbox(hbox(s1, scene), parent=parent_scene)
-    setupCamera!(scene);
-    display(parent_scene)
-end
-nothing
-
-# ----------------------------------------------------------------------
-
-hsx, hsy = home_sxy
-hwx, hwy = home_wxy
-println(typeof(home_sxy[1]))
-println(home_sxy[1])
-println(home_sxy[2])
-wid_hx = Set(wid_df.hlong.+84.)
-wid_hy = Set(wid_df.hlat.-30.)
-nothing
-
-
-
-# ----------------------------------------------------------------------
 # ======================================================================
-# ======================================================================
-# LAST FUNCTION
-
-#function getHomes(wid_df; hplane=0., wplane=1.)
-    # Starting from the homes, Identify all the workplaces.
-    # identify the home coordinates of all the workers
-println("hlat people: ", people_in_homes_df.hlat .-30.)
-
-# rows of h_df that have schools
-# rows of h_df that have workplaces
-pih = people_in_homes_df;
-school_df = pih[pih.school_id .!= -1,:];
-work_df = pih[pih.work_id .!= -1,:];
-
-# Remove from school_df all rows where the school is outside Leon County
-school_df = @where(school_df, (-1. .< :slat  .- 30. .< 1.) .&
-                              (-1. .< :slong .+ 84. .< 1.))
-# Remove from work_df all rows where the workplace is outside Leon County
-work_df = @where(work_df, (-1. .< :wlat  .- 30. .< 1.) .&
-                          (-1. .< :wlong .+ 84. .< 1.))
-
-hslat  = school_df.hlat  .- 30.;
-hslong = school_df.hlong .+ 84.;
-slat   = school_df.slat  .- 30.;
-slong  = school_df.slong .+ 84.;
-
-println("==> Why is hwlat and hwlong missing?")
-println("==> work_df= $work_df")
-    #return
-hwlat  = work_df.hlat    .- 30.;
-hwlong = work_df.hlong   .+ 84.;
-wlat   = work_df.wlat    .- 30.;
-wlong  = work_df.wlong   .+ 84;
-
-    # Create two graphs, one for schools, one for homes
-    # These two graphs connect the home network to the school/work network
-graph_s = SimpleGraph(nrow(school_df)*2)
-graph_w = SimpleGraph(nrow(work_df)*2)
-println("nb nodes(graph_s): ", nv(graph_s))
-println("nb nodes(graph_w): ", nv(graph_w))
-
-    # edges are 1-1 links between homes and schools
-nb_edges_s = nrow(school_df)
-for i in 1:nb_edges_s
-    add_edge!(graph_s, i, i+nb_edges_s)
-end
-
-
-    # edges are 1-1 links between homes and workplaces
-nb_edges_w = nrow(work_df)
-for i in 1:nb_edges_w
-    add_edge!(graph_w, i, i+nb_edges_w)
-end
-
-    # Construct a graph that connects schools and homes
-    println("graph_w: ", graph_s)
-    println("nb_edges_w: ", nb_edges_s)
-    println("hslat: $(length(hslat))")
-    println("hslong: $(length(hslong))")
-    println("hwlat: $(length(hwlat))")
-    println("hwlong: $(length(hwlong))")
-    println("slat: $(length(slat))")
-    println("slong: $(length(slong))")
-
-    nb_edges_w = nrow(work_df)
-    xxs = vcat(hslat, slat)
-    yys = vcat(hslong, slong)
-    zzs = fill(wplane, 2*nb_edges_s)  # school and workplace on the same plane
-    zzs[1:nb_edges_s] .= hplane
-    graph_s = MetaGraph(graph_s)
-    set_prop!(graph_s, :node_coords, [xxs,yys,zzs])
-
-    # Construct a graph that connects workplace and homes
-    nb_edges_s = nrow(school_df)
-    println("hwlat= ", hwlat)    # missing
-    println("hwlong= ", hwlong)  # missing
-    println("hslat= ", hslat)
-    println("hslong= ", hslong)
-    println("wlat= ", wlat)
-    println("wlong= ", wlong)
-    println("slat= ", slat)
-    println("slong= ", slong)
-    xxw = vcat(hwlat, wlat)
-    yyw = vcat(hwlong, wlong)
-    zzw = fill(wplane, 2*nb_edges_w)
-    zzw[1:nb_edges_w] .= hplane
-    graph_w = MetaGraph(graph_w)
-    set_prop!(graph_w, :node_coords, [xxw,yyw,zzw])
-
-    return [graph_s, graph_w]
-#end
-
-function Gordon(a::Real)
-    println(a)
-end
