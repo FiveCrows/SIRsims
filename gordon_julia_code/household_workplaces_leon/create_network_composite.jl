@@ -239,14 +239,16 @@ function secondGeneration!(scene, graph_s, graph_w, ld, la; marker_size=0.01, pl
         zsegs[2*i]   = zs[i]
     end
 
+    sphere = Makie.Sphere(Makie.Point3f0(0), 1.0)
+
     scale_factor = 4
 
     w_col = :red
     linesegments!(scene, xsegs, ysegs, zsegs, color=w_col, edgewidth=1.)
-    AP.scatter!(scene, xs ,ys, zs, transparency=true, markersize=scale_factor*marker_size, color=w_col, diffuse=ld[], ambient=la[])
-    msh = AP.scatter!(scene, xh ,yh, zh, transparency=true, markersize=scale_factor*marker_size, color=:darkgreen)
-    #meshscatter!(scene, xs ,ys, zs, transparency=true, markersize=4*marker_size, color=w_col)
-    #meshscatter!(scene, xh ,yh, zh, transparency=true, markersize=marker_size, color=:darkgray)
+    #AP.scatter!(scene, xs ,ys, zs, transparency=true, markersize=scale_factor*marker_size, color=w_col, diffuse=ld[], ambient=la[])
+    AP.meshscatter!(scene, xs ,ys, zs, marker=sphere, transparency=false, markersize=scale_factor*marker_size, color=w_col, diffuse=ld[], ambient=la[])
+    #AP.scatter!(scene, xh ,yh, zh, transparency=true, markersize=scale_factor*marker_size, color=:darkgreen)
+    AP.meshscatter!(scene, xh ,yh, zh, marker=sphere, transparency=false, markersize=scale_factor*marker_size, color=:darkgreen)
 
     xw, yw, zw = get_prop(graph_w, :ncoords_w);
     xh, yh, zh = get_prop(graph_w, :ncoords_h);
@@ -269,11 +271,13 @@ function secondGeneration!(scene, graph_s, graph_w, ld, la; marker_size=0.01, pl
 
     sch_col = :darkred
     linesegments!(scene, xsegs, ysegs, zsegs, color=sch_col)
-    AP.scatter!(scene, xw ,yw, zw, transparency=true, markersize=scale_factor*marker_size, color=sch_col, alpha=.0, fillalpha=.0, markeralpha=0.0)
-    AP.scatter!(scene, xh ,yh, zh, transparency=true, markersize=scale_factor*marker_size, color=:darkgreen, alpha=.0, fillalpha=.0, markeralpha=0.0)
+    AP.meshscatter!(scene, xw ,yw, zw, marker=sphere, transparency=false, markersize=scale_factor*marker_size, color=sch_col, alpha=.0, fillalpha=.0, markeralpha=0.0)
+    #AP.scatter!(scene, xh ,yh, zh, transparency=true, markersize=scale_factor*marker_size, color=:darkgreen, alpha=.0, fillalpha=.0, markeralpha=0.0)
+    AP.meshscatter!(scene, xh ,yh, zh, marker=sphere, transparency=false, markersize=scale_factor*marker_size, color=:darkgreen, alpha=.0, fillalpha=.0, markeralpha=0.0)
+    #AP.scatter!(scene, xh ,yh, zh, transparency=true, markersize=scale_factor*marker_size, color=:darkgreen, alpha=.0, fillalpha=.0, markeralpha=0.0)
     #meshscatter!(scene, xw ,yw, zw, transparency=true, markersize=4*marker_size, color=sch_col, alpha=.0, fillalpha=.0, markeralpha=0.0)
     #meshscatter!(scene, xh ,yh, zh, transparency=true, markersize=marker_size, color=:darkgray, alpha=.0, fillalpha=.0, markeralpha=0.0)
-    return msh
+    return
 end
 
 function setupCamera!(scene)
@@ -335,13 +339,15 @@ function makePlot(mgraph, graph_s, graph_w)
     =#
 
 
+    sphere = Makie.Sphere(Makie.Point3f0(0), 0.3f0)
     #rad = to_value(radius)
     x,y,z = get_prop(mgraph, :line_segments);
     AP.linesegments!(parent_scene, x,y,z, color=:darkblue);
     #linesegments!(scene, x,y,z, color=:darkblue);
     # Must Observables be arguments that accept observables?
     # single ball at original workplace
-    AP.scatter!(parent_scene, x[1:1], y[1:1], z[1:1], markersize=.03, color=:darkblue, transparency=true)
+    #AP.scatter!(parent_scene, x[1:1], y[1:1], z[1:1], markersize=.03, color=:darkblue, transparency=true)
+    AP.meshscatter!(parent_scene, x[1:1], y[1:1], z[1:1], transparency=false, marker=sphere, markersize=.02, color=:darkblue)
     #on(marker_radius) do x
         # Crashes. Why?
         #AP.scatter!(parent_scene, x[1:1], y[1:1], z[1:1], markersize=.03, color=:darkblue, transparency=true)
@@ -351,7 +357,7 @@ function makePlot(mgraph, graph_s, graph_w)
 
     # returns home coordinates connected to workplaces and homes as Sets
     secondGeneration!(parent_scene, graph_s, graph_w, ld, la,
-            marker_size=6*marker_size, plane_width=0.2)
+            marker_size=4*marker_size, plane_width=0.2)
 
     #onany(plane_width, ld, la) do x
         #secondGeneration!(parent_scene, graph_s, graph_w, ld, la,
@@ -363,7 +369,7 @@ function makePlot(mgraph, graph_s, graph_w)
     county_scene = Scene(parent_scene, plot_axis=false)
     plotCounty!(county_scene, all_df, county_plane=countyplane, marker_size=marker_size)
     on(c_h_width) do x
-        county_plane = countyplane + c_h_width[]
+
         translate!(county_scene, 0., 0., x[])
     end
 
