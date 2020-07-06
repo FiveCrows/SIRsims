@@ -248,7 +248,8 @@ function secondGeneration!(scene, graph_s, graph_w, ld, la; marker_size=0.01, pl
     #AP.scatter!(scene, xs ,ys, zs, transparency=true, markersize=scale_factor*marker_size, color=w_col, diffuse=ld[], ambient=la[])
     AP.meshscatter!(scene, xs ,ys, zs, marker=sphere, transparency=false, markersize=scale_factor*marker_size, color=w_col, diffuse=ld[], ambient=la[])
     #AP.scatter!(scene, xh ,yh, zh, transparency=true, markersize=scale_factor*marker_size, color=:darkgreen)
-    AP.meshscatter!(scene, xh ,yh, zh, marker=sphere, transparency=false, markersize=scale_factor*marker_size, color=:darkgreen)
+    AP.meshscatter!(scene, xh ,yh, zh, marker=sphere, transparency=false,
+        markersize=0.6scale_factor*marker_size, color=:darkgreen)
 
     xw, yw, zw = get_prop(graph_w, :ncoords_w);
     xh, yh, zh = get_prop(graph_w, :ncoords_h);
@@ -273,7 +274,8 @@ function secondGeneration!(scene, graph_s, graph_w, ld, la; marker_size=0.01, pl
     linesegments!(scene, xsegs, ysegs, zsegs, color=sch_col)
     AP.meshscatter!(scene, xw ,yw, zw, marker=sphere, transparency=false, markersize=scale_factor*marker_size, color=sch_col, alpha=.0, fillalpha=.0, markeralpha=0.0)
     #AP.scatter!(scene, xh ,yh, zh, transparency=true, markersize=scale_factor*marker_size, color=:darkgreen, alpha=.0, fillalpha=.0, markeralpha=0.0)
-    AP.meshscatter!(scene, xh ,yh, zh, marker=sphere, transparency=false, markersize=scale_factor*marker_size, color=:darkgreen, alpha=.0, fillalpha=.0, markeralpha=0.0)
+    AP.meshscatter!(scene, xh ,yh, zh, marker=sphere, transparency=false,
+        markersize=0.6*scale_factor*marker_size, color=:darkgreen, alpha=.0, fillalpha=.0, markeralpha=0.0)
     #AP.scatter!(scene, xh ,yh, zh, transparency=true, markersize=scale_factor*marker_size, color=:darkgreen, alpha=.0, fillalpha=.0, markeralpha=0.0)
     #meshscatter!(scene, xw ,yw, zw, transparency=true, markersize=4*marker_size, color=sch_col, alpha=.0, fillalpha=.0, markeralpha=0.0)
     #meshscatter!(scene, xh ,yh, zh, transparency=true, markersize=marker_size, color=:darkgray, alpha=.0, fillalpha=.0, markeralpha=0.0)
@@ -295,7 +297,7 @@ function plotCounty!(scene, all_df; county_plane=0.0, marker_size=0.0001)
     house_xy[:,2] .-= 30.
     house_z = repeat([county_plane], nrow(all_df))  # waste of memory
     AP.scatter!(scene, house_xy[:,1], house_xy[:,2], house_z,
-        strokecolor=:gray, markersize=marker_size,color=:gray)
+        strokecolor=:darkgray, markersize=marker_size,color=:darkgray)
 end
 
 # ----------------------------------------------
@@ -366,12 +368,12 @@ function makePlot(mgraph, graph_s, graph_w)
 
     #s_c_h_width, c_h_width = textslider(0.0f0:.01f0:1.0f0, "base_home_width", start = 0.01f0)
     #s_h_w_width, h_w_width = textslider(0.0f0:.01f0:1.0f0, "home_work_width", start = 0.1f0)
-    county_scene = Scene(parent_scene, plot_axis=false)
-    plotCounty!(county_scene, all_df, county_plane=countyplane, marker_size=marker_size)
-    on(c_h_width) do x
-
-        translate!(county_scene, 0., 0., x[])
-    end
+    #county_scene = Scene(parent_scene, plot_axis=false)
+    #county_scene = Scene(parent_scene, plot_axis=false)
+    plotCounty!(parent_scene, all_df, county_plane=countyplane, marker_size=4*marker_size)
+    #on(c_h_width) do x
+    #    translate!(county_scene, 0., 0., x[])
+    #end
 
     #=
     Point3f0 = GeometryTypes.Point3f0
