@@ -27,7 +27,7 @@ employmentRate = 0.9
 
 #for generating graph
 graphGenParams = 1
-globalInfectionRate = 1
+globalInfectionRate = .5
 homeInfectivity = 1
 schoolInfectivity = 0.5
 workInfectivity = 0.5
@@ -73,12 +73,16 @@ class Record:
         self.comments += input("Enter comment")
 
     def printGraphStats(self, graph, statAlgs):
-        graphStats = "{"
+        if not nx.is_connected(graph):
+            self.print("graph is not connected. There are {} components".format(nx.number_connected_components(graph)))
+            max_subgraph = graph.subgraph(max(nx.connected_components(graph)))
+            self.print("{} of nodes lie within the maximal subgraph".format(max_subgraph.number_of_nodes()/graph.number_of_nodes()))
+        else:
+            max_subgraph = graph
+        graphStats = {}
         for statAlg in statAlgs:
-            graphStats += statAlg.__name__
-            graphStats += ": {}, ".format(statAlg(graph))
-        graphStats+="}"
-        self.print(graphStats)
+            graphStats[statAlg.__name__] = statAlg(max_subgraph)
+        self.print(str(graphStats))
 
     def dump(self):
         mkdir("./simResults/{}".format(self.stamp))
@@ -98,9 +102,10 @@ class Environment:
 #WIP
 class TransmissionWeighter:
     def __init__(self):
-        self.weight = 1
+        self.global_weight = 1
+        self.mask_infect_reduction = .4
 
-    def getWeight(self, personA, personB, locale):
+    def getWeight(self, personA, personB):#, locale):
         return self.weight
 
     def reweight(graph, groups):
@@ -109,6 +114,7 @@ class TransmissionWeighter:
 
     def includeInRecord(self, record):
         record.print("nothing here yet")
+
 
 
 
@@ -199,25 +205,6 @@ def sortPopulace(populace, categories):
 
 #connect list of groups with weight
 #TODO update to use a weight calculating function
-def clusterDenseGroup(graph, group, member_count, weight, params = None):
-    subGraph = nx.complete_graph(member_count)
-    relabel = dict(zip(range(member_count), group))
-    subGraph = nx.relabel.relabel_nodes(subGraph,relabel)
-    graph.add_edges_from(subGraph.edges(), transmission_weight=weight)
-#supports dense (no params), degree_p (params is prob list), random (param is avg_degree), strogatz, (degree and rewire_p), and preferential attachment
-
-
-def clusterRandomDepricated(graph, group, member_count, weight, params):
-    avg_degree = params
-    if avg_degree >= member_count:
-        clusterDense(graph, group, member_count, weight, params)
-        return
-    edgeProb = 2*avg_degree / (member_count - 1)
-    subGraph = nx.fast_gnp_random_graph(member_count, edgeProb)
-    relabel = dict(zip(range(member_count), group))
-    nx.relabel.relabel_nodes(subGraph, relabel)
-    graph.add_edges_from(subGraph.edges(), transmission_weight=weight)
-
 
 def clusterRandom(graph, group, member_count, weight, params):
     avg_degree = params
@@ -251,14 +238,14 @@ def clusterPartitions(graph, group, member_count, weight, params):
     groups = nGroupAssign()
 
 
-def clusterDense(graph, group, member_count, weight, params):
+def clusterDense(graph, group, member_count, weighter, params):
     #memberWeightScalar = np.sqrt(memberCount)
     for i in range(member_count):
         for j in range(i):
-            graph.add_edge(group[i], group[j], transmission_weight=weight) #/ memberWeightScalar)
+            graph.add_edge(group[i], group[j], transmission_weight=weighter.getWeight(group[i],group[j])) #/ memberWeightScalar)
 
 
-def clusterDegree_p(graph,group, memberCount, weight, params):
+def clusterDegree_p(graph,group, memberCount, weighter, params):
     degree_p = params
     connectorList = []
     for i in range(memberCount):
@@ -268,19 +255,20 @@ def clusterDegree_p(graph,group, memberCount, weight, params):
     # this method DOES leave the chance adding duplicate edges
     i = 0
     while i < len(connectorList) - 1:
-        graph.add_edge(group[connectorList[i]], group[connectorList[i + 1]],
-                       transmission_weight=weight)
+        nodeA = group[connectorList[i]]
+        nodeB = group[connectorList[i + 1]]
+        graph.add_edge(nodeA, nodeB, transmission_weight = weighter(nodeA,nodeB))
         i = i + 2
 
 
-def clusterStrogatz(graph,group, memberCount, weight, params):
+def clusterStrogatz(graph, group, memberCount, weighter, params):
     group.sort()
     local_k = params[0]
     rewire_p = params[1]
     if (local_k % 2 != 0):
         record.print("Error: local_k must be even")
     if local_k >= memberCount:
-        clusterDense(graph, group, memberCount, weight, params)
+        clusterDense(graph, group, memberCount, weighter, params)
         return
 
     for i in range(memberCount):
@@ -294,10 +282,10 @@ def clusterStrogatz(graph,group, memberCount, weight, params):
 
             else:
                 nodeB = group[(i + j) % memberCount]
-            graph.add_edge(nodeA, nodeB, transmission_weight=weight)
+            graph.add_edge(nodeA, nodeB, transmission_weight=weighter.getWeight(nodeA,nodeB))
 
 
-def clusterByDegree_p(graph, groups, weight,degree_p):
+def clusterByDegree_p(graph, groups, weighter,degree_p):
     #some random edges may be duplicates, best for large groups
     connectorList = []
 
@@ -312,7 +300,9 @@ def clusterByDegree_p(graph, groups, weight,degree_p):
 
             i = 0
             while i < len(connectorList)-1:
-                graph.add_edge(groups[key][connectorList[i]],groups[key][connectorList[i+1]],transmission_weight = weight)
+                nodeA = groups[key][connectorList[i]]
+                nodeB = groups[key][connectorList[i+1]]
+                graph.add_edge(nodeA,nodeB,transmission_weight = weighter.getWeight(nodeA,nodeB))
                 i = i+2
 
 
@@ -321,7 +311,7 @@ def clusterGroupsByPA(graph, groups):
         memberCount = len(groups[key])
 
 
-def clusterGroups(graph, classifier, weight, clusterAlg, params = None, ):
+def clusterGroups(graph, classifier, transmissionWeighter, clusterAlg, params = None, ):
     record.print("clustering {} groups with the {} algorithm".format(classifier, clusterAlg.__name__))
     start = time.time()
     # # stats = {"classifier": }
@@ -333,11 +323,11 @@ def clusterGroups(graph, classifier, weight, clusterAlg, params = None, ):
         if key == None:
             continue
         group = groups[key]
-        clusterAlg(graph, group, len(group), weight, params)
+        clusterAlg(graph, group, len(group), transmissionWeighter, params)
 
     weights_added = graph.size() - initial_weights
     stop = time.time()
-    record.print("{} weights of size {} added for {} work environments in {} seconds".format(weights_added, weight,len(popsByCategory[classifier].keys()), stop-start))
+    record.print("{} weights of size {} added for {} work environments in {} seconds".format(weights_added, transmissionWeighter,len(popsByCategory[classifier].keys()), stop-start))
 
 
 def showGroupComparison(sim, category, groupTags, popsByCategory, node_investigation, record):
@@ -361,19 +351,19 @@ def showGroupComparison(sim, category, groupTags, popsByCategory, node_investiga
 
 
 
-def simulateGraph(clusteringAlg, simAlg, params, full_data = False):
+def simulateGraph(clusteringAlg, simAlg, transmissionWeighter, params, full_data = False):
     record.print('\n')
     record.print("building populace into graphs with the {} clustering algorithm".format(clusteringAlg.__name__))
     start = time.time()
 
     graph = nx.Graph()
-    clusterGroups(graph, 'sp_hh_id', homeInfectivity, clusterDenseGroup)
-    clusterGroups(graph, 'work_id', workInfectivity, clusteringAlg, params)
-    clusterGroups(graph, 'school_id', workInfectivity, clusteringAlg, params)
+    clusterGroups(graph, 'sp_hh_id', transmissionWeighter, clusterDense)
+    clusterGroups(graph, 'work_id', transmissionWeighter, clusteringAlg, params)
+    clusterGroups(graph, 'school_id', transmissionWeighter, clusteringAlg, params)
 
     stop_a = time.time()
     record.print("Graph completed in {} seconds.".format((stop_a - start)))
-    record.printGraphStats(graph, [nx.average_clustering])
+    #record.printGraphStats(graph, [nx.average_clustering])
     # record.print("{edges: {}, nodes: }".format(graph.size()))
     record.print("running simulation with the {} algorithm".format(simAlg.__name__))
 
@@ -397,19 +387,17 @@ stop = time.time()
 record.print("finished in {} seconds".format(stop - start))
 
 
-
-
-
-
 #[t, S, I, R] = simulateGraph(clusterRandom2,workAvgDegree)
 #plt.plot(t,I,label = 'random')
-simresultA = simulateGraph(clusterStrogatz, EoN.fast_SIR,  [workAvgDegree, 0.3])
-simresultB = simulateGraph(clusterStrogatz, EoN.Gillespie_SIR,  [workAvgDegree, 0.3])
-
+weighter = TransmissionWeighter()
+simresultA = simulateGraph(clusterStrogatz, EoN.fast_SIR, weighter, [workAvgDegree, 0.2])
+simresultB = simulateGraph(clusterStrogatz, EoN.Gillespie_SIR, weighter, [workAvgDegree, 0.5])
 [t, S, I, R] = simresultA
-plt.plot(t,I,label = 'I')
-plt.plot(t,S,label = 'S')
-
+plt.plot(t,I,label = 'I with 20% random')
+plt.plot(t,S,label = 'S with 20% random')
+[t, S, I, R] = simresultB
+plt.plot(t,I,label = 'I with 50% random')
+plt.plot(t,S,label = 'S with 50% random')
 
 #node_investigation = EoN.fast_SIR(graph, globalInfectionRate, recoveryRate, rho = 0.0001, transmission_weight ='transmission_weight',return_full_data = True)
 #showGroupComparison(node_investigation, 'race', [1,2], popsByCategory)
