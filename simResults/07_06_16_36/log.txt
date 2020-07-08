@@ -1,0 +1,29 @@
+
+loading and sorting synthetic populations
+finished in 1.8432464599609375 seconds
+
+
+building populace into graphs with the clusterStrogatz clustering algorithm
+clustering sp_hh_id groups with the clusterDenseGroup algorithm
+270559 weights of size 1 added for 110944 work environments in 5.222069025039673 seconds
+clustering work_id groups with the clusterStrogatz algorithm
+534813 weights of size 0.5 added for 15824 work environments in 1.8531606197357178 seconds
+clustering school_id groups with the clusterStrogatz algorithm
+221900 weights of size 0.5 added for 62 work environments in 0.813751220703125 seconds
+Graph completed in 7.88918924331665 seconds.
+running simulation with the fast_SIR algorithm
+simulation completed in 7.458240270614624 seconds
+total build and sim time: 15.347429513931274
+
+
+building populace into graphs with the clusterStrogatz clustering algorithm
+clustering sp_hh_id groups with the clusterDenseGroup algorithm
+270559 weights of size 1 added for 110944 work environments in 5.207469463348389 seconds
+clustering work_id groups with the clusterStrogatz algorithm
+524549 weights of size 0.5 added for 15824 work environments in 1.8007047176361084 seconds
+clustering school_id groups with the clusterStrogatz algorithm
+222945 weights of size 0.5 added for 62 work environments in 0.9267773628234863 seconds
+Graph completed in 7.935141324996948 seconds.
+running simulation with the Gillespie_SIR algorithm
+simulation completed in 9.267695426940918 seconds
+total build and sim time: 17.202836751937866

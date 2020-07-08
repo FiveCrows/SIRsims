@@ -1,0 +1,29 @@
+
+loading and sorting synthetic environment
+finished in 14.847622156143188 seconds
+
+
+building populace into graphs with the clusterStrogatz clustering algorithm
+clustering sp_hh_id groups with the clusterDense algorithm
+270559 weights of size <__main__.TransmissionWeighter object at 0x7fcd43a2a510> added for 110944 work environments in 1.4799904823303223 seconds
+clustering work_id groups with the clusterStrogatz algorithm
+534777 weights of size <__main__.TransmissionWeighter object at 0x7fcd43a2a510> added for 15824 work environments in 1.9803040027618408 seconds
+clustering school_id groups with the clusterStrogatz algorithm
+221953 weights of size <__main__.TransmissionWeighter object at 0x7fcd43a2a510> added for 62 work environments in 1.0247550010681152 seconds
+Graph completed in 4.485336065292358 seconds.
+running simulation with the fast_SIR algorithm
+simulation completed in 5.5969016551971436 seconds
+total build and sim time: 10.082237720489502
+
+
+building populace into graphs with the clusterStrogatz clustering algorithm
+clustering sp_hh_id groups with the clusterDense algorithm
+270559 weights of size <__main__.TransmissionWeighter object at 0x7fcd43a2a510> added for 110944 work environments in 1.4476053714752197 seconds
+clustering work_id groups with the clusterStrogatz algorithm
+524482 weights of size <__main__.TransmissionWeighter object at 0x7fcd43a2a510> added for 15824 work environments in 2.287802219390869 seconds
+clustering school_id groups with the clusterStrogatz algorithm
+223113 weights of size <__main__.TransmissionWeighter object at 0x7fcd43a2a510> added for 62 work environments in 1.1149959564208984 seconds
+Graph completed in 4.850666046142578 seconds.
+running simulation with the Gillespie_SIR algorithm
+simulation completed in 8.082064867019653 seconds
+total build and sim time: 12.932730913162231

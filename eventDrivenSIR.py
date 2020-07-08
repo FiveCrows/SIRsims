@@ -346,7 +346,7 @@ def clusterGroups(graph, classifier, transmissionWeighter, clusterAlg, params = 
     stop = time.time()
     record.print("{} weights of size {} added for {} work environments in {} seconds".format(weights_added, transmissionWeighter,len(popsByCategory[classifier].keys()), stop-start))
 
-#def clusterBlendedGroups(graph, groups, contact_matrix, )
+#def clusterBlendedGroups(graph, groups, contact_matrix)
 
 def showGroupComparison(sim, category, groupTags, popsByCategory, node_investigation, record):
         record.print("plotting an infection rate comparison of groups in category of {}".format(category))
