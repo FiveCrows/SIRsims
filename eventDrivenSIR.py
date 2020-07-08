@@ -100,19 +100,36 @@ class Environment:
     #def plot_homes(self):
 
 #WIP
+#TODO refonfigure masking
 class TransmissionWeighter:
-    def __init__(self):
+    def __init__(self, loc_scalars, mask_scalar):
         self.global_weight = 1
-        self.mask_infect_reduction = .4
+        self.mask_scalar = mask_scalar
+        self.loc_scalars = loc_scalars
+        #self.age_scalars = age_scalars
 
-    def getWeight(self, personA, personB):#, locale):
-        return self.weight
+    def getWeight(self, personA, personB, location):
+        weight = self.global_weight
+        try:
+            weight = weight*self.loc_scalars[location]
+        except:
+            print("locale type not identified")
 
+        if(populace[personA]['comorbidities']['MaskUsage']):
+            weight = weight*self.mask_scalar
+        if(populace[personB]['comorbidities']['MaskUsage']):
+            weight = weight*self.mask_scalar
+        return weight
+
+
+    #WIP
     def reweight(graph, groups):
         for edge in graph.edges():
-            graph[edge[0],]
+            print("stub")
+            #graph[edge[0],]
 
-    def includeInRecord(self, record):
+    #WIP
+    def record(self, record):
         record.print("nothing here yet")
 
 
@@ -164,7 +181,7 @@ def p_attributeAssign(memberIndices, attributes, probabilities):
 
 
 #for loading people objects from file
-def loadPickledPop(filename):
+def loadPickles(filename):
     with open(filename,'rb') as file:
         x = pickle.load(file)
     #return represented by dict of dicts
@@ -206,10 +223,10 @@ def sortPopulace(populace, categories):
 #connect list of groups with weight
 #TODO update to use a weight calculating function
 
-def clusterRandom(graph, group, member_count, weight, params):
+def clusterRandom(graph, group, location,  member_count, weighter, params):
     avg_degree = params
     if avg_degree >= member_count:
-        clusterDense(graph, group, member_count, weight, params)
+        clusterDense(graph, group, member_count, weighter, params)
         return
     edgeProb = 2 * avg_degree / (member_count - 1)
 
@@ -218,7 +235,7 @@ def clusterRandom(graph, group, member_count, weight, params):
         pos_edges = itertools.combinations(group,2)
         for edge in pos_edges:
             if random.random()<edgeProb:
-                graph.add_edge(edge[0],edge[1], transmission_weight = weight)
+                graph.add_edge(edge[0],edge[1], transmission_weight = weighter.getWeight(edge[0],edge[1], location))
 
     else:
         for i in range(member_count-1):
@@ -226,26 +243,26 @@ def clusterRandom(graph, group, member_count, weight, params):
             for j in range(i+1,member_count):
                 if random.random()<edgeProb:
                     nodeB = group[j]
-                    graph.add_edge(nodeA,nodeB, transmission_weight = weight)
+                    graph.add_edge(nodeA,nodeB, transmission_weight = weighter.getWeight(nodeA,nodeB,location))
 
-
-def clusterPartitions(graph, group, member_count, weight, params):
+#WIP
+def clusterPartitions(graph, group, location, member_count, weight, params):
     partition_size = params[0]
     mixing_rate = params[1]
     if partition_size>member_count:
-        clusterDenseGroup(graph, group, member_count, weight, params)
+        clusterDense(graph, group, member_count, weight, params)
         return
-    groups = nGroupAssign()
+    #groups = nGroupAssign()
 
 
-def clusterDense(graph, group, member_count, weighter, params):
+def clusterDense(graph, group, location, member_count, weighter, params):
     #memberWeightScalar = np.sqrt(memberCount)
     for i in range(member_count):
         for j in range(i):
-            graph.add_edge(group[i], group[j], transmission_weight=weighter.getWeight(group[i],group[j])) #/ memberWeightScalar)
+            graph.add_edge(group[i], group[j], transmission_weight=weighter.getWeight(group[i],group[j], location)) #/ memberWeightScalar)
 
 
-def clusterDegree_p(graph,group, memberCount, weighter, params):
+def clusterDegree_p(graph,group, location, memberCount, weighter, params):
     degree_p = params
     connectorList = []
     for i in range(memberCount):
@@ -257,18 +274,18 @@ def clusterDegree_p(graph,group, memberCount, weighter, params):
     while i < len(connectorList) - 1:
         nodeA = group[connectorList[i]]
         nodeB = group[connectorList[i + 1]]
-        graph.add_edge(nodeA, nodeB, transmission_weight = weighter(nodeA,nodeB))
+        graph.add_edge(nodeA, nodeB, transmission_weight = weighter(nodeA,nodeB, location))
         i = i + 2
 
 
-def clusterStrogatz(graph, group, memberCount, weighter, params):
+def clusterStrogatz(graph, group, location, memberCount, weighter, params):
     group.sort()
     local_k = params[0]
     rewire_p = params[1]
     if (local_k % 2 != 0):
         record.print("Error: local_k must be even")
     if local_k >= memberCount:
-        clusterDense(graph, group, memberCount, weighter, params)
+        clusterDense(graph, group, location, memberCount, weighter, params)
         return
 
     for i in range(memberCount):
@@ -282,7 +299,7 @@ def clusterStrogatz(graph, group, memberCount, weighter, params):
 
             else:
                 nodeB = group[(i + j) % memberCount]
-            graph.add_edge(nodeA, nodeB, transmission_weight=weighter.getWeight(nodeA,nodeB))
+            graph.add_edge(nodeA, nodeB, transmission_weight=weighter.getWeight(nodeA,nodeB, location))
 
 
 def clusterByDegree_p(graph, groups, weighter,degree_p):
@@ -323,12 +340,13 @@ def clusterGroups(graph, classifier, transmissionWeighter, clusterAlg, params = 
         if key == None:
             continue
         group = groups[key]
-        clusterAlg(graph, group, len(group), transmissionWeighter, params)
+        clusterAlg(graph, group, classifier, len(group),  transmissionWeighter, params)
 
     weights_added = graph.size() - initial_weights
     stop = time.time()
     record.print("{} weights of size {} added for {} work environments in {} seconds".format(weights_added, transmissionWeighter,len(popsByCategory[classifier].keys()), stop-start))
 
+#def clusterBlendedGroups(graph, groups, contact_matrix, )
 
 def showGroupComparison(sim, category, groupTags, popsByCategory, node_investigation, record):
         record.print("plotting an infection rate comparison of groups in category of {}".format(category))
@@ -379,17 +397,40 @@ def simulateGraph(clusteringAlg, simAlg, transmissionWeighter, params, full_data
 
 
 record = Record()
-record.print( "loading and sorting synthetic populations")
+record.print( "loading and sorting synthetic environment")
 start = time.time()
-populace = loadPickledPop("people_list_serialized.pkl")
+#load people datasets
+populace = loadPickles("people_list_serialized.pkl")
 popsByCategory = sortPopulace(populace, ['sp_hh_id', 'work_id', 'school_id', 'race'])
+
+#load locations
+loc_types = {"school": 0.3 , "workplace": 0.3, "household": 1}
+
+#load location data from location files if necessary, otherwise load from csv
+if False:
+    locale = {}
+    for type in loc_types:
+        locale.update(loadPickles("{}s_list_serialized.pkl".format(type)))
+        for location in locale:
+            locale[location]["type"] = type# adds school, workplace, etc under 'type' key
+            #locale[locale[location]['sp_id']] = locale[location] # makes the sp_id the key
+            #locale.pop[location]
+    df.columns = (df.loc['sp_id'][:])
+    df.drop('sp_id')
+    locale = df.to_dict()
+    df.to_csv("./locale.csv")
+
+df = pd.read_csv("./locale.csv", index_col = 0)
+locale = pd.DataFrame.from_dict(df)
 stop = time.time()
 record.print("finished in {} seconds".format(stop - start))
 
 
 #[t, S, I, R] = simulateGraph(clusterRandom2,workAvgDegree)
 #plt.plot(t,I,label = 'random')
-weighter = TransmissionWeighter()
+mask_scalar = 0.3
+loc_weights = {"school_id": 0.3 , "work_id": 0.3, "sp_hh_id": 1}
+weighter = TransmissionWeighter(loc_weights, mask_scalar)
 simresultA = simulateGraph(clusterStrogatz, EoN.fast_SIR, weighter, [workAvgDegree, 0.2])
 simresultB = simulateGraph(clusterStrogatz, EoN.Gillespie_SIR, weighter, [workAvgDegree, 0.5])
 [t, S, I, R] = simresultA
@@ -409,7 +450,7 @@ plt.plot(t,S,label = 'S with 50% random')
 
 
 plt.xlabel("time")
-plt.ylabel("infected count")
+plt.ylabel("people")
 plt.legend()
 record.dump()
 plt.savefig("./simResults/{}/plot".format(record.stamp))
