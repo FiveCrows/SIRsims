@@ -26,20 +26,16 @@ workGroupSize = 10
 employmentRate = 0.9
 
 #for generating graph
-graphGenParams = 1
-globalInfectionRate = .5
-homeInfectivity = 1
-schoolInfectivity = 0.5
-workInfectivity = 0.5
-workAvgDegree = 10
-schoolAvgDeree = 10
+workAvgDegree = 20
+schoolAvgDeree = 20
 timeCode = True
 tau = 1 #transmission factor
 gamma = 1 #recovery rate
 initial_infected = 1
 
 #for simulating graph
-recovery_rate = 1
+recovery_rate = 0.1
+globalInfectionRate = 0.08
 
 #for recording results
 #ageGroups = [[0,5], [5,8], [18,65], [65,90]]
@@ -63,7 +59,7 @@ class Record:
         self.comments = ""
         self.stamp = datetime.now().strftime("%m_%d_%H_%M")
         self.graph_stats = {}
-
+        self.last_runs_percent_uninfected = 1
     def print(self, string):
         print(string)
         self.log+=('\n')
@@ -103,22 +99,29 @@ class Environment:
 #TODO refonfigure masking
 class TransmissionWeighter:
     def __init__(self, loc_scalars, mask_scalar):
+        self.name = 'sole'
         self.global_weight = 1
         self.mask_scalar = mask_scalar
         self.loc_scalars = loc_scalars
+
         #self.age_scalars = age_scalars
 
-    def getWeight(self, personA, personB, location):
+    def getWeight(self, personA, personB, location, masking):
         weight = self.global_weight
         try:
             weight = weight*self.loc_scalars[location]
         except:
             print("locale type not identified")
 
-        if(populace[personA]['comorbidities']['MaskUsage']):
-            weight = weight*self.mask_scalar
-        if(populace[personB]['comorbidities']['MaskUsage']):
-            weight = weight*self.mask_scalar
+        if ("go fuck" == "yourself"):
+            print("go fuck yourself")
+
+        if (masking != None):
+            if random.random()<masking:
+                weight = weight*self.mask_scalar
+        if masking != None:
+            if random.random()<masking:
+                weight = weight*self.mask_scalar
         return weight
 
 
@@ -130,7 +133,8 @@ class TransmissionWeighter:
 
     #WIP
     def record(self, record):
-        record.print("nothing here yet")
+        record.print("A transmission probability weighter has been configured with:".format(mask_scalar))
+        record.print(str(self.__dict__))
 
 
 
@@ -223,7 +227,7 @@ def sortPopulace(populace, categories):
 #connect list of groups with weight
 #TODO update to use a weight calculating function
 
-def clusterRandom(graph, group, location,  member_count, weighter, params):
+def clusterRandom(graph, group, location,  member_count, weighter, masking, params):
     avg_degree = params
     if avg_degree >= member_count:
         clusterDense(graph, group, member_count, weighter, params)
@@ -235,7 +239,7 @@ def clusterRandom(graph, group, location,  member_count, weighter, params):
         pos_edges = itertools.combinations(group,2)
         for edge in pos_edges:
             if random.random()<edgeProb:
-                graph.add_edge(edge[0],edge[1], transmission_weight = weighter.getWeight(edge[0],edge[1], location))
+                graph.add_edge(edge[0],edge[1], transmission_weight = weighter.getWeight(edge[0],edge[1], location, masking))
 
     else:
         for i in range(member_count-1):
@@ -246,23 +250,23 @@ def clusterRandom(graph, group, location,  member_count, weighter, params):
                     graph.add_edge(nodeA,nodeB, transmission_weight = weighter.getWeight(nodeA,nodeB,location))
 
 #WIP
-def clusterPartitions(graph, group, location, member_count, weight, params):
+def clusterPartitions(graph, group, location, member_count, weighter, masking, params):
     partition_size = params[0]
     mixing_rate = params[1]
     if partition_size>member_count:
-        clusterDense(graph, group, member_count, weight, params)
+        clusterDense(graph, group, member_count, weighter, masking, params)
         return
     #groups = nGroupAssign()
 
 
-def clusterDense(graph, group, location, member_count, weighter, params):
+def clusterDense(graph, group, location, member_count, weighter, masking, params):
     #memberWeightScalar = np.sqrt(memberCount)
     for i in range(member_count):
         for j in range(i):
-            graph.add_edge(group[i], group[j], transmission_weight=weighter.getWeight(group[i],group[j], location)) #/ memberWeightScalar)
+            graph.add_edge(group[i], group[j], transmission_weight=weighter.getWeight(group[i],group[j], location, masking)) #/ memberWeightScalar)
 
 
-def clusterDegree_p(graph,group, location, memberCount, weighter, params):
+def clusterDegree_p(graph,group, location, memberCount, weighter, masking, params):
     degree_p = params
     connectorList = []
     for i in range(memberCount):
@@ -274,18 +278,18 @@ def clusterDegree_p(graph,group, location, memberCount, weighter, params):
     while i < len(connectorList) - 1:
         nodeA = group[connectorList[i]]
         nodeB = group[connectorList[i + 1]]
-        graph.add_edge(nodeA, nodeB, transmission_weight = weighter(nodeA,nodeB, location))
+        graph.add_edge(nodeA, nodeB, transmission_weight = weighter.getWeight(nodeA,nodeB, location, masking))
         i = i + 2
 
 
-def clusterStrogatz(graph, group, location, memberCount, weighter, params):
+def clusterStrogatz(graph, group, location, memberCount, weighter, masking, params):
     group.sort()
     local_k = params[0]
     rewire_p = params[1]
     if (local_k % 2 != 0):
         record.print("Error: local_k must be even")
     if local_k >= memberCount:
-        clusterDense(graph, group, location, memberCount, weighter, params)
+        clusterDense(graph, group, location, memberCount, weighter, masking, params)
         return
 
     for i in range(memberCount):
@@ -299,10 +303,10 @@ def clusterStrogatz(graph, group, location, memberCount, weighter, params):
 
             else:
                 nodeB = group[(i + j) % memberCount]
-            graph.add_edge(nodeA, nodeB, transmission_weight=weighter.getWeight(nodeA,nodeB, location))
+            graph.add_edge(nodeA, nodeB, transmission_weight=weighter.getWeight(nodeA,nodeB, location, masking))
 
 
-def clusterByDegree_p(graph, groups, weighter,degree_p):
+def clusterByDegree_p(graph, groups, weighter, masking, degree_p):
     #some random edges may be duplicates, best for large groups
     connectorList = []
 
@@ -328,7 +332,7 @@ def clusterGroupsByPA(graph, groups):
         memberCount = len(groups[key])
 
 
-def clusterGroups(graph, classifier, transmissionWeighter, clusterAlg, params = None, ):
+def clusterGroups(graph, classifier, transmissionWeighter, clusterAlg, masking, params = None):
     record.print("clustering {} groups with the {} algorithm".format(classifier, clusterAlg.__name__))
     start = time.time()
     # # stats = {"classifier": }
@@ -340,11 +344,11 @@ def clusterGroups(graph, classifier, transmissionWeighter, clusterAlg, params = 
         if key == None:
             continue
         group = groups[key]
-        clusterAlg(graph, group, classifier, len(group),  transmissionWeighter, params)
+        clusterAlg(graph, group, classifier, len(group), transmissionWeighter, masking, params)
 
     weights_added = graph.size() - initial_weights
     stop = time.time()
-    record.print("{} weights of size {} added for {} work environments in {} seconds".format(weights_added, transmissionWeighter,len(popsByCategory[classifier].keys()), stop-start))
+    record.print("{} weights added for {} environments in {} seconds".format(weights_added,len(popsByCategory[classifier].keys()), stop-start))
 
 #def clusterBlendedGroups(graph, groups, contact_matrix)
 
@@ -369,15 +373,18 @@ def showGroupComparison(sim, category, groupTags, popsByCategory, node_investiga
 
 
 
-def simulateGraph(clusteringAlg, simAlg, transmissionWeighter, params, full_data = False):
+def simulateGraph(clusteringAlg, simAlg, transmissionWeighter, params = None, full_data = False, exemption = None, masking = {'schools': None, 'workplaces': None}):
     record.print('\n')
     record.print("building populace into graphs with the {} clustering algorithm".format(clusteringAlg.__name__))
     start = time.time()
 
     graph = nx.Graph()
-    clusterGroups(graph, 'sp_hh_id', transmissionWeighter, clusterDense)
-    clusterGroups(graph, 'work_id', transmissionWeighter, clusteringAlg, params)
-    clusterGroups(graph, 'school_id', transmissionWeighter, clusteringAlg, params)
+    clusterGroups(graph, 'sp_hh_id', transmissionWeighter, clusterDense, None)
+
+    if exemption != 'workplaces':
+        clusterGroups(graph, 'work_id', transmissionWeighter, clusteringAlg, masking['workplaces'], params)
+    if exemption != 'schools':
+        clusterGroups(graph, 'school_id', transmissionWeighter, clusteringAlg, masking['schools'], params)
 
     stop_a = time.time()
     record.print("Graph completed in {} seconds.".format((stop_a - start)))
@@ -393,15 +400,23 @@ def simulateGraph(clusteringAlg, simAlg, transmissionWeighter, params, full_data
 
     record.print("simulation completed in {} seconds".format(stop_b - stop_a))
     record.print("total build and sim time: {}".format(stop_b-start))
+    time_to_immunity = simResult[0][-1]
+    final_uninfected = simResult[1][-1]
+    final_recovered = simResult[3][-1]
+    percent_uninfected = final_uninfected / (final_uninfected + final_recovered)
+    record.last_runs_percent_uninfected = percent_uninfected
+    record.print("The infection quit spreading after {} days, and {} percent of people were never infected".format(time_to_immunity,percent_uninfected))
+
     return simResult
 
 
+#def binarySearchGlobalInfectivity(R0, clusteringAlg, simAlg, transmissionWeighter)
 record = Record()
 record.print( "loading and sorting synthetic environment")
 start = time.time()
 #load people datasets
 populace = loadPickles("people_list_serialized.pkl")
-popsByCategory = sortPopulace(populace, ['sp_hh_id', 'work_id', 'school_id', 'race'])
+popsByCategory = sortPopulace(populace, ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'])
 
 #load locations
 loc_types = {"school": 0.3 , "workplace": 0.3, "household": 1}
@@ -420,8 +435,8 @@ if False:
     locale = df.to_dict()
     df.to_csv("./locale.csv")
 
-df = pd.read_csv("./locale.csv", index_col = 0)
-locale = pd.DataFrame.from_dict(df)
+#df = pd.read_csv("./locale.csv", index_col = 0)
+locale = pickle.load(open("./locale.pkl", "rb"))
 stop = time.time()
 record.print("finished in {} seconds".format(stop - start))
 
@@ -429,16 +444,22 @@ record.print("finished in {} seconds".format(stop - start))
 #[t, S, I, R] = simulateGraph(clusterRandom2,workAvgDegree)
 #plt.plot(t,I,label = 'random')
 mask_scalar = 0.3
-loc_weights = {"school_id": 0.3 , "work_id": 0.3, "sp_hh_id": 1}
+loc_weights = {"school_id": 0.1 , "work_id": 0.2, "sp_hh_id": 1}
 weighter = TransmissionWeighter(loc_weights, mask_scalar)
-simresultA = simulateGraph(clusterStrogatz, EoN.fast_SIR, weighter, [workAvgDegree, 0.2])
-simresultB = simulateGraph(clusterStrogatz, EoN.Gillespie_SIR, weighter, [workAvgDegree, 0.5])
-[t, S, I, R] = simresultA
-plt.plot(t,I,label = 'I with 20% random')
-plt.plot(t,S,label = 'S with 20% random')
-[t, S, I, R] = simresultB
-plt.plot(t,I,label = 'I with 50% random')
-plt.plot(t,S,label = 'S with 50% random')
+weighter.record(record)
+
+[t, S, I, R] = simulateGraph(clusterStrogatz, EoN.fast_SIR, weighter, [workAvgDegree, 0.5])
+plt.plot(t,S,label = 'Uninfected count using Strogatz nets with 50% random edges, control test')
+[t, S, I, R] = simulateGraph(clusterStrogatz, EoN.fast_SIR, weighter, [workAvgDegree, 0.2])
+plt.plot(t,S,label = 'With 20% random Strogatz nets')
+[t, S, I, R] = simulateGraph(clusterStrogatz, EoN.fast_SIR, weighter, [workAvgDegree, 0.5], exemption = 'schools')
+plt.plot(t,S,label = 'With primary schools closed')
+[t, S, I,R] = simulateGraph(clusterStrogatz, EoN.fast_SIR, weighter, [workAvgDegree, 0.5], masking = {'workplaces': 0.5, 'schools': 0.5})
+plt.plot(t,S,label = 'With 50% public masking')
+[t, S, I,R] = simulateGraph(clusterStrogatz, EoN.fast_SIR, weighter, [workAvgDegree, 0.5], masking = {'workplaces':0 , 'schools':1})
+plt.plot(t,S,label = 'With school masking')
+[t, S, I,R] = simulateGraph(clusterStrogatz, EoN.fast_SIR, weighter, [workAvgDegree, 0.5], masking = {'workplaces': 1, 'schools': 0})
+plt.plot(t,S,label = 'With workplace masking')
 
 #node_investigation = EoN.fast_SIR(graph, globalInfectionRate, recoveryRate, rho = 0.0001, transmission_weight ='transmission_weight',return_full_data = True)
 #showGroupComparison(node_investigation, 'race', [1,2], popsByCategory)
@@ -449,9 +470,9 @@ plt.plot(t,S,label = 'S with 50% random')
 #node_investigation.animate()
 
 
-plt.xlabel("time")
+plt.xlabel("days")
 plt.ylabel("people")
-plt.legend()
+plt.legend(loc = 1, prop={'size': 7})
 record.dump()
 plt.savefig("./simResults/{}/plot".format(record.stamp))
 plt.show()
