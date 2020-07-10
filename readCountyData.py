@@ -82,6 +82,7 @@ def plotThreshold(threshold, dates, cumulativeData, county_list):
     plt.figure(figsize=(10,8))
     for v in hr_counties:
         plt.plot(sorted(dates), cumulativeData[v], label=county_list[v])
+        plt.annotate(str(cumulativeData[v][-1]),xy=(sorted(dates)[-1],cumulativeData[v][-1]*1.01))
     plt.xticks(rotation=45)
     plt.legend()
     title_temp="Counties with cumulative case count over "+ str(threshold)
@@ -99,6 +100,7 @@ def plotCounty(counties, dates, cumulativeData, county_list):
     for county in counties:
         idx=county_list.index(county)
         plt.plot(sorted(dates),cumulativeData[idx], label=county)
+        plt.annotate(str(cumulativeData[idx][-1]),xy=(sorted(dates)[-1],cumulativeData[idx][-1]*1.01))
     title="Cumulative case count trend for counties"+str(counties)
     plt.title(title)
     plt.legend()
@@ -122,6 +124,7 @@ def plotZipcodes(zipcodes, dates, data):
                 case_count+=int(val)
             temp_data.append(case_count)
         plt.plot(sorted(dates),temp_data, label=zipcode)
+        plt.annotate(str(temp_data[-1]),xy=(sorted(dates)[-1],temp_data[-1]*1.01))
     title="Cumulative case count for zipcodes\n"+str(zipcodes)
     plt.title(title)
     plt.legend()
@@ -154,6 +157,7 @@ def plotDefault(dates, cumulativeData, county_list):
     plt.figure(figsize=(10,8))
     for i in range(10):
         plt.plot(sorted(dates),top_10[i], label=county_list[top_10_idxs[i]])
+        plt.annotate(str(top_10[i][-1]),xy=(sorted(dates)[-1],top_10[i][-1]*1.01))
     plt.xticks(rotation=45)
     plt.title(title)
     plt.legend()

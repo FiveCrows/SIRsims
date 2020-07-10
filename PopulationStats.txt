@@ -2,13 +2,16 @@ This file contains aggregate statistics for the synthetic data for Leon County. 
 If you need any specific statistic, please email me at sb13m@my.fsu.edu
 By employment:
 1.	# Student and Employed:  1469
+	a. Age distribution: {16: 369, 17: 561, 18: 539}
 2.	# Student Only:  43877 
-3.	# Employed Only:  132816 
+	a. No of children in same school per household {1: 13735, 2: 8666, 3: 3052, 4: 923, 5: 237, 6: 41}
+3.	# Employed Only:  132816
+	a. Employed people per household going to same job: {1: 48086, 2: 32865, 3: 5309, 4: 1073, 5: 50}
 4.	# Unemployed:  82380
+	a. 8682 households have more than one unemployed. This discounts people under 18 and above 65
 5.	Unemployment by gender (ages between 18 and 65) :
 	a.	# Male unemployed:  19853
 	b.	# Female unemployed:  28532
-
 By age:
 1.	# Children under 5: 12602
 2.	# People above 65: 22494
