@@ -136,8 +136,10 @@ class TransmissionWeighter:
         record.print("A transmission probability weighter has been configured with:".format(mask_scalar))
         record.print(str(self.__dict__))
 
-
-
+class ClusterBuilder:
+    def __init__(self):
+        
+class
 
 
 
@@ -363,7 +365,8 @@ def showGroupComparison(sim, category, groupTags, popsByCategory, node_investiga
         plt.xlabel("time steps")
         plt.show()
 
-
+def returnMatchingEdges(Agroups, Bgroups):
+    print("testHere")
 #def summarizeGroup(classifier, key):
 
 
@@ -448,18 +451,20 @@ loc_weights = {"school_id": 0.1 , "work_id": 0.2, "sp_hh_id": 1}
 weighter = TransmissionWeighter(loc_weights, mask_scalar)
 weighter.record(record)
 
-[t, S, I, R] = simulateGraph(clusterStrogatz, EoN.fast_SIR, weighter, [workAvgDegree, 0.5])
-plt.plot(t,S,label = 'Uninfected count using Strogatz nets with 50% random edges, control test')
-[t, S, I, R] = simulateGraph(clusterStrogatz, EoN.fast_SIR, weighter, [workAvgDegree, 0.2])
-plt.plot(t,S,label = 'With 20% random Strogatz nets')
-[t, S, I, R] = simulateGraph(clusterStrogatz, EoN.fast_SIR, weighter, [workAvgDegree, 0.5], exemption = 'schools')
-plt.plot(t,S,label = 'With primary schools closed')
-[t, S, I,R] = simulateGraph(clusterStrogatz, EoN.fast_SIR, weighter, [workAvgDegree, 0.5], masking = {'workplaces': 0.5, 'schools': 0.5})
-plt.plot(t,S,label = 'With 50% public masking')
-[t, S, I,R] = simulateGraph(clusterStrogatz, EoN.fast_SIR, weighter, [workAvgDegree, 0.5], masking = {'workplaces':0 , 'schools':1})
-plt.plot(t,S,label = 'With school masking')
-[t, S, I,R] = simulateGraph(clusterStrogatz, EoN.fast_SIR, weighter, [workAvgDegree, 0.5], masking = {'workplaces': 1, 'schools': 0})
-plt.plot(t,S,label = 'With workplace masking')
+test = None
+if test == "testInterventions":
+    [t, S, I, R] = simulateGraph(clusterStrogatz, EoN.fast_SIR, weighter, [workAvgDegree, 0.5])
+    plt.plot(t,S,label = 'Uninfected count using Strogatz nets with 50% random edges, control test')
+    [t, S, I, R] = simulateGraph(clusterStrogatz, EoN.fast_SIR, weighter, [workAvgDegree, 0.2])
+    plt.plot(t,S,label = 'With 20% random Strogatz nets')
+    [t, S, I, R] = simulateGraph(clusterStrogatz, EoN.fast_SIR, weighter, [workAvgDegree, 0.5], exemption = 'schools')
+    plt.plot(t,S,label = 'With primary schools closed')
+    [t, S, I,R] = simulateGraph(clusterStrogatz, EoN.fast_SIR, weighter, [workAvgDegree, 0.5], masking = {'workplaces': 0.5, 'schools': 0.5})
+    plt.plot(t,S,label = 'With 50% public masking')
+    [t, S, I,R] = simulateGraph(clusterStrogatz, EoN.fast_SIR, weighter, [workAvgDegree, 0.5], masking = {'workplaces':0 , 'schools':1})
+    plt.plot(t,S,label = 'With school masking')
+    [t, S, I,R] = simulateGraph(clusterStrogatz, EoN.fast_SIR, weighter, [workAvgDegree, 0.5], masking = {'workplaces': 1, 'schools': 0})
+    plt.plot(t,S,label = 'With workplace masking')
 
 #node_investigation = EoN.fast_SIR(graph, globalInfectionRate, recoveryRate, rho = 0.0001, transmission_weight ='transmission_weight',return_full_data = True)
 #showGroupComparison(node_investigation, 'race', [1,2], popsByCategory)
