@@ -131,10 +131,14 @@ count of group quarter residents: 13231
 	longitude
 
 -2010_ver1_12073_pums_h.txt
-	See http://www.census.gov/acs/www/data_documentation/public_use_microdata_sample 
+	#See http://www.census.gov/acs/www/data_documentation/public_use_microdata_sample 
+	https://www.census.gov/programs-surveys/geography/guidance/geo-areas/pumas.html
 
 -2010_ver1_12073_pums_p.txt
-	See http://www.census.gov/acs/www/data_documentation/public_use_microdata_sample
+	#See http://www.census.gov/acs/www/data_documentation/public_use_microdata_sample
+	https://www.census.gov/programs-surveys/geography/guidance/geo-areas/pumas.html
+	https://data.census.gov/mdat/?#/search?ds=ACSPUMS1Y2018 (metadata in file)
+	(one line per business)
 
 -2010_ver1_12073_size_compare.txt
 	stcotrbg
