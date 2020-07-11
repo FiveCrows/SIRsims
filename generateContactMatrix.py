@@ -76,3 +76,5 @@ for key in age_counts_by_school.keys():
     contact_matrices[key]=CMbySchool
 #Writing contact matrix back into pickled file for easy reading
 pickle.dump(contact_matrices, open("ContactMatrixLeonSchools.pkl",'wb'))
+
+print(type(contact_matrices))
