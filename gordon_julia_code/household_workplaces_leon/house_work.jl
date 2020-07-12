@@ -9,7 +9,6 @@ include("./functions.jl")
 #    And this is after I removed the missing data from the dataframes
 @time home_graph, work_graph, school_graph = generateDemographicGraphs(p)
 
-
 @show school_graph
 @show work_graph
 @show home_graph
@@ -17,8 +16,34 @@ include("./functions.jl")
 Glist = [home_graph, work_graph, school_graph]
 @show total_edges = sum(ne.(Glist))
 
-@time times, S,I,R = FPLEX.fastSIR(Glist, p, collect(1:2000); t_max=100.)
+# Test this on simpler graphs with all to all connections
+# Make the three graphs the same
+function setupTestGraph(nv, ne)
+    home_graph = SimpleGraph(nv, ne) #div(n*(n-1),2))
+    work_graph =  deepcopy(home_graph)
+    school_graph =  deepcopy(home_graph)
+    Glist = [home_graph, work_graph, school_graph]
+    Glist = MetaGraph.(Glist)
+    for i in 1:3
+        set_prop!(Glist[i], :node_ids, collect(1:n))
+    end
+    return Glist
+end
+
+n = 300000
+#Glist = setupTestGraph(n, 1000000)
+w = weights.(Glist);
+infected_0 = rand(1:nv(home_graph), 10000);
+
+# *****************
+# Using BSON, time to save is tiny fraction of total time
+@time times, S,I,R = FPLEX.fastSIR(Glist, p, infected_0;
+    t_max=1000., save_data=true, save_freq=10);
+@show maximum.([S,I,R])
+@show minimum.([S,I,R])
+
 F.myPlot(times, S, I, R)
+@show pwd()
 
 nothing
 # TODO:

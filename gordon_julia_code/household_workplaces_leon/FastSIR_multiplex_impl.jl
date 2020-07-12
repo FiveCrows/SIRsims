@@ -6,6 +6,8 @@ import Random: seed!
 using Distributions
 using MetaGraphs
 using DataStructures
+using BSON
+using StringLiterals
 
 # Consumes too much memory
 # Everybody has state 1
@@ -17,7 +19,8 @@ using DataStructures
 # This could be done with Markov for more generality
 mutable struct Node
     index::Int  # :S, :I, :R
-    status::Symbol  # :S, :I, :R
+    #status::Symbol  # :S, :I, :R
+    i_status::Int8  # :S, :I, :R
     pred_inf_time::Float64
     rec_time::Float64
 	# We can make this more efficient at a later time
@@ -42,6 +45,7 @@ end
 # Or better: only get status each time a infection is about to check his neighbors
 function getStatus(t, node_status)
 	tmod = t % 1.
+	#return 1   # Just running on a single graph for testing. Remove when done.
 	if (tmod < 0.25) || (tmod > 0.75)  # measured in days
 	    return 1  # home
 	end
@@ -54,15 +58,16 @@ end
 
 
 # Replace G by Glist = [Ghome, Gschool, Gwork]
-function fastSIR(Glist, params, initial_infecteds::Vector{Int}; t_max=10.)
+function fastSIR(Glist, params, initial_infecteds::Vector{Int};
+		t_max=10., save_data=false, save_freq=1)
 	status = 1  # status = 1 (home), 2, school, 3, work
 	global_time = 0.0  # new variable
-	τ = params.τ
-	γ = params.γ
+	τ = 1. / params.τ
+	γ = 1. / params.γ
 	# These can no longer be precomputed because in principle, each
 	# edge can have a different weight.
 
-	G = Glist[1]  # first list is households
+	G = Glist[1]  # first in list is households
 
     nb_nodes = nv(G)
 	times = [0.]
@@ -77,8 +82,9 @@ function fastSIR(Glist, params, initial_infecteds::Vector{Int}; t_max=10.)
     Q = PriorityQueue(Base.Order.Forward);
 
 	# prestore one F.Node for each graph vertex
+	#println("==> nb_nodes= ", nb_nodes)
     nodes = Array{Node,1}(undef, nb_nodes)
-	# person status
+	# person status (has to do with Multilayer)
 	# I do not know how to handl non-mutable static vectors
 	p_status = Vector{MVector{2, Int8}}(undef, nb_nodes)
 	for i in 1:nb_nodes
@@ -86,11 +92,14 @@ function fastSIR(Glist, params, initial_infecteds::Vector{Int}; t_max=10.)
 	end
 
     for u in 1:nb_nodes  # extremely fast
-        nodes[u] = Node(u, :S, pred_inf_time, rec_time)
+        nodes[u] = Node(u, 1, pred_inf_time, rec_time)
+        #nodes[u] = Node(u, :S, 1, pred_inf_time, rec_time)
 		p_status[u][1] = 1
 		p_status[u][2] = 1
     end
 
+	# #=
+	# Temporary comment (above line) while I debug the code
 	# I need the actual person id for these graphs.
 	ids = get_prop(Glist[2], :node_ids)
 	for u in ids
@@ -101,14 +110,9 @@ function fastSIR(Glist, params, initial_infecteds::Vector{Int}; t_max=10.)
 	for u in ids
 		p_status[u][2] = 3
 	end
+	# =#
 
 	println("finished with setting status")
-
-	# REMOVE
-	#println(">>> about to test")
-	#testTimings(G, nodes[4])  # EXPERIMENTAL. JUST FOR TESTING REMOVE WHEN DONE
-	#println("END TEST TIMINGS")
-	# REMOVE
 
     for u in initial_infecteds
        #println("nodes[u]= ", nodes[u])
@@ -118,10 +122,18 @@ function fastSIR(Glist, params, initial_infecteds::Vector{Int}; t_max=10.)
        Q[event] = event.time
     end
 
+	time_last_dump = 0
     while !isempty(Q)
         event = dequeue!(Q)
+		if save_data    # save full graph data
+			if event.time > time_last_dump
+				#println("t=$(event.time), ")
+				@time dumpData(nodes, "node_output.txt", event.time)
+				time_last_dump += save_freq
+			end
+		end
         if event.action == :transmit
-            if event.node.status == :S
+            if event.node.i_status == 1  # :S
                 processTransSIR(Glist, p_status, event.node, event.time, τ, γ, times,
 					S, I, R, Q, t_max, nodes)
             end
@@ -136,6 +148,17 @@ function fastSIR(Glist, params, initial_infecteds::Vector{Int}; t_max=10.)
 end;
 
 
+function dumpData(nodes, out_file, t)
+	stat = zeros(Int8, length(nodes))
+	for i in 1:length(nodes)
+		stat[i] = nodes[i].i_status
+	end  # auto closes file
+	file_name = f"nodes_t=\%06.1f(t).bson" # using Literals.jl module
+	println("file_name= ", file_name, pwd())
+	bson(file_name, Dict(:nodes=>stat))
+end
+
+
 function processTransSIR(Glist, p_status, node_u, t::Float64, τ::Float64, γ::Float64,
         times::Vector{Float64}, S::Vector{Int}, I::Vector{Int}, R::Vector{Int},
 		Q, t_max::Float64, nodes::Vector{Node})
@@ -144,13 +167,14 @@ function processTransSIR(Glist, p_status, node_u, t::Float64, τ::Float64, γ::F
     if (S[end] <= 0)
 		println("S=$(S[end]), (ERROR!!! S cannot be zero at this point")
 	end
-	node_u.status = :I
+	#node_u.status = :I
+	node_u.i_status = 2
     push!(times, t)
     push!(S, S[end]-1)
     push!(I, I[end]+1)
     push!(R, R[end])
 	# rec_time: time at which infected person recovers
-	node_u.rec_time = t + rand(Exponential(γ))
+	node_u.rec_time = t + rand(Exponential(γ))   # <<<<<
 
 	if node_u.rec_time < t_max
 		new_event = Event(node_u, node_u.rec_time, :recover)
@@ -173,8 +197,10 @@ end
 
 function findTransSIR(Q, t, τ, w, source, target, t_max, nodes)
     # w is the edge weight
-	if target.status == :S
-		inf_time = t + rand(Exponential(τ*w))
+	#if target.status == :S
+	if target.i_status == 1
+		inf_time = t + rand(Exponential(τ))  # add w back when debugged
+		#inf_time = t + rand(Exponential(τ*w))
 		#print("inf_time")
 		# Allocate memory for this list
 		if inf_time < minimum([source.rec_time, target.pred_inf_time, t_max])
@@ -190,7 +216,8 @@ function processRecSIR(node_u, t, times, S, I, R)
 	push!(S, S[end])
 	push!(I, I[end]-1)
 	push!(R, R[end]+1)
-	node_u.status = :R
+	#node_u.status = :R
+	node_u.i_status = 3
 end
 
 #
