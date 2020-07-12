@@ -361,21 +361,6 @@ def showGroupComparison(sim, category, groupTags, popsByCategory, node_investiga
         plt.show()
 
 
-#def summarizeGroup(classifier, key):
-
-
-#def mergeSubClusterGraph(graph,subgraph, nodeMap):
-#def sortAttributes(people,attributeClasses):
-#populace = genPop(people, attributes, attribute_p)
-
-
-#quickGraph =nx.complete_graph(1000)
-#[t,S,I,R] = EoN.fast_SIR(quickGraph,0.001, 0.08, rho = 0.005)
-#plt.plot(t,S)
-#plt.plot(t,I)
-#plt.plot(t,R)
-#plt.show()
-#print("stop")
 
 def simulateGraph(clusteringAlg, simAlg, transmissionWeighter, params = None, full_data = False, exemption = None, masking = {'schools': None, 'workplaces': None}):
     record.print('\n')
@@ -424,12 +409,13 @@ def partitionOrdinals(groupsByCategory, partition_size, key):
     return partitioned_groups
 
 def returnContactMatrix(graph, groups):
-
+    print("WIP")
 def partitionOrdinalsToDict(groupsByCategory, partition_size, key):
     maximum = max(popsByCategory[key].keys())
     minimum = min(popsByCategory[key].keys())
     partition_groups = []
     for i in groupsByCategory[key].keys():
+        print("pause")
 
 #def binarySearchGlobalInfectivity(R0, clusteringAlg, simAlg, transmissionWeighter)
 record = Record()
@@ -474,8 +460,8 @@ weighter.record(record)
 # SERIES OF RUNS with associated PLOTS
 labels = []
 sol = []
-[t, S, I, R] = simulateGraph(clusterStrogatz, EoN.fast_SIR, weighter, [workAvgDegree, 0.5],full_data = True)
-investigation = simulateGraph(clusterStrogatz, EoN.fast_SIR, weighter, [workAvgDegree, 0.5],full_data = True)
+[t, S, I, R] = simulateGraph(clusterStrogatz, EoN.fast_SIR, weighter, [workAvgDegree, 0.5],full_data = False)
+
 sol.append([t,S,I,R])
 labels.append('Uninfected count using Strogatz nets \nwith 50% random edges, control test')
 
