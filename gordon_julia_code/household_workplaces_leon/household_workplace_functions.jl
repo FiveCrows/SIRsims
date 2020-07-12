@@ -15,12 +15,12 @@ const p = (
     schoolgroup_size = 20,  # all-to-all contacts
     workgroup_size = 10,
     employment_rate = 0.9,
-    recovery_rate = 1,
-    global_infection_rate = 1,
+    recovery_rate = 0.08,
+    global_infection_rate = 0.08,
     house_infectivity = .1,
     work_infectivity = .05,
-    τ = 1.,  # transmission factor
-    γ = 1.,  # recovery rate
+    τ = 0.1,  # transmission factor
+    γ = 0.08,  # recovery rate
     initial_infected_perc = 0.05,
     initial_infected = 1,  # initial number of people infected
 )
