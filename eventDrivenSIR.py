@@ -113,9 +113,6 @@ class TransmissionWeighter:
         except:
             print("locale type not identified")
 
-        if ("go fuck" == "yourself"):
-            print("go fuck yourself")
-
         if (masking != None):
             if random.random()<masking:
                 weight = weight*self.mask_scalar
@@ -364,14 +361,6 @@ def showGroupComparison(sim, category, groupTags, popsByCategory, node_investiga
         plt.show()
 
 
-#def summarizeGroup(classifier, key):
-
-
-#def mergeSubClusterGraph(graph,subgraph, nodeMap):
-#def sortAttributes(people,attributeClasses):
-#populace = genPop(people, attributes, attribute_p)
-
-
 
 def simulateGraph(clusteringAlg, simAlg, transmissionWeighter, params = None, full_data = False, exemption = None, masking = {'schools': None, 'workplaces': None}):
     record.print('\n')
@@ -405,10 +394,28 @@ def simulateGraph(clusteringAlg, simAlg, transmissionWeighter, params = None, fu
     final_recovered = simResult[3][-1]
     percent_uninfected = final_uninfected / (final_uninfected + final_recovered)
     record.last_runs_percent_uninfected = percent_uninfected
-    record.print("The infection quit spreading after {} days, and {} percent of people were never infected".format(time_to_immunity,percent_uninfected))
+    record.print("The infection quit spreading after {} days, and {} of people were never infected".format(time_to_immunity,percent_uninfected))
 
     return simResult
 
+def partitionOrdinals(groupsByCategory, partition_size, key):
+    maximum = max(popsByCategory[key].keys())
+    minimum = min(popsByCategory[key].keys())
+    #partitioned_groups = partitionNames = (['{}:{}'.format(inf*partition_size, (inf+1)*partition_size) for inf in range(minimum//partition_size,maximum//partition_size)])
+    #intNames = {inf :'{}:{}'.format(inf*partition_size, (inf+1)*partition_size) for inf in range(minimum//partition_size,maximum//partition_size)}
+    partitioned_groups = [{key: '{}:{}'.format(i*partition_size, (i+1)*partition_size), 'list': []} for i in range(0, maximum//partition_size+1)]
+    for i in groupsByCategory[key].keys():
+        partitioned_groups[i//partition_size]['list'].extend(groupsByCategory[key][i])
+    return partitioned_groups
+
+def returnContactMatrix(graph, groups):
+    print("WIP")
+def partitionOrdinalsToDict(groupsByCategory, partition_size, key):
+    maximum = max(popsByCategory[key].keys())
+    minimum = min(popsByCategory[key].keys())
+    partition_groups = []
+    for i in groupsByCategory[key].keys():
+        print("pause")
 
 #def binarySearchGlobalInfectivity(R0, clusteringAlg, simAlg, transmissionWeighter)
 record = Record()
@@ -417,7 +424,8 @@ start = time.time()
 #load people datasets
 populace = loadPickles("people_list_serialized.pkl")
 popsByCategory = sortPopulace(populace, ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'])
-
+age_grouped_pops = partitionOrdinals(popsByCategory, 5, 'age')
+print("stop and CHECK YO ")
 #load locations
 loc_types = {"school": 0.3 , "workplace": 0.3, "household": 1}
 
@@ -452,7 +460,8 @@ weighter.record(record)
 # SERIES OF RUNS with associated PLOTS
 labels = []
 sol = []
-[t, S, I, R] = simulateGraph(clusterStrogatz, EoN.fast_SIR, weighter, [workAvgDegree, 0.5])
+[t, S, I, R] = simulateGraph(clusterStrogatz, EoN.fast_SIR, weighter, [workAvgDegree, 0.5],full_data = False)
+
 sol.append([t,S,I,R])
 labels.append('Uninfected count using Strogatz nets \nwith 50% random edges, control test')
 

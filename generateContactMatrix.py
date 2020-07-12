@@ -42,10 +42,10 @@ for key in students_by_school.keys():
     for student_records in school_distr:
         age_counts[student_records[1]]+=1
     #assign counts per age group as in Contact Matrix
-    age_group_counts={'3-5':sum([age_counts[r] for r in range(min_age_overall,6)]),'6-10':sum([age_counts[r] for r in range(6,11)]),
-                     '11-15':sum([age_counts[r] for r in range(11,16)]),'16-18':sum([age_counts[r] for r in range(16,max_age_overall+1)])}
+    age_group_counts={'3-4':sum([age_counts[r] for r in range(min_age_overall,5)]),'5-9':sum([age_counts[r] for r in range(5,10)]),
+                     '10-14':sum([age_counts[r] for r in range(10,15)]),'15-18':sum([age_counts[r] for r in range(15,max_age_overall+1)])}
     #Remove age groups that aren't present
-    for age in ['3-5','6-10','11-15','16-18']:
+    for age in ['3-4','5-9','10-14','15-18']:
         if age_group_counts[age]==0:
             del(age_group_counts[age])
     age_counts_by_school[key]=age_group_counts
@@ -54,8 +54,10 @@ with open('ContactMatrixUSASchools_Base.csv', 'r', encoding='utf-8-sig') as f:
 #Not currently being used  
 with open('ContactMatrixUSAWorkplaces_Base.csv', 'r', encoding='utf-8-sig') as f: 
     workplaceBaseCM= np.genfromtxt(f, dtype=float, delimiter=',')
+with open('ContactMatrixUSA_Base.csv', 'r', encoding='utf-8-sig') as f: 
+    BaseCM= np.genfromtxt(f, dtype=float, delimiter=',')
 contact_matrices={}
-age_group_map={'3-5':0,'6-10':1,'11-15':2,'16-18':3}
+age_group_map={'3-4':0,'5-9':1,'10-14':2,'15-18':3}
 for key in age_counts_by_school.keys():
     gamma_ij=0 #This is the probability of contacting someone from a different age group
     CMbySchool=copy.deepcopy(schoolBaseCM)
