@@ -347,6 +347,10 @@ def clusterGroups(graph, classifier, transmissionWeighter, clusterAlg, masking, 
     stop = time.time()
     record.print("{} weights added for {} environments in {} seconds".format(weights_added,len(popsByCategory[classifier].keys()), stop-start))
 
+
+
+
+
 #def clusterBlendedGroups(graph, groups, contact_matrix)
 
 def showGroupComparison(sim, category, groupTags, popsByCategory, node_investigation, record):
@@ -361,7 +365,6 @@ def showGroupComparison(sim, category, groupTags, popsByCategory, node_investiga
         plt.show()
 
 
-
 def simulateGraph(clusteringAlg, simAlg, transmissionWeighter, params = None, full_data = False, exemption = None, masking = {'schools': None, 'workplaces': None}):
     record.print('\n')
     record.print("building populace into graphs with the {} clustering algorithm".format(clusteringAlg.__name__))
@@ -372,10 +375,17 @@ def simulateGraph(clusteringAlg, simAlg, transmissionWeighter, params = None, fu
 
     if exemption != 'workplaces':
         clusterGroups(graph, 'work_id', transmissionWeighter, clusteringAlg, masking['workplaces'], params)
+        print("nothing")
     if exemption != 'schools':
         clusterGroups(graph, 'school_id', transmissionWeighter, clusteringAlg, masking['schools'], params)
-
+        print("nothing")
     stop_a = time.time()
+
+    age_partition = partitionOrdinals('age', 5)
+    originalCM = returnContactMatrix(graph, age_partition)
+    total_original_contact = np.sum(originalCM)
+    #contactMatrixUSA_Base = pd.read_csv("./ContactMatrices/Base/ContactMatrixUSA_Base.csv").values
+    hadamard_scalar = (originalCM + originalCM.transpose())/(contactMatrixUSA_Base+contactMatrixUSA_Base.transpose())
     record.print("Graph completed in {} seconds.".format((stop_a - start)))
     #record.printGraphStats(graph, [nx.average_clustering])
     # record.print("{edges: {}, nodes: }".format(graph.size()))
@@ -394,11 +404,12 @@ def simulateGraph(clusteringAlg, simAlg, transmissionWeighter, params = None, fu
     final_recovered = simResult[3][-1]
     percent_uninfected = final_uninfected / (final_uninfected + final_recovered)
     record.last_runs_percent_uninfected = percent_uninfected
-    record.print("The infection quit spreading after {} days, and {} of people were never infected".format(time_to_immunity,percent_uninfected))
+    record.print("The infection quit spreading after {} days, and {} of people were never infected".format(time_to_immunity, percent_uninfected))
 
     return simResult
 
-def partitionOrdinals(popsByCategory, partition_size, key):
+
+def partitionOrdinals(key, partition_size):
     maximum = max(popsByCategory[key].keys())
     minimum = min(popsByCategory[key].keys())
     #partitioned_groups = partitionNames = (['{}:{}'.format(inf*partition_size, (inf+1)*partition_size) for inf in range(minimum//partition_size,maximum//partition_size)])
@@ -408,23 +419,28 @@ def partitionOrdinals(popsByCategory, partition_size, key):
         partitioned_groups[i//partition_size]['list'].extend(popsByCategory[key][i])
     return partitioned_groups
 
-def returnOrdinalContactMatrix(graph, partition_size, key):
-    maximum = max(popsByCategory[key].keys())
-    minimum = min(popsByCategory[key].keys())
-    partition_count = maximum//partition_size +1
-    total_weight_matrix = np.empty([partition_count, partition_count])
-    total_contacts_matrix = np.empty([partition_count, partition_count])
-    key_to_partition={}
 
-    for i in popsByCategory[key].keys():
-        key_to_partition[i] = i // partition_size
+def returnContactMatrix(graph, partitioned_groups):
+
+    partition_count = partitioned_groups.__len__()
+    partition_sizes = np.empty(partition_count)
+    contact_matrix = np.empty([partition_count, partition_count])
+
+    #create dict to associate each id to partition
+    id_to_partition = {}
+    for partition in range(partition_count):
+        list = partitioned_groups[partition]['list']
+        partition_sizes[partition] = list.__len__()
+        for id in list:
+           id_to_partition[id] = partition
 
     for i in graph:
-        iPartition = key_to_partition[i]
+        iPartition = id_to_partition[i]
         for j in graph[i]:
-            jPartition = key_to_partition[j]
-            total_weight_matrix[iPartition, jPartition] = key_to_partition
-
+            jPartition = id_to_partition[j]
+            contact_matrix[iPartition, jPartition] += graph[i][j]['transmission_weight']/partition_sizes[iPartition]
+    plt.imshow(np.array([ row/np.linalg.norm(row) for row in contact_matrix]))
+    return contact_matrix
 
     #for
 
@@ -434,6 +450,19 @@ def returnOrdinalContactMatrix(graph, partition_size, key):
 
 
     print("WIP")
+
+
+def scaleGroupContact(graph, scaleMatrix, id_to_partition):
+    weights = nx.get_edge_attributes(graph, 'transmission_weight')
+    for i in graph:
+        for j in graph[j]:
+            scalar = scaleMatrix[id_to_partition[i], id_to_partition[j]]
+            graph[i][j]['transmission_weight'] = graph[i][j]['transmission_weight']  * scalar
+
+
+def scaleGraphToContactMatrix(graph, contact_matrix, partitioned_groups):
+    graphContacts = returnContactMatrix(graph, partitioned_groups)
+    #graphContactsSize =
 
 
 
@@ -446,14 +475,33 @@ def partitionOrdinalsToDict(groupsByCategory, partition_size, key):
         print("pause")
 
 #def binarySearchGlobalInfectivity(R0, clusteringAlg, simAlg, transmissionWeighter)
+
+
+
+
+contactMatrixUSA_Base = pd.read_csv("./ContactMatrices/Base/ContactMatrixUSA_Base.csv").values
+contactMatrixUSASchools_Base = pd.read_csv("./ContactMatrices/Base/ContactMatrixUSASchools_Base.csv").values
+contactMatrixUSAWorkplaces_Base = pd.read_csv("./ContactMatrices/Base/ContactMatrixUSAWorkplaces_Base.csv").values
+
+
+plot_contacts = False
+if plot_contacts:
+    fig, axs = plt.subplots(1,3)
+    axs[0].imshow(ContactMatrixUSA_Base)
+    axs[0].title.set_text ("USA_Base")
+    axs[1].imshow(ContactMatrixUSASchools_Base)
+    axs[1].title.set_text(" Schools_Base")
+    axs[2].imshow(ContactMatrixUSAWorkplaces_Base)
+    axs[2].title.set_text(" Workplaces_Base")
+    plt.show()
 record = Record()
-record.print( "loading and sorting synthetic environment")
+record.print("loading and sorting synthetic environment")
 start = time.time()
 #load people datasets
 populace = loadPickles("people_list_serialized.pkl")
 popsByCategory = sortPopulace(populace, ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'])
 age_grouped_pops = partitionOrdinals(popsByCategory, 5, 'age')
-print("stop and CHECK YO ")
+
 #load locations
 loc_types = {"school": 0.3 , "workplace": 0.3, "household": 1}
 
@@ -477,6 +525,7 @@ stop = time.time()
 record.print("finished in {} seconds".format(stop - start))
 
 
+plt.show()
 #[t, S, I, R] = simulateGraph(clusterRandom2,workAvgDegree)
 #plt.plot(t,I,label = 'random')
 mask_scalar = 0.3
@@ -488,7 +537,7 @@ weighter.record(record)
 # SERIES OF RUNS with associated PLOTS
 labels = []
 sol = []
-[t, S, I, R] = simulateGraph(clusterStrogatz, EoN.fast_SIR, weighter, [workAvgDegree, 0.5],full_data = False)
+[t, S, I, R] = simulateGraph(clusterStrogatz, EoN.fast_SIR, weighter, [workAvgDegree, 0.5], full_data = False)
 
 sol.append([t,S,I,R])
 labels.append('Uninfected count using Strogatz nets \nwith 50% random edges, control test')
