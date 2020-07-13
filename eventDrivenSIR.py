@@ -398,22 +398,50 @@ def simulateGraph(clusteringAlg, simAlg, transmissionWeighter, params = None, fu
 
     return simResult
 
-def partitionOrdinals(groupsByCategory, partition_size, key):
+def partitionOrdinals(popsByCategory, partition_size, key):
     maximum = max(popsByCategory[key].keys())
     minimum = min(popsByCategory[key].keys())
     #partitioned_groups = partitionNames = (['{}:{}'.format(inf*partition_size, (inf+1)*partition_size) for inf in range(minimum//partition_size,maximum//partition_size)])
     #intNames = {inf :'{}:{}'.format(inf*partition_size, (inf+1)*partition_size) for inf in range(minimum//partition_size,maximum//partition_size)}
     partitioned_groups = [{key: '{}:{}'.format(i*partition_size, (i+1)*partition_size), 'list': []} for i in range(0, maximum//partition_size+1)]
-    for i in groupsByCategory[key].keys():
-        partitioned_groups[i//partition_size]['list'].extend(groupsByCategory[key][i])
+    for i in popsByCategory[key].keys():
+        partitioned_groups[i//partition_size]['list'].extend(popsByCategory[key][i])
     return partitioned_groups
 
-def returnContactMatrix(graph, groups):
-    print("WIP")
-def partitionOrdinalsToDict(groupsByCategory, partition_size, key):
+def returnOrdinalContactMatrix(graph, partition_size, key):
     maximum = max(popsByCategory[key].keys())
     minimum = min(popsByCategory[key].keys())
-    partition_groups = []
+    partition_count = maximum//partition_size +1
+    total_weight_matrix = np.empty([partition_count, partition_count])
+    total_contacts_matrix = np.empty([partition_count, partition_count])
+    key_to_partition={}
+
+    for i in popsByCategory[key].keys():
+        key_to_partition[i] = i // partition_size
+
+    for i in graph:
+        iPartition = key_to_partition[i]
+        for j in graph[i]:
+            jPartition = key_to_partition[j]
+            total_weight_matrix[iPartition, jPartition] = key_to_partition
+
+
+    #for
+
+    #for edge in graph.edges():
+
+
+
+
+    print("WIP")
+
+
+
+def partitionOrdinalsToDict(groupsByCategory, partition_size, key):
+
+    maximum = max(popsByCategory[key].keys())
+    minimum = min(popsByCategory[key].keys())
+    #partition_groups =
     for i in groupsByCategory[key].keys():
         print("pause")
 
