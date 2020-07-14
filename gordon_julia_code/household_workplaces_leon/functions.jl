@@ -12,6 +12,8 @@ function generateDemographicGraphs(params)
 
     # Id's are converted to integers. Missing data is -1 index
     df = readData()
+    # Replace missing values by -1 (assume these are all integers)
+    all_df = coalesce.(all_df, -1)
 
     # person_id start at zero. Since I am programming in Julia, to avoid potential
     # errors, the numbering should start from 1

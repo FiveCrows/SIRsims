@@ -22,6 +22,7 @@ using LightGraphs, MetaGraphs
 using CSV
 using Dictionaries
 using BSON
+# in SirProject environment
 import Glob
 D = Dictionaries
 #using Plots
@@ -58,13 +59,13 @@ function extractSIR(k, df, nodes::Vector{Int})
    if nrow(df) == 0
       return null_df
    end
-   println("enter, k= ", k)
    dfn = DataFrame([nodes], [:index])
-   println(first(dfn,1))
-   println(first(df,1))
-   println("dfn = ", names(dfn))
-   println("df= ", names(df))
-   innerjoin(dfn, df, on=:index)
+   #println("names(dfn)= ", names(dfn), nrow(dfn))
+   #println("names(df)= ", names(df), nrow(df))
+   # INNER JOIN allocates memory. MUST CHANGE THAT.
+   return intersect(dfn.index, df.index)
+   #innerjoin(dfn, df, on=:index)   # <<<< TIME SINK
+   #[return nothing
 end
 
 #=
@@ -170,26 +171,38 @@ end
 
 dbss = generate_dBs(all_df)
 
-function generate_dbs_at_time(dbss, time_index)
+function generate_dbs_at_time(dbss, time_index, nodes_list)
    nodes_S,nodes_I,nodes_R = SIR_from_full_db(all_df, nodes_list[time_index])
 
    dbs_S = Dict()
    dbs_I = Dict()
    dbs_R = Dict()
 
+
    for key in keys(dbss)
-      dbs_S[key] = extractSIR(key, dbss[key], nodes_S)
-      dbs_I[key] = extractSIR(key, dbss[key], nodes_I)
-      dbs_R[key] = extractSIR(key, dbss[key], nodes_R)
+      if nrow(dbss[key]) == 0 continue end
+      #println(key)
+      #println(names(dbss[key]))
+      df_index = dbss[key][[:index]]
+      #dbs_S[key] = extractSIR(key, dbss[key], nodes_S)
+      #dbs_I[key] = extractSIR(key, dbss[key], nodes_I)
+      #dbs_R[key] = extractSIR(key, dbss[key], nodes_R)
+      dbs_S[key] = extractSIR(key, df_index, nodes_S)
+      dbs_I[key] = extractSIR(key, df_index, nodes_I)
+      dbs_R[key] = extractSIR(key, df_index, nodes_R)
    end
 
    return [dbs_S, dbs_I, dbs_R]
 end
 
+# SLOWEST PART of this code. MUST ACCELERATE IT!
 dbs_at_time = Dict()
-for time_index in 1:length(files)
+lg = length(files)
+for time_index in 1:lg
+   println("Time index: $(time_index)/$lg")
    # dbs_at_time[3] is a triplet of (lists of dataframes)
-   dbs_at_time[time_index] = generate_dbs_at_time(dbss, time_index)
+   dbs_at_time[time_index] = generate_dbs_at_time(dbss, time_index, nodes_list)
+   #break
 end
 
 for i in 1:length(files)
@@ -197,16 +210,65 @@ for i in 1:length(files)
    @show dbs_at_time[i][2][:df_0_4] |> nrow
 end
 
+file_idx = 3
+for key in keys(dbss)
+   @show dbs_at_time[file_idx][2][key] |> nrow
+end
+
+# For each plot, I need
+# Approximately correct. I really should get the times from the file names
+
+function setupStructures(files, dbs_at_time)
+   time = 10 .* (collect(1:length(files)) .- 1.)
+   vars_S = Dict()
+   vars_I = Dict()
+   vars_R = Dict()
+
+   for key in keys(dbss)
+      vars_S[key] = zeros(Int64, length(files))
+      vars_I[key] = zeros(Int64, length(files))
+      vars_R[key] = zeros(Int64, length(files))
+
+      for file_idx in 1:length(files)
+         vars_S[key][file_idx] = dbs_at_time[file_idx][1][key] |> nrow
+         vars_I[key][file_idx] = dbs_at_time[file_idx][2][key] |> nrow
+         vars_R[key][file_idx] = dbs_at_time[file_idx][3][key] |> nrow
+      end
+   end
+   return [time, vars_S, vars_I, vars_R]
+end
+#
+time, vars_S, vars_I, vars_R = setupStructures(files, dbs_at_time)
+
+# --------------------------------------
+# Plot the results
+
+pl = Vector{Any}(undef, length(dbss))
+lg_dbss = length(dbss)
+for (i,key) in enumerate(keys(dbss))
+   ssum = sum([vars_S[key][1], vars_I[key][1], vars_R[key][1]])
+   ssumi = 1. / ssum
+   pl[i] = plot(time, vars_S[key].*ssumi, legend=false, label="S")
+   plot!(size=(1300,1300))
+   plot!(time, vars_I[key].*ssumi, label="I")
+   plot!(time, vars_R[key].*ssumi, label="R")
+   plot!(title=key)
+end
+plot_tuple = (pl[i] for i in 1:lg_dbss)
+plot(plot_tuple..., layout=lg_dbss)
+savefig("gordon.pdf")
+
+# Place all the curves on a single plot
+plot(size=(1000, 1000))
+for (i,key) in enumerate(keys(dbss))
+   ssum = sum([vars_S[key][1], vars_I[key][1], vars_R[key][1]])
+   ssumi = 1. / ssum
+   pl[i] = plot!(time, vars_S[key].*ssumi, legend=false, label="S")
+   plot!(time, vars_I[key].*ssumi, label="I")
+   plot!(time, vars_R[key].*ssumi, label="R")
+   plot!(title=key)
+end
+savefig("all_plots_in_one.pdf")
+
+
 # ------------------------------------------------
-extractOne(nodes) = extractSIR(df, nodes)
-ddd = extractOne.([nodes_S, nodes_I, nodes_R]);
-ddd = extractOne(nodes_S);
-
-S,I,R = nodes_list[10]
-
-function extractSIR(df_s, nodes_R)
-
-counts = nrow.(dbss)
-nothing
-
-# ----------------------------------------------------------------------
