@@ -1,0 +1,87 @@
+
+loading and sorting synthetic environment
+finished in 2.1951680183410645 seconds
+A transmission probability weighter has been configured with:
+{'name': 'sole', 'global_weight': 1, 'mask_scalar': 0.3, 'loc_scalars': {'school_id': 0.1, 'work_id': 0.2, 'sp_hh_id': 1}}
+
+
+building populace into graphs with the clusterStrogatz clustering algorithm
+clustering sp_hh_id groups with the clusterDense algorithm
+270559 weights added for 110944 environments in 1.1261816024780273 seconds
+clustering work_id groups with the clusterStrogatz algorithm
+955966 weights added for 15824 environments in 3.3764567375183105 seconds
+clustering school_id groups with the clusterStrogatz algorithm
+446618 weights added for 62 environments in 1.8159949779510498 seconds
+Graph completed in 6.318873882293701 seconds.
+running simulation with the fast_SIR algorithm
+simulation completed in 19.384398698806763 seconds
+total build and sim time: 25.703272581100464
+The infection quit spreading after 181.0740293072735 days, and 0.2912958445067242 of people were never infected
+
+
+building populace into graphs with the clusterStrogatz clustering algorithm
+clustering sp_hh_id groups with the clusterDense algorithm
+270559 weights added for 110944 environments in 1.0571205615997314 seconds
+clustering work_id groups with the clusterStrogatz algorithm
+976188 weights added for 15824 environments in 2.8928639888763428 seconds
+clustering school_id groups with the clusterStrogatz algorithm
+447036 weights added for 62 environments in 1.4836688041687012 seconds
+Graph completed in 5.434020757675171 seconds.
+running simulation with the fast_SIR algorithm
+simulation completed in 19.886220693588257 seconds
+total build and sim time: 25.320241451263428
+The infection quit spreading after 225.13374191902213 days, and 0.2851624090166744 of people were never infected
+
+
+building populace into graphs with the clusterStrogatz clustering algorithm
+clustering sp_hh_id groups with the clusterDense algorithm
+270559 weights added for 110944 environments in 1.1366572380065918 seconds
+clustering work_id groups with the clusterStrogatz algorithm
+955979 weights added for 15824 environments in 3.361828327178955 seconds
+Graph completed in 4.498637914657593 seconds.
+running simulation with the fast_SIR algorithm
+simulation completed in 14.856549263000488 seconds
+total build and sim time: 19.35518717765808
+The infection quit spreading after 236.69491382755785 days, and 0.4221042910891648 of people were never infected
+
+
+building populace into graphs with the clusterStrogatz clustering algorithm
+clustering sp_hh_id groups with the clusterDense algorithm
+270559 weights added for 110944 environments in 1.1151981353759766 seconds
+clustering work_id groups with the clusterStrogatz algorithm
+956146 weights added for 15824 environments in 3.7662808895111084 seconds
+clustering school_id groups with the clusterStrogatz algorithm
+446682 weights added for 62 environments in 1.9722774028778076 seconds
+Graph completed in 6.853995323181152 seconds.
+running simulation with the fast_SIR algorithm
+simulation completed in 16.751473665237427 seconds
+total build and sim time: 23.60546898841858
+The infection quit spreading after 402.40028657686446 days, and 0.5732322519507228 of people were never infected
+
+
+building populace into graphs with the clusterStrogatz clustering algorithm
+clustering sp_hh_id groups with the clusterDense algorithm
+270559 weights added for 110944 environments in 1.0674779415130615 seconds
+clustering work_id groups with the clusterStrogatz algorithm
+955973 weights added for 15824 environments in 3.6105458736419678 seconds
+clustering school_id groups with the clusterStrogatz algorithm
+446753 weights added for 62 environments in 1.8961169719696045 seconds
+Graph completed in 6.574408531188965 seconds.
+running simulation with the fast_SIR algorithm
+simulation completed in 17.974791049957275 seconds
+total build and sim time: 24.54919958114624
+The infection quit spreading after 208.08460241369175 days, and 0.4033469766316511 of people were never infected
+
+
+building populace into graphs with the clusterStrogatz clustering algorithm
+clustering sp_hh_id groups with the clusterDense algorithm
+270559 weights added for 110944 environments in 1.2738099098205566 seconds
+clustering work_id groups with the clusterStrogatz algorithm
+955853 weights added for 15824 environments in 3.632288694381714 seconds
+clustering school_id groups with the clusterStrogatz algorithm
+446680 weights added for 62 environments in 1.8335158824920654 seconds
+Graph completed in 6.7398459911346436 seconds.
+running simulation with the fast_SIR algorithm
+simulation completed in 13.073992252349854 seconds
+total build and sim time: 19.813838243484497
+The infection quit spreading after 250.56427461901976 days, and 0.6983325604371232 of people were never infected

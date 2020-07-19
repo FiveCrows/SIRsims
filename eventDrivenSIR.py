@@ -25,6 +25,7 @@ schoolGroupSize = 20
 workGroupSize = 10
 employmentRate = 0.9
 
+
 #for generating graph
 workAvgDegree = 20
 schoolAvgDeree = 20
@@ -205,9 +206,6 @@ def genPop(people, attributeClasses, attributeClass_p):
 
     return population
 
-def getWeight(person_A, person_B, locale):
-    return 1
-
 #takes a dict of dicts to represent populace and returns a list of dicts of lists to represent groups of people with the same
 #attributes
 def sortPopulace(populace, categories):
@@ -385,7 +383,8 @@ def simulateGraph(clusteringAlg, simAlg, transmissionWeighter, params = None, fu
     originalCM = returnContactMatrix(graph, age_partition)
     total_original_contact = np.sum(originalCM)
     #contactMatrixUSA_Base = pd.read_csv("./ContactMatrices/Base/ContactMatrixUSA_Base.csv").values
-    hadamard_scalar = (originalCM + originalCM.transpose())/(contactMatrixUSA_Base+contactMatrixUSA_Base.transpose())
+    hadamard_scalar = (originalCM + originalCM.transpose()) / (
+                contactMatrixUSA_Base + contactMatrixUSA_Base.transpose())
     record.print("Graph completed in {} seconds.".format((stop_a - start)))
     #record.printGraphStats(graph, [nx.average_clustering])
     # record.print("{edges: {}, nodes: }".format(graph.size()))
