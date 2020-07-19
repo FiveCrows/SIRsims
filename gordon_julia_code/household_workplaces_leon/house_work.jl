@@ -30,15 +30,27 @@ function setupTestGraph(nv, ne)
     return Glist
 end
 
-n = 300000
+#n = 300000
 #Glist = setupTestGraph(n, 1000000)
-w = weights.(Glist);
-infected_0 = rand(1:nv(home_graph), 10000);
+#w = weights.(Glist);
+
+# Retrieve all businesses with nb_employees ∈ [lb, ub]
+function findInfected(df::DataFrame, group_col::Symbol, target_col::Symbol, lb::Int, ub::Int)
+    grps = groupby(df, group_col)
+    dd = combine(grps, group_col => length => target_col)
+    dd = dd[lb .< dd[target_col] .< ub, :]
+    ix = rand(dd[:,group_col], 1)[1]
+    infected = df[df[group_col] .== ix,:]
+    infected = infected.index
+    return dd, ix, infected
+end
+
+dfs_work, ix, infected_0 = findInfected(all_df, :work_id, :count, 100, 200)
 
 # *****************
 # Using BSON, time to save is tiny fraction of total time
 @time times, S,I,R = FPLEX.fastSIR(Glist, p, infected_0;
-    t_max=1000., save_data=true, save_freq=10);
+    t_max=1000., save_data=true, save_freq=5);
 @show maximum.([S,I,R])
 @show minimum.([S,I,R])
 
