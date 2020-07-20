@@ -275,7 +275,7 @@ class PopulaceGraph:
         assert contact_matrix.shape[0] == contact_matrix.shape[1], "contact matrices must be symmetric"
         self.constructContactMatrix(key, partition_size, reshape = contact_matrix.shape[0])
         assert self.contact_matrix.shape == contact_matrix.shape, "mismatch contact matrix shapes"
-        allContact =
+        #allContact =
         scaleMatrix = (self.contact_matrix + self.contact_matrix.transpose()) / (contact_matrix + contact_matrix.transpose())
         for i in self.graph:
             for j in self.graph[i]:
