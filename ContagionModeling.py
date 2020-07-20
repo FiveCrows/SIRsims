@@ -213,7 +213,7 @@ class PopulaceGraph:
         self.record.print("Graph completed in {} seconds.".format((stop_a - start)))
 
 
-    def partitionOrdinals(self, key, partition_size, partition_limit = 16):
+    def partitionOrdinals(self, key, partition_size):
         maximum = max(self.pops_by_category[key].keys())
         minimum = min(self.pops_by_category[key].keys())
         # partitioned_groups = partitionNames = (['{}:{}'.format(inf*partition_size, (inf+1)*partition_size) for inf in range(minimum//partition_size,maximum//partition_size)])
@@ -224,32 +224,35 @@ class PopulaceGraph:
         for i in self.pops_by_category[key].keys():
             partitioned_groups[i // partition_size]['list'].extend(self.pops_by_category[key][i])
 
-        if partition_limit != None:
-            for i in range(len(partitioned_groups) - 1, partition_limit - 1, -1):
-                partitioned_groups[partition_limit - 1]['list'] = partitioned_groups[partition_limit - 1]['list'] + partitioned_groups[i]['list']
-                del partitioned_groups[i]
-
-        #create an inverse of the partion dict
-        self.id_to_partition = {}
         partition_count = partitioned_groups.__len__()
+        self.id_to_partition = {}
+
+        reshape = 16
         for partition in range(partition_count):
             list = partitioned_groups[partition]['list']
-            for id in list:
-               self.id_to_partition[id] = partition
 
             # this is here in case the loaded matrix has unusual shape, like combining all ages  75+ into one group
             # loops back from the partitions at the end
+            if reshape != None:
+                for i in range(len(partitioned_groups) - 1, reshape - 1, -1):
+                    partitioned_groups[reshape - 1]['list'] = partitioned_groups[reshape - 1]['list'] + \
+                                                              partitioned_groups[i]['list']
+                    del partitioned_groups[i]
 
+            for id in list:
+               self.id_to_partition[id] = partition
 
         return partitioned_groups
 
 
-    def constructContactMatrix(self, key, partition_size):
+    def constructContactMatrix(self, key, partition_size, reshape = None):
         partitioned_groups = self.partitionOrdinals(key, partition_size)
 
+
+
         partition_count = partitioned_groups.__len__()
-        partition_sizes = np.zeros(partition_count)
-        contact_matrix = np.zeros([partition_count, partition_count])
+        partition_sizes = np.empty(partition_count)
+        contact_matrix = np.empty([partition_count, partition_count])
 
         #create dict to associate each id to partition
         id_to_partition = {}
@@ -264,13 +267,13 @@ class PopulaceGraph:
             for j in self.graph[i]:
                 jPartition = id_to_partition[j]
                 contact_matrix[iPartition, jPartition] += self.graph[i][j]['transmission_weight']/partition_sizes[iPartition]
-        #plt.imshow(np.array([row / np.linalg.norm(row) for row in contact_matrix]))
+        plt.imshow(np.array([ row/np.linalg.norm(row) for row in contact_matrix]))
         self.contact_matrix = contact_matrix
 
 
-    def fitWithContactMatrix(self, contact_matrix, key, partition_size):
+    def fitGraphToContactMatrix(self, contact_matrix, key, partition_size):
         assert contact_matrix.shape[0] == contact_matrix.shape[1], "contact matrices must be symmetric"
-        self.constructContactMatrix(key, partition_size)
+        self.constructContactMatrix(key, partition_size, reshape = contact_matrix.shape[0])
         assert self.contact_matrix.shape == contact_matrix.shape, "mismatch contact matrix shapes"
         allContact =
         scaleMatrix = (self.contact_matrix + self.contact_matrix.transpose()) / (contact_matrix + contact_matrix.transpose())
@@ -278,6 +281,7 @@ class PopulaceGraph:
             for j in self.graph[i]:
                 scalar = scaleMatrix[self.id_to_partition[i], self.id_to_partition[j]]
                 self.graph[i][j]['transmission_weight'] = self.graph[i][j]['transmission_weight'] * scalar
+
 
     #given a  list of lists to partition N_i, the nodes in a graph, this function produces a 2d array,
     #contact_matrix, where contact_matrix[i,j] is the sum total weight of edges between nodes in N_i and N_j, divided by number of nodes in N_i
@@ -296,12 +300,7 @@ class PopulaceGraph:
         #percent_uninfected = final_uninfected / (final_uninfected + final_recovered)
         #self.record.last_runs_percent_uninfected = percent_uninfected
         #self.record.print("The infection quit spreading after {} days, and {} of people were never infected".format(time_to_immunity,percent_uninfected))
-        self.sims.append([simResult, title])
-
-    def plotContactMatrix(self, key, partition_size):
-        self.constructContactMatrix(key, partition_size)
-        plt.imshow(self.contact_matrix)
-        plt.show()
+        self.sims.append(simResult)
 
     def plotSIR(self):
         rowTitles = ['S','I','R']
@@ -312,13 +311,10 @@ class PopulaceGraph:
             return
         else:
             for sim in self.sims:
-                title = sim[1]
-                sim = sim[0]
                 t = sim.t()
                 ax[0].plot(t, sim.S())
-                ax[1].plot(t, sim.I(), label = title)
+                ax[1].plot(t, sim.I())
                 ax[2].plot(t, sim.R())
-        plt.legend()
         plt.show()
 
 
