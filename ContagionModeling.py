@@ -280,17 +280,19 @@ class PopulaceGraph:
     #contact_matrix, where contact_matrix[i,j] is the sum total weight of edges between nodes in N_i and N_j, divided by number of nodes in N_i
 
 
-    def simulate(self, gamma, tau, simAlg = EoN.fast_SIR,  full_data = False):
+    def simulate(self, gamma, tau, simAlg = EoN.fast_SIR, title = None, full_data = True):
         start = time.time()
         simResult = simAlg(self.graph, gamma, tau, rho=0.0001, transmission_weight='transmission_weight', return_full_data=full_data)
         stop = time.time()
         self.record.print("simulation completed in {} seconds".format(stop - start))
-        time_to_immunity = simResult[0][-1]
-        final_uninfected = simResult[1][-1]
-        final_recovered = simResult[3][-1]
-        percent_uninfected = final_uninfected / (final_uninfected + final_recovered)
+
+        #doesn't work returning full results
+        #time_to_immunity = simResult[0][-1]
+        #final_uninfected = simResult[1][-1]
+        #final_recovered = simResult[3][-1]
+        #percent_uninfected = final_uninfected / (final_uninfected + final_recovered)
         #self.record.last_runs_percent_uninfected = percent_uninfected
-        self.record.print("The infection quit spreading after {} days, and {} of people were never infected".format(time_to_immunity,percent_uninfected))
+        #self.record.print("The infection quit spreading after {} days, and {} of people were never infected".format(time_to_immunity,percent_uninfected))
         self.sims.append(simResult)
 
     def plotSIR(self):
@@ -301,8 +303,14 @@ class PopulaceGraph:
             print("no sims to show")
             return
         else:
-            for i in range(simCount):
-                print("just test here for now")
+            for sim in self.sims:
+                t = sim.t()
+                ax[0].plot(t, sim.S())
+                ax[1].plot(t, sim.I())
+                ax[2].plot(t, sim.R())
+        plt.show()
+
+
 
 class Record:
     def __init__(self):
