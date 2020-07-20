@@ -360,7 +360,7 @@ class PopulaceGraph:
             totals = []
             end_time = sim.t()[-1]
             for group in self.partitioned_groups:
-                totals.append(sum(status == 'S' for status in sim.get_statuses(group, end_time).values()))
+                totals.append(sum(status == 'S' for status in sim.get_statuses(group['list'], end_time).values()))
         plt.bar(list(range(len(totals))),totals)
         plt.show()
 
