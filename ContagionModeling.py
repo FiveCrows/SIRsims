@@ -226,22 +226,29 @@ class PopulaceGraph:
 
         partition_count = partitioned_groups.__len__()
         self.id_to_partition = {}
+
+        reshape = 16
         for partition in range(partition_count):
             list = partitioned_groups[partition]['list']
+
+            # this is here in case the loaded matrix has unusual shape, like combining all ages  75+ into one group
+            # loops back from the partitions at the end
+            if reshape != None:
+                for i in range(len(partitioned_groups) - 1, reshape - 1, -1):
+                    partitioned_groups[reshape - 1]['list'] = partitioned_groups[reshape - 1]['list'] + \
+                                                              partitioned_groups[i]['list']
+                    del partitioned_groups[i]
+
             for id in list:
                self.id_to_partition[id] = partition
+
         return partitioned_groups
 
 
     def constructContactMatrix(self, key, partition_size, reshape = None):
         partitioned_groups = self.partitionOrdinals(key, partition_size)
 
-        #this is here in case the loaded matrix has unusual shape, like combining all ages  75+ into one group
-        #loops back from the partitions at the end
-        if reshape != None:
-            for i in range(len(partitioned_groups)-1, reshape-1, -1):
-                partitioned_groups[reshape - 1]['list'] = partitioned_groups[reshape - 1]['list'] + partitioned_groups[i]['list']
-                del partitioned_groups[i]
+
 
         partition_count = partitioned_groups.__len__()
         partition_sizes = np.empty(partition_count)
