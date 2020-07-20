@@ -251,6 +251,7 @@ class PopulaceGraph:
         self.entire_weight_sum = sum
         return sum
 
+
     def constructContactMatrix(self, key, partition_size):
         partitioned_groups = self.partitionOrdinals(key, partition_size)
         partition_count = partitioned_groups.__len__()
@@ -274,7 +275,7 @@ class PopulaceGraph:
         self.contact_matrix = contact_matrix
 
 
-    def fitWithContactMatrix(self, contact_matrix, key, partition_size):
+    def fitWithContactMatrix(self, contact_matrix, key, partition_size, show_scale = False):
         assert contact_matrix.shape[0] == contact_matrix.shape[1], "contact matrices must be symmetric"
         self.constructContactMatrix(key, partition_size)
         assert self.contact_matrix.shape == contact_matrix.shape, "mismatch contact matrix shapes"
@@ -292,6 +293,10 @@ class PopulaceGraph:
             for j in self.graph[i]:
                 self.graph[i][j]['transmission_weight'] = self.graph[i][j]['transmission_weight'] * renormFactor
 
+        if show_scale:
+            plt.imshow(scaleMatrix*renormFactor)
+            plt.title("scale matrix")
+            plt.show()
     #given a  list of lists to partition N_i, the nodes in a graph, this function produces a 2d array,
     #contact_matrix, where contact_matrix[i,j] is the sum total weight of edges between nodes in N_i and N_j, divided by number of nodes in N_i
 
@@ -317,13 +322,17 @@ class PopulaceGraph:
         plt.show()
 
     def plotNodeDegreeHistogram(self):
-        plt.hist([degree[1] for degree in nx.degree(self.graph)],bins = 40)
+
+        plt.hist([degree[1] for degree in nx.degree(self.graph)], 'auto')
+
+        plt.ylabel("total people")
+        plt.xlabel("degree")
         plt.show()
 
 
     def plotSIR(self):
         rowTitles = ['S','I','R']
-        fig, ax = plt.subplots(3,1)
+        fig, ax = plt.subplots(3,1,sharex = True, sharey = True)
         simCount = len(self.sims)
         if simCount == []:
             print("no sims to show")
@@ -334,9 +343,25 @@ class PopulaceGraph:
                 sim = sim[0]
                 t = sim.t()
                 ax[0].plot(t, sim.S())
+                ax[0].set_title('S')
+
                 ax[1].plot(t, sim.I(), label = title)
+                ax[1].set_ylabel("people")
+                ax[1].set_title('I')
                 ax[2].plot(t, sim.R())
+                ax[2].set_title('R')
+                ax[2].set_xlabel("days")
         ax[1].legend()
+        plt.show()
+
+    def plotVictoryChart(self,partition = None):
+        for sim in self.sims:
+            sim = sim[0]
+            totals = []
+            end_time = sim.t()[-1]
+            for group in self.partitioned_groups:
+                totals.append(sum(status == 'S' for status in sim.get_statuses(group, end_time).values()))
+        plt.bar(list(range(len(totals))),totals)
         plt.show()
 
 

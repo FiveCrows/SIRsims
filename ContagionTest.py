@@ -8,12 +8,13 @@ env_masking = {'work': 0, 'school':0}
 gamma = 0.1
 tau = 0.08
 weighter = TransmissionWeighter(env_weights, mask_scalar)
-model = PopulaceGraph(weighter, env_degrees, env_masking, slim = True)
+model = PopulaceGraph(weighter, env_degrees, env_masking)
+model.build(model.clusterStrogatz)
 contactMatrixUSA_Base = pd.read_csv("./ContactMatrices/Base/ContactMatrixUSA_Base.csv").values
-model.build(model.clusterStrogatz)
-model.simulate(gamma, tau)
-model.fitWithContactMatrix(contactMatrixUSA_Base, 'age', 5)
-model.build(model.clusterStrogatz)
-model.simulate(gamma, tau)
+model.simulate(gamma, tau, title = 'control')
+#model.plotContactMatrix()
+model.fitWithContactMatrix(contactMatrixUSA_Base, 'age', 5, show_scale = True)
+model.plotVictoryChart()
+model.simulate(gamma, tau, title = 'fit to Contact Matrix')
 model.plotSIR()
 model.plotNodeDegreeHistogram()
