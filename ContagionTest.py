@@ -1,4 +1,4 @@
-from ContagionModeling import *
+from ContagionModeling import TransmissionWeighter,PopulaceGraph
 import pandas as pd
 
 mask_scalar = 0.3

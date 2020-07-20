@@ -1,13 +1,15 @@
 import random
 from os import mkdir
-import EoN
-import networkx as nx
 import itertools
 import pickle
 from datetime import datetime
 import time
+import EoN
 import matplotlib.pyplot as plt
 import numpy as np
+
+import networkx as nx
+
 class TransmissionWeighter:
     def __init__(self, loc_scalars, mask_scalar):#, loc_masking):
         self.name = 'sole'
