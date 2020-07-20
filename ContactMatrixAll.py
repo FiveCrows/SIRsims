@@ -8,6 +8,8 @@ gamma_ij = (1-gamma_ii)/(number of other age groups present)
 Contact from present to absent age groups are set to zero
 The final contact marices are written into the following files:
 
+ContactMatrixLeonSchools.pkl
+ContactMatrixLeonWorkplaces
 '''
 import numpy as np
 import pandas as pd

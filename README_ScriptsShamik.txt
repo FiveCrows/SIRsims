@@ -42,16 +42,17 @@ This script restructures the data from existing serialized files so that the key
 Run:
 python restructureData.py
 -------------------------------------------------------------------------------
-generateContactMatrix.py
-This script generates contact matrices for Leon Schools in the following age groups:
-3-5
-6-10
-11-15
-16-18
-The rest of the rows and columns are left unchanged from the ContactMatrixUSASchools_Base.csv file
-The gamma_ii value can be changed to create a new contact matrix
-gamma_ij = (1-gamma_ii)/(number of other age groups)
+ContactMatrixAll.py
+This script generates contact matrices for schools and workplaces in Leon County for the following age groups:
+'0-4','5-9','10-14','15-19','20-24','25-29','30-34','35-39','40-44','45-49','50-54','55-59','60-64','65-69','70-74','75+'
+The gamma_ii value can be changed to create a new contact matrix (set to 0.7 for schools, 0.5 for workplaces)
+gamma_ij = (1-gamma_ii)/(number of other age groups present)
+Contact from present to absent age groups are set to zero. 
+The final contact marices are written into the following files:
+
+ContactMatrixLeonSchools.pkl
+ContactMatrixLeonWorkplaces
 
 Run:
-python generateContactMatrix.py
+python ContactMatrixAll.py
 -------------------------------------------------------------------------------
