@@ -88,7 +88,7 @@ def plotThreshold(threshold, dates, cumulativeData, county_list):
     title_temp="Counties with cumulative case count over "+ str(threshold)
     plt.title(title_temp)
     figname="Threshold_"+str(threshold)+datetime.now().strftime("%d%m%y%H%M")+".png"
-    #plt.savefig(figname)
+    plt.savefig(figname)
     plt.show()
     
 
@@ -106,7 +106,7 @@ def plotCounty(counties, dates, cumulativeData, county_list):
     plt.legend()
     figname="Counties_"+datetime.now().strftime("%d%m%y%H%M")+".png"
     plt.xticks(rotation=45)
-    #plt.savefig(figname)
+    plt.savefig(figname)
     plt.show()
     
 def plotZipcodes(zipcodes, dates, data):
@@ -130,7 +130,7 @@ def plotZipcodes(zipcodes, dates, data):
     plt.legend()
     plt.xticks(rotation=45)
     figname="Zipcodes_"+datetime.now().strftime("%d%m%y%H%M")+".png"
-    #plt.savefig(figname)
+    plt.savefig(figname)
     plt.show()
     # temp_data=[]
     # for date in sorted(dates):
@@ -161,7 +161,7 @@ def plotDefault(dates, cumulativeData, county_list):
     plt.xticks(rotation=45)
     plt.title(title)
     plt.legend()
-    #plt.savefig(figname)
+    plt.savefig(figname)
     plt.show()
     
 
@@ -198,7 +198,7 @@ if __name__=="__main__":
             main(zipcode=''.join(sys.argv[2:]))
     elif sys.argv[1]=='-threshold' or sys.argv[1]=='-t':
         if sys.argv[2].isnumeric():
-            main(threshold=int(sys.argv[2]))
+            main(int(sys.argv[2]))
         else:
             print("Invalid threshold value")
 
