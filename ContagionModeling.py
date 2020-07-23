@@ -8,6 +8,8 @@ from datetime import datetime
 import time
 import matplotlib.pyplot as plt
 import numpy as np
+
+
 class TransmissionWeighter:
     def __init__(self, loc_scalars, mask_scalar):#, loc_masking):
         self.name = 'sole'
@@ -40,7 +42,6 @@ class TransmissionWeighter:
     #WIP
     def record(self, record):
         record.print(str(self.__dict__))
-
 
 
 class PopulaceGraph:
@@ -274,6 +275,29 @@ class PopulaceGraph:
         #plt.imshow(np.array([row / np.linalg.norm(row) for row in contact_matrix]))
         self.contact_matrix = contact_matrix
 
+    #WIP
+    def constructPreferenceMatrix(self, key, partition_size):
+        partitioned_groups = self.partitionOrdinals(self, key, partition_size)
+        partition_count = partitioned_groups.__len__()
+        partition_sizes = np.zeros(partition_count)
+        contact_matrix = np.zeros([partition_count, partition_count])
+
+        #create dict to associate each id to partition
+        id_to_partition = {}
+        for partition in range(partition_count):
+            list = partitioned_groups[partition]['list']
+            partition_sizes[partition] = list.__len__()
+            for id in list:
+               id_to_partition[id] = partition
+
+        for i in self.graph:
+            iPartition = id_to_partition[i]
+            for j in self.graph[i]:
+                jPartition = id_to_partition[j]
+                contact_matrix[iPartition, jPartition] += self.graph[i][j]['transmission_weight']/partition_sizes[iPartition]
+        #plt.imshow(np.array([row / np.linalg.norm(row) for row in contact_matrix]))
+        self.contact_matrix = contact_matrix
+
 
     def fitWithContactMatrix(self, contact_matrix, key, partition_size, show_scale = False):
         assert contact_matrix.shape[0] == contact_matrix.shape[1], "contact matrices must be symmetric"
@@ -297,6 +321,7 @@ class PopulaceGraph:
             plt.imshow(scaleMatrix*renormFactor)
             plt.title("scale matrix")
             plt.show()
+            plt.savefig("./simResults/{}/NodeDegreePlot".format(self.record.stamp))
     #given a  list of lists to partition N_i, the nodes in a graph, this function produces a 2d array,
     #contact_matrix, where contact_matrix[i,j] is the sum total weight of edges between nodes in N_i and N_j, divided by number of nodes in N_i
 
@@ -320,15 +345,13 @@ class PopulaceGraph:
         self.constructContactMatrix(key, partition_size)
         plt.imshow(self.contact_matrix)
         plt.show()
-
+        plt.savefig("./simResults/{}/contactMatrix".format(self.record.stamp))
     def plotNodeDegreeHistogram(self):
-
         plt.hist([degree[1] for degree in nx.degree(self.graph)], 'auto')
-
         plt.ylabel("total people")
         plt.xlabel("degree")
         plt.show()
-
+        plt.savefig("./simResults/{}/".format(self.record.stamp))
 
     def plotSIR(self):
         rowTitles = ['S','I','R']
@@ -360,9 +383,13 @@ class PopulaceGraph:
             totals = []
             end_time = sim.t()[-1]
             for group in self.partitioned_groups:
-                totals.append(sum(status == 'S' for status in sim.get_statuses(group['list'], end_time).values()))
+                totals.append(sum(status == 'S' for status in sim.get_statuses(group['list'], end_time).values())/len(group))
+            #totals = sorted(totals)
         plt.bar(list(range(len(totals))),totals)
         plt.show()
+        plt.ylabel("Percent never infected")
+        plt.xlabel("partition number ")
+        plt.savefig("./simResults/{}/victoryPlot".format(self.record.stamp))
 
 
 
@@ -373,6 +400,7 @@ class Record:
         self.stamp = datetime.now().strftime("%m_%d_%H_%M")
         self.graph_stats = {}
         self.last_runs_percent_uninfected = 1
+        mkdir("./simResults/{}".format(self.stamp))
     def print(self, string):
         print(string)
         self.log+=('\n')
@@ -394,8 +422,7 @@ class Record:
         self.print(str(graphStats))
 
     def dump(self):
-        mkdir("./simResults/{}".format(self.stamp))
-        log_txt = open("./simResults/{}/log.txt".format(self.stamp),"w+")
+        log_txt = open("./simResults/{}/log.txt".format(self.stamp), "w+")
         log_txt.write(self.log)
         if self.comments != "":
             comment_txt = open("./simResults/{}/comments.txt".format(self.stamp),"w+")
