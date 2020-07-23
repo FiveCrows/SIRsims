@@ -11,9 +11,10 @@ function generateDemographicGraphs(params)
     #duties = [:None, :school, :work,]
 
     # Id's are converted to integers. Missing data is -1 index
-    df = readData()
+    all_df = readData()
     # Replace missing values by -1 (assume these are all integers)
     all_df = coalesce.(all_df, -1)
+    df = all_df  # Check against original code
 
     # person_id start at zero. Since I am programming in Julia, to avoid potential
     # errors, the numbering should start from 1

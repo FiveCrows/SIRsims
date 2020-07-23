@@ -58,7 +58,7 @@ end
 
 
 # Replace G by Glist = [Ghome, Gschool, Gwork]
-function fastSIR(Glist, params, initial_infecteds::Vector{Int};
+function fastSIR(Glist, params, initial_infecteds::Vector{Int}, initial_recovered::Vector{Int};
 		t_max=10., save_data=false, save_freq=1)
 	status = 1  # status = 1 (home), 2, school, 3, work
 	global_time = 0.0  # new variable
@@ -72,9 +72,9 @@ function fastSIR(Glist, params, initial_infecteds::Vector{Int};
     nb_nodes = nv(G)
 	times = [0.]
     # length(G) is Int128
-    S = [nb_nodes]
+    S = [nb_nodes-length(initial_recovered)]
     I = [0]
-    R = [0]
+    R = [length(initial_recovered)]
     pred_inf_time = 100000000.0
     rec_time = 0.
 
@@ -113,6 +113,10 @@ function fastSIR(Glist, params, initial_infecteds::Vector{Int};
 	# =#
 
 	println("finished with setting status")
+
+    for u in initial_recovered
+		nodes[u].i_status = 3
+	end
 
     for u in initial_infecteds
        #println("nodes[u]= ", nodes[u])
@@ -189,7 +193,10 @@ function processTransSIR(Glist, p_status, node_u, t::Float64, τ::Float64, γ::F
 	wghts = weights(G)
 	#@show G, node_u.index
 	for ν in neighbors(G, node_u.index)
-		w = wghts[node_u.index, ν]
+		#w = wghts[node_u.index, ν]
+		#edge_dict = get_prop(G, :edge_dict)
+		w = get_prop(G, node_u.index, ν, :bet_inv)
+		#w = 1.
 		findTransSIR(Q, t, τ, w, node_u, nodes[ν], t_max, nodes)
 	end
 end
@@ -199,8 +206,9 @@ function findTransSIR(Q, t, τ, w, source, target, t_max, nodes)
     # w is the edge weight
 	#if target.status == :S
 	if target.i_status == 1
-		inf_time = t + rand(Exponential(τ))  # add w back when debugged
-		#inf_time = t + rand(Exponential(τ*w))
+		# time to infection when an infected is in contact with a susceptible
+		#inf_time = t + rand(Exponential(τ))  # add w back when debugged
+		inf_time = t + rand(Exponential(τ*w))
 		#print("inf_time")
 		# Allocate memory for this list
 		if inf_time < minimum([source.rec_time, target.pred_inf_time, t_max])
