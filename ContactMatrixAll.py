@@ -1,15 +1,14 @@
 '''
 Written by Shamik Bose. For any queries, email sb13m@my.fsu.edu
-07/17/2020
+07/24/2020
 This script generates contact matrices for schools and workplaces in Leon County for the following age groups:
 '0-4','5-9','10-14','15-19','20-24','25-29','30-34','35-39','40-44','45-49','50-54','55-59','60-64','65-69','70-74','75+'
-The gamma_ii value can be changed to create a new contact matrix (set to 0.7 for schools, 0.5 for workplaces)
-gamma_ij = (1-gamma_ii)/(number of other age groups present)
-Contact from present to absent age groups are set to zero
-The final contact marices are written into the following files:
+APBG is calculated as the percentage of people in a particular age group compared to the total population for the original contact 
+matrix. The data for the demographics is taken from the 2018 ACS tables.
+The final contact matrices are written into the following files:
 
-ContactMatrixLeonSchools.pkl
-ContactMatrixLeonWorkplaces
+ContactMatrices/Leon/ContactMatrixLeonSchools.pkl
+ContactMatrices/Leon/ContactMatrixLeonWorkplaces.pkl
 '''
 import numpy as np
 import pandas as pd
@@ -17,107 +16,101 @@ import pickle
 from collections import defaultdict
 import copy
 age_groups=['0-4','5-9','10-14','15-19','20-24','25-29','30-34','35-39','40-44','45-49','50-54','55-59','60-64','65-69','70-74','75+']
+#data from ACS corresponding to age_groups for 2018
+#APBG-> Age Percentage By Groups
+APBG=[0.060049726,0.060537504,0.065388298,0.065548983,0.066381795,0.071280633,0.067317127,0.065933523,0.060908112,0.063372566,0.063795481,0.06609625,0.063156716,0.052289091,0.041153316,0.06679088]
+APBG_schools=[0.064503768,0.310016909,0.344630797,0.280848526,0,0,0,0,0,0,0,0,0,0,0,0,]
+APBG_workplaces=[0,0,0,0.066018572,0.082834194,0.088947184,0.084001343,0.079139,0.079139,0.079343,0.079343,0.082477878,0.078809795,0.05533008, 0.05533008,0.083344668]
 home_dir="RestructuredData/"
+CM_home_dir="ContactMatrices/"
 people_file=home_dir+"people_list_serialized_rs.pkl"
 workplaces_file=home_dir+"workplaces_list_serialized_rs.pkl"
 school_file=home_dir+"schools_list_serialized_rs.pkl"
-ContactMatrixSchoolsFile='ContactMatrixUSASchools_Base.csv'
-ContactMatrixWorkplacesFile='ContactMatrixUSAWorkplaces_Base.csv'
+ContactMatrixSchoolsFile=CM_home_dir+'Base/ContactMatrixUSASchools_Base.csv'
+ContactMatrixWorkplacesFile=CM_home_dir+'Base/ContactMatrixUSAWorkplaces_Base.csv'
 people_data=pickle.load(open(people_file,'rb'))
 workplaces_data=pickle.load(open(workplaces_file,'rb'))
-contactMatricesBySchoolFile="ContactMatrixLeonSchools.pkl"
-contactMatricesByWorkplaceFile="ContactMatrixLeonWorkplaces.pkl"
+contactMatricesBySchoolFile=CM_home_dir+"Leon/ContactMatrixSchools.pkl"
+contactMatricesByWorkplaceFile=CM_home_dir+"Leon/ContactMatrixWorkplaces.pkl"
+students_by_school=defaultdict(set)
+employees_by_workplace=defaultdict(set)
+age_groups_by_school={}
+age_groups_by_workplace={}
 with open(ContactMatrixSchoolsFile, 'r', encoding='utf-8-sig') as f: 
     schoolBaseCM= np.genfromtxt(f, dtype=float, delimiter=',')  
 with open(ContactMatrixWorkplacesFile, 'r', encoding='utf-8-sig') as f: 
     workplaceBaseCM= np.genfromtxt(f, dtype=float, delimiter=',')
-workplaceContactMatrices={}
-schoolContactMatrices={}
-school_gamma_ii=0.7 #This is the probability of contacting someone from the same age group in school
-workplace_gamma_ii=0.5 #This is the probability of contacting someone from the same age group in the workplace
-students_by_school=defaultdict(set)
-employees_by_workplace=defaultdict(set)
-#Get data by workplace and school
 for row in people_data:
     record=people_data[row]
     if record.school_id:
         students_by_school[record.school_id].add((record.sp_id,record.age))
     if record.work_id:
         employees_by_workplace[record.work_id].add((record.sp_id,record.age))
-#Put students into age_groups
-age_groups_by_school={}
-for key in students_by_school.keys():
-    schoolRecord=students_by_school[key]
-    age_group_counts={r:0 for r in age_groups}
-    #print(age_group_counts)
-    for student in schoolRecord:
-        student_ag=student[1]//5
-        idx=age_groups[student_ag]
-        #print(student_ag,idx)
-        age_group_counts[idx]+=1
-    for age_group in age_groups: #dropping absent age groups
-        if age_group_counts[age_group]==0:
-            del(age_group_counts[age_group])
-    age_groups_by_school[key]=age_group_counts
-#Put employees into age groups
-age_groups_by_workplace={}
-for key in employees_by_workplace.keys():
-    workplaceRecord=employees_by_workplace[key]
-    age_group_counts={r:0 for r in age_groups}
-    for employee in workplaceRecord:
-        employee_ag=employee[1]//5
-        if employee_ag<16:
-            idx=age_groups[employee_ag]
-        else:
-            idx='75+'
-        age_group_counts[idx]+=1
-    for age_group in age_groups: #dropping absent age groups
-        if age_group_counts[age_group]==0:
-            del(age_group_counts[age_group])
-    age_groups_by_workplace[key]=age_group_counts
-#The following loop creates contact matrices by school
-contactMatricesBySchool={}
-for key in age_groups_by_school.keys():
-    temp_gamma_ii=school_gamma_ii
-    gamma_ij=0 #This is the probability of contacting someone from a different age group
-    CMbySchool=copy.deepcopy(schoolBaseCM)
-    age_counts=age_groups_by_school[key]
-    total=sum(age_counts.values())
-    absentAgeGroups=set(age_groups)-age_counts.keys()
-    #Ensuring schools that have only one age group are not omitted
-    if len(age_counts)==1:
-        temp_gamma_ii=1
+def ageGroupByLoc(loc_type):
+    """
+    This function generates the population by age groups for loc_type (school or workplaces)
+    """
+    if loc_type=="school":
+        dataByLoc=students_by_school
+        age_group_by_loc=age_groups_by_school
+    elif loc_type=="workplace":
+        dataByLoc=employees_by_workplace
+        age_group_by_loc=age_groups_by_workplace
     else:
-        gamma_ij=(1-temp_gamma_ii)/(len(age_counts)-1)
-    for age_group in age_counts:
-        remaining=age_counts.keys()-{age_group}
-        CMbySchool[age_groups.index(age_group)][age_groups.index(age_group)]*=temp_gamma_ii*age_counts[age_group]/total
-        for ag in remaining:
-            CMbySchool[age_groups.index(age_group)][age_groups.index(ag)]*=gamma_ij*age_counts[ag]/total
-        for ag in absentAgeGroups: #All absent age_groups set to zero
-            CMbySchool[age_groups.index(age_group)][age_groups.index(ag)]=0
-    contactMatricesBySchool[key]=CMbySchool
-pickle.dump(contactMatricesBySchool, open(contactMatricesBySchoolFile,'wb'))
+        print("Unknown location type")
+        return
+    for key in dataByLoc.keys():
+        record=dataByLoc[key]
+        age_group_counts={r:0 for r in age_groups}
+        for person in record:
+            person_ag=person[1]//5
+            if person_ag<16:
+                idx=age_groups[person_ag]
+            else:
+                idx='75+'
+            age_group_counts[idx]+=1
+        age_group_by_loc[key]=age_group_counts
 
-#The following loop creates contact matrices by workplace
-contactMatricesByWorkplace={}
-for key in age_groups_by_workplace.keys():
-    temp_gamma_ii=workplace_gamma_ii
-    gamma_ij=0 #This is the probability of contacting someone from a different age group
-    CMbyWorkplace=copy.deepcopy(workplaceBaseCM)
-    age_counts=age_groups_by_workplace[key]
-    total=sum(age_counts.values())
-    absentAgeGroups=set(age_groups)-age_counts.keys()
-    if len(age_counts)==1:
-        temp_gamma_ii=1
+def buildNewContactMatrix(loc_type):
+    """
+    This function builds contact matrices for loc_type (school or workplace)
+    age_distribution -> percentage of population in an age group for the country
+    age_groups_by_loc -> number of people in each age group, indexed by work_ or school_ id
+    """
+    CMNew={}
+    if loc_type=="school":
+        age_groups_by_loc=age_groups_by_school
+        age_distribution=APBG_schools
+        base_M=schoolBaseCM
+        pickle_file=contactMatricesBySchoolFile
+        print("Creating contact matrices for schools...")
+    elif loc_type=="workplace":
+        age_groups_by_loc=age_groups_by_workplace
+        age_distribution=APBG_workplaces
+        base_M=workplaceBaseCM
+        pickle_file=contactMatricesByWorkplaceFile
+        print("Creating contact matrices for workplaces...")
     else:
-        gamma_ij=(1-temp_gamma_ii)/(len(age_counts)-1)
-    for age_group in age_counts:
-        remaining=age_counts.keys()-{age_group}
-        CMbyWorkplace[age_groups.index(age_group)][age_groups.index(age_group)]*=temp_gamma_ii*age_counts[age_group]/total
-        for ag in remaining:
-            CMbyWorkplace[age_groups.index(age_group)][age_groups.index(ag)]*=gamma_ij*age_counts[ag]/total
-        for ag in absentAgeGroups: #All absent age_groups set to zero
-            CMbyWorkplace[age_groups.index(age_group)][age_groups.index(ag)]=0
-    contactMatricesByWorkplace[key]=CMbyWorkplace
-pickle.dump(contactMatricesByWorkplace, open(contactMatricesByWorkplaceFile,'wb'))
+        print("Invalid location type")
+        return
+    for key in age_groups_by_loc.keys():
+        temp_CM=copy.deepcopy(base_M)
+        age_counts=age_groups_by_loc[key]
+        total=sum(age_counts.values())
+        for age_group in age_counts:
+            idx=age_groups.index(age_group)
+            if age_counts[age_group]==0:
+                temp_CM[idx]=0
+            else:
+                for age_groups_idx,demographic_percentage in enumerate(age_distribution):
+                    if demographic_percentage:
+                        temp_CM[idx][age_groups_idx]=base_M[idx][age_groups_idx]*(1/demographic_percentage)*age_counts[age_groups[age_groups_idx]]/total
+                    else:
+                        temp_CM[idx][age_groups_idx]=0
+        CMNew[key]=temp_CM
+    print("Written to ",pickle_file)
+    pickle.dump(CMNew, open(pickle_file,'wb'))
+
+for loc_type in ["school","workplace"]:
+    ageGroupByLoc(loc_type)
+    buildNewContactMatrix(loc_type)
