@@ -8,11 +8,11 @@ from datetime import datetime
 import time
 import matplotlib.pyplot as plt
 import numpy as np
-
+import json
 
 class TransmissionWeighter:
-    def __init__(self, loc_scalars, mask_scalar):#, loc_masking):
-        self.name = 'sole'
+    def __init__(self, loc_scalars, mask_scalar, name = 'default'):#, loc_masking):
+        self.name = name
         self.global_weight = 1
         self.mask_scalar = mask_scalar
         self.loc_scalars = loc_scalars
@@ -34,7 +34,6 @@ class TransmissionWeighter:
                 weight = weight*self.mask_scalar
         return weight
 
-
     #WIP
     def reweight(graph, groups):
         pass
@@ -42,6 +41,14 @@ class TransmissionWeighter:
     #WIP
     def record(self, record):
         record.print(str(self.__dict__))
+
+    def __str__(self):
+        string = "\n Weighter name: {} \n".format(self.name)
+        string += "Global default weight: {} \n".format()
+        string +="Mask risk reduction scalar: {} \n".format(self.mask_scalar)
+        string +="Environment weight scalars: \n"
+        string += json.dumps(self.loc_scalars)
+        return string
 
 
 class PopulaceGraph:
@@ -55,6 +62,8 @@ class PopulaceGraph:
         self.environment_masking = environment_masking
         if graph == None:
             self.graph = nx.Graph()
+
+        #load populace from file if necessary
         if populace == None:
         # for loading people objects from file
             with open("people_list_serialized.pkl", 'rb') as file:
@@ -80,8 +89,7 @@ class PopulaceGraph:
         else:
             self.pops_by_category = pops_by_category
 
-
-    def clusterRandom(self, group, location, masking, params):
+    def clusterRandom(self, group, env, masking, params):
         member_count = len(group)
         avg_degree = params
         if avg_degree >= member_count:
@@ -94,8 +102,8 @@ class PopulaceGraph:
             pos_edges = itertools.combinations(group,2)
             for edge in pos_edges:
                 if random.random()<edgeProb:
-                    weight =  self.weighter.getWeight(edge[0],edge[1], location, masking)
-                    self.graph.add_edge(edge[0],edge[1], transmission_weight = weight)
+                    weight =  self.weighter.getWeight(edge[0], edge[1], env, masking)
+                    self.graph.add_edge(edge[0], edge[1], transmission_weight = weight, environment = env)
 
         else:
             for i in range(member_count-1):
@@ -103,8 +111,8 @@ class PopulaceGraph:
                 for j in range(i+1,member_count):
                     if random.random()<edgeProb:
                         nodeB = group[j]
-                        weight = self.weighter.getWeight(nodeA,nodeB,location)
-                        self.graph.add_edge(nodeA,nodeB, transmission_weight = weight)
+                        weight = self.weighter.getWeight(nodeA, nodeB, env)
+                        self.graph.add_edge(nodeA, nodeB, transmission_weight = weight, environment = env)
 
     #WIP
     def clusterPartitions(self, group, location, member_count, weighter, masking, params):
@@ -116,16 +124,16 @@ class PopulaceGraph:
         #groups = nGroupAssign()
 
 
-    def clusterDense(self, members, location, masking = None, params = None):
+    def clusterDense(self, members, env, masking = None, params = None):
         member_count = len(members)
         #memberWeightScalar = np.sqrt(memberCount)
         for i in range(member_count):
             for j in range(i):
-                weight = self.trans_weighter.getWeight(members[i], members[j], location, masking)
-                self.graph.add_edge(members[i], members[j], transmission_weight = weight) #/ memberWeightScalar)
+                weight = self.trans_weighter.getWeight(members[i], members[j], env, masking)
+                self.graph.add_edge(members[i], members[j], transmission_weight = weight, environment = env) #/ memberWeightScalar)
 
 
-    def clusterStrogatz(self, members, location, masking, params):
+    def clusterStrogatz(self, members, env, masking, params):
         member_count = len(members)
         if member_count == 1:
             return
@@ -136,7 +144,7 @@ class PopulaceGraph:
             self.record.print("Error: local_k must be even")
             local_k = local_k+1
         if local_k >= member_count:
-            self.clusterDense(members, location, masking)
+            self.clusterDense(members, env, masking)
 
         for i in range(member_count):
             nodeA = members[i]
@@ -149,8 +157,8 @@ class PopulaceGraph:
 
                 else:
                     nodeB = members[(i + j) % member_count]
-                    weight = self.trans_weighter.getWeight(nodeA,nodeB, location, masking)
-                self.graph.add_edge(nodeA, nodeB, transmission_weight=self.trans_weighter.getWeight(nodeA,nodeB, location, masking))
+                weight = self.trans_weighter.getWeight(nodeA, nodeB, env, masking)
+                self.graph.add_edge(nodeA, nodeB, transmission_weight=weight, environment = env)
 
 
     def clusterByDegree_p(graph, groups, weighter, masking, degree_p):
@@ -277,23 +285,26 @@ class PopulaceGraph:
 
     #WIP
     def constructPreferenceMatrix(self, key, partition_size):
+
+        #partition groups writes self.id_to_partition
         partitioned_groups = self.partitionOrdinals(self, key, partition_size)
+        id_to_partition = self.id_to_partition
         partition_count = partitioned_groups.__len__()
         partition_sizes = np.zeros(partition_count)
-        contact_matrix = np.zeros([partition_count, partition_count])
+        preference_matrix = np.zeros([partition_count, partition_count])
 
-        #create dict to associate each id to partition
-        id_to_partition = {}
-        for partition in range(partition_count):
-            list = partitioned_groups[partition]['list']
-            partition_sizes[partition] = list.__len__()
-            for id in list:
-               id_to_partition[id] = partition
-
+        cumulative_weight = self.sumAllWeights()
+        cumulative_edge_pos =self.
         for i in self.graph:
             iPartition = id_to_partition[i]
             for j in self.graph[i]:
                 jPartition = id_to_partition[j]
+
+                if iPartition == jPartition:
+                    pos_edges = iPartition*(iPartition-1)/2
+                else:
+                    pos_edges = iPartition*jPartition
+
                 contact_matrix[iPartition, jPartition] += self.graph[i][j]['transmission_weight']/partition_sizes[iPartition]
         #plt.imshow(np.array([row / np.linalg.norm(row) for row in contact_matrix]))
         self.contact_matrix = contact_matrix
@@ -346,6 +357,7 @@ class PopulaceGraph:
         plt.imshow(self.contact_matrix)
         plt.show()
         plt.savefig("./simResults/{}/contactMatrix".format(self.record.stamp))
+
     def plotNodeDegreeHistogram(self):
         plt.hist([degree[1] for degree in nx.degree(self.graph)], 'auto')
         plt.ylabel("total people")
@@ -377,7 +389,7 @@ class PopulaceGraph:
         ax[1].legend()
         plt.show()
 
-    def plotVictoryChart(self,partition = None):
+    def plotEvasionChart(self, partition = None):
         for sim in self.sims:
             sim = sim[0]
             totals = []
@@ -387,10 +399,14 @@ class PopulaceGraph:
             #totals = sorted(totals)
         plt.bar(list(range(len(totals))),totals)
         plt.show()
-        plt.ylabel("Percent never infected")
+        plt.ylabel("Fraction Uninfected")
         plt.xlabel("partition number ")
         plt.savefig("./simResults/{}/victoryPlot".format(self.record.stamp))
 
+    def __str__(self):
+        string = "Model: "
+        string += "\n Weighter Name: {}".format(self.trans_weighter.name)
+        string += "\n {Node count: {}, Edge count: {}}".format(self.graph.number_of_nodes, self.graph.number_of_edges())
 
 
 class Record:
@@ -406,8 +422,10 @@ class Record:
         self.log+=('\n')
         self.log+=(string)
 
-    def getComment(self):
-        self.comments += input("Enter comment")
+    def addComment(self):
+        comment = input("Enter comment")
+        self.comments += comment
+        self.log +=comment
 
     def printGraphStats(self, graph, statAlgs):
         if not nx.is_connected(graph):
