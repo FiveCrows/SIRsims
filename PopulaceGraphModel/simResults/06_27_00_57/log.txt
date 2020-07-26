@@ -1,0 +1,19 @@
+
+loading and sorting synthetic populations
+finished in 1.8390343189239502 seconds
+
+
+building populace into graphs with the  clusterRandom clustering algorithm
+
+
+clustering sp_hh_id groups with the clusterDenseGroup algorithm
+270559 weights of size 1 added for 110944 work environments in 5.216590642929077 seconds
+
+
+clustering work_id groups with the clusterRandom algorithm
+997944 weights of size 0.5 added for 15824 work environments in 18.01344347000122 seconds
+
+
+clustering school_id groups with the clusterRandom algorithm
+452410 weights of size 0.5 added for 62 work environments in 3.9772462844848633 seconds
+The final graph finished in 27.20753502845764 seconds. with properties:

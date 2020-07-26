@@ -1,6 +1,8 @@
 using LightGraphs
 using DataFrames
 using Random
+using PyCall
+@pyimport pickle
 
 # Given two subgraphs, I would like to connect them.
 # Assign two ages, 5 and 10 to each node
@@ -427,3 +429,24 @@ end
 d = degree(g)
 @show avgd1 = sum(d[1:n1]) / n1
 @show avgd2 = sum(d[1+n1:n1+n2]) / n2
+
+import CSV
+df = CSV.read("school_contact_matrix.csv")
+arr = df[!, "450145980"]
+arr = Vector(arr)
+arr = reshape(arr, 16, 16)
+
+
+function myunpickle(filename)
+    r = nothing
+    @pywith pybuiltin("open")(filename,"rb") as f begin
+        r = pickle.load(f)
+    end
+    return r
+end
+
+dir = "ContactMatrices/Leon/"
+ds = myunpickle(dir*"ContactMatrixSchools.pkl")
+dw = myunpickle(dir*"ContactMatrixWorkplaces.pkl")
+
+d = ds[450122676]
