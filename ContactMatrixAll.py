@@ -10,6 +10,7 @@ The final contact matrices are written into the following files:
 ContactMatrices/Leon/ContactMatrixLeonSchools.pkl
 ContactMatrices/Leon/ContactMatrixLeonWorkplaces.pkl
 '''
+#TODO: Change APBG_workplaces to reflect splits in ages 35-44 and 65-74 according to population
 import numpy as np
 import pandas as pd
 import pickle
@@ -32,6 +33,8 @@ people_data=pickle.load(open(people_file,'rb'))
 workplaces_data=pickle.load(open(workplaces_file,'rb'))
 contactMatricesBySchoolFile=CM_home_dir+"Leon/ContactMatrixSchools.pkl"
 contactMatricesByWorkplaceFile=CM_home_dir+"Leon/ContactMatrixWorkplaces.pkl"
+gammaSchoolFile=CM_home_dir+"Leon/GammaSchools.pkl"
+gammaWorkplaceFile=CM_home_dir+"Leon/GammaWorkplaces.pkl"
 students_by_school=defaultdict(set)
 employees_by_workplace=defaultdict(set)
 age_groups_by_school={}
@@ -71,46 +74,56 @@ def ageGroupByLoc(loc_type):
             age_group_counts[idx]+=1
         age_group_by_loc[key]=age_group_counts
 
-def buildNewContactMatrix(loc_type):
+def buildNewGammaAndContactMatrix(loc_type):
     """
-    This function builds contact matrices for loc_type (school or workplace)
+    This function builds gamma and contact matrices for loc_type (school or workplace)
     age_distribution -> percentage of population in an age group for the country
     age_groups_by_loc -> number of people in each age group, indexed by work_ or school_ id
     """
     CMNew={}
+    Gammas={}
     if loc_type=="school":
         age_groups_by_loc=age_groups_by_school
         age_distribution=APBG_schools
         base_M=schoolBaseCM
-        pickle_file=contactMatricesBySchoolFile
-        print("Creating contact matrices for schools...")
+        pickle_fileCM=contactMatricesBySchoolFile
+        pickle_fileGamma=gammaSchoolFile
+        print("Creating gamma and contact matrices for schools...")
     elif loc_type=="workplace":
         age_groups_by_loc=age_groups_by_workplace
         age_distribution=APBG_workplaces
         base_M=workplaceBaseCM
-        pickle_file=contactMatricesByWorkplaceFile
-        print("Creating contact matrices for workplaces...")
+        pickle_fileCM=contactMatricesByWorkplaceFile
+        pickle_fileGamma=gammaByWorkplaceFile
+        print("Creating gamma and contact matrices for workplaces...")
     else:
         print("Invalid location type")
         return
     for key in age_groups_by_loc.keys():
         temp_CM=copy.deepcopy(base_M)
+        temp_gamma=copy.deepcopy(base_M)
         age_counts=age_groups_by_loc[key]
         total=sum(age_counts.values())
         for age_group in age_counts:
             idx=age_groups.index(age_group)
             if age_counts[age_group]==0:
                 temp_CM[idx]=0
+                temp_gamma[idx]=0
             else:
                 for age_groups_idx,demographic_percentage in enumerate(age_distribution):
                     if demographic_percentage:
+                        temp_gamma[idx][age_groups_idx]=base_M[idx][age_groups_idx]*(1/demographic_percentage)
                         temp_CM[idx][age_groups_idx]=base_M[idx][age_groups_idx]*(1/demographic_percentage)*age_counts[age_groups[age_groups_idx]]/total
                     else:
+                        temp_gamma[idx][age_groups_idx]=0
                         temp_CM[idx][age_groups_idx]=0
         CMNew[key]=temp_CM
-    print("Written to ",pickle_file)
-    pickle.dump(CMNew, open(pickle_file,'wb'))
+        Gammas[key]=temp_gamma
+    print("Contact matrices written to ",pickle_fileCM)
+    print("Gamma values written to ",pickle_fileCM)
+    pickle.dump(CMNew, open(pickle_fileCM,'wb'))
+    #pickle.dump(Gammas, open(pickle_fileGamma,'wb'))
 
 for loc_type in ["school","workplace"]:
     ageGroupByLoc(loc_type)
-    buildNewContactMatrix(loc_type)
+    buildNewGammaAndContactMatrix(loc_type)
