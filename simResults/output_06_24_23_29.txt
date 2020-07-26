@@ -1,2 +1,0 @@
-loading and sorting synthetic populations
-finished in 29.387211084365845 seconds

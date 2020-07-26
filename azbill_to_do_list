@@ -1,14 +1,1 @@
-finish test logging system
-add mor stats on groupCluster
-finish clusterPartition function
-finish clusterPA function
-test with different K
-apply grade seperations to students
-arrange location datasets in Environment class
-Write function to predict weights
-
-investigate commorbitities
-   death rate
-   behaviour change
-
-GPU computing
+Predict deaths

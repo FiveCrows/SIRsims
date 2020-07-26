@@ -60,6 +60,7 @@ class PopulaceGraph:
         self.contactMatrix = None
         self.environment_degrees = environment_degrees
         self.environment_masking = environment_masking
+        self.total_weight = 0
         if graph == None:
             self.graph = nx.Graph()
 
@@ -104,7 +105,7 @@ class PopulaceGraph:
                 if random.random()<edgeProb:
                     weight =  self.weighter.getWeight(edge[0], edge[1], env, masking)
                     self.graph.add_edge(edge[0], edge[1], transmission_weight = weight, environment = env)
-
+                    self.total_weight += weight
         else:
             for i in range(member_count-1):
                 nodeA = group[i]
@@ -120,6 +121,7 @@ class PopulaceGraph:
         mixing_rate = params[1]
         if partition_size>member_count:
             self.clusterDense(group, member_count, masking, params)
+
             return
         #groups = nGroupAssign()
 
@@ -131,7 +133,7 @@ class PopulaceGraph:
             for j in range(i):
                 weight = self.trans_weighter.getWeight(members[i], members[j], env, masking)
                 self.graph.add_edge(members[i], members[j], transmission_weight = weight, environment = env) #/ memberWeightScalar)
-
+                self.total_weight +=weight
 
     def clusterStrogatz(self, members, env, masking, params):
         member_count = len(members)
@@ -158,9 +160,10 @@ class PopulaceGraph:
                 else:
                     nodeB = members[(i + j) % member_count]
                 weight = self.trans_weighter.getWeight(nodeA, nodeB, env, masking)
+                self.total_weight+=weight
                 self.graph.add_edge(nodeA, nodeB, transmission_weight=weight, environment = env)
 
-
+    #needs to be updated
     def clusterByDegree_p(graph, groups, weighter, masking, degree_p):
         #some random edges may be duplicates, best for large groups
         connectorList = []
@@ -181,7 +184,7 @@ class PopulaceGraph:
                     graph.add_edge(nodeA,nodeB,transmission_weight = weighter.getWeight(nodeA,nodeB))
                     i = i+2
 
-
+    #WIP
     def clusterGroupsByPA(graph, groups):
         for key in groups.keys():
             memberCount = len(groups[key])
@@ -223,33 +226,46 @@ class PopulaceGraph:
         self.record.print("Graph completed in {} seconds.".format((stop_a - start)))
 
 
-    def partitionOrdinals(self, key, partition_size, partition_limit = 16):
+    def partition(self, people, key, range = None,  partition_limit = 16):
+        #I'll wory about this if statement when I'm in need of a non-ordinal partition
+        if range == None:
+            pass
         maximum = max(self.pops_by_category[key].keys())
-        minimum = min(self.pops_by_category[key].keys())
-        # partitioned_groups = partitionNames = (['{}:{}'.format(inf*partition_size, (inf+1)*partition_size) for inf in range(minimum//partition_size,maximum//partition_size)])
-        # intNames = {inf :'{}:{}'.format(inf*partition_size, (inf+1)*partition_size) for inf in range(minimum//partition_size,maximum//partition_size)}
-        partitioned_groups = [{key: '{}:{}'.format(i * partition_size, (i + 1) * partition_size), 'list': []} for i in
-                              range(0, maximum // partition_size + 1)]
 
-        for i in self.pops_by_category[key].keys():
-            partitioned_groups[i // partition_size]['list'].extend(self.pops_by_category[key][i])
+        number_people = len(people)
+        #partitioned_groups = [{key: '{}:{}'.format(i * range, (i + 1) * range), 'list': []} for i in range(0, maximum // range + 1)]
+        partition = [[] for i in range(maximum//range+1)]
+        id_to_element = {}
 
-            # this is here in case the loaded matrix has unusual shape, like combining all ages  75+ into one group
-            # loops back from the partitions at the end
+        for person in people:
+            if range != None:
+                element = self.populace[person][key] // range
+                partition[element].append(person)
+                id_to_element[person] = element
+
+        # this is here in case the loaded matrix has unusual shape, like combining all ages  75+ into one group
+        # loops back from the partitions at the end
         if partition_limit != None:
-            for i in range(len(partitioned_groups) - 1, partition_limit - 1, -1):
-                partitioned_groups[partition_limit - 1]['list'] = partitioned_groups[partition_limit - 1]['list'] + partitioned_groups[i]['list']
-                del partitioned_groups[i]
+            for i in range(len(partition) - 1, partition_limit - 1, -1):
+                partition[partition_limit - 1]['list'] = partition[partition_limit - 1]['list'] + partition[i]['list']
+                del partition[i]
+
+        for person in people:
+            if range != None:
+                element = self.populace[person][key] // range
+                id_to_element[person] = element
+
 
         #create an inverse of the partion dict
-        self.id_to_partition = {}
-        partition_count = partitioned_groups.__len__()
-        for partition in range(partition_count):
-            list = partitioned_groups[partition]['list']
+        id_to_partition = {}
+        partition_elements = partition.__len__()
+        for partition in range(partition_elements):
+            list = partition[partition]['list']
             for id in list:
-               self.id_to_partition[id] = partition
-        self.partitioned_groups = partitioned_groups
-        return partitioned_groups
+               id_to_partition[id] = partition
+        partitioned_groups = partition
+
+        return [partitioned_groups, id_to_partition]
 
 
     def sumAllWeights(self):
@@ -261,8 +277,8 @@ class PopulaceGraph:
         return sum
 
 
-    def constructContactMatrix(self, key, partition_size):
-        partitioned_groups = self.partitionOrdinals(key, partition_size)
+    def constructContactMatrix(self, key, partition_size, people):
+        partitioned_groups = self.partition(key, partition_size)
         partition_count = partitioned_groups.__len__()
         partition_sizes = np.zeros(partition_count)
         contact_matrix = np.zeros([partition_count, partition_count])
@@ -275,43 +291,20 @@ class PopulaceGraph:
             for id in list:
                id_to_partition[id] = partition
 
-        for i in self.graph:
+        for i in people:
             iPartition = id_to_partition[i]
-            for j in self.graph[i]:
+            for j in people.graph[i]:
                 jPartition = id_to_partition[j]
                 contact_matrix[iPartition, jPartition] += self.graph[i][j]['transmission_weight']/partition_sizes[iPartition]
         #plt.imshow(np.array([row / np.linalg.norm(row) for row in contact_matrix]))
         self.contact_matrix = contact_matrix
 
-    #WIP
-    def constructPreferenceMatrix(self, key, partition_size):
+#    def construct_weight_matrix():
 
-        #partition groups writes self.id_to_partition
-        partitioned_groups = self.partitionOrdinals(self, key, partition_size)
-        id_to_partition = self.id_to_partition
-        partition_count = partitioned_groups.__len__()
-        partition_sizes = np.zeros(partition_count)
-        preference_matrix = np.zeros([partition_count, partition_count])
-
-        cumulative_weight = self.sumAllWeights()
-        cumulative_edge_pos =self.
-        for i in self.graph:
-            iPartition = id_to_partition[i]
-            for j in self.graph[i]:
-                jPartition = id_to_partition[j]
-
-                if iPartition == jPartition:
-                    pos_edges = iPartition*(iPartition-1)/2
-                else:
-                    pos_edges = iPartition*jPartition
-
-                contact_matrix[iPartition, jPartition] += self.graph[i][j]['transmission_weight']/partition_sizes[iPartition]
-        #plt.imshow(np.array([row / np.linalg.norm(row) for row in contact_matrix]))
-        self.contact_matrix = contact_matrix
 
 
     def fitWithContactMatrix(self, contact_matrix, key, partition_size, show_scale = False):
-        assert contact_matrix.shape[0] == contact_matrix.shape[1], "contact matrices must be symmetric"
+        assert contact_matrix.shape[0] == contact_matrix.shape[1], "contact matrix must be square"
         self.constructContactMatrix(key, partition_size)
         assert self.contact_matrix.shape == contact_matrix.shape, "mismatch contact matrix shapes"
 
