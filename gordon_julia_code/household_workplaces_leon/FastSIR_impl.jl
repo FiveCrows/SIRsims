@@ -54,14 +54,7 @@ function fastSIR(G, params, initial_infecteds::Vector{Int})
         nodes[u] = Node(u, :S, pred_inf_time, rec_time)
     end
 
-	# REMOVE
-	#println(">>> about to test")
-	#testTimings(G, nodes[4])  # EXPERIMENTAL. JUST FOR TESTING REMOVE WHEN DONE
-	#println("END TEST TIMINGS")
-	# REMOVE
-
     for u in initial_infecteds
-       #println("nodes[u]= ", nodes[u])
        event = Event(nodes[u], 0., :transmit)
        # How to do this with immutable structure
        nodes[u].pred_inf_time = 0.0  # should this new time be reflectd in the event? Here, it is.
@@ -75,12 +68,10 @@ function fastSIR(G, params, initial_infecteds::Vector{Int})
                 # 12 allocations, 224 bytes
                 processTransSIR(G, event.node, event.time, τ, γ, times,
 					S, I, R, Q, t_max, nodes)
-                #println("processTransSIR\n")
             end
 		else
              # 1 alloc: 16 bytes, 0.000001 to 0.000002 seconds
              processRecSIR(event.node, event.time, times, S, I, R)
-             #println("processRecSIR\n")
         end
     end
 	println("times, times[end]: $(length(times)), $(times[end])")
@@ -110,6 +101,7 @@ function processTransSIR(G, node_u, t::Float64, τ::Float64, γ::Float64,
 	w::Float64 = 0.
 
 	wghts = weights(G)
+	# Identify susceptible neighbors to infect
 	for ν in neighbors(G, node_u.index)
 		w = wghts[node_u.index, ν]
 		findTransSIR(Q, t, τ, w, node_u, nodes[ν], t_max, nodes)
@@ -120,9 +112,13 @@ end
 function findTransSIR(Q, t, τ, w, source, target, t_max, nodes)
     # w is the edge weight
 	if target.status == :S
+		# Infection time
 		inf_time = t + rand(Exponential(τ*w))
-		#print("inf_time")
 		# Allocate memory for this list
+		# Infection is only possible if 
+		#   a) the infector is not yet recovered, 
+		#   b) if an earlier target infection time is not yet set
+		#   c) t is smaller than the simulation time.time
 		if inf_time < minimum([source.rec_time, target.pred_inf_time, t_max])
 			new_event = Event(target, inf_time, :transmit)
 			Q[new_event] = new_event.time

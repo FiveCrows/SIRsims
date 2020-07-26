@@ -209,8 +209,12 @@ function findTransSIR(Q, t, τ, w, source, target, t_max, nodes)
 		# time to infection when an infected is in contact with a susceptible
 		#inf_time = t + rand(Exponential(τ))  # add w back when debugged
 		inf_time = t + rand(Exponential(τ*w))
-		#print("inf_time")
 		# Allocate memory for this list
+		# Infection is only possible if 
+		#   a) the infector is not yet recovered, 
+		#   b) if an earlier target infection time is not yet set
+		#   c) t is smaller than the simulation time.time
+		#   d) If the :S is on network different from the network on which the time was set. 
 		if inf_time < minimum([source.rec_time, target.pred_inf_time, t_max])
 			new_event = Event(target, inf_time, :transmit)
 			Q[new_event] = new_event.time
