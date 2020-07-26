@@ -18,7 +18,7 @@ model = PopulaceGraph(weighter, env_degrees, env_masking)
 #model.build builds the models graph. I call it with clusterStrogatz as the clustering algorithm here,
 #to specify that edges at work and schools are picked for strogatz graphs
 model.build(model.clusterStrogatz)
-contactMatrixUSA_Base = pd.read_csv("./ContactMatrices/Base/ContactMatrixUSA_Base.csv").values
+contactMatrixUSA_Base = pd.read_csv("../ContactMatrices/Leon/ContactMatrixLeonAll.csv").values
 #model.simulate
 model.simulate(gamma, tau, title = 'control')
 model.record.dump()

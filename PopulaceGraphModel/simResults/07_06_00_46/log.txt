@@ -1,0 +1,35 @@
+
+loading and sorting synthetic populations
+finished in 1.8346920013427734 seconds
+
+
+building populace into graphs with the clusterStrogatz clustering algorithm
+clustering sp_hh_id groups with the clusterDenseGroup algorithm
+270559 weights of size 1 added for 110944 work environments in 5.449182987213135 seconds
+clustering work_id groups with the clusterStrogatz algorithm
+530836 weights of size 0.5 added for 15824 work environments in 2.2795169353485107 seconds
+clustering school_id groups with the clusterStrogatz algorithm
+222325 weights of size 0.5 added for 62 work environments in 0.8768496513366699 seconds
+Graph completed in 8.605764150619507 seconds.
+graph is not connected. There are 10037 components
+0.9061636792547937 of nodes lie within the maximal subgraph
+{'average_clustering': 0.39396203888585973}
+running simulation with the fast_SIR algorithm
+simulation completed in 51.06378936767578 seconds
+total build and sim time: 59.66955351829529
+
+
+building populace into graphs with the clusterStrogatz clustering algorithm
+clustering sp_hh_id groups with the clusterDenseGroup algorithm
+270559 weights of size 1 added for 110944 work environments in 5.930379152297974 seconds
+clustering work_id groups with the clusterStrogatz algorithm
+530787 weights of size 0.5 added for 15824 work environments in 1.8108866214752197 seconds
+clustering school_id groups with the clusterStrogatz algorithm
+222253 weights of size 0.5 added for 62 work environments in 1.0012035369873047 seconds
+Graph completed in 8.742685794830322 seconds.
+graph is not connected. There are 10037 components
+0.9061636792547937 of nodes lie within the maximal subgraph
+{'average_clustering': 0.39460489168346996}
+running simulation with the Gillespie_SIR algorithm
+simulation completed in 52.09350562095642 seconds
+total build and sim time: 60.83619141578674

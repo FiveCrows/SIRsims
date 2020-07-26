@@ -1,0 +1,37 @@
+
+loading and sorting synthetic populations
+finished in 29.21051001548767 seconds
+
+
+building populace into graphs with the  clusterRandom clustering algorithm
+
+
+clustering sp_hh_id groups with the clusterDenseGroup algorithm
+270559 weights of size 1 added for 110944 work environments in 5.643598318099976 seconds
+270559 weights of size 1 have been added for 110944 homes
+
+
+clustering work_id groups with the clusterRandom algorithm
+564899 weights of size 0.5 added for 15824 work environments in 6.5407655239105225 seconds
+
+
+clustering school_id groups with the clusterRandom algorithm
+266746 weights of size 0.5 added for 62 work environments in 3.4227004051208496 seconds
+The final graph finished in 15.694414615631104 seconds with 1102204 edges
+
+
+building populace into graphs with the  clusterStrogatz clustering algorithm
+
+
+clustering sp_hh_id groups with the clusterDenseGroup algorithm
+270559 weights of size 1 added for 110944 work environments in 5.982450246810913 seconds
+270559 weights of size 1 have been added for 110944 homes
+
+
+clustering work_id groups with the clusterStrogatz algorithm
+0 weights of size 0.5 added for 15824 work environments in 0.2749297618865967 seconds
+
+
+clustering school_id groups with the clusterStrogatz algorithm
+0 weights of size 0.5 added for 62 work environments in 0.19532203674316406 seconds
+The final graph finished in 6.535105228424072 seconds with 270559 edges
