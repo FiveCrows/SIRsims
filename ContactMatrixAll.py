@@ -9,8 +9,6 @@ The final contact matrices are written into the following files:
 
 ContactMatrices/Leon/ContactMatrixLeonSchools.pkl
 ContactMatrices/Leon/ContactMatrixLeonWorkplaces.pkl
-
-# PLEASE PROVIDE LINKS TO DATA SOURCE(S)
 '''
 #TODO: Change APBG_workplaces to reflect splits in ages 35-44 and 65-74 according to population
 import numpy as np
