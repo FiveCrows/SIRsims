@@ -11,22 +11,25 @@ import numpy as np
 import json
 
 class TransmissionWeighter:
-    def __init__(self, loc_scalars, mask_scalar, name = 'default'):#, loc_masking):
+    def __init__(self, env_scalars, mask_scalar, env_masking, name ='default'):#, loc_masking):
         self.name = name
         self.global_weight = 1
         self.mask_scalar = mask_scalar
-        self.loc_scalars = loc_scalars
+        self.env_masking = env_masking
+        self.env_scalars = env_scalars
+
         #self.loc_masking = loc_masking
         #self.age_scalars = age_scalars
 
-    def getWeight(self, personA, personB, location, masking):
+    def getWeight(self, personA, personB, env, masking):
+        masking = self.env_masking[env]
         weight = self.global_weight
         try:
-            weight = weight*self.loc_scalars[location]
+            weight = weight*self.env_scalars[env]
         except:
             print("locale type not identified")
 
-        if (masking != None):
+        if (masking != 0):
             if random.random()<masking:
                 weight = weight*self.mask_scalar
         if masking != None:
@@ -47,12 +50,12 @@ class TransmissionWeighter:
         string += "Global default weight: {} \n".format()
         string +="Mask risk reduction scalar: {} \n".format(self.mask_scalar)
         string +="Environment weight scalars: \n"
-        string += json.dumps(self.loc_scalars)
+        string += json.dumps(self.env_scalars)
         return string
 
 
 class PopulaceGraph:
-    def __init__(self, weighter, environment_degrees, environment_masking = None, graph = None, populace = None, pops_by_category = None, categories = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False):
+    def __init__(self, weighter, environment_degrees, environment_masking =  {'work': 0, 'school':0}, graph = None, populace = None, pops_by_category = None, categories = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False):
         self.trans_weighter = weighter
         self.isBuilt = False
         self.record = Record()
@@ -84,6 +87,7 @@ class PopulaceGraph:
         # for sorting people into categories
         # takes a dict of dicts to rep resent populace and returns a list of dicts of lists to represent groups of people with the same
         # attributes
+            env_rename = {'sp_hh_id': 'household'}
             pops_by_category = {category: {} for category in categories}
             #pops_by_category{'populace'} = []
             for person in self.populace:
@@ -196,11 +200,12 @@ class PopulaceGraph:
             memberCount = len(groups[key])
 
 
-    def clusterGroups(self, environment, clusterAlg, masking, params=None):
+    def clusterGroups(self, env, clusterAlg, masking, params=None):
         #self.record.print("clustering {} groups with the {} algorithm".format(classifier, clusterAlg.__name__))
         start = time.time()
         # # stats = {"classifier": }
-        groups = self.pops_by_category[environment]
+        env_to_category = {"household": "sp_hh_id","work":"work_id","school": "school_id"}
+        groups = self.pops_by_category[env_to_category[env]]
         group_count = len(groups)
 
         initial_weights = self.graph.size()
@@ -208,11 +213,11 @@ class PopulaceGraph:
             if key == None:
                 continue
             group = groups[key]
-            clusterAlg(group, environment, masking, params)
+            clusterAlg(group, env, masking, params)
 
         weights_added = self.graph.size() - initial_weights
         stop = time.time()
-        self.record.print("{} weights added for {} environments in {} seconds".format(weights_added, len(self.pops_by_category[environment].keys()), stop - start))
+        self.record.print("{} weights added for {} environments in {} seconds".format(weights_added, len(self.pops_by_category[env_to_category[env]].keys()), stop - start))
 
 
     def build(self, clusteringAlg, params=None, exemption=None, masking = {'schools': None, 'workplaces': None}):
@@ -222,12 +227,12 @@ class PopulaceGraph:
         self.graph = nx.Graph()
 
         #dense cluster for each household
-        self.clusterGroups('sp_hh_id', self.clusterDense, None)
+        self.clusterGroups('household', self.clusterDense, None)
         #cluster schools and workplaces with specified clustering alg
         if exemption != 'workplaces':
-            self.clusterGroups('work_id', self.clusterStrogatz, self.environment_masking['work'], [self.environment_degrees['work'], 0.5])
+            self.clusterGroups('work', self.clusterStrogatz, self.environment_masking['work'], [self.environment_degrees['work'], 0.5])
         if exemption != 'schools':
-            self.clusterGroups('school_id', self.clusterStrogatz,self.environment_masking['school'], [self.environment_degrees['school'], 0.5])
+            self.clusterGroups('school', self.clusterStrogatz,self.environment_masking['school'], [self.environment_degrees['school'], 0.5])
         stop_a = time.time()
         #self.record.print("Graph completed in {} seconds.".format((stop_a -
 
@@ -265,10 +270,10 @@ class PopulaceGraph:
         return weights
 
     def partitionToContactMatrix(self, partition, id_to_partition):
-        element_sizes = [len(partition[i]) for i in partition]
+        element_sizes = [len(element) for element in partition]
         partition_elements = len(partition)
         weight_matrix = self.constructWeightMatrix(partition, id_to_partition)
-        contact_matrix = np.zeros(partition_elements, partition_elements)
+        contact_matrix = np.zeros([partition_elements, partition_elements])
         for i in range(partition_elements):
             for j in range(partition_elements):
                 contact_matrix[i,j] = weight_matrix[i,j]/element_sizes[i]
@@ -296,14 +301,13 @@ class PopulaceGraph:
 
 
 
-    def fitWithContactMatrix(self, contact_matrix, key, partition_size, show_scale = False):
-        #assert contact_matrix.shape[0] == contact_matrix.shape[1], "contact matrix must be square"
-        self.constructContactMatrix(list(self.populace.keys(), key, partition_size,))
-        #assert self.contact_matrix.shape == contact_matrix.shape, "mismatch contact matrix shapes"
+    def fitWithContactMatrix(self, people, contact_matrix, key, partition_size, show_scale = False):
+        assert contact_matrix.shape[0] == contact_matrix.shape[1], "contact matrix must be square"
+        assert contact_matrix.shape == contact_matrix.shape, "mismatch contact matrix shapes"
 
         entireGraphWeight = self.sumAllWeights()
 
-        scaleMatrix = (self.contact_matrix + self.contact_matrix.transpose()) / (contact_matrix + contact_matrix.transpose())
+        scaleMatrix = (contact_matrix + contact_matrix.transpose()) / (contact_matrix + contact_matrix.transpose())
         for i in self.graph:
             for j in self.graph[i]:
                 scalar = scaleMatrix[self.id_to_partition[i], self.id_to_partition[j]]
@@ -338,6 +342,7 @@ class PopulaceGraph:
         #self.record.print("The infection quit spreading after {} days, and {} of people were never infected".format(time_to_immunity,percent_uninfected))
         self.sims.append([simResult, title])
 
+    #doesn't work, outdated
     def plotContactMatrix(self, key, partition_size):
         self.constructContactMatrix(key, partition_size)
         plt.imshow(self.contact_matrix)
@@ -377,17 +382,20 @@ class PopulaceGraph:
 
     def plotEvasionChart(self, partition = None):
         for sim in self.sims:
+            title = sim[1]
             sim = sim[0]
+
             totals = []
             end_time = sim.t()[-1]
-            for group in self.partitioned_groups:
-                totals.append(sum(status == 'S' for status in sim.get_statuses(group['list'], end_time).values())/len(group))
+            for element in partition:
+                totals.append(sum(status == 'S' for status in sim.get_statuses(element, end_time).values())/len(element))
             #totals = sorted(totals)
-        plt.bar(list(range(len(totals))),totals)
+            plt.bar(list(range(len(totals))),totals,label = title)
+        plt.legend()
         plt.show()
         plt.ylabel("Fraction Uninfected")
         plt.xlabel("partition number ")
-        plt.savefig("./simResults/{}/victoryPlot".format(self.record.stamp))
+        plt.savefig("./simResults/{}/evasionChart".format(self.record.stamp))
 
     def __str__(self):
         string = "Model: "
