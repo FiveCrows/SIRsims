@@ -69,17 +69,23 @@ class PopulaceGraph:
         # for loading people objects from file
             with open("people_list_serialized.pkl", 'rb') as file:
                 x = pickle.load(file)
-            # return represented by dict of dicts
-            self.populace = ({key: (vars(x[key])) for key in x})  # .transpose()
 
+            # return represented by dict of dicts
+        if slim == False:
+            self.populace = ({key: (vars(x[key])) for key in x})  # .transpose()
         else:
-            self.populace = populace
+            self.populace = {}
+            for key in x:
+                if random.random()>0.9:
+                    self.populace[key] = (vars(x[key]))
+
 
         if pops_by_category == None:
         # for sorting people into categories
         # takes a dict of dicts to rep resent populace and returns a list of dicts of lists to represent groups of people with the same
         # attributes
             pops_by_category = {category: {} for category in categories}
+            #pops_by_category{'populace'} = []
             for person in self.populace:
                 for category in categories:
                     try:
@@ -223,50 +229,20 @@ class PopulaceGraph:
         if exemption != 'schools':
             self.clusterGroups('school_id', self.clusterStrogatz,self.environment_masking['school'], [self.environment_degrees['school'], 0.5])
         stop_a = time.time()
-        self.record.print("Graph completed in {} seconds.".format((stop_a - start)))
+        #self.record.print("Graph completed in {} seconds.".format((stop_a -
 
 
-    def partition(self, people, key, range = None,  partition_limit = 16):
-        #I'll wory about this if statement when I'm in need of a non-ordinal partition
-        if range == None:
-            pass
-        maximum = max(self.pops_by_category[key].keys())
+    def partition(self, people, attribute, enumerator, partition_limit = 16):
+        partition =  [[] for i in range(len(np.unique(list(enumerator.values()))))] #yup... this creates an empty list for every partition element in a list,
+        #A better way? IDK ...
 
-        number_people = len(people)
-        #partitioned_groups = [{key: '{}:{}'.format(i * range, (i + 1) * range), 'list': []} for i in range(0, maximum // range + 1)]
-        partition = [[] for i in range(maximum//range+1)]
         id_to_element = {}
-
         for person in people:
-            if range != None:
-                element = self.populace[person][key] // range
-                partition[element].append(person)
-                id_to_element[person] = element
+            element = enumerator[self.populace[person][attribute]]
+            partition[element].append(person)
+            id_to_element[person] = element
 
-        # this is here in case the loaded matrix has unusual shape, like combining all ages  75+ into one group
-        # loops back from the partitions at the end
-        if partition_limit != None:
-            for i in range(len(partition) - 1, partition_limit - 1, -1):
-                partition[partition_limit - 1]['list'] = partition[partition_limit - 1]['list'] + partition[i]['list']
-                del partition[i]
-
-        for person in people:
-            if range != None:
-                element = self.populace[person][key] // range
-                id_to_element[person] = element
-
-
-        #create an inverse of the partion dict
-        id_to_partition = {}
-        partition_elements = partition.__len__()
-        for partition in range(partition_elements):
-            list = partition[partition]['list']
-            for id in list:
-               id_to_partition[id] = partition
-        partitioned_groups = partition
-
-        return [partitioned_groups, id_to_partition]
-
+        return partition, id_to_element
 
     def sumAllWeights(self):
         sum = 0
@@ -276,37 +252,54 @@ class PopulaceGraph:
         self.entire_weight_sum = sum
         return sum
 
+    #def construct_weight_matrix(partition, id_to_partition):
 
-    def constructContactMatrix(self, key, partition_size, people):
-        partitioned_groups = self.partition(key, partition_size)
-        partition_count = partitioned_groups.__len__()
-        partition_sizes = np.zeros(partition_count)
-        contact_matrix = np.zeros([partition_count, partition_count])
-
-        #create dict to associate each id to partition
-        id_to_partition = {}
-        for partition in range(partition_count):
-            list = partitioned_groups[partition]['list']
-            partition_sizes[partition] = list.__len__()
-            for id in list:
-               id_to_partition[id] = partition
-
-        for i in people:
-            iPartition = id_to_partition[i]
-            for j in people.graph[i]:
+    def constructWeightMatrix(self, partition, id_to_partition):
+        weights = np.zeros([len(partition), len(partition)])
+        for id in id_to_partition:
+            iPartition = id_to_partition[id]
+            for j in self.graph[id]:
                 jPartition = id_to_partition[j]
-                contact_matrix[iPartition, jPartition] += self.graph[i][j]['transmission_weight']/partition_sizes[iPartition]
+                weights[iPartition, jPartition] += self.graph[id][j]['transmission_weight']
         #plt.imshow(np.array([row / np.linalg.norm(row) for row in contact_matrix]))
-        self.contact_matrix = contact_matrix
+        return weights
 
-#    def construct_weight_matrix():
+    def partitionToContactMatrix(self, partition, id_to_partition):
+        element_sizes = [len(partition[i]) for i in partition]
+        partition_elements = len(partition)
+        weight_matrix = self.constructWeightMatrix(partition, id_to_partition)
+        contact_matrix = np.zeros(partition_elements, partition_elements)
+        for i in range(partition_elements):
+            for j in range(partition_elements):
+                contact_matrix[i,j] = weight_matrix[i,j]/element_sizes[i]
+        return contact_matrix
+
+    def partitionToPreferenceMatrix(self, partition, id_to_partition):
+        element_sizes = [len(element) for element in partition]
+        partition_elements = len(partition)
+        number_people = len(id_to_partition.keys())
+        weight_matrix = self.constructWeightMatrix(partition, id_to_partition)
+        cumulative_weight = sum(sum(weight_matrix))
+        preference_matrix = np.zeros([partition_elements, partition_elements])
+        cumulative_pos_edges = number_people*(number_people-1)/2
+        for i in range(partition_elements):
+            for j in range(i, partition_elements):
+                if i == j:
+                    pos_edges = element_sizes[i]*(element_sizes[i] -1)/2
+                else:
+                    pos_edges = element_sizes[i]*element_sizes[j]
+                preference_matrix[i,j] = (weight_matrix[i,j]/cumulative_weight)*(cumulative_pos_edges/pos_edges)
+                preference_matrix[j,i] = preference_matrix[i,j]
+        plt.imshow(preference_matrix)
+        plt.show()
+        return preference_matrix
 
 
 
     def fitWithContactMatrix(self, contact_matrix, key, partition_size, show_scale = False):
-        assert contact_matrix.shape[0] == contact_matrix.shape[1], "contact matrix must be square"
-        self.constructContactMatrix(key, partition_size)
-        assert self.contact_matrix.shape == contact_matrix.shape, "mismatch contact matrix shapes"
+        #assert contact_matrix.shape[0] == contact_matrix.shape[1], "contact matrix must be square"
+        self.constructContactMatrix(list(self.populace.keys(), key, partition_size,))
+        #assert self.contact_matrix.shape == contact_matrix.shape, "mismatch contact matrix shapes"
 
         entireGraphWeight = self.sumAllWeights()
 
