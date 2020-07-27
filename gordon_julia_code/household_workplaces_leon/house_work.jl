@@ -2,11 +2,29 @@
 include("./modules.jl")
 using Plots
 include("./functions.jl")
+include("./read_age_map.jl")
 
 # 0.65, skipping over sizes > 1000
 # Questions to Answer:
 # 1) Why do schools have sz > 5000? In fact, why are sizes > 100,000?
 #    And this is after I removed the missing data from the dataframes
+
+const all_df = CSV.read("all_data.csv")
+# Replace all missing by -1
+# Assume that all missings are integers (I do not know that to be true)
+all_df = coalesce.(all_df, -1)
+all_df.index = collect(1:nrow(all_df))
+person_ids = all_df[:person_id] |> collect
+# Add to all_df, the number of people in each workplace
+work_groups = groupby(all_df, "work_id")
+all_df = transform(work_groups, nrow => :wk_count)
+
+# make the minimum age 1 to be consistent with the Transmission Matrix data
+replace!(all_df.age, 0 => 1)
+
+
+
+
 @time home_graph, work_graph, school_graph = generateDemographicGraphs(p)
 
 @show school_graph
@@ -35,7 +53,8 @@ end
 #w = weights.(Glist);
 
 # Retrieve all businesses with nb_employees ∈ [lb, ub]
-function findInfected(df::DataFrame, group_col::Symbol, target_col::Symbol, lb::Int, ub::Int)
+# According to Holme, one should only start a simulation with one infected.
+function setInfected(df::DataFrame, group_col::Symbol, target_col::Symbol, lb::Int, ub::Int)
     grps = groupby(df, group_col)
     dd = combine(grps, group_col => length => target_col)
     dd = dd[lb .< dd[target_col] .< ub, :]
@@ -45,12 +64,66 @@ function findInfected(df::DataFrame, group_col::Symbol, target_col::Symbol, lb::
     return dd, ix, infected
 end
 
-dfs_work, ix, infected_0 = findInfected(all_df, :work_id, :count, 100, 200)
+function setRecovered(df::DataFrame, group_col::Symbol, target_col::Symbol, lb::Int, ub::Int)
+    grps = groupby(df, group_col)
+    dd = combine(grps, group_col => length => target_col)
+    dd = dd[lb .< dd[target_col] .< ub, :]
+    ix = rand(dd[:,group_col], 1)[1]
+    recovered = df[df[group_col] .== ix,:]
+    recovered = recovered.index
+    return dd, ix, recovered
+end
 
-# *****************
+# collect the indices of people whose target_col is witin [lb, ub]
+# For example, getIndexes(df, :age, 8, 15) retrieves all the people whose age
+# is between lb and ub
+function getIndexes(df::DataFrame, target_col::Symbol, lb::Int, ub::Int)
+    indexes = df[lb .<= df[target_col] .<= ub, :].index
+    return indexes
+end
+
+recovered_0 = getIndexes(all_df, :age, 0, 18)
+dfs_work, ix, infected_0 = setInfected(all_df, :work_id, :count, 100, 200)
+#dfs_school, ix, recovered_0 = setRecovered(all_df, :school_id, :count, 400, 800)
+
+# Prepare weights to take contact matrices into account.
+# I have copied the transmission matrix from the paper by Valle
+#transmission_map_file = "transmission_map_age_matrix.csv"
+#df_map = CSV.read(transmisison_map_file, sep=',')
+
+### Sets up ages between 1 in 90
+### I should assume the gages go to 100
+g = SimpleGraph(1000, 5000)
+g = MetaGraph(g)
+using LightGraphs, MetaGraphs
+include("./read_age_map.jl")
+
+function setupMetaData(all_df, Glist)
+    for g in Glist
+        setupTransmission(all_df, g)
+
+        # create edge dictionary
+        edge_dict = Dict()
+        for e in collect(edges(g))
+            # Necessary for undirected graph
+            edge_dict[(src(e),dst(e))] = e
+            edge_dict[(dst(e),src(e))] = e
+        end
+        set_prop!(g, :edge_dict, edge_dict)  # not the best approach
+        # First get the code running
+    end
+end
+
+setupMetaData(all_df, Glist)
+
+include("./modules.jl")
+
+# ****************************************************
 # Using BSON, time to save is tiny fraction of total time
-@time times, S,I,R = FPLEX.fastSIR(Glist, p, infected_0;
-    t_max=1000., save_data=true, save_freq=5);
+t_max = 500.   # Artificial limit! Remove when code runs.
+@time times, S,I,R = FPLEX.fastSIR(Glist, p, infected_0, recovered_0;
+    t_max=t_max, save_data=true, save_freq=10);
+# ****************************************************
 @show maximum.([S,I,R])
 @show minimum.([S,I,R])
 

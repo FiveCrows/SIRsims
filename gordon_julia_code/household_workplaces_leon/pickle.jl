@@ -1,5 +1,5 @@
-module Pickle
-export mypickle, myunpickle
+#module Pickle
+#export mypickle, myunpickle
 
 using PyCall
 @pyimport pickle
@@ -18,4 +18,4 @@ function myunpickle(filename)
     return r
 end
 
-end
+#end
