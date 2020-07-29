@@ -269,6 +269,16 @@ class PopulaceGraph:
         #plt.imshow(np.array([row / np.linalg.norm(row) for row in contact_matrix]))
         return weights
 
+    def constructEdgeMatrix(self, partition, id_to_partition):
+        weights = np.zeros([len(partition), len(partition)])
+        for id in id_to_partition:
+            iPartition = id_to_partition[id]
+            for j in self.graph[id]:
+                jPartition = id_to_partition[j]
+                edges[iPartition, jPartition] += 1
+        #plt.imshow(np.array([row / np.linalg.norm(row) for row in contact_matrix]))
+        return edges
+
     def partitionToContactMatrix(self, partition, id_to_partition):
         element_sizes = [len(element) for element in partition]
         partition_elements = len(partition)
