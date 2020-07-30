@@ -7,7 +7,8 @@
 # Use a const immutable named tuple for efficiency
 # I can change values within this constant, but I cannot add another member
 # When developing the code, use non-consts in the global space
-const p = (
+# No need to declare p a constant if it will be passed to a function via argument
+p = (
     epidemic_sims = 10,  # ???
     households = 10,     # number of households
     household_size = 4,
@@ -372,9 +373,60 @@ function createOldWorkGraph(df, workplaces, β_strogatz, weight)
 end
 
 
+include("make_contact_graph_functions.jl")
 # person_id starts from 0
 function createWorkGraph(nb_nodes, df, workplaces, β_strogatz, weight)
+
+    # Get Contact Matrices for Schools
+
+
+    println("Top of createWorkGraph")
+    #@show propertynames(df)
+    #@show first(df, 5)
+    println("nrow: ", nrow(df))
+    println("propertynames(workplaces[1]= ", propertynames(workplaces[1]))
+    println("propertynames(df= ", propertynames(df))
     master_graph = MetaGraph(nb_nodes)
+
+    ### Add all the szes of workplaces. They must add up to nrow(df)
+    println("nb workplaces: ", length(workplaces))
+    ss = 0
+    deg_dict = Dict()
+    for (r,wp) in enumerate(workplaces)
+       #println("===== NEW WORKPLACE ($(nrow(wp))) ======")
+       grps = groupby(wp, :age_bin)
+       println("properties(wp)= ", propertynames(wp))
+       #println("nb age bins in group: ", length(grps))
+       # Create a database with :age_bin set to the count
+       counts = combine(grps, nrow => :age_bin_count)
+       counts = sort(counts, :age_bin)
+       #println("=== counts= ", counts)
+       N_ages = zeros(Int64, 4)
+       N_ages[counts.age_bin] = counts.age_bin_count
+       school_id = wp[1,:orig_school_id]
+       println("school_id= ", school_id)
+
+       # ************   LOCATION *****
+       filenm = "ContactMatrices/Leon/ContactMatrixSchools.pkl"
+       #school_id = 450124041
+       index_range = (1,4)
+       cmm = getContactMatrix(filenm, N_ages, school_id, index_range)
+       println("cmm= ", cmm)
+
+
+       #println("N= ", N)
+       index_range = (1,4)
+       println("N_ages= ", N_ages)
+       mgh, deg_list = makeGraph(N_ages, index_range, cmm)  # make contact graph # inf loop
+       deg_dict[school_id] = (deg_list, nv(mgh))
+
+       @show mgh
+       person_ids = workplaces[r].person_id
+       myMerge!(master_graph, mgh, person_ids, weight)
+   end
+   return master_graph, deg_dict
+
+
     # Create smallworld graph (follow Bryan)
     tot_sz = 0
     tot_edges = 0

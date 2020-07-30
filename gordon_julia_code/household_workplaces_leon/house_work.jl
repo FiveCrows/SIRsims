@@ -1,8 +1,12 @@
 # Based off the latest code written by Bryan, with a network closer to demographics
-include("./modules.jl")
 using Plots
+default(legendfontsize=10)
+include("./pickle.jl")
+include("./modules.jl")
+# Generates and sets up the graphs
 include("./functions.jl")
 include("./read_age_map.jl")
+include("./make_contact_graph_functions.jl")
 
 # 0.65, skipping over sizes > 1000
 # Questions to Answer:
@@ -23,9 +27,36 @@ all_df = transform(work_groups, nrow => :wk_count)
 replace!(all_df.age, 0 => 1)
 
 
+@time home_graph, work_graph, school_graph, deg_graph = generateDemographicGraphs(p)
 
-
-@time home_graph, work_graph, school_graph = generateDemographicGraphs(p)
+function plotDegGraph(deg_graph)
+    y = collect(values(deg_graph))
+    yy = deepcopy(y)
+    pp = plot()
+    for (i,z) in enumerate(y)
+        tup = y[i]
+        yy[i] = (tup[2], tup[1])
+    end
+    yy = sort(yy, rev=true)
+    #println(y[1])
+    #println(y[2])
+    #println(y[3])
+    println(yy)
+    fntsm = Plots.font("sans-serif", pointsize=round(10.0*0.6))
+    default(legendfont = fntsm)
+    for (i,k) in enumerate(yy)
+        dg = yy[i]
+        if i > 30 break end
+        print(dg[2])
+        if i == 1
+            pp = plot(dg[2], label=dg[1], fontsize=5)
+        else
+            pp = plot!(dg[2], label=dg[1], fontsize=5)
+        end
+    end
+    return pp
+end
+pp = plotDegGraph(deg_graph)
 
 @show school_graph
 @show work_graph
@@ -98,6 +129,8 @@ g = MetaGraph(g)
 using LightGraphs, MetaGraphs
 include("./read_age_map.jl")
 
+# Graphs in Glist are MetaGraphs
+# Add an edge dictionary to the graph as a global graph property.
 function setupMetaData(all_df, Glist)
     for g in Glist
         setupTransmission(all_df, g)
@@ -126,6 +159,10 @@ t_max = 500.   # Artificial limit! Remove when code runs.
 # ****************************************************
 @show maximum.([S,I,R])
 @show minimum.([S,I,R])
+
+
+
+#--------------------------------------------------------------
 
 F.myPlot(times, S, I, R)
 @show pwd()

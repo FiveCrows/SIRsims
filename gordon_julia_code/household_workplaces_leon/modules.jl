@@ -12,6 +12,7 @@ using DataFrames
 DF = DataFrames
 
 include("FastSIR_impl.jl")
+include("./household_workplace_functions.jl")
 # Not sure about the meaning of dot. Does not work with out. Means current directory?
 using .FastSIRWithWeightedNodes
 FWG = FastSIRWithWeightedNodes
@@ -25,5 +26,3 @@ FPLEX = FastSIRMultiplex
 include("./FastSIR_common.jl")
 using .FastSIRCommon
 F  = FastSIRCommon
-
-include("./household_workplace_functions.jl")

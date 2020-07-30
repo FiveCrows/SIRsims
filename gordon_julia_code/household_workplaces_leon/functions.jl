@@ -1,10 +1,39 @@
-    # Generate Household and Workplace graphs (one for each)
+function age2AgeBin()
+    age_bins = [(5*i,5*i+4) for i in 0:15]
+    age_bins[end] = (75,120)
+
+    age2bin_dict = Dict()
+    for age in 0:99
+        if age >= 75
+            age2bin_dict[age] = 16
+        else
+            age2bin_dict[age] = (div(age, 5) + 1)
+        end
+    end
+    println("length(age2bin_dict): ", length(age2bin_dict))
+    return age2bin_dict
+end
+
+function ageBinCol(all_df, age2bin_dict)
+    age_bin = zeros(Int64, nrow(all_df))
+    age = all_df.age
+    @show age[1:10]
+
+    for r in 1:nrow(all_df)
+        age_bin[r] = age2bin_dict[age[r]]
+    end
+    return age_bin
+end
+
+
+# Each house id can appear multiple times. I wish to change the id values to numbers between 1 and max_value
+
+# Generate Household and Workplace graphs (one for each)
 # The idea is to apply multigraphs. Both Households and Workplace graphs
 # are composed of multiple disconnected graphs, one per household and one
 # per workplace
 function generateDemographicGraphs(params)
     p = params
-    #population = p.household_size * p.households
 
     # symbols take 8 bytes
     #work_classes = [:default, :unemployed, :school,]
@@ -20,13 +49,19 @@ function generateDemographicGraphs(params)
     # errors, the numbering should start from 1
     df.person_id .+= 1
 
+    # Create a dictionary: age2bin[age] return the bin number 1 thru 16
+    age_bin = ageBinCol(df, age2AgeBin())
+    # add an age_bins column to all_df
+    df.age_bin = age_bin
+
+
     # Each house id can appear multiple times. I wish to change the id values to numbers between 1 and max_value
     # Create 2 databases, with missing values removed
     #   (person_id, school_id)
     #   (person_id, work_id)
 
-    school_df = df[[:person_id, :school_id]]
-    work_df = df[[:person_id, :work_id]]
+    school_df = df[[:person_id, :school_id, :age_bin]]
+    work_df = df[[:person_id, :work_id, :age_bin]]
     school_df = school_df[school_df.school_id .!= -1, :]
     work_df   = work_df[work_df.work_id .!= -1, :]
 
@@ -35,7 +70,9 @@ function generateDemographicGraphs(params)
 
     # Replace the columns in three three databases with the respective
     # indexes
+    school_df.orig_school_id = school_df.school_id
     school_df.school_id = [school_ids_dict[is] for is in school_df.school_id]
+    work_df.orig_work_id = work_df.work_id
     work_df.work_id = [work_ids_dict[is] for is in work_df.work_id]
 
     #println("school_ids_dict")
@@ -51,7 +88,7 @@ function generateDemographicGraphs(params)
     printSchoolDF() = for r in 1:nrow(school_df) println(school_df[r,:]) end
 
     # The databases now have renumbered Ids
-    df_age = ageDistribution(df)
+    #df_age = ageDistribution(df)   # NOT USED
 
     # Categories is a list of categories
     #column1 in each group is the person_id. I should rename the colums of the DataFrame
@@ -61,7 +98,7 @@ function generateDemographicGraphs(params)
 
     # Regenerate the groups
     school_groups = groupby(school_df, :school_id)
-    work_groups   = groupby(work_df,  :work_id)
+    work_groups   = groupby(work_df,   :work_id)
 
     # These does not appear to be -1s any longer
     println("school df")
@@ -93,9 +130,12 @@ function generateDemographicGraphs(params)
     tot_nb_people = nrow(df)
 
     #println("========================================")
-    weight = 0.8
-    @time work_graph = createWorkGraph(tot_nb_people, work_df, work_groups, 0.1, weight)
-    set_prop!(work_graph, :node_ids, work_df[:person_id])
+    # make true once I get the school stuff working
+    if false
+        weight = 0.8
+        @time work_graph, deg_dict = createWorkGraph(tot_nb_people, work_df, work_groups, 0.1, weight, cmm)
+        set_prop!(work_graph, :node_ids, work_df[:person_id])
+    end
 
     #@show work_graph
     #println("========================================")
@@ -107,9 +147,14 @@ function generateDemographicGraphs(params)
     #println("finished work")
     #return nothing, nothing, nothing
 
-    #println("========================================")
+    println("========================================")
+    println("=== Generate school graphs =============")
+    println("school_df: ", first(school_df, 5))
     weight = 0.4
-    @time school_graph = createWorkGraph(tot_nb_people, school_df, school_groups, 0.1, weight)
+    @time school_graph, deg_dict = createWorkGraph(tot_nb_people, school_df, school_groups, 0.1, weight)
+    println("RETURN from createWorkGraph on schools")
+    println("prop names(school_df): ", propertynames(school_df))
+    println("type(school_graph): ", typeof(school_graph))
     set_prop!(school_graph, :node_ids, school_df[:person_id])
     #println("finished school")
     #println("========================================")
@@ -125,7 +170,7 @@ function generateDemographicGraphs(params)
 
     # TODO: Must make all graphs weighted
 
-    return home_graph, work_graph, school_graph
+    return home_graph, work_graph, school_graph, deg_dict
 end
 
 # ---------------------------------------------------

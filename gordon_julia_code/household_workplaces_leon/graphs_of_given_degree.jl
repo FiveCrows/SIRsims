@@ -1,7 +1,10 @@
 using LightGraphs
+using BenchmarkTools
+using MetaGraphs
 using DataFrames
 using Random
 using PyCall
+using CSV
 @pyimport pickle
 
 # Given two subgraphs, I would like to connect them.
@@ -173,6 +176,7 @@ g = setupGraph(n1, n2)
 # collection of degrees in V1, and similarly for d2. Let us try this out and see what happens.
 # ----------------------------------------
 
+# THIS IS THE WORKHORSE THAT HAS BEEN CHECKED
 # Use dictionaries for speed
 # Use probability density functions for the degrees to handle
 # non-integer averages
@@ -304,72 +308,7 @@ total_deg2 = sum(seq2)
 
 # Try this out. Let us connect the two subgraphs
 
-# Establish the connections between two subgraphs that satisfy a given
-# categorical distribution. We model the distribution with two entries such
-# that the degree average is correct. The degree averages of the two subgraphs
-# are nb_edges/n1 and nb_edges/n2, which are not integer values in general.
-# nb_edges: desired total number of edges between two subgraphs
-# n1, n2: number of nodes in each subgraph
-function edgeListProb(n1, n2, nb_edges)
-    #function setup(n1,deg1,n2,deg2)
-        edge_dict = Dict()
-        excess_list = []
 
-    avg_deg1 = nb_edges / n1
-    avg_deg2 = nb_edges / n2
-    @show avg_deg1, avg_deg2
-    # We want 2000 links between both groups
-    seq1, avg_deg1_approx = generateSequence(n1, avg_deg1)
-    seq2, avg_deg2_approx = generateSequence(n2, avg_deg2)
-    # seq1 and seq2 = list of degrees
-    # Repeat each node a number of times equal to its degree (There has to be a better approach)
-    # duplicte nodes
-    # Because the degrees are only of two values, separated by one, there is a fast algorithm.
-    deg1 = Int16(floor(avg_deg1))
-    nodes1 = collect(1:length(seq1))
-    nodes11 = nodes1[seq1 .== deg1]
-    nodes12 = nodes1[seq1 .== (deg1+1)]
-    hh1 = vcat(repeat(nodes11, deg1), repeat(nodes12, deg1+1))
-
-    deg2 = Int16(floor(avg_deg2))
-    lg = length(seq1)
-    nodes2 = collect(lg+1:lg+length(seq2))
-    nodes21 = nodes2[seq2 .== deg2]
-    nodes22 = nodes2[seq2 .== (deg2+1)]
-    hh2 = vcat(repeat(nodes21, deg2), repeat(nodes22, deg2+1))
-
-    hh1 = hh1[randperm(length(hh1))]
-    hh2 = hh2[randperm(length(hh2))]
-
-    total_deg1 = sum(seq1)
-    total_deg2 = sum(seq2)
-
-    # Given hh1 and hh2 of different lengths, establish the links between subgraphs
-
-    lg = minimum((length(hh1), length(hh2)))
-    lgmax = maximum((length(hh1), length(hh2)))
-    edge_dict = Dict()
-    for i in 1:lg
-        e1 = hh1[i]
-        e2 = hh2[i]
-        mn = minimum((e1,e2))
-        mx = maximum((e1,e2))
-
-        if haskey(edge_dict,(mn,mx))
-            push!(excess_list, (mn, mx))
-            continue
-        end
-
-        edge_dict[(mn,mx)] = 1
-    end
-    #@show count, lg
-    #@show length(edge_dict)
-    #@show length(excess_list)
-    @assert length(edge_dict) + length(excess_list) == lg
-    #@show avg_deg1, avg_deg2
-    #@show 100*length(excess_list) / lgmax
-    return edge_dict, excess_list
-end
 
 # Create a test
 function tests()
@@ -437,16 +376,79 @@ arr = Vector(arr)
 arr = reshape(arr, 16, 16)
 
 
-function myunpickle(filename)
-    r = nothing
-    @pywith pybuiltin("open")(filename,"rb") as f begin
-        r = pickle.load(f)
-    end
-    return r
-end
-
 dir = "ContactMatrices/Leon/"
 ds = myunpickle(dir*"ContactMatrixSchools.pkl")
 dw = myunpickle(dir*"ContactMatrixWorkplaces.pkl")
 
 d = ds[450122676]
+
+#----------------------------------------------------------------------
+# Algorithm that will assign edges to a graph. Contruct a graph manually.
+# First, consider 4 age groups:
+#
+
+
+include("make_contact_graph_functions.jl")
+
+N_ages = [600, 1200, 800, 1400]
+filenm = "ContactMatrices/Leon/ContactMatrixSchools.pkl"
+school_id = 450124041
+index_range = (1,4)
+cmm = getContactMatrix(filenm, N_ages, school_id, index_range)
+
+# DEBUGGING
+function getContactMatrix(filenm, index_range)
+    lo, hi = index_range
+    dict = myunpickle(filenm)
+    for k in keys(dict)
+        cm = dict[k]
+        cm = cm[lo:hi,lo:hi]   # CM for the school. (I really need the school numbers)
+        println("school_id: ", k)
+        println("cm= ", cm)
+    end
+end
+getContactMatrix(filenm, index_range)
+# END DEBUGGING
+
+N = [200, 600, 400, 700]
+N = [60, 120, 80, 140]
+N = [6000, 12000, 8000, 14000]
+N = [600, 1200, 800, 1400]
+index_range = (1,4)
+@benchmark makeGraph(N, index_range) samples=10 evals=4
+
+# The new contact matrix is identical across multiple random runs
+# The graph changes slightly
+deg_l = []
+for i in 1:5
+    g = makeGraph(N, index_range)
+    checkContactMatrices(g, cmm, index_range)
+    push!(deg_l, degree(g))
+end
+
+
+using Plots
+p = histogram(deg_l[1], bins=25, fillalpha=0.9)
+for i in 2:5
+    histogram!(p, deg_l[i], bins=25, fillalpha=0.1, color=:red)
+end
+p
+# should plot the network
+
+function tst1()
+    z = zeros(1000)
+    rands = rand([1:1000], 1000)
+    return rands[1000]
+end
+
+function tst2()
+    z = zeros(1000)
+    r = [0.]
+    for i in 1:1000
+        r = rand([1:1000], 1)
+    end
+    return r
+end
+
+@btime tst1() seconds=0.1
+@btime tst2() seconds=0.1
