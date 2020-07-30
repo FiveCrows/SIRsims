@@ -27,36 +27,72 @@ all_df = transform(work_groups, nrow => :wk_count)
 replace!(all_df.age, 0 => 1)
 
 
-@time home_graph, work_graph, school_graph, deg_graph = generateDemographicGraphs(p)
+# deg_graph_dict[school_id] = (degrees, N_tot, N_age[i], index_range)
+# Ntot = sum(N_age)
+@time home_graph, work_graph, school_graph, deg_graph_dict = generateDemographicGraphs(p)
+a = collect(deg_graph_dict)
+println("a[1]= $(a[1])")
 
-function plotDegGraph(deg_graph)
-    y = collect(values(deg_graph))
-    yy = deepcopy(y)
-    pp = plot()
-    for (i,z) in enumerate(y)
-        tup = y[i]
-        yy[i] = (tup[2], tup[1])
+function plotDegGraph(deg_graph; stype="")
+    # Values of dictionary: (degrees, N_tot, N_age[i], index_range)
+    yy = collect(values(deg_graph)) |> deepcopy
+    pp = plot(displaysize=(1200,800))
+    for (i,z) in enumerate(yy)
+        tup = yy[i]
+        yy[i] = (tup[2], tup[1], tup[3], tup[4])
     end
     yy = sort(yy, rev=true)
-    #println(y[1])
-    #println(y[2])
-    #println(y[3])
-    println(yy)
-    fntsm = Plots.font("sans-serif", pointsize=round(10.0*0.6))
+    fntsm = Plots.font("sans-serif", pointsize=round(10.0*0.4))
     default(legendfont = fntsm)
+
     for (i,k) in enumerate(yy)
-        dg = yy[i]
-        if i > 30 break end
-        print(dg[2])
-        if i == 1
-            pp = plot(dg[2], label=dg[1], fontsize=5)
+        N, dg, N_age, index_range = yy[i]
+        if i > 20 break end
+        label = string(N) * ", " * string(N_age)
+        if i <=5 style = :solid;  shape=:square
+        elseif i <=10 style = :solid; shape=:circle
+        elseif i <=15 style = :solid;  shape=:dtriangle
+        elseif i <=20 style = :solid;  shape=:utriangle end
+        plot!(dg, label=label, fontsize=5, style=style, shape=shape,
+            msize=3.0, msc=:match, msw=0, size=(800,600))
+        xlabel!("Degree")
+        ylabel!("Number of nodes")
+        if stype == ""
+            title!("Degree distributions in Schools")
         else
-            pp = plot!(dg[2], label=dg[1], fontsize=5)
+            title!("Degree distributions (" * stype * ") in Schools")
         end
     end
     return pp
 end
-pp = plotDegGraph(deg_graph)
+pp = plotDegGraph(deg_graph_dict)
+
+# Separate out elementary from high schools
+s00xx_dict = Dict()
+s0xxx_dict = Dict()
+sxx00_dict = Dict()
+sxxxx_dict = Dict()
+for k in keys(deg_graph_dict)
+    v = deg_graph_dict[k]
+    N_age = v[3]
+
+    if N_age[1] == 0 && N_age[2] == 0
+        s00xx_dict[k] = v
+    elseif N_age[1] == 0 && N_age[3] != 0
+        s0xxx_dict[k] = v
+    elseif N_age[3] == 0 && N_age[4] == 0
+        sxx00_dict[k] = v
+    else
+        sxxxx_dict[k] = v
+    end
+end
+p1 = plotDegGraph(s0xxx_dict, stype="s0xxx")
+p2 = plotDegGraph(s00xx_dict, stype="s00xx")
+p3 = plotDegGraph(sxx00_dict, stype="sxx00")
+p4 = plotDegGraph(sxxxx_dict, stype="sxxxx")
+pp = plot(p1,p2,p3,p4, displaysize=(2400,1800), layout=(2,2))
+savefig(pp, "gordon.pdf")
+plot(p1,p2,p3,p4, layout=(2,2))
 
 @show school_graph
 @show work_graph

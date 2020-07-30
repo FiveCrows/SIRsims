@@ -391,7 +391,7 @@ function createWorkGraph(nb_nodes, df, workplaces, β_strogatz, weight)
     ### Add all the szes of workplaces. They must add up to nrow(df)
     println("nb workplaces: ", length(workplaces))
     ss = 0
-    deg_dict = Dict()
+    work_dict = Dict()
     for (r,wp) in enumerate(workplaces)
        #println("===== NEW WORKPLACE ($(nrow(wp))) ======")
        grps = groupby(wp, :age_bin)
@@ -418,13 +418,14 @@ function createWorkGraph(nb_nodes, df, workplaces, β_strogatz, weight)
        index_range = (1,4)
        println("N_ages= ", N_ages)
        mgh, deg_list = makeGraph(N_ages, index_range, cmm)  # make contact graph # inf loop
-       deg_dict[school_id] = (deg_list, nv(mgh))
+       work_dict[school_id] = (deg_list, nv(mgh), N_ages, index_range)
 
        @show mgh
        person_ids = workplaces[r].person_id
        myMerge!(master_graph, mgh, person_ids, weight)
    end
-   return master_graph, deg_dict
+   # work_dict[i]: deg_list, nb_nodes in graph, age distribution, index_range
+   return master_graph, work_dict
 
 
     # Create smallworld graph (follow Bryan)

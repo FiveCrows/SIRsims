@@ -137,9 +137,6 @@ function generateDemographicGraphs(params)
         set_prop!(work_graph, :node_ids, work_df[:person_id])
     end
 
-    #@show work_graph
-    #println("========================================")
-
     #@time old_work_graph = createOldWorkGraph(work_df, work_groups, 0.21, 0.8)
     #set_prop!(old_work_graph, :node_ids, work_df[:person_id])
     #@show old_work_graph
@@ -151,7 +148,10 @@ function generateDemographicGraphs(params)
     println("=== Generate school graphs =============")
     println("school_df: ", first(school_df, 5))
     weight = 0.4
-    @time school_graph, deg_dict = createWorkGraph(tot_nb_people, school_df, school_groups, 0.1, weight)
+
+    # school_dict[i]: deg_list, nb_nodes in graph, age distribution, index_range
+    @time school_graph, school_dict = createWorkGraph(tot_nb_people, school_df, school_groups, 0.1, weight)
+
     println("RETURN from createWorkGraph on schools")
     println("prop names(school_df): ", propertynames(school_df))
     println("type(school_graph): ", typeof(school_graph))
@@ -170,7 +170,7 @@ function generateDemographicGraphs(params)
 
     # TODO: Must make all graphs weighted
 
-    return home_graph, work_graph, school_graph, deg_dict
+    return home_graph, work_graph, school_graph, school_dict
 end
 
 # ---------------------------------------------------

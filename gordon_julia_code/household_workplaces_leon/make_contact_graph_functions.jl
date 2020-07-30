@@ -71,7 +71,6 @@ end
 # total number of nodes
 # cmm: contact matrix
 function makeGraph(N, index_range::Tuple, cmm)
-    println("**** ENTER makeGraph *****")
     Nv = sum(N)
     println("== Nv= $Nv")
     g = SimpleGraph(Nv)
@@ -83,7 +82,6 @@ function makeGraph(N, index_range::Tuple, cmm)
     # These are also the node numbers for each category, sorted
     age_bins = [repeat([i], N[i]) for i in lo:hi]
     cum_N = append!([0], cumsum(N))
-    #@show cum_N
     all_bins = []
     for i in lo:hi append!(all_bins, age_bins[i]) end
     set_prop!(g, :age_bins, all_bins)
@@ -92,16 +90,14 @@ function makeGraph(N, index_range::Tuple, cmm)
 
     for i in lo:hi
         for j in lo:i
-            #println("$i, $j")
             ddict = Dict()
             Nij = Int64(floor(N[i] * cmm[i,j]))
-            #println("i= $i, N[i] $(N[i]), cmm[i,j]= $(cmm[i,j]), Nij= $Nij")
+
             if Nij == 0 continue end
+
             total_edges += Nij
-            #println("Nij= $Nij")
             Vi = cum_N[i]+1:cum_N[i+1]
             Vj = cum_N[j]+1:cum_N[j+1]
-            #println("($i,$j), length(Vi,Vj)= $(length(Vi)), $(length(Vj))")
 
             # Treat the case when the number of edges dictated by the
             # contact matrices is greater than the number of available edges
@@ -111,8 +107,6 @@ function makeGraph(N, index_range::Tuple, cmm)
             if Vi == Vj && Nij > nbe
                 Nij = nbe
             end
-            #ps = rand(Vi, 10000)
-            #qs = rand(Vj, 10000)
             count = 0
             while true
                 # p ~ Vi, q ~ Vj
@@ -123,9 +117,7 @@ function makeGraph(N, index_range::Tuple, cmm)
                 #q = getRand(Vi, 1) # I could use memoization
 
                 p = rand(Vi, 1)[]
-                #println(p)
                 q = rand(Vj, 1)[]
-                #println(q)
                 if p == q continue end
                 # multiple edges between p,q not allowed
                 if p <  q
@@ -133,16 +125,10 @@ function makeGraph(N, index_range::Tuple, cmm)
                 else
                     ddict[(q,p)] = 1
                 end
-                #count += 1
                 # stop when desired number of edges is reached
-                #println("Nij= $Nij")
                 lg = length(ddict)
-                #if (count % 10 == 0) println("($count, $Nij),len: $lg,  ", length(Vi), ",  ", length(Vj)) end
-                #if (Nij == 1) println("($count, $Nij),len: $lg,  ", length(Vi), ",  ", length(Vj)) end
                 if length(ddict) == Nij break end
             end
-            #@show g, typeof(g)
-            #println("**** Add Edges to Graph ***")
             for k in keys(ddict)
                 s, d = k
                 add_edge!(g, s, d)
@@ -154,11 +140,12 @@ function makeGraph(N, index_range::Tuple, cmm)
     for i in 1:nv(g)
         deg[1+degrees[i]] += 1
     end
-    println("deg: ")
+    println("(N=nv(g)), deg: ")
     for i in 1:length(deg)
         print("$(deg[i]), ")
     end
     println("")
+    # N is the age distribution in the schools
     return g, deg
 end
 
