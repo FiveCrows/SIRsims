@@ -592,6 +592,3 @@ plt.savefig("./simResults/{}/plot".format(record.stamp))
 plt.show()
 #plt.plot(node_investigation.summary(popsByCategory['race'][3])[1]['I']/racePops[2],label = "infected students")
 #plt.plot(node_investigation.summary(graph,label = "infected students")
-
-
-

@@ -60,7 +60,7 @@ function plotDegGraph(deg_graph; stype="")
         if stype == ""
             title!("Degree distributions in Schools")
         else
-            title!("Degree distributions (" * stype * ") in Schools")
+            title!("Degree distributions (" * stype * ")")
         end
     end
     return pp
