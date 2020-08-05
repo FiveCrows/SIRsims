@@ -1,0 +1,53 @@
+Variables for picking edges: 
+
+school, household, workplace id's, from synthetic data, to identify people in shared environments
+
+Environment avg degrees. For School and workplace, avg number of contacts per person. Households always include every possible edge anyways.
+
+Strogatz clustering is also called with a variable to represent portion of edges that are random. 
+
+group contact: for picking edges more carefully 
+
+
+Variables for calculating graph weights:
+
+Environment transmission Scalars: one for each environment (school, home, worplace),
+these variables are affected by how often contagion spreads in such environments
+
+Global transmission Scalar:
+Affects every weight. This variable is affected by the viral quality
+
+Masking Scalar: 
+    affects the weight by scalar if one side of edge has mask, scalar squared if both. 
+
+Environment mask use: 
+    portion of people in environment using masks
+
+
+group contact: for reweighting graph
+Variables for simulating graph:
+Gamma: the recovery rate
+Tau: the transmission weight. Has the same affect as Global Scalar
+
+
+
+
+
+metrics for comparing and understanding results: 
+These can be applied to a population as a whole, to a subpopulation, or between subpopulations (bipartite):
+
+Sum total weight in all edges
+
+Clustering coeff: density of triangles in graph
+
+Avg path length (expensive to compute) 
+
+node degree distribution
+
+Susceptible, infected, recovered vs time 
+
+final susceptible, Infected, Recovered
+
+contact: sum total weight per person
+
+

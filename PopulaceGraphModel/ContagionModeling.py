@@ -417,7 +417,7 @@ class Record:
     def __init__(self):
         self.log = ""
         self.comments = ""
-        self.stamp = datetime.now().strftime("%m_%d_%H_%M")
+        self.stamp = datetime.now().strftime("%m_%d_%H_%M_%S")
         self.graph_stats = {}
         self.last_runs_percent_uninfected = 1
         mkdir("./simResults/{}".format(self.stamp))
