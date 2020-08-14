@@ -81,13 +81,13 @@ class PopulaceGraph:
             for key in x:
                 if random.random()>0.9:
                     self.populace[key] = (vars(x[key]))
-
+        self.population = len(self.populace)
 
         if pops_by_category == None:
         # for sorting people into categories
         # takes a dict of dicts to rep resent populace and returns a list of dicts of lists to represent groups of people with the same
         # attributes
-            env_rename = {'sp_hh_id': 'household'}
+
             pops_by_category = {category: {} for category in categories}
             #pops_by_category{'populace'} = []
             for person in self.populace:
@@ -99,6 +99,8 @@ class PopulaceGraph:
             self.pops_by_category = pops_by_category
         else:
             self.pops_by_category = pops_by_category
+
+    #def clusterFromMatrix(self,group, env, masking, params):
 
     def clusterRandom(self, group, env, masking, params):
         member_count = len(group)
@@ -235,7 +237,7 @@ class PopulaceGraph:
             self.clusterGroups('school', self.clusterStrogatz,self.environment_masking['school'], [self.environment_degrees['school'], 0.5])
         stop_a = time.time()
         #self.record.print("Graph completed in {} seconds.".format((stop_a -
-
+        self.isBuilt = True
 
     def partition(self, people, attribute, enumerator, partition_limit = 16):
         partition =  [[] for i in range(len(np.unique(list(enumerator.values()))))] #yup... this creates an empty list for every partition element in a list,
@@ -352,6 +354,24 @@ class PopulaceGraph:
         #self.record.print("The infection quit spreading after {} days, and {} of people were never infected".format(time_to_immunity,percent_uninfected))
         self.sims.append([simResult, title])
 
+    def getR0(self):
+        sim = self.sims[-1]
+        herd_immunity = list.index(max(sim.I))
+        return(self.population/sim.S([herd_immunity]))
+
+    def clearSims(self):
+        self.sims = []
+
+    def matchTauWithR0(self,R0):
+        assert (self.isBuilt, 'model must be built first')
+        search_range = 0.05
+        simBuffer = self.sims
+        found = False
+        while(not found):
+            #new_tau = tau +(R0-tau)*(R0-)
+            pass
+        tau = 0.05
+
     #doesn't work, outdated
     def plotContactMatrix(self, key, partition_size):
         self.constructContactMatrix(key, partition_size)
@@ -390,7 +410,14 @@ class PopulaceGraph:
         ax[1].legend()
         plt.show()
 
-    def plotEvasionChart(self, partition = None):
+    def plotBars(self, partition, xlabels, SIRstatus):
+        simCount = len(self.sims)
+        partitionCount = len(partition)
+        barGroupWidth = 0.8
+        barWidth = barGroupWidth/simCount
+        index = np.arange(partitionCount)
+
+        offset = 0
         for sim in self.sims:
             title = sim[1]
             sim = sim[0]
@@ -398,13 +425,15 @@ class PopulaceGraph:
             totals = []
             end_time = sim.t()[-1]
             for element in partition:
-                totals.append(sum(status == 'S' for status in sim.get_statuses(element, end_time).values())/len(element))
+                totals.append(sum(status == SIRstatus for status in sim.get_statuses(element, end_time).values()) / len(element))
             #totals = sorted(totals)
-            plt.bar(list(range(len(totals))),totals,label = title)
+            xCoor = [offset + x for x in list(range(len(totals)))]
+            plt.bar(xCoor,totals, barWidth, label = title)
+            offset = offset+barWidth
         plt.legend()
+        plt.ylabel("Fraction of people with status {}".format(SIRstatus))
+        plt.xlabel("Age groups of 5 years")
         plt.show()
-        plt.ylabel("Fraction Uninfected")
-        plt.xlabel("partition number ")
         plt.savefig("./simResults/{}/evasionChart".format(self.record.stamp))
 
     def __str__(self):

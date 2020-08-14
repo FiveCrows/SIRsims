@@ -1,0 +1,32 @@
+Medical Comparison of studies
+https://www.sciencedirect.com/science/article/pii/S0140673620311429
+Social Distancing
+<1m, chance of infection: 12.8%
+≥1m, chance of infection: 2.6%
+Results: ~79.69% reduction in infection rate
+    • ~80% of people are actively practicing social distancing (seems high)
+        ◦ high variance, some say 58%, some say 77%
+        ◦ average of ~71.67%
+
+Face mask vs. no face mask
+Without face mask, chance of infection: 17.4%
+With face mask, chance of infection: 3.1%
+Results: ~82.18% reduction in infection rate
+    • CDC reports that 74.1% of people make an effort to wear a mask
+        ◦ other sites report an average of around 61.5%, 60%,
+        ◦ average of 65.2%
+
+Eye protection vs. no eye protection
+Without eye protection, chance of infection: 16.0%
+With eye protection, chance of infection: 5.5%
+Results: ~65.63% reduction in infection rate
+    • Unable to find a study/article that shows how many people are wearing face shields; might be largely limited to those in high-risk settings (doctors, nurses, etc.)
+
+https://www.medrxiv.org/content/10.1101/2020.06.02.20120022v1.full.pdf
+Hand Washing
+Without washing hands, chance of infection: N/A (Depends on how much people are touching their face)
+Washing hands, chance of infection: N/A
+Results: can reduce the rate of infection by 16%. (Another study shows 21%, average: 18.5%)
+    • Less than 1% (~0.9%) of those monitored complied completely with the hospital’s handwashing protocol in Ethiopia
+        ◦ Other measurements showed around 0.52% in Miami and 1.7% in São Paulo, Brazil.
+        ◦ average of 1.04%
