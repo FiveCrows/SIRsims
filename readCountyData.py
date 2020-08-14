@@ -92,7 +92,7 @@ def plotThreshold(threshold, dates, cumulativeData, county_list):
     plt.show()
     
 
-def plotCounty(counties, dates, cumulativeData, county_list):
+def plotCounty(counties, dates, cumulativeData, county_list, save_c='N'):
     '''
         This function plots cases over dates for the specified counties
     '''
@@ -106,10 +106,11 @@ def plotCounty(counties, dates, cumulativeData, county_list):
     plt.legend()
     figname="Counties_"+datetime.now().strftime("%d%m%y%H%M")+".png"
     plt.xticks(rotation=45)
-    plt.savefig(figname)
+    if save_c=='Y' or save_c=='y':
+        plt.savefig(figname)
     plt.show()
     
-def plotZipcodes(zipcodes, dates, data):
+def plotZipcodes(zipcodes, dates, data, save_c='N'):
     '''
         This function plots cases over dates for the specified county
     '''
@@ -130,23 +131,12 @@ def plotZipcodes(zipcodes, dates, data):
     plt.legend()
     plt.xticks(rotation=45)
     figname="Zipcodes_"+datetime.now().strftime("%d%m%y%H%M")+".png"
-    plt.savefig(figname)
+    if save_c=='Y' or save_c=='y':
+        plt.savefig(figname)
     plt.show()
-    # temp_data=[]
-    # for date in sorted(dates):
-    #     temp_df=data[date][data[date]['ZIP']==zipcode]
-    #     temp_data.append(float(temp_df['Cases_1']))
-    # plt.figure(figsize=(10,8))
-    # plt.plot(sorted(dates),temp_data)
-    # title="Cumulative case count for zipcode "+str(zipcode)
-    # plt.title(title)
-    # figname=str(zipcode)+" Zipcode_"+datetime.now().strftime("%d%m%y%H%M")+".png"
-    # plt.xticks(rotation=45)
-    # plt.savefig(figname)
-    # plt.show()
     
 
-def plotDefault(dates, cumulativeData, county_list):
+def plotDefault(dates, cumulativeData, county_list, save_c='N'):
     '''
         This function plots cases over dates for the top 10 counties in case count
     '''
@@ -161,11 +151,12 @@ def plotDefault(dates, cumulativeData, county_list):
     plt.xticks(rotation=45)
     plt.title(title)
     plt.legend()
-    plt.savefig(figname)
+    if save_c=='Y' or save_c=='y':
+        plt.savefig(figname)
     plt.show()
     
 
-def main(default=None,threshold: int=None, county: str=None, zipcode: str=None):
+def main(default=None,threshold: int=None, county: str=None, zipcode: str=None, save_c: str='N'):
     '''
         To run this program, you will need files as given below:
         home_dir='zipcode_data/' - This will be the folder containing all the csv files
@@ -177,28 +168,29 @@ def main(default=None,threshold: int=None, county: str=None, zipcode: str=None):
     if zipcode:
         zipcodes=zipcode.split(",")
         zipcodes=list(map(lambda x : int(x) if x.isnumeric() else None, zipcodes))
-        plotZipcodes(zipcodes, dates, data)
+        plotZipcodes(zipcodes, dates, data, save_c)
     elif threshold:
-        plotThreshold(threshold, dates, cumulativeData, county_list)
+        plotThreshold(threshold, dates, cumulativeData, county_list, save_c)
     elif county:
         counties=county.split(',')
-        plotCounty(counties, dates, cumulativeData, county_list)
+        plotCounty(counties, dates, cumulativeData, county_list, save_c)
     elif default:
-        plotDefault(dates, cumulativeData, county_list)
+        plotDefault(dates, cumulativeData, county_list, save_c)
 
 if __name__=="__main__":
+    save_c=input("Save plots? [Y/N] ")
     if len(sys.argv)==1:
         main()
         print("Other Usage:\n[-d|-default]\n[-county|-c] countyname\n[-zipcode|-z] zipcode list(comma-separated without spaces)\n[-threshold|-t] threshold")
     elif sys.argv[1]=='-county' or sys.argv[1]=='-c':
-        main(county=''.join(sys.argv[2:]))
+        main(county=''.join(sys.argv[2:]), save_c=save_c)
     elif sys.argv[1]=='-default' or sys.argv[1]=='-d':
-        main(default=1)
+        main(default=1,  save_c=save_c)
     elif sys.argv[1]=='-zipcode' or sys.argv[1]=='-z':
-            main(zipcode=''.join(sys.argv[2:]))
+            main(zipcode=''.join(sys.argv[2:]),  save_c=save_c)
     elif sys.argv[1]=='-threshold' or sys.argv[1]=='-t':
         if sys.argv[2].isnumeric():
-            main(int(sys.argv[2]))
+            main(int(sys.argv[2]),  save_c=save_c)
         else:
             print("Invalid threshold value")
 
