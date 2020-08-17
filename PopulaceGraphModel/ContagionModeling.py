@@ -127,17 +127,10 @@ class PopulaceGraph:
                         weight = self.weighter.getWeight(nodeA, nodeB, env)
                         self.graph.add_edge(nodeA, nodeB, transmission_weight = weight, environment = env)
 
-    #WIP
-    def clusterPartitions(self, group, location, member_count, weighter, masking, params):
-        partition_size = params[0]
-        mixing_rate = params[1]
-        if partition_size>member_count:
-            self.clusterDense(group, member_count, masking, params)
-
-            return
-        #groups = nGroupAssign()
 
 
+
+        for group in
     def clusterDense(self, members, env, masking = None, params = None):
         member_count = len(members)
         #memberWeightScalar = np.sqrt(memberCount)
@@ -176,7 +169,7 @@ class PopulaceGraph:
                 self.graph.add_edge(nodeA, nodeB, transmission_weight=weight, environment = env)
 
     #needs to be updated
-    def clusterByDegree_p(graph, groups, weighter, masking, degree_p):
+    def clusterByDegree_p(graph, groups, weighter, masking, degree):
         #some random edges may be duplicates, best for large groups
         connectorList = []
 
@@ -194,12 +187,41 @@ class PopulaceGraph:
                     nodeA = groups[key][connectorList[i]]
                     nodeB = groups[key][connectorList[i+1]]
                     graph.add_edge(nodeA,nodeB,transmission_weight = weighter.getWeight(nodeA,nodeB))
-                    i = i+2
+                    i =
 
-    #WIP
-    def clusterGroupsByPA(graph, groups):
-        for key in groups.keys():
-            memberCount = len(groups[key])
+    def clusterByContact(self, partition, matrix, masking, avg_contacts, randomization):
+        totalContact = matrix.sum()
+        inclusiveList ={0:[1,2,3], 1:[2,3,4]}
+        for group in partition:
+            groupSizes = partition.size()
+        for group in partition:
+
+            clusterStrogatz(group, env, masking, [])
+        for partition in
+        #single list of group is to create a strogatz ring
+
+    def getInfectionProb(self,w,beta,gamma):
+        return w*beta/(gamma+w*beta)
+
+    def returnNextGenMatrix(self, partition, id_to_partition, beta, gamma):
+        #initiialize next gen matrix
+        N = np.zeros([len(partition), len(partition)])
+
+        #for each ij, add the probability of infection for each weight divided by members in i
+        for id in id_to_partition:
+            iPartition = id_to_partition[id]
+            iMemberCount = len(partition[iPartition])
+            for j in self.graph[id]:
+                jPartition = id_to_partition[j]
+                weight = self.graph[id][j]['transmission_weight']
+                N[iPartition, jPartition] += self.getInfectionProb(weight,beta,gamma)/iMemberCount
+        return N
+
+#WIP
+    def clusterByContact(self, members, env, masking, id_to_partition, contact):
+        member_count = len(members)
+        if member_count == 1:
+            return
 
 
     def clusterGroups(self, env, clusterAlg, masking, params=None):
