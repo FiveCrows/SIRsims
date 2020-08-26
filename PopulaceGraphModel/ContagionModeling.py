@@ -128,6 +128,7 @@ class PopulaceGraph:
 
         #Adding B as secondary to A's friends
         for key in attachments[nodeA]:
+            pass
         #Adding A as secondary to B's friends
 
             # grow primary list,
@@ -139,8 +140,8 @@ class PopulaceGraph:
 
         #Adding B to A's friends
         #Adding A to B's friends
-        try:
-            attachments[""]
+        #try:
+            #attachments[""]
     #def clusterFromMatrix(self,group, env, masking, params):
     def clusterMatrixGuidedPreferentialAttachment(self, group, M, partition, id_to_partition, avg_contacts, r,mask_p):
 
@@ -166,8 +167,10 @@ class PopulaceGraph:
                 self.graph.add_edge(edge[0], edge[1],
                                     transmission_weight=self.trans_weighter.genMaskScalar(mask_p) * weight)
                 try:
-                    partitionAttachments[]
+                    #partitionAttachments[]
+                    pass
                 except:
+                    pass
         else:
             for i in range(random_edges):
                 sel_A = random.choice(num_people)
@@ -218,11 +221,11 @@ class PopulaceGraph:
             for edge in pos_edges:
                 if random.random()<edgeProb:
                     weight =  self.weighter.getWeight(edge[0], edge[1], env, masking)
-                    if env = None:
+                    if env == None:
                         assert(weight != None)
                     else:
-                    self.graph.add_edge(edge[0], edge[1], transmission_weight = weight, environment = env)
-                    self.total_weight += weight
+                        self.graph.add_edge(edge[0], edge[1], transmission_weight = weight, environment = env)
+                        self.total_weight += weight
         else:
             for i in range(member_count-1):
                 nodeA = group[i]
@@ -246,7 +249,7 @@ class PopulaceGraph:
                     weight = self.trans_weighter.getWeight(members[i], members[j], env, masking)
 
                 self.graph.add_edge(members[i], members[j], transmission_weight = weight, environment = env) #/ memberWeightScalar)
-                self.total_weight +=weight
+                self.total_weight += weight
 
 
     def clusterStrogatz(self, members, masking, params, env = None, weight = None, num_edges = None):
@@ -384,12 +387,12 @@ class PopulaceGraph:
                 N[iPartition, jPartition] += self.getInfectionProb(weight,beta,gamma)/iMemberCount
         return N
 
-    def clusterGroups(self, env, clusterAlg, masking, params=None):
+    def clusterGroups(self, environment, clusterAlg, masking, params=None):
         #self.record.print("clustering {} groups with the {} algorithm".format(classifier, clusterAlg.__name__))
         start = time.time()
         # # stats = {"classifier": }
-        env_to_category = {"household": "sp_hh_id","work":"work_id","school": "school_id"}
-        groups = self.pops_by_category[env_to_category[env]]
+        env_to_category = {"household": "sp_hh_id", "work":"work_id", "school": "school_id"}
+        groups = self.pops_by_category[env_to_category[environment]]
         group_count = len(groups)
 
         initial_weights = self.graph.size()
@@ -397,11 +400,11 @@ class PopulaceGraph:
             if key == None:
                 continue
             group = groups[key]
-            clusterAlg(group, env, masking, params)
+            clusterAlg(group, environment, masking, params)
 
         weights_added = self.graph.size() - initial_weights
         stop = time.time()
-        self.record.print("{} weights added for {} environments in {} seconds".format(weights_added, len(self.pops_by_category[env_to_category[env]].keys()), stop - start))
+        self.record.print("{} weights added for {} environments in {} seconds".format(weights_added, len(self.pops_by_category[env_to_category[environment]].keys()), stop - start))
 
     def build(self, clusteringAlg, params=None, exemption=None, masking = {'schools': None, 'workplaces': None}):
         self.record.print('\n')

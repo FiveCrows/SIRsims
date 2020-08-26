@@ -7,7 +7,6 @@ env_masking = {'work': 0, 'school':0, 'household': 0}
 
 gamma = 0.1
 tau = 0.08
-
 trans_weighter = TransmissionWeighter(default_env_scalars, mask_scalar, default_env_masking)
 model = PopulaceGraph(trans_weighter, env_degrees, default_env_masking, slim = True)
 
