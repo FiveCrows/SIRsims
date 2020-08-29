@@ -1,5 +1,6 @@
 import random
 from os import mkdir
+from os import makedirs
 import EoN
 import networkx as nx
 import itertools
@@ -145,7 +146,7 @@ class PopulaceGraph:
         #load populace from file if necessary
         if populace == None:
         # for loading people objects from file
-            with open("people_list_serialized.pkl", 'rb') as file:
+            with open("./PopulaceGraphModel/people_list_serialized.pkl", 'rb') as file:
                 x = pickle.load(file)
 
             # return represented by dict of dicts
@@ -321,8 +322,10 @@ class PopulaceGraph:
     def clusterStrogatz(self, members, masking, params, env = None, weight = None, num_edges = None):
 
         #unpack params
-        local_k = params[0]
-        rewire_p = params[1]
+        # local_k = params[0]
+        # rewire_p = params[1]
+        local_k = 10
+        rewire_p = 2
         # if only one person, don't bother
         member_count = len(members)
         if member_count == 1:
@@ -428,7 +431,7 @@ class PopulaceGraph:
                 if groupA == groupB:
                     num_people = len(groupA)
                     k = number_edges//(2*num_people)
-                    self.clusterStrogatz(groupA, masking, [0.1,None], weight = w, num_edges = number_edges)
+                    self.clusterStrogatz(groupA, masking, params=[0.1,None], weight = w, num_edges = number_edges)
 
 
                 else:
@@ -479,7 +482,7 @@ class PopulaceGraph:
         self.graph = nx.Graph()
 
         #dense cluster for each household
-        self.clusterGroups('household', self.clusterDense, None)
+        self.clusterGroups('household', self.clusterDense, None, 1)
         #cluster schools and workplaces with specified clustering alg
         if exemption != 'workplaces':
             self.clusterGroups('work', clusteringAlg, self.environment_masking['work'], [self.environment_degrees['work'], 0.5])
@@ -699,7 +702,7 @@ class Record:
         self.stamp = datetime.now().strftime("%m_%d_%H_%M_%S")
         self.graph_stats = {}
         self.last_runs_percent_uninfected = 1
-        mkdir("./simResults/{}".format(self.stamp))
+        makedirs("./PopulaceGraphModel/simResults/{}".format(self.stamp), exist_ok=True)
     def print(self, string):
         print(string)
         self.log+=('\n')
