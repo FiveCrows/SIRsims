@@ -10,6 +10,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import json
 import math
+
+
 class TransmissionWeighter:
     def __init__(self, env_scalars, mask_scalar, env_masking, name ='default'):#, loc_masking):
         self.name = name
@@ -61,6 +63,70 @@ class TransmissionWeighter:
         string +="Environment weight scalars: \n"
         string += json.dumps(self.env_scalars)
         return string
+
+class Partition:
+    def __init__(self,members, populace, attribute, enumerator, contact_matrix, group_names = None):
+        self.members = members
+        self.attribute = attribute
+        self.enumerator = enumerator
+        self.num_groups = len(enumerator)
+        self.group_names = group_names
+        self.contact_matrix = contact_matrix
+        self.partition = dict.fromkeys(set(enumerator.values()))
+        self.id_to_partition = dict.fromkeys(members)
+
+        for person in members:
+            #determine the number for which group the person belongs in, depending on their attribute
+            group = enumerator[populace[person][attribute]]
+            #add person to  to dict in group
+            self.partition[group].append(person)
+
+        for group in self.partition:
+            for person in group:
+                self.id_to_partition[person]= group
+
+class NetBuilder:
+    def __init__(self, transmission_weighter):
+        self.transmission_weight = transmission_weighter
+        self.isPartitionAlg = False
+        def cluster(self, group, env, scaleWeight):
+            pass
+    def childProc(self):
+        pass
+
+
+class DenseNetBuilder(NetBuilder):
+    def cluster(self, group, env, mask_rate, scaleWeight):
+        member_count = len(group)
+    # memberWeightScalar = np.sqrt(memberCount)
+        for i in range(member_count):
+            for j in range(i):
+                # originally weight was picked for the environment, but in order to
+                # implement clustering by matrix I've updated to pass weight explicitly
+                if env == None:
+                    weight = w
+                else:
+                    weight = self.trans_weighter.getWeight(group[i], group[j], env, group)
+
+                self.graph.add_edge(group[i], group[j], transmission_weight=weight,
+                                    environment=env)  # / memberWeightScalar)
+
+class StrogatzNetBuilder(NetBuilder):
+    def __init__(self, transmission_weighter, rand_frac):
+        super.__init__(transmission_weighter)
+        self.rand_frac = rand_frac
+
+
+class randomNetBuilder(NetBuilder):
+    pass
+
+
+class PartitionedStrogatzNetBuilder(NetBuilder):
+    def __init__(self, transmission_weighter, rand_frac):
+        pass
+
+
+class PartitionedScalefreeNetBuilder(NetBuilder):
 
 
 class PopulaceGraph:
@@ -387,11 +453,11 @@ class PopulaceGraph:
                 N[iPartition, jPartition] += self.getInfectionProb(weight,beta,gamma)/iMemberCount
         return N
 
-    def clusterGroups(self, environment, clusterAlg, masking, params=None):
+    def clusterGroups(self, environment, clusterAlg, masking, params=None, weight = None):
         #self.record.print("clustering {} groups with the {} algorithm".format(classifier, clusterAlg.__name__))
         start = time.time()
         # # stats = {"classifier": }
-        env_to_category = {"household": "sp_hh_id", "work":"work_id", "school": "school_id"}
+        env_to_category = {"household": "sp_hh_id", "work": "work_id", "school": "school_id"}
         groups = self.pops_by_category[env_to_category[environment]]
         group_count = len(groups)
 
@@ -400,7 +466,7 @@ class PopulaceGraph:
             if key == None:
                 continue
             group = groups[key]
-            clusterAlg(group, environment, masking, params)
+        clusterAlg(group, environment,  masking, params, w = weight)
 
         weights_added = self.graph.size() - initial_weights
         stop = time.time()
@@ -416,9 +482,9 @@ class PopulaceGraph:
         self.clusterGroups('household', self.clusterDense, None)
         #cluster schools and workplaces with specified clustering alg
         if exemption != 'workplaces':
-            self.clusterGroups('work', self.clusterStrogatz, self.environment_masking['work'], [self.environment_degrees['work'], 0.5])
+            self.clusterGroups('work', clusteringAlg, self.environment_masking['work'], [self.environment_degrees['work'], 0.5])
         if exemption != 'schools':
-            self.clusterGroups('school', self.clusterStrogatz, self.environment_masking['school'], [self.environment_degrees['school'], 0.5])
+            self.clusterGroups('school', clusteringAlg, self.environment_masking['school'], [self.environment_degrees['school'], 0.5])
         stop_a = time.time()
         #self.record.print("Graph completed in {} seconds.".format((stop_a -
         self.isBuilt = True
