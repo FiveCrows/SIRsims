@@ -12,32 +12,6 @@ import json
 import math
 
 
-class TransmissionWeighter:
-    def __init__(self, env_scalars, mask_scalar, env_masking, name ='default'):#, loc_masking):
-        self.name = name
-        self.global_weight = 1
-        self.mask_scalar = mask_scalar
-        self.env_masking = env_masking
-        self.env_scalars = env_scalars
-
-        #self.loc_masking = loc_masking
-        #self.age_scalars = age_scalars
-
-    def getWeight(self, personA, personB, env, masking):
-        masking = self.env_masking[env]
-        weight = self.global_weight
-        try:
-            weight = weight*self.env_scalars[env]
-        except:
-            print("locale type not identified")
-
-        if (masking != 0):
-            if random.random()<masking:
-                weight = weight*self.mask_scalar
-        if masking != None:
-            if random.random()<masking:
-                weight = weight*self.mask_scalar
-        return weight
 
     def genMaskScalar(self, mask_p):
         if random.random() < mask_p:
@@ -84,7 +58,7 @@ class Partition:
         for group in self.partition:
             for person in group:
                 self.id_to_partition[person]= group
-
+#builder classes WIP, low priority
 class NetBuilder:
     def __init__(self, transmission_weighter):
         self.transmission_weight = transmission_weighter
@@ -127,7 +101,7 @@ class PartitionedStrogatzNetBuilder(NetBuilder):
 
 
 class PartitionedScalefreeNetBuilder(NetBuilder):
-
+    pass
 
 class PopulaceGraph:
     def __init__(self, weighter, environment_degrees, environment_masking =  {'work': 0, 'school':0}, graph = None, populace = None, pops_by_category = None, categories = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False):
@@ -472,6 +446,7 @@ class PopulaceGraph:
         stop = time.time()
         self.record.print("{} weights added for {} environments in {} seconds".format(weights_added, len(self.pops_by_category[env_to_category[environment]].keys()), stop - start))
 
+    def clusterPartitions(self, environment, clusterAlg, masking, weight):
     def build(self, clusteringAlg, params=None, exemption=None, masking = {'schools': None, 'workplaces': None}):
         self.record.print('\n')
         self.record.print("building populace into graphs with the {} clustering algorithm".format(clusteringAlg.__name__))
