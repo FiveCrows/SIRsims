@@ -12,7 +12,7 @@ import json
 import math
 
 
-
+class TransmissionWeighter:
     def genMaskScalar(self, mask_p):
         if random.random() < mask_p:
             mask_scalar = self.trans_weighter.mask_scalar
@@ -58,49 +58,7 @@ class Partition:
         for group in self.partition:
             for person in group:
                 self.id_to_partition[person]= group
-#builder classes WIP, low priority
-class NetBuilder:
-    def __init__(self, transmission_weighter):
-        self.transmission_weight = transmission_weighter
-        self.isPartitionAlg = False
-        def cluster(self, group, env, scaleWeight):
-            pass
-    def childProc(self):
-        pass
 
-
-class DenseNetBuilder(NetBuilder):
-    def cluster(self, group, env, mask_rate, scaleWeight):
-        member_count = len(group)
-    # memberWeightScalar = np.sqrt(memberCount)
-        for i in range(member_count):
-            for j in range(i):
-                # originally weight was picked for the environment, but in order to
-                # implement clustering by matrix I've updated to pass weight explicitly
-                if env == None:
-                    weight = w
-                else:
-                    weight = self.trans_weighter.getWeight(group[i], group[j], env, group)
-
-                self.graph.add_edge(group[i], group[j], transmission_weight=weight,
-                                    environment=env)  # / memberWeightScalar)
-
-class StrogatzNetBuilder(NetBuilder):
-    def __init__(self, transmission_weighter, rand_frac):
-        super.__init__(transmission_weighter)
-        self.rand_frac = rand_frac
-
-
-class randomNetBuilder(NetBuilder):
-    pass
-
-
-class PartitionedStrogatzNetBuilder(NetBuilder):
-    def __init__(self, transmission_weighter, rand_frac):
-        pass
-
-
-class PartitionedScalefreeNetBuilder(NetBuilder):
     pass
 
 class PopulaceGraph:
@@ -330,39 +288,39 @@ class PopulaceGraph:
                 self.total_weight+=weight
                 self.graph.add_edge(nodeA, nodeB, transmission_weight=weight, environment=env)
 
-    def clusterBipartite(self, members_A, members_B, edge_count, weight, p_random = 0.1):
-        #reorder groups by size
-        A = min(members_A, members_B, key = len)
-        if A == members_A:
-            B = members_B
-        else:
-            B = members_A
-        size_A = len(A)
-        size_B = len(B)
-
-        if members_A*members_B > edge_count:
-            print("warning, not enough possible edges for cluterBipartite")
-
-        #distance between edge groups
-        separation = int(math.ceil(size_B/size_A))
-
-        #size of edge groups and remaining edges
-        k = edge_count//size_A
-        remainder = edge_count%size_A
-        p_random = max(0, p_random - remainder/edge_count)
-
-        for i in range(size_A):
-            begin_B_edges = (i * separation - k // 2)%size_B
-
-            for j in range(k):
-                if random.random()>p_random:
-                    B_side = (begin_B_edges +j)%size_B
-                    self.graph.add_edge(A[i], B[B_side], transmission_weight=weight)
+            def clusterBipartite(self, members_A, members_B, edge_count, weight, p_random=0.1):
+                # reorder groups by size
+                A = min(members_A, members_B, key=len)
+                if A == members_A:
+                    B = members_B
                 else:
-                    self.graph.add_edge(random.choice(A), random.choice(B))
+                    B = members_A
+                size_A = len(A)
+                size_B = len(B)
 
-        for i in range(remainder):
-            self.graph.add_edge(random.choice(A), random.choice(B))
+                if members_A * members_B > edge_count:
+                    print("warning, not enough possible edges for cluterBipartite")
+
+                # distance between edge groups
+                separation = int(math.ceil(size_B / size_A))
+
+                # size of edge groups and remaining edges
+                k = edge_count // size_A
+                remainder = edge_count % size_A
+                p_random = max(0, p_random - remainder / edge_count)
+
+                for i in range(size_A):
+                    begin_B_edges = (i * separation - k // 2) % size_B
+
+                    for j in range(k):
+                        if random.random() > p_random:
+                            B_side = (begin_B_edges + j) % size_B
+                            self.graph.add_edge(A[i], B[B_side], transmission_weight=weight)
+                        else:
+                            self.graph.add_edge(random.choice(A), random.choice(B))
+
+                for i in range(remainder):
+                    self.graph.add_edge(random.choice(A), random.choice(B))
 
             #don't for get to add remainder edges too
 
