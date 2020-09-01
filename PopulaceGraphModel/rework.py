@@ -162,7 +162,7 @@ class PopulaceGraph:
                 school = PartitionedEnvironment(schools[place], "school", self.populace, school_matrices[place], partition )
                 self.environments[place] = (school)
 
-        print("stop")
+
 
     def build(self, preventions, env_degrees):
         self.preventions = preventions
@@ -182,6 +182,7 @@ class PopulaceGraph:
         weight = self.trans_weighter.getWeight(nodeA, nodeB, environment)*weight_scalar
         self.total_weight += weight
         self.total_edges += 1
+        self.graph.add_edge(nodeA, nodeB, transmission_weight = weight)
 
     def clusterDense(self, environment, subgroup = None, weight_scalar = 1):
         if subgroup == None:
@@ -214,9 +215,6 @@ class PopulaceGraph:
         member_count = len(members)
         if member_count == 1:
             return
-
-        remainder = 0
-        #if user is specifying a number of edges
 
         local_k = math.floor(num_edges/member_count)*2
         remainder = num_edges - local_k*member_count/2
@@ -370,7 +368,7 @@ class PopulaceGraph:
 
     def simulate(self, gamma, tau, simAlg = EoN.fast_SIR, title = None, full_data = True):
         start = time.time()
-        simResult = simAlg(self.graph, gamma, tau, rho=0.0001, transmission_weight='transmission_weight', return_full_data=full_data)
+        simResult = simAlg(self.graph, gamma, tau, rho=0.001, transmission_weight='transmission_weight', return_full_data=full_data)
         stop = time.time()
         self.record.print("simulation completed in {} seconds".format(stop - start))
 
