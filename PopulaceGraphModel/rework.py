@@ -88,6 +88,8 @@ class PopulaceGraph:
         self.environment_degrees = environment_degrees
         self.total_weight = 0
         self.record = Record()
+        self.total_edges = 0
+        self.total_weight = 0
         if graph == None:
             self.graph = nx.Graph()
 
@@ -176,6 +178,11 @@ class PopulaceGraph:
             self.addEnvironment(environment)
         self.isBuilt = True
 
+    def addEdge(self, nodeA, nodeB, environment, weight_scalar = 1):
+        weight = self.trans_weighter.getWeight(nodeA, nodeB, environment)*weight_scalar
+        self.total_weight += weight
+        self.total_edges += 1
+
     def clusterDense(self, environment, subgroup = None, weight_scalar = 1):
         if subgroup == None:
             members = environment.members
@@ -187,14 +194,8 @@ class PopulaceGraph:
         #memberWeightScalar = np.sqrt(memberCount)
         for i in range(member_count):
             for j in range(i):
-                #originally weight was picked for the environment, but in order to
-                # implement clustering by matrix I've updated to pass weight explicitly
-#                if  == None:
-#                    weight = w
-                #else:
-                weight = self.trans_weighter.getWeight(members[i], members[j], environment) * weight_scalar
-                self.graph.add_edge(members[i], members[j], transmission_weight = weight, type = type) #/ memberWeightScalar)
-                #self.total_weight += weight
+                self.addEdge(members[i], members[j], environment, weight_scalar)
+
 
     def addEnvironment(self, environment):
         if environment.type == 'household':
@@ -217,29 +218,21 @@ class PopulaceGraph:
         remainder = 0
         #if user is specifying a number of edges
 
-        local_k = math.floor(num_edges*2/member_count)
+        local_k = math.floor(num_edges/member_count)*2
         remainder = num_edges - local_k*member_count/2
-
-        if (local_k % 2 != 0):
-            self.record.print("Error: local_k must be even")
-            local_k = local_k+1
         if local_k >= member_count:
             self.clusterDense(environment, weight_scalar = weight_scalar)
             return
 
         for i in range(member_count):
             nodeA = members[i]
-
             for j in range(1, local_k // 2+1):
                 rewireRoll = random.uniform(0, 1)
                 if rewireRoll < rewire_p:
                     nodeB = members[(i + random.choice(range(member_count - 1))) % member_count]
                 else:
                     nodeB = members[(i + j) % member_count]
-
-                weight = self.trans_weighter.getWeight(nodeA, nodeB, environment)
-                self.total_weight+=weight
-                self.graph.add_edge(nodeA, nodeB, transmission_weight=weight, type=environment.type)
+                self.addEdge(nodeA, nodeB, environment, weight_scalar)
 
     #clusterBipartite is particularly written to be used in clusterStrogatzByContact
     def clusterBipartite(self, environment, members_A, members_B, edge_count, weight_scalar = 1, p_random = 0.2):
@@ -249,6 +242,7 @@ class PopulaceGraph:
             B = members_B
         else:
             B = members_A
+
         size_A = len(A)
         size_B = len(B)
 
@@ -263,19 +257,19 @@ class PopulaceGraph:
         remainder = edge_count%size_A
         p_random = max(0, p_random - remainder/edge_count)
 
+
         for i in range(size_A):
             begin_B_edges = (i * separation - k // 2)%size_B
 
             for j in range(k):
                 if random.random()>p_random:
                     B_side = (begin_B_edges +j)%size_B
-                    self.graph.add_edge(A[i], B[B_side])#, transmission_weight=weight)
+                    self.addEdge(A[i], B[B_side],environment, weight_scalar)
                 else:
-                    self.graph.add_edge(random.choice(A), random.choice(B))#, transmission_weight = weight)
+                    self.addEdge(random.choice(A), random.choice(B), environment, weight_scalar)
 
         for i in range(remainder):
-            self.graph.add_edge(random.choice(A), random.choice(B))#, transmission_weight)
-
+            self.addEdge(random.choice(A), random.choice(B), environment, weight_scalar)
 
     def clusterPartitionedStrogatz(self, environment, avg_degree):
         assert isinstance(environment, PartitionedEnvironment), "must be a partitioned environment"
@@ -290,6 +284,8 @@ class PopulaceGraph:
                     continue
                 weightFraction = environment.contact_matrix[groupA, groupB]/matrix_sum
                 number_edges = int(totalEdges*weightFraction)
+                if number_edges == 0:
+                    continue
                 residual_scalar = matrix_sum/number_edges # a slight rescale to compensate rounding
 
                 if groupA == groupB:

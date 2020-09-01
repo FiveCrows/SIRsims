@@ -1,7 +1,7 @@
 from rework import *
 
 mask_scalar = 0.3
-env_scalars = {"school": 0.3 , "work": 0.3, "household": 1}
+env_scalars = {"school": 0.3 , "workplace": 0.3, "household": 1}
 env_degrees = {'workplace': 16, 'school' :13}
 masking = {'workplace': 0, 'school':0, 'household': 0}
 distancing = {'workplace': 0, 'school':0, 'household': 0}

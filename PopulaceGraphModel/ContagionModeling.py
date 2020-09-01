@@ -39,7 +39,7 @@ class TransmissionWeighter:
         return string
 
 class Partition:
-    def __init__(self,members, populace, attribute, enumerator, contact_matrix, group_names = None):
+    def __init__(self, members, populace, attribute, enumerator, contact_matrix, group_names = None):
         self.members = members
         self.attribute = attribute
         self.enumerator = enumerator
@@ -404,7 +404,7 @@ class PopulaceGraph:
         stop = time.time()
         self.record.print("{} weights added for {} environments in {} seconds".format(weights_added, len(self.pops_by_category[env_to_category[environment]].keys()), stop - start))
 
-    def clusterPartitions(self, environment, clusterAlg, masking, weight):
+
     def build(self, clusteringAlg, params=None, exemption=None, masking = {'schools': None, 'workplaces': None}):
         self.record.print('\n')
         self.record.print("building populace into graphs with the {} clustering algorithm".format(clusteringAlg.__name__))
