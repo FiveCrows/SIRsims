@@ -18,11 +18,12 @@ class Partition:
         self.attribute = attribute
         self.names = names
         self.attribute_values = dict.fromkeys(set(enumerator.values()))
-        self.num_sets = len(enumerator)
+        self.num_sets = (len(np.unique(list(enumerator.values()))))
 
 
 class Environment:
-    def __init__(self, members, type, preventions = None):
+    def __init__(self, index, members, type, preventions = None):
+        self.index = index
         self.members = members
         self.type = type
         self.preventions = preventions
@@ -31,8 +32,8 @@ class Environment:
 
 
 class PartitionedEnvironment(Environment):
-    def __init__(self, members, type, populace, contact_matrix, partition, preventions = None):
-        super().__init__(members, type, preventions)
+    def __init__(self, index, members, type, populace, contact_matrix, partition, preventions = None):
+        super().__init__(index,members, type, preventions)
         self.partition = partition
         self.contact_matrix = contact_matrix
         self.id_to_partition = dict.fromkeys(members)
@@ -51,10 +52,10 @@ class PartitionedEnvironment(Environment):
 
 
 class TransmissionWeighter:
-    def __init__(self, env_scalars, prevention_scalars, name ='default'):#, loc_masking):
+    def __init__(self, env_scalars, preventions, name ='default'):#, loc_masking):
         self.name = name
         self.global_weight = 1
-        self.mask_scalar = prevention_scalars["masking"]
+        self.preventions = preventions
         self.env_scalars = env_scalars
 
         #self.loc_masking = loc_masking
@@ -67,29 +68,23 @@ class TransmissionWeighter:
             weight = weight*self.env_scalars[environment.type]
         except:
             print("environment type not identified")
-
-        if (environment.masking != None):
-            if random.random()<environment.masking:
-                weight = weight*self.mask_scalar
-
-        if environment.masking != None:
-            if random.random()<environment.masking:
-                weight = weight*self.mask_scalar
+        for prevention in environment.preventions:
+            weight = weight*environment.preventions[prevention]
         return weight
 
 
 class PopulaceGraph:
-    def __init__(self, weighter, environment_degrees, partition = None, graph = None, populace = None, pops_by_category = None, categories = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False):
+    def __init__(self, weighter, partition = None, graph = None, populace = None, pops_by_category = None, categories = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False):
         self.trans_weighter = weighter
         self.isBuilt = False
         #self.record = Record()
         self.sims = []
         self.contactMatrix = None
-        self.environment_degrees = environment_degrees
         self.total_weight = 0
         self.record = Record()
         self.total_edges = 0
         self.total_weight = 0
+        self.environments_added = 0
         if graph == None:
             self.graph = nx.Graph()
 
@@ -140,27 +135,29 @@ class PopulaceGraph:
         #adding households to environment list
         households = self.pops_by_category["sp_hh_id"]
         self.environments = {}
-        for household in households:
-            houseObject = Environment(households[household], "household", 0)
-            self.environments[household] = (houseObject)
+        for index in households:
+            houseObject = Environment(index, households[index], "household", 0)
+            self.environments[index] = (houseObject)
 
         #adding workplaces to environment list
         workplaces = self.pops_by_category["work_id"]
         with open("../ContactMatrices/Leon/ContactMatrixWorkplaces.pkl", 'rb') as file:
             work_matrices = pickle.load(file)
-        for place in workplaces:
-            if place != None:
-                workplace = PartitionedEnvironment(workplaces[place], "workplace", self.populace, work_matrices[place], partition )
-                self.environments[place] = (workplace)
 
+        if partition != None:
+            self.hasPartition = True
+            for index in workplaces:
+                if index != None:
+                    workplace = PartitionedEnvironment(index, workplaces[index], "workplace", self.populace, work_matrices[index], partition)
+                    self.environments[index] = (workplace)
+            schools = self.pops_by_category["school_id"]
+            with open("../ContactMatrices/Leon/ContactMatrixSchools.pkl", 'rb') as file:
+                school_matrices = pickle.load(file)
+            for index in schools:
+                if index != None:
+                    school = PartitionedEnvironment(index, schools[index], "school", self.populace, school_matrices[index], partition )
+                    self.environments[index] = (school)
 
-        schools = self.pops_by_category["school_id"]
-        with open("../ContactMatrices/Leon/ContactMatrixSchools.pkl", 'rb') as file:
-            school_matrices = pickle.load(file)
-        for place in schools:
-            if place != None:
-                school = PartitionedEnvironment(schools[place], "school", self.populace, school_matrices[place], partition )
-                self.environments[place] = (school)
 
 
 
@@ -171,10 +168,9 @@ class PopulaceGraph:
         #self.record.print("building populace into graphs with the {} clustering algorithm".format(clusteringAlg.__name__))
         #start = time.time()
         self.graph = nx.Graph()
-
-        for environment in self.environments:
-            environment = self.environments[environment]
-            environment.masking = preventions["masking"][environment.type]
+        for index in self.environments:
+            environment = self.environments[index]
+            environment.preventions = preventions[environment.type]
             self.addEnvironment(environment)
         self.isBuilt = True
 
@@ -189,7 +185,6 @@ class PopulaceGraph:
             members = environment.members
         else:
             members = subgroup
-
         type = environment.type
         member_count = len(members)
         #memberWeightScalar = np.sqrt(memberCount)
@@ -203,6 +198,8 @@ class PopulaceGraph:
             self.clusterDense(environment)
         else:
             self.clusterPartitionedStrogatz(environment, self.environment_degrees[environment.type])
+
+
 
     def clusterStrogatz(self, environment,  num_edges, weight_scalar = 1, subgroup = None, rewire_p = 0.2):
         if subgroup == None:
@@ -244,7 +241,7 @@ class PopulaceGraph:
         size_A = len(A)
         size_B = len(B)
 
-        if len(members_A)*len(members_B) > edge_count:
+        if len(members_A)*len(members_B) < edge_count:
             print("warning, not enough possible edges for cluterBipartite")
 
         #distance between edge groups
@@ -276,32 +273,146 @@ class PopulaceGraph:
         #default_weight = totalContact/totalEdges
 
         for groupA in environment.partitioned_members:
+            sizeA = len(environment.partitioned_members[groupA])
+            if sizeA == 0:
+                continue
             for groupB in environment.partitioned_members:
-                sizeA, sizeB = len(environment.partitioned_members[groupA]), len(environment.partitioned_members[groupB])
-                if sizeA*sizeB == 0:
+                sizeB = len(environment.partitioned_members[groupB])
+                if sizeB == 0:
                     continue
                 weightFraction = environment.contact_matrix[groupA, groupB]/matrix_sum
                 number_edges = int(totalEdges*weightFraction)
                 if number_edges == 0:
                     continue
-                residual_scalar = matrix_sum/number_edges # a slight rescale to compensate rounding
+                residual_scalar = totalEdges * weightFraction / number_edges
 
                 if groupA == groupB:
                     max_edges = sizeA * (sizeA-1)/2
-                    if max_edges > number_edges:
+                    if max_edges < number_edges:
                         number_edges = max_edges
-                    residual_scalar = totalEdges * weightFraction / number_edges
                     self.clusterStrogatz(environment, num_edges = number_edges, weight_scalar = residual_scalar)
                 else:
                     max_edges = sizeA*sizeB
-                    if max_edges > number_edges:
+                    if max_edges < number_edges:
                         number_edges = max_edges
-                    residual_scalar = totalEdges * weightFraction / number_edges
                     self.clusterBipartite(environment, environment.partitioned_members[groupA],environment.partitioned_members[groupB], number_edges, weight_scalar = residual_scalar)
 
+    #written for the clusterMatrixGuidedPreferentialAttachment function
 
-            # for partition in
-            # single list of group is to create a strogatz ring
+    def addEdgeWithAttachmentTracking(self, nodeA, nodeB, attachments, environment):
+        self.add_edge(nodeA, nodeB, environment)
+        groupA = environment.id_to_partition[nodeA]
+        groupB = environment.id_to_partition[nodeB]
+
+        #grow secondary list
+        #Adding B's friends to A's secondary
+        for key in attachments[nodeA]["secondary"][nodeB]:
+            attachments[nodeA]["secondary"][key].extend(attachments[nodeB]["secondary"][key])
+        #Adding A's friends to B's secondary
+        for key in attachments[nodeB]["secondary"][nodeA]:
+            attachments[nodeB]["secondary"][key].extend(attachments[nodeA]["secondary"][key])
+
+        #Adding B as secondary to A's friends
+        for key in attachments[nodeA]:
+            pass
+        #Adding A as secondary to B's friends
+
+            # grow primary list,
+            # adding B to A, A to B
+        attachments[nodeA]["primary"][groupB].append(nodeB)
+        attachments[nodeB]["primary"][groupA].append(nodeA)
+
+        #Adding A's friends to B
+
+        #Adding B to A's friends
+        #Adding A to B's friends
+        #try:
+            #attachments[""]
+
+    def clusterMatrixGuidedPreferentialAttachment(self, environment, avg_contacts, prob_rand):
+        cumulative_weight = sum(sum(environment.contact_matrix))
+        num_people = len(environment.members)
+        total_pos_edges = num_people * (num_people - 1) / 2
+        total_edges = num_people * avg_contacts
+        random_edges = math.round(prob_rand * total_edges)
+        remaining_edges = total_edges - random_edges
+        vecM = np.matrix.flatten(environment.contact_matrix)
+        num_partitions = len(vecM)
+        partitionAttachments = {}
+
+
+        # speed up, in case there aren't many duplicates likely anyways
+        random_duplicate_rate = (random_edges - 1) / total_pos_edges
+        # above, so much cancelled... hows that for some prob?
+        if random_duplicate_rate > 0.01:
+            rand_edges = random.choices(list(itertools.combinations(environment.members, 2)), k=random_edges)
+            for edge in rand_edges:
+                self.add_edge(edge[0], edge[1], environment)
+        else:
+            for i in range(random_edges):
+                sel_A = random.choice(num_people)
+                sel_B = (sel_A + random.choice(num_people - 1)) % num_people
+                self.add_edge(environment.members[sel_A], environment.members[sel_B], environment)
+
+        # now adding preferential attachment edges
+        partition_dist = [sum(vecM[:i] for i in range(num_partitions))] / sum(vecM)
+        # partition_dist projects the edge_partition to  [0,1], such that the space between elements is in proportion to
+        # the elements contact
+        for i in range(remaining_edges):
+            # this selects a partition element using partition_dist
+            # then, from vec back to row/col
+            selector = random.random()
+            raw_partition = list(filter(range(num_partitions),
+                                        lambda i: partition_dist[i] < (selector) & partition_dist[i + 1] > (
+                                        selector)))
+            partition_A = raw_partition % environment.contact_matrix.shape[0]
+            partition_B = raw_partition // environment.contact_matrix.shape[0]
+
+            def addEdgeWithAttachmentTracking(self, nodeA, nodeB, attachments, id_to_partition, mask_p, weight):
+                w = self.trans_weighter.genMaskScalar(mask_p) * weight
+                self.graph.add_edge(nodeA, nodeB, transmission_weight=w)
+                groupA = id_to_partition[nodeA]
+                groupB = id_to_partition[nodeB]
+
+                # grow secondary list
+                # Adding B's friends to A's secondary
+                for key in attachments[nodeA]["secondary"][nodeB]:
+                    attachments[nodeA]["secondary"][key].extend(attachments[nodeB]["secondary"][key])
+                # Adding A's friends to B's secondary
+                for key in attachments[nodeB]["secondary"][nodeA]:
+                    attachments[nodeB]["secondary"][key].extend(attachments[nodeA]["secondary"][key])
+
+                # Adding B as secondary to A's friends
+                for key in attachments[nodeA]:
+                    pass
+                # Adding A as secondary to B's friends
+
+                # grow primary list,
+                # adding B to A, A to B
+                attachments[nodeA]["primary"][groupB].append(nodeB)
+                attachments[nodeB]["primary"][groupA].append(nodeA)
+
+                # Adding A's friends to B
+
+                # Adding B to A's friends
+                # Adding A to B's friends
+                # try:
+                # attachments[""]
+
+    def simulate(self, gamma, tau, simAlg = EoN.fast_SIR, title = None, full_data = True):
+        start = time.time()
+        simResult = simAlg(self.graph, gamma, tau, rho=0.001, transmission_weight='transmission_weight', return_full_data=full_data)
+        stop = time.time()
+        self.record.print("simulation completed in {} seconds".format(stop - start))
+
+        #doesn't work returning full results
+        #time_to_immunity = simResult[0][-1]
+        #final_uninfected = simResult[1][-1]
+        #final_recovered = simResult[3][-1]
+        #percent_uninfected = final_uninfected / (final_uninfected + final_recovered)
+        #self.record.last_runs_percent_uninfected = percent_uninfected
+        #self.record.print("The infection quit spreading after {} days, and {} of people were never infected".format(time_to_immunity,percent_uninfected))
+        self.sims.append([simResult, title])
 
     def plotContactMatrix(self, key, partition_size):
         self.constructContactMatrix(key, partition_size)
@@ -309,7 +420,10 @@ class PopulaceGraph:
         plt.show()
         plt.savefig("./simResults/{}/contactMatrix".format(self.record.stamp))
 
-    def plotNodeDegreeHistogram(self):
+    def plotNodeDegreeHistogram(self, environment = None):
+        if environment != None:
+            graph = self.graph.subgraph(environment.members)
+            plt.title("Degree plot for members of {} # {}".format(environment.type, environment))
         plt.hist([degree[1] for degree in nx.degree(self.graph)], 'auto')
         plt.ylabel("total people")
         plt.xlabel("degree")
@@ -366,21 +480,6 @@ class PopulaceGraph:
         plt.show()
         plt.savefig("./simResults/{}/evasionChart".format(self.record.stamp))
 
-    def simulate(self, gamma, tau, simAlg = EoN.fast_SIR, title = None, full_data = True):
-        start = time.time()
-        simResult = simAlg(self.graph, gamma, tau, rho=0.001, transmission_weight='transmission_weight', return_full_data=full_data)
-        stop = time.time()
-        self.record.print("simulation completed in {} seconds".format(stop - start))
-
-        #doesn't work returning full results
-        #time_to_immunity = simResult[0][-1]
-        #final_uninfected = simResult[1][-1]
-        #final_recovered = simResult[3][-1]
-        #percent_uninfected = final_uninfected / (final_uninfected + final_recovered)
-        #self.record.last_runs_percent_uninfected = percent_uninfected
-        #self.record.print("The infection quit spreading after {} days, and {} of people were never infected".format(time_to_immunity,percent_uninfected))
-        self.sims.append([simResult, title])
-
     def getR0(self):
         sim = self.sims[-1]
         herd_immunity = list.index(max(sim.I))
@@ -397,6 +496,7 @@ class Record:
         self.graph_stats = {}
         self.last_runs_percent_uninfected = 1
         mkdir("./simResults/{}".format(self.stamp))
+
     def print(self, string):
         print(string)
         self.log+=('\n')

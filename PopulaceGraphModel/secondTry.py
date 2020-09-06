@@ -1,4 +1,4 @@
-from rework import *
+from ModelToolkit import *
 
 mask_scalar = 0.3
 env_scalars = {"school": 0.3 , "workplace": 0.3, "household": 1}
@@ -16,7 +16,7 @@ names = ["{}:{}".format(5 * i, 5 * (i + 1)) for i in range(15)]
 partition = Partition(enumerator, 'age', names)
 
 trans_weighter = TransmissionWeighter(env_scalars, prevention_scalars)
-model = PopulaceGraph(trans_weighter, env_degrees, partition, slim = True)
+model = PopulaceGraph(trans_weighter, partition, slim = True)
 model.build(preventions, env_degrees)
 model.simulate(gamma, tau)
 print("here")
