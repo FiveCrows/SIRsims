@@ -1,4 +1,5 @@
-from ContagionModeling import *
+#from ContagionModeling import *
+from ModelToolkit import *
 from matplotlib import pyplot as plt
 mask_scalar = 0.3
 env_scalars = {"school": 0.3 , "work": 0.3, "household": 1}

@@ -12,7 +12,7 @@ import math
 
 
 
-class Partition:
+class Partitioner:
     def __init__(self, enumerator, attribute, names = None):
         self.enumerator = enumerator
         self.attribute = attribute
@@ -20,6 +20,21 @@ class Partition:
         self.attribute_values = dict.fromkeys(set(enumerator.values()))
         self.num_sets = (len(np.unique(list(enumerator.values()))))
 
+
+
+    def partitionGroup(self, members, populace):
+        partitioned_members = {i: [] for i in range(self.num_sets)}
+        for person in members:
+            #determine the number for which group the person belongs in, depending on their attribute
+            group = self.enumerator[populace[person][self.attribute]]
+            #add person to  to dict in group
+            partitioned_members[group].append(person)
+        return partitioned_members
+
+class memberedPartition:
+    def __init__(self, members, populace, enumerator, attribute, names = None):
+        super.__init__()
+        self.partitioned_members = super.partitionGroup(members, populace)
 
 class Environment:
     def __init__(self, index, members, type, preventions = None):
@@ -37,45 +52,37 @@ class PartitionedEnvironment(Environment):
         self.partition = partition
         self.contact_matrix = contact_matrix
         self.id_to_partition = dict.fromkeys(members)
-        self.partitioned_members = {i:[] for i in range(partition.num_sets)}
+
         self.total_matrix_contact = contact_matrix.sum()
-
-        for person in members:
-            #determine the number for which group the person belongs in, depending on their attribute
-            group = partition.enumerator[populace[person][partition.attribute]]
-            #add person to  to dict in group
-            self.partitioned_members[group].append(person)
-
+        self.partitioned_members = partition.partitionGroup(members, populace)
         for set in self.partitioned_members:
             for person in self.partitioned_members[set]:
                 self.id_to_partition[person] = (set)
 
 
 class TransmissionWeighter:
-    def __init__(self, env_scalars, preventions, name ='default'):#, loc_masking):
+    def __init__(self, env_scalars, prevention_reductions, name ='default'):#, loc_masking):
         self.name = name
         self.global_weight = 1
-        self.preventions = preventions
+        self.prevention_reductions = prevention_reductions
         self.env_scalars = env_scalars
 
         #self.loc_masking = loc_masking
         #self.age_scalars = age_scalars
-
     def getWeight(self, personA, personB, environment):
-
-        weight = self.global_weight
-        try:
-            weight = weight*self.env_scalars[environment.type]
-        except:
-            print("environment type not identified")
-        for prevention in environment.preventions:
-            weight = weight*environment.preventions[prevention]
+        weight = self.global_weight*self.env_scalars[environment.type]
+        #including masks
+        if random.random() < environment.preventions["masking"]:
+            weight = weight * self.prevention_reductions["masking"]
+            if random.random() < environment.preventions["masking"]**2:
+                weight = weight * self.prevention_reductions["masking"]
+        #distancing weight reduction
+        weight = weight*(1-(1-self.prevention_reductions["distancing"]) * environment.preventions["distancing"])
         return weight
 
 
 class PopulaceGraph:
-    def __init__(self, weighter, partition = None, graph = None, populace = None, pops_by_category = None, categories = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False):
-        self.trans_weighter = weighter
+    def __init__(self, partition = None, graph = None, populace = None, pops_by_category = None, categories = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False):
         self.isBuilt = False
         #self.record = Record()
         self.sims = []
@@ -161,7 +168,8 @@ class PopulaceGraph:
 
 
 
-    def build(self, preventions, env_degrees):
+    def build(self, weighter, preventions, env_degrees):
+        self.trans_weighter = weighter
         self.preventions = preventions
         self.environment_degrees = env_degrees
         #self.record.print('\n')
@@ -284,17 +292,20 @@ class PopulaceGraph:
                 number_edges = int(totalEdges*weightFraction)
                 if number_edges == 0:
                     continue
-                residual_scalar = totalEdges * weightFraction / number_edges
+
 
                 if groupA == groupB:
                     max_edges = sizeA * (sizeA-1)/2
                     if max_edges < number_edges:
                         number_edges = max_edges
-                    self.clusterStrogatz(environment, num_edges = number_edges, weight_scalar = residual_scalar)
+                    residual_scalar = totalEdges * weightFraction / number_edges
+                    self.clusterStrogatz(environment, num_edges = number_edges, subgroup = environment.partitioned_members[groupA], weight_scalar = residual_scalar)
+
                 else:
                     max_edges = sizeA*sizeB
                     if max_edges < number_edges:
                         number_edges = max_edges
+                    residual_scalar = totalEdges * weightFraction / number_edges
                     self.clusterBipartite(environment, environment.partitioned_members[groupA],environment.partitioned_members[groupB], number_edges, weight_scalar = residual_scalar)
 
     #written for the clusterMatrixGuidedPreferentialAttachment function
@@ -430,7 +441,7 @@ class PopulaceGraph:
         plt.show()
         plt.savefig("./simResults/{}/".format(self.record.stamp))
 
-    def plotSIR(self):
+    def plotSIR(self, memberSelection = None):
         rowTitles = ['S','I','R']
         fig, ax = plt.subplots(3,1,sharex = True, sharey = True)
         simCount = len(self.sims)
@@ -454,9 +465,9 @@ class PopulaceGraph:
         ax[1].legend()
         plt.show()
 
-    def plotBars(self, partition, xlabels, SIRstatus):
+    def plotBars(self, membered_partition):
         simCount = len(self.sims)
-        partitionCount = len(partition)
+        partitionCount = partition.num_sets
         barGroupWidth = 0.8
         barWidth = barGroupWidth/simCount
         index = np.arange(partitionCount)
@@ -468,7 +479,7 @@ class PopulaceGraph:
 
             totals = []
             end_time = sim.t()[-1]
-            for element in partition:
+            for element in partition.enumerator:
                 totals.append(sum(status == SIRstatus for status in sim.get_statuses(element, end_time).values()) / len(element))
             #totals = sorted(totals)
             xCoor = [offset + x for x in list(range(len(totals)))]
