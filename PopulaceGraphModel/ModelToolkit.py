@@ -464,12 +464,13 @@ class PopulaceGraph:
     def plotNodeDegreeHistogram(self, environment = None):
         if environment != None:
             graph = self.graph.subgraph(environment.members)
-            plt.title("Degree plot for members of {} # {}".format(environment.type, environment))
+            plt.title("Degree plot for members of {} \n# {}".format(environment.type, environment))
         plt.hist([degree[1] for degree in nx.degree(self.graph)], 'auto')
         plt.ylabel("total people")
         plt.xlabel("degree")
         plt.show()
         plt.savefig("./simResults/{}/".format(self.record.stamp))
+        print ("./simResults/{}/".format(self.record.stamp))
 
     def plotSIR(self, memberSelection = None):
         rowTitles = ['S','I','R']
