@@ -31,6 +31,7 @@ class Partitioner:
             partitioned_members[group].append(person)
         return partitioned_members
 
+#was a thought, but I never used it
 class memberedPartition:
     def __init__(self, members, populace, enumerator, attribute, names = None):
         super.__init__()
@@ -53,7 +54,7 @@ class PartitionedEnvironment(Environment):
         self.contact_matrix = contact_matrix
         self.id_to_partition = dict.fromkeys(members)
 
-        self.total_matrix_contact = contact_matrix.sum()
+        #self.total_matrix_contact = contact_matrix.sum()
         self.partitioned_members = partition.partitionGroup(members, populace)
         for set in self.partitioned_members:
             for person in self.partitioned_members[set]:
@@ -92,6 +93,7 @@ class PopulaceGraph:
         self.total_edges = 0
         self.total_weight = 0
         self.environments_added = 0
+
         if graph == None:
             self.graph = nx.Graph()
 
@@ -188,6 +190,13 @@ class PopulaceGraph:
         self.total_edges += 1
         self.graph.add_edge(nodeA, nodeB, transmission_weight = weight)
 
+    #merge environments, written for plotting and exploration
+    def returnMultiEnvironment(self, env_indexes, partition):
+        members = []
+        for index in env_indexes:
+            members = members + (self.environments[index].members)
+        return PartitionedEnvironment(None, members, 'multiEnvironment', self.populace, None, partition)
+
     def clusterDense(self, environment, subgroup = None, weight_scalar = 1):
         if subgroup == None:
             members = environment.members
@@ -206,7 +215,6 @@ class PopulaceGraph:
             self.clusterDense(environment)
         else:
             self.clusterPartitionedStrogatz(environment, self.environment_degrees[environment.type])
-
 
 
     def clusterStrogatz(self, environment,  num_edges, weight_scalar = 1, subgroup = None, rewire_p = 0.2):
@@ -425,11 +433,33 @@ class PopulaceGraph:
         #self.record.print("The infection quit spreading after {} days, and {} of people were never infected".format(time_to_immunity,percent_uninfected))
         self.sims.append([simResult, title])
 
-    def plotContactMatrix(self, key, partition_size):
-        self.constructContactMatrix(key, partition_size)
-        plt.imshow(self.contact_matrix)
+    def returnContactMatrix(self, environment):
+        partition = environment.partition
+        contact_matrix = np.zeros([partition.num_sets, partition.num_sets])
+        partition_sizes = np.zeros(partition.num_sets)
+        for index in range(partition.num_sets):
+            partition_sizes[index] = len(partition.enumerator)
+
+        for i in environment.members:
+            iPartition = environment.id_to_partition[i]
+            try:
+                iHomies = list(set(environment.members) & set(self.graph[i]))
+            except:
+                continue
+            for j in iHomies:
+                jPartition = environment.id_to_partition[j]
+                contact_matrix[iPartition, jPartition] += self.graph[i][j]['transmission_weight'] / partition_sizes[iPartition]
+        # plt.imshow(np.array([row / np.linalg.norm(row) for row in contact_matrix]))
+        return contact_matrix
+
+
+    def plotContactMatrix(self, environment):
+        if environment == None:
+            environment = self.returnMultiEnvironment()
+        contact_matrix = self.returnContactMatrix(environment)
+        plt.imshow(contact_matrix)
         plt.show()
-        plt.savefig("./simResults/{}/contactMatrix".format(self.record.stamp))
+
 
     def plotNodeDegreeHistogram(self, environment = None):
         if environment != None:
@@ -465,7 +495,15 @@ class PopulaceGraph:
         ax[1].legend()
         plt.show()
 
-    def plotBars(self, membered_partition):
+    #If a partitionedEnvironment is specified, the partition of the environment is applied, otherwise, a partition must be passed
+    def plotBars(self, environment = None, SIRstatus = 'R'):
+        partition = environment.partition
+        if isinstance(environment, PartitionedEnvironment):
+            partitioned_people = environment.partitioned_members
+            partition = environment.partition
+        else:
+            assert partition != None
+            partitioned_people = partition.partitionGroup(self.populace.keys(), self.populace)
         simCount = len(self.sims)
         partitionCount = partition.num_sets
         barGroupWidth = 0.8
@@ -479,7 +517,12 @@ class PopulaceGraph:
 
             totals = []
             end_time = sim.t()[-1]
-            for element in partition.enumerator:
+            for index in partitioned_people:
+                element = partitioned_people[index]
+                if len(element) == 0:
+                    #no bar if no people
+                    totals.append(0)
+                    continue
                 totals.append(sum(status == SIRstatus for status in sim.get_statuses(element, end_time).values()) / len(element))
             #totals = sorted(totals)
             xCoor = [offset + x for x in list(range(len(totals)))]

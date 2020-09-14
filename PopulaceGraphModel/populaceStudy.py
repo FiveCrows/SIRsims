@@ -15,6 +15,7 @@ tau = 0.08
 
 enumerator = {i:i//5 for i in range(75)}
 enumerator.update({i:15 for i in range(75,100)})
+
 names = ["{}:{}".format(5 * i, 5 * (i + 1)) for i in range(15)]
 partition = Partitioner(enumerator, 'age', names)
 
@@ -43,5 +44,14 @@ preventions['workplace']['masking'] = 1
 model.build(trans_weighter, preventions, env_degrees)
 model.simulate(gamma, tau, title = 'schools closed, and workplaces masked')
 
-model.plotSIR(model.environments[505001334].members)
-model.plotBars(partition)
+globalMultiEnvironment = model.returnMultiEnvironment(model.environments.keys(), partition)
+largestWorkplace = model.environments[505001334]
+largestSchool = model.environments[450059802]
+#bigHousehold = model.environments[58758613]
+list = [globalMultiEnvironment, largestWorkplace, largestSchool]#, #bigHousehold]
+for environment in list:
+    model.plotBars(environment)#(environment = model.environments[505001334])
+    model.plotNodeDegreeHistogram(environment)
+    if environment != globalMultiEnvironment:
+        model.plotContactMatrix(environment)
+model.plotSIR()
