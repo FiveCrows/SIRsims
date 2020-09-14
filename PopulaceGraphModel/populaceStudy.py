@@ -49,5 +49,5 @@ largestWorkplace = model.environments[505001334]
 largestSchool = model.environments[450059802]
 #bigHousehold = model.environments[58758613]
 list = [largestWorkplace, largestSchool]#, #bigHousehold]
-model.plotContactMatrix(largestWorkplace)
+model.plotNodeDegreeHistogram(largestWorkplace)
 
