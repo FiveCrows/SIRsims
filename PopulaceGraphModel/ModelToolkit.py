@@ -434,7 +434,6 @@ class PopulaceGraph:
         self.sims.append([simResult, title])
 
     def returnContactMatrix(self, environment):
-        graph = self.graph.subgraph(environment.members)
         partition = environment.partition
         contact_matrix = np.zeros([partition.num_sets, partition.num_sets])
         partition_sizes = np.zeros(partition.num_sets)
