@@ -44,14 +44,10 @@ preventions['workplace']['masking'] = 1
 model.build(trans_weighter, preventions, env_degrees)
 model.simulate(gamma, tau, title = 'schools closed, and workplaces masked')
 
-globalMultiEnvironment = model.returnMultiEnvironment(model.environments.keys(), partition)
+#globalMultiEnvironment = model.returnMultiEnvironment(model.environments.keys(), partition)
 largestWorkplace = model.environments[505001334]
 largestSchool = model.environments[450059802]
 #bigHousehold = model.environments[58758613]
-list = [globalMultiEnvironment, largestWorkplace, largestSchool]#, #bigHousehold]
-for environment in list:
-    model.plotBars(environment)#(environment = model.environments[505001334])
-    model.plotNodeDegreeHistogram(environment)
-    if environment != globalMultiEnvironment:
-        model.plotContactMatrix(environment)
-model.plotSIR()
+list = [largestWorkplace, largestSchool]#, #bigHousehold]
+model.plotContactMatrix(largestWorkplace)
+
