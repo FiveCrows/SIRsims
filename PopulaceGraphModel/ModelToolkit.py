@@ -464,7 +464,7 @@ class PopulaceGraph:
         if environment != None:
             graph = self.graph.subgraph(environment.members)
             plt.title("Degree plot for members of {} # {}".format(environment.type, environment.index))
-        plt.hist([degree[1] for degree in nx.degree(graph)])
+        plt.hist([degree[1] for degree in nx.degree(graph)],'auto', align = 'mid')
         plt.ylabel("total people")
         plt.xlabel("degree")
         plt.show()

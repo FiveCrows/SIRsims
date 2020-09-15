@@ -1,4 +1,5 @@
 from ModelToolkit import *
+import copy
 # plot chance of infection
 mask_scalar = 0.3
 default_env_scalars = {"school": 0.3, "workplace": 0.3, "household": 1}
@@ -23,13 +24,13 @@ model = PopulaceGraph( partition, slim = False)
 model.build(trans_weighter, preventions, env_degrees)
 model.simulate(gamma, tau, title = 'base-test')
 
-school_masks = dict(preventions)
+school_masks = copy.deepcopy(preventions)
 school_masks['school']['masking'] = 1
 model.build(trans_weighter, school_masks, env_degrees)
 model.simulate(gamma, tau, title = 'in-school masks')
 pass
 
-with_distancing = dict(preventions)
+with_distancing = copy.deepcopy(preventions)
 with_distancing['workplace']['distancing'] = 1
 model.build(trans_weighter, with_distancing, env_degrees)
 model.simulate(gamma, tau, title = 'school and workplace distancing')
