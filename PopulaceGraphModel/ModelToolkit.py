@@ -284,7 +284,7 @@ class PopulaceGraph:
 
     def clusterPartitionedStrogatz(self, environment, avg_degree):
         assert isinstance(environment, PartitionedEnvironment), "must be a partitioned environment"
-        totalEdges = avg_degree * environment.population
+        totalEdges = math.floor(avg_degree * environment.population/2)
         matrix_sum = sum(sum(environment.contact_matrix))
         #default_weight = totalContact/totalEdges
 
@@ -300,7 +300,6 @@ class PopulaceGraph:
                 number_edges = int(totalEdges*weightFraction)
                 if number_edges == 0:
                     continue
-
 
                 if groupA == groupB:
                     max_edges = sizeA * (sizeA-1)/2
@@ -464,13 +463,13 @@ class PopulaceGraph:
     def plotNodeDegreeHistogram(self, environment = None):
         if environment != None:
             graph = self.graph.subgraph(environment.members)
-            plt.title("Degree plot for members of {} \n# {}".format(environment.type, environment))
-        plt.hist([degree[1] for degree in nx.degree(self.graph)], 'auto')
+            plt.title("Degree plot for members of {} # {}".format(environment.type, environment.index))
+        plt.hist([degree[1] for degree in nx.degree(graph)], 'auto')
         plt.ylabel("total people")
         plt.xlabel("degree")
         plt.show()
         plt.savefig("./simResults/{}/".format(self.record.stamp))
-        # print ("./simResults/{}/".format(self.record.stamp))
+
 
     def plotSIR(self, memberSelection = None):
         rowTitles = ['S','I','R']
