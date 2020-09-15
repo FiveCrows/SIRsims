@@ -194,7 +194,7 @@ class PopulaceGraph:
     def returnMultiEnvironment(self, env_indexes, partition):
         members = []
         for index in env_indexes:
-            members = members + (self.environments[index].members)
+            members.extend ((self.environments[index].members))
         return PartitionedEnvironment(None, members, 'multiEnvironment', self.populace, None, partition)
 
     def clusterDense(self, environment, subgroup = None, weight_scalar = 1):
@@ -469,6 +469,7 @@ class PopulaceGraph:
         plt.xlabel("degree")
         plt.show()
         plt.savefig("./simResults/{}/".format(self.record.stamp))
+
 
     def plotSIR(self, memberSelection = None):
         rowTitles = ['S','I','R']
