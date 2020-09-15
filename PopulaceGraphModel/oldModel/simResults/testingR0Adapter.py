@@ -1,5 +1,3 @@
-import ContagionTest
-import numpy as np
 mask_scalar = 0.3
 default_env_scalars = {"school": 0.3, "work": 0.3, "household": 1}
 env_degrees = {'work': 16, 'school' :20}

@@ -77,7 +77,7 @@ class PopulaceGraph:
         #load populace from file if necessary
         if populace == None:
         # for loading people objects from file
-            with open("people_list_serialized.pkl", 'rb') as file:
+            with open("../people_list_serialized.pkl", 'rb') as file:
                 x = pickle.load(file)
 
             # return represented by dict of dicts

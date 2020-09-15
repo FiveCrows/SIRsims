@@ -549,7 +549,7 @@ class Record:
         self.stamp = datetime.now().strftime("%m_%d_%H_%M_%S")
         self.graph_stats = {}
         self.last_runs_percent_uninfected = 1
-        mkdir("./simResults/{}".format(self.stamp))
+        #mkdir("./simResults/{}".format(self.stamp))
 
     def print(self, string):
         print(string)

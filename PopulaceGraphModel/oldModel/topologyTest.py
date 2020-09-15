@@ -1,4 +1,4 @@
-from ContagionModeling import *
+from oldModel.ContagionModeling import *
 import networkx as nx
 import random as random
 #mask_scalar scales down the weights between nodes with mask use

@@ -1,4 +1,4 @@
-from ContagionModeling import *
+from oldModel.ContagionModeling import *
 from matplotlib import pyplot as plt
 import networkx as nx
 

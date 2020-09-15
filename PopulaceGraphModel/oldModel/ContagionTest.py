@@ -1,4 +1,4 @@
-from ContagionModeling import *
+from oldModel.ContagionModeling import *
 import pandas as pd
 #mask_scalar scales down the weights between nodes with mask use
 mask_scalar = 0.3
@@ -25,7 +25,7 @@ preferenceMatrix = model.partitionToPreferenceMatrix(partition,id_to_partition)
 contactMatrix = model.partitionToContactMatrix(partition, id_to_partition)
 plt.imshow(preferenceMatrix)
 plt.imshow(contactMatrix)
-contactMatrixUSA_Base = pd.read_csv("../ContactMatrices/Leon/ContactMatrixLeonAll.csv", header = None).values
+contactMatrixUSA_Base = pd.read_csv("../../ContactMatrices/Leon/ContactMatrixLeonAll.csv", header = None).values
 #model.simulate
 model.simulate(gamma, tau, title = 'control')
 #model.plotContactMatrix()
