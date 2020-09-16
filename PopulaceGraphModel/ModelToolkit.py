@@ -42,7 +42,7 @@ class Environment:
         self.index = index
         self.members = members
         self.type = type
-        self.preventions = preventions
+        self.preventions = None
         self.population = len(members)
        # self.distancing = distancing
 
@@ -73,12 +73,13 @@ class TransmissionWeighter:
     def getWeight(self, personA, personB, environment):
         weight = self.global_weight*self.env_scalars[environment.type]
         #including masks
-        if random.random() < environment.preventions["masking"]:
-            weight = weight * self.prevention_reductions["masking"]
-            if random.random() < environment.preventions["masking"]**2:
+        if environment.preventions != None:
+            if random.random() < environment.preventions["masking"]:
                 weight = weight * self.prevention_reductions["masking"]
-        #distancing weight reduction
-        weight = weight*(1-(1-self.prevention_reductions["distancing"]) * environment.preventions["distancing"])
+                if random.random() < environment.preventions["masking"]**2:
+                    weight = weight * self.prevention_reductions["masking"]
+            #distancing weight reduction
+            weight = weight*(1-(1-self.prevention_reductions["distancing"]) * environment.preventions["distancing"])
         return weight
 
 
@@ -549,7 +550,7 @@ class Record:
         self.stamp = datetime.now().strftime("%m_%d_%H_%M_%S")
         self.graph_stats = {}
         self.last_runs_percent_uninfected = 1
-        mkdir("./simResults/{}".format(self.stamp))
+        #mkdir("./simResults/{}".format(self.stamp))
 
     def print(self, string):
         print(string)

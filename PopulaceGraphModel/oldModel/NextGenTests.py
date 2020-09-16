@@ -1,4 +1,4 @@
-from ContagionModeling import *
+from oldModel.ContagionModeling import *
 from matplotlib import pyplot as plt
 from numpy import linalg as LA
 
