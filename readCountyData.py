@@ -84,7 +84,7 @@ def plotThreshold(threshold, dates, cumulativeData, county_list):
         plt.plot(sorted(dates), cumulativeData[v], label=county_list[v])
         plt.annotate(str(cumulativeData[v][-1]),xy=(sorted(dates)[-1],cumulativeData[v][-1]*1.01))
     plt.xticks(rotation=45)
-    plt.legend()
+    plt.legend(loc="best")
     title_temp="Counties with cumulative case count over "+ str(threshold)
     plt.title(title_temp)
     figname="Threshold_"+str(threshold)+datetime.now().strftime("%d%m%y%H%M")+".png"
@@ -103,7 +103,7 @@ def plotCounty(counties, dates, cumulativeData, county_list, save_c='N'):
         plt.annotate(str(cumulativeData[idx][-1]),xy=(sorted(dates)[-1],cumulativeData[idx][-1]*1.01))
     title="Cumulative case count trend for counties"+str(counties)
     plt.title(title)
-    plt.legend()
+    plt.legend(loc="best")
     figname="Counties_"+datetime.now().strftime("%d%m%y%H%M")+".png"
     plt.xticks(rotation=45)
     if save_c=='Y' or save_c=='y':
@@ -128,7 +128,7 @@ def plotZipcodes(zipcodes, dates, data, save_c='N'):
         plt.annotate(str(temp_data[-1]),xy=(sorted(dates)[-1],temp_data[-1]*1.01))
     title="Cumulative case count for zipcodes\n"+str(zipcodes)
     plt.title(title)
-    plt.legend()
+    plt.legend(loc="best")
     plt.xticks(rotation=45)
     figname="Zipcodes_"+datetime.now().strftime("%d%m%y%H%M")+".png"
     if save_c=='Y' or save_c=='y':
@@ -150,7 +150,7 @@ def plotDefault(dates, cumulativeData, county_list, save_c='N'):
         plt.annotate(str(top_10[i][-1]),xy=(sorted(dates)[-1],top_10[i][-1]*1.01))
     plt.xticks(rotation=45)
     plt.title(title)
-    plt.legend()
+    plt.legend(loc="best")
     if save_c=='Y' or save_c=='y':
         plt.savefig(figname)
     plt.show()
