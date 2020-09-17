@@ -36,6 +36,18 @@ def main(n1, n2, m1, m2):
     else:
         print("graph not possible, {} edges would be needed to satisfy m1, but {} to satisfy m2, so using {} instead".format(edgeCountA, edgeCountB, edgeCount))
 
+    env_cm = model.environments[58758613]
+    env_cm = model.environments[450124041] # school (error if key does not exist)
+    print("\n *******************\n")
+    print("\n ** dir(env_cm)= ", dir(env_cm))
+    print("\n ** dir(model)= ", dir(model))
+    print("type: ", type(env_cm))
+    cm = model.returnContactMatrix(env_cm)
+    print("cm= ", cm)
+
+
+    print(dir(env_cm))
+    print("")
     model.clusterBipartite(model.environments[58758613], list(range(0,n1)), list(range(n1,n1+n2)), edgeCount) # fourty four edges will
 
     pos = nx.spring_layout(model.graph)

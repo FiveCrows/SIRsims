@@ -1,4 +1,4 @@
-
+#
 # Establish the connections between two subgraphs that satisfy a given
 # categorical distribution. We model the distribution with two entries such
 # that the degree average is correct. The degree averages of the two subgraphs
@@ -72,7 +72,6 @@ end
 # cmm: contact matrix
 function makeGraph(N, index_range::Tuple, cmm)
     Nv = sum(N)
-    println("== Nv= $Nv")
     g = SimpleGraph(Nv)
     g = MetaGraph(g)
     if Nv < 25 return g, [0,0] end   # <<<<< All to all connection below Nv = 25. Not done yet.
@@ -91,6 +90,9 @@ function makeGraph(N, index_range::Tuple, cmm)
     for i in lo:hi
         for j in lo:i
             ddict = Dict()
+            #println("i,j= $i, $j")
+            #println("N= $N")
+            #println("cmm= $cmm")
             Nij = Int64(floor(N[i] * cmm[i,j]))
 
             if Nij == 0 continue end
@@ -140,11 +142,11 @@ function makeGraph(N, index_range::Tuple, cmm)
     for i in 1:nv(g)
         deg[1+degrees[i]] += 1
     end
-    println("(N=nv(g)), deg: ")
-    for i in 1:length(deg)
-        print("$(deg[i]), ")
-    end
-    println("")
+    #println("(N=nv(g)), deg: ")
+    #for i in 1:length(deg)
+        #println("$(deg[i]), ")
+    #end
+    #println("")
     # N is the age distribution in the schools
     return g, deg
 end
@@ -171,10 +173,8 @@ function checkContactMatrices(g, cm, index_range::Tuple)
         end
     end
 
-    println("new_cm")
-    @show new_cm
-    println("cmm = original cm")
-    @show cmm
+    @show "error on cmm: ", (new_cm .- cmm)
+    @show "original cm: ", cmm
 
 
     # number of expected edges
@@ -191,8 +191,6 @@ function checkContactMatrices(g, cm, index_range::Tuple)
     deg = degree(g)
 end
 
-# Use the fake numbers N_ages
-# Symmetrize cm
 # The simplest approach to symmetrization is Method 1 (M1) in paper by Arregui
 function reciprocity(cm, N)
     cmm = zeros(4,4)
@@ -222,8 +220,13 @@ function myunpickle(filename)
 end
 
 
-function getContactMatrix(filenm, N, school_id, index_range)
-    lo, hi = index_range
+function getContactMatrix(filenm, N, school_id; index_range=None)
+	# index_range: age range of interest in the contact matrix
+	if index_range == None
+		lo, hi = 1, size(cm[1])
+    else
+    	lo, hi = index_range
+	end
     dict = myunpickle(filenm)
     cm = dict[school_id]
     cm = cm[lo:hi,lo:hi]   # CM for the school. (I really need the school numbers)

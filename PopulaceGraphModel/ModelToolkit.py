@@ -450,7 +450,7 @@ class PopulaceGraph:
                 jPartition = environment.id_to_partition[j]
                 contact_matrix[iPartition, jPartition] += self.graph[i][j]['transmission_weight'] / partition_sizes[iPartition]
         # plt.imshow(np.array([row / np.linalg.norm(row) for row in contact_matrix]))
-        return contact_matrix
+        return contact_matrix 
 
 
     def plotContactMatrix(self, environment):

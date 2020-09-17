@@ -5,7 +5,10 @@ using DataFrames
 using Random
 using PyCall
 using CSV
+using Distributions
+using Plots
 @pyimport pickle
+include("make_contact_graph_functions.jl")
 
 # Given two subgraphs, I would like to connect them.
 # Assign two ages, 5 and 10 to each node
@@ -213,6 +216,7 @@ function edgeListProb(n1,deg1,n2,deg2)
         mn = minimum((e1,e2))
         mx = maximum((e1,e2))
 
+		#
         if haskey(edge_dict,(mn,mx))
             push!(excess_list, (mn, mx))
             continue
@@ -247,7 +251,6 @@ deg2 = 6
 # So now to sample from this pdf. How many samples do I need to achieve
 # the proper average.
 
-using Distributions
 
 # Generate a sequence of degrees that match a particular average.
 # This is for the case when the average degree is non-integer
@@ -369,7 +372,6 @@ d = degree(g)
 @show avgd1 = sum(d[1:n1]) / n1
 @show avgd2 = sum(d[1+n1:n1+n2]) / n2
 
-import CSV
 df = CSV.read("school_contact_matrix.csv")
 arr = df[!, "450145980"]
 arr = Vector(arr)
@@ -395,9 +397,10 @@ filenm = "ContactMatrices/Leon/ContactMatrixSchools.pkl"
 school_id = 450124041
 index_range = (1,4)
 cmm = getContactMatrix(filenm, N_ages, school_id, index_range)
+println("cmm= ", cmm)
 
 # DEBUGGING
-function getContactMatrix(filenm, index_range)
+function printContactMatrix(filenm, index_range)
     lo, hi = index_range
     dict = myunpickle(filenm)
     for k in keys(dict)
@@ -407,32 +410,46 @@ function getContactMatrix(filenm, index_range)
         println("cm= ", cm)
     end
 end
-getContactMatrix(filenm, index_range)
+cmm = printContactMatrix(filenm, index_range)
 # END DEBUGGING
 
 N = [200, 600, 400, 700]
-N = [60, 120, 80, 140]
 N = [6000, 12000, 8000, 14000]
+N = [60, 120, 80, 140]
 N = [600, 1200, 800, 1400]
 index_range = (1,4)
-@benchmark makeGraph(N, index_range) samples=10 evals=4
+@benchmark makeGraph(N, index_range, cmm) samples=10 evals=4
 
 # The new contact matrix is identical across multiple random runs
 # The graph changes slightly
 deg_l = []
-for i in 1:5
-    g = makeGraph(N, index_range)
+filenm = "ContactMatrices/Leon/ContactMatrixSchools.pkl"
+index_range = (1,4)
+N_ages = N
+school_id = 450124041
+cmm = getContactMatrix(filenm, N_ages, school_id, index_range)
+include("make_contact_graph_functions.jl")
+
+# Construct the graph four times to investigate variability
+for i in 1:4
+    println("================================")
+    # return graph and list of node degrees
+    g, deg = makeGraph(N, index_range, cmm);
     checkContactMatrices(g, cmm, index_range)
     push!(deg_l, degree(g))
 end
 
 
-using Plots
+plist = []
 p = histogram(deg_l[1], bins=25, fillalpha=0.9)
-for i in 2:5
-    histogram!(p, deg_l[i], bins=25, fillalpha=0.1, color=:red)
+push!(plist, p)
+for i in 2:4
+    p = histogram(deg_l[i], bins=25, fillalpha=0.1, color=:red)
+    push!(plist, p)
 end
-p
+
+# A graph with four degree histograms.
+plot(plist...)
 # should plot the network
 
 function tst1()
@@ -452,3 +469,5 @@ end
 
 @btime tst1() seconds=0.1
 @btime tst2() seconds=0.1
+
+]
