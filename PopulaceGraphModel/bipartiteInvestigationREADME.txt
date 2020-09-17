@@ -4,3 +4,6 @@ run the script with four arguments n1, and n2, the nodes in each group, m1, the 
 the average degree of nodes in m2
 
 From this, it will display a bipartite graph.
+
+Try for example,
+python bipartiteInvestigation.py 6 8 3 3

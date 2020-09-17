@@ -20,7 +20,7 @@ enumerator.update({i:15 for i in range(75,100)})
 names = ["{}:{}".format(5 * i, 5 * (i + 1)) for i in range(15)]
 partition = Partitioner(enumerator, 'age', names)
 
-model = PopulaceGraph( partition, slim = False)
+model = PopulaceGraph( partition, slim = True)
 model.build(trans_weighter, preventions, env_degrees)
 model.simulate(gamma, tau, title = 'base-test')
 
@@ -49,11 +49,12 @@ largestWorkplace = model.environments[505001334]
 largestSchool = model.environments[450059802]
 #bigHousehold = model.environments[58758613]
 list = [largestWorkplace, largestSchool]#, #bigHousehold]
+model.plotSIR()
 model.plotNodeDegreeHistogram(globalMultiEnvironment)
 model.plotBars(globalMultiEnvironment)
 model.plotContactMatrix(largestWorkplace)
-model.plotSIR()
-
+plt.imshow(largestWorkplace.contact_matrix)
+plt.show()
 #priority
 #Show charts for bipartite n1,n2,m1,m2
 #add plots to overleaf

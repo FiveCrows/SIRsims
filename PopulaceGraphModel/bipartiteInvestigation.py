@@ -47,8 +47,6 @@ def main(n1, n2, m1, m2):
 if __name__  == "__main__":
     sys.argv = sys.argv[1:]
     if len(sys.argv) == 4:
-
-
             main(int(sys.argv[0]), int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]))
     else:
         print("must provide four integers as arguments, n1,n2,m1,m2")

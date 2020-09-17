@@ -436,9 +436,7 @@ class PopulaceGraph:
     def returnContactMatrix(self, environment):
         partition = environment.partition
         contact_matrix = np.zeros([partition.num_sets, partition.num_sets])
-        partition_sizes = np.zeros(partition.num_sets)
-        for index in range(partition.num_sets):
-            partition_sizes[index] = len(partition.enumerator)
+        partition_sizes = [len(environment.partitioned_members[i]) for i in environment.partitioned_members]
 
         for i in environment.members:
             iPartition = environment.id_to_partition[i]
@@ -550,7 +548,7 @@ class Record:
         self.stamp = datetime.now().strftime("%m_%d_%H_%M_%S")
         self.graph_stats = {}
         self.last_runs_percent_uninfected = 1
-        #mkdir("./simResults/{}".format(self.stamp))
+        mkdir("./simResults/{}".format(self.stamp))
 
     def print(self, string):
         print(string)
