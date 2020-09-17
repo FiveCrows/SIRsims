@@ -285,36 +285,43 @@ class PopulaceGraph:
 
     def clusterPartitionedStrogatz(self, environment, avg_degree):
         assert isinstance(environment, PartitionedEnvironment), "must be a partitioned environment"
+        #determine total edges needed for entire subgraph, and note there are 2 node connections per edge
         totalEdges = math.floor(avg_degree * environment.population/2)
-        matrix_sum = sum(sum(environment.contact_matrix))
+        #a list of the number of people in each partition set
+        partition_sizes = [len(environment.partitioned_members[i]) for i in environment.partitioned_members]
+        #get total contact, keeping in mind the contact matrix elements are divided by num people in group
+        totalContact = 0
+        for i in range(len(environment.contact_matrix)):
+            for element in environment.contact_matrix[i]:
+                totalContact +=element*partition_sizes[i]
         #default_weight = totalContact/totalEdges
 
-        for groupA in environment.partitioned_members:
-            sizeA = len(environment.partitioned_members[groupA])
+        #for each number between two groups
+        for index_i in environment.partitioned_members:
+            sizeA = len(environment.partitioned_members[index_i])
             if sizeA == 0:
                 continue
-            for groupB in environment.partitioned_members:
-                sizeB = len(environment.partitioned_members[groupB])
+            for index_j in environment.partitioned_members:
+                sizeB = len(environment.partitioned_members[index_j])
                 if sizeB == 0:
                     continue
-                weightFraction = environment.contact_matrix[groupA, groupB]/matrix_sum
+                weightFraction = environment.contact_matrix[index_i, index_j]*partition_sizes[index_i]/(totalContact)
                 number_edges = int(totalEdges*weightFraction)
                 if number_edges == 0:
                     continue
-
-                if groupA == groupB:
+                if index_i == index_j:
                     max_edges = sizeA * (sizeA-1)/2
                     if max_edges < number_edges:
                         number_edges = max_edges
                     residual_scalar = totalEdges * weightFraction / number_edges
-                    self.clusterStrogatz(environment, num_edges = number_edges, subgroup = environment.partitioned_members[groupA], weight_scalar = residual_scalar)
+                    self.clusterStrogatz(environment, num_edges = number_edges, subgroup = environment.partitioned_members[index_i], weight_scalar = residual_scalar)
 
                 else:
                     max_edges = sizeA*sizeB
                     if max_edges < number_edges:
                         number_edges = max_edges
                     residual_scalar = totalEdges * weightFraction / number_edges
-                    self.clusterBipartite(environment, environment.partitioned_members[groupA],environment.partitioned_members[groupB], number_edges, weight_scalar = residual_scalar)
+                    self.clusterBipartite(environment, environment.partitioned_members[index_i],environment.partitioned_members[index_j], number_edges, weight_scalar = residual_scalar)
 
     #written for the clusterMatrixGuidedPreferentialAttachment function
 
@@ -463,7 +470,7 @@ class PopulaceGraph:
         if environment != None:
             graph = self.graph.subgraph(environment.members)
             plt.title("Degree plot for members of {} # {}".format(environment.type, environment.index))
-        plt.hist([degree[1] for degree in nx.degree(graph)],'auto', align = 'mid')
+        plt.hist([degree[1] for degree in nx.degree(graph)], 50, align = 'mid')
         plt.ylabel("total people")
         plt.xlabel("degree")
         plt.show()
