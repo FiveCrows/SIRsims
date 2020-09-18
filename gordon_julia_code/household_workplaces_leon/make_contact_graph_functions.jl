@@ -90,9 +90,93 @@ function makeGraph(N, index_range::Tuple, cmm)
     for i in lo:hi
         for j in lo:i
             ddict = Dict()
-            #println("i,j= $i, $j")
-            #println("N= $N")
-            #println("cmm= $cmm")
+            Nij = Int64(floor(N[i] * cmm[i,j]))
+            println("i,j= $i, $j,  Nij= $Nij")
+
+            if Nij == 0 continue end
+
+            total_edges += Nij
+            Vi = cum_N[i]+1:cum_N[i+1]
+            Vj = cum_N[j]+1:cum_N[j+1]
+
+            # Treat the case when the number of edges dictated by the
+            # contact matrices is greater than the number of available edges
+            # The connectivity is then cmoplete
+            lg = length(Vi)
+            nbe = div(lg*(lg-1), 2)
+            if Vi == Vj && Nij > nbe
+                Nij = nbe
+            end
+            count = 0
+            while true
+                # p ~ Vi, q ~ Vj
+                # no self-edges
+                # only reallocate when necessary (that would provide speedup)
+                # allocate 1000 at t time
+                #p = getRand(Vi, 1) # I could use memoization
+                #q = getRand(Vi, 1) # I could use memoization
+
+                p = rand(Vi, 1)[]
+                q = rand(Vj, 1)[]
+                if p == q continue end
+                # multiple edges between p,q not allowed
+                if p <  q
+                    ddict[(p,q)] = 1
+                else
+                    ddict[(q,p)] = 1
+                end
+                # stop when desired number of edges is reached
+                lg = length(ddict)
+                if length(ddict) == Nij break end
+            end
+            for k in keys(ddict)
+                s, d = k
+                add_edge!(g, s, d)
+            end
+        end
+    end
+    degrees = degree(g)
+    deg = zeros(Int64, Δ(g)+1)
+    for i in 1:nv(g)
+        deg[1+degrees[i]] += 1
+    end
+    println("Degree distribution")
+    println("(N=nv(g)), deg: ")
+    for i in 1:length(deg)
+        println("$(deg[i]), ")
+    end
+    #println("")
+    # N is the age distribution in the schools
+    println("total edges: ", total_edges)
+    return g, deg
+end
+nothing
+
+# Just for testing
+function makeBipartite(N1, N2, C12, C21)
+    Nv = N1 + N2
+    g = SimpleGraph(Nv)
+    g = MetaGraph(g)
+    if Nv < 25 return g, [0,0] end   # <<<<< All to all connection below Nv = 25. Not done yet.
+
+    # Assign age groups to the nodes. Randomness not important
+    # These are also the node numbers for each category, sorted
+    all_bins = vcat(repeat([1], N1), repeat([2], N2))'   # row vector
+    cum_N = append!([0], cumsum([N1,N2]))
+    all_bins = []
+    #set_prop!(g, :age_bins, all_bins)   # not clear where used
+    ddict = Dict()
+    total_edges = 0
+
+    lo, hi = 1, 2
+    N = [N1, N2]
+    cmm = Dict()
+    cmm[1,2] = C12
+    cmm[2,1] = c21
+
+    for i in lo:hi
+        for j in lo:i
+            ddict = Dict()
             Nij = Int64(floor(N[i] * cmm[i,j]))
 
             if Nij == 0 continue end
@@ -151,6 +235,7 @@ function makeGraph(N, index_range::Tuple, cmm)
     return g, deg
 end
 
+
 function checkContactMatrices(g, cm, index_range::Tuple)
     lo, hi = index_range
     age_bins = get_prop(g, :age_bins)
@@ -193,6 +278,7 @@ end
 
 # The simplest approach to symmetrization is Method 1 (M1) in paper by Arregui
 function reciprocity(cm, N)
+    println("reciprocity, cm= ", cm)
     cmm = zeros(4,4)
     for i in 1:4
         for j in 1:4
@@ -220,15 +306,12 @@ function myunpickle(filename)
 end
 
 
-function getContactMatrix(filenm, N, school_id; index_range=None)
+function getContactMatrix(filenm, N, school_id, index_range)
 	# index_range: age range of interest in the contact matrix
-	if index_range == None
-		lo, hi = 1, size(cm[1])
-    else
-    	lo, hi = index_range
-	end
+    lo, hi = index_range
     dict = myunpickle(filenm)
     cm = dict[school_id]
     cm = cm[lo:hi,lo:hi]   # CM for the school. (I really need the school numbers)
     cmm = reciprocity(cm, N)
+    return cmm
 end
