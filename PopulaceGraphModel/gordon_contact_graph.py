@@ -68,7 +68,6 @@ def GEclusterBipartite(environment, members_A, members_B, edge_count, weight_sca
 
     for i in range(size_A):
         begin_B_edges = (i * separation - k // 2)%size_B
-
         for j in range(k):
             if random.random()>p_random:
                 B_side = (begin_B_edges +j)%size_B
@@ -121,7 +120,7 @@ def main(n1, n2, m1, m2):
     
     print("avg_deg_from = ", avg_deg_from)
     print("avg_deg_to = ", avg_deg_to)
-    quit()
+    #quit()
 
     # Total degree histogram
     degrees = np.zeros(max_deg+1, dtype='int')  # add 1 for security
