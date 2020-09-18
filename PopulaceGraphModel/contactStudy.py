@@ -20,10 +20,10 @@ model = PopulaceGraph( partition, slim = True)
 model.trans_weighter = trans_weighter
 
 
-N = [600, 1200, 800, 1400,0,0,0,0,0,0,0,0,0,0,0]
-syntheticEnvironment = model.environments[450124041]
-plt.imshow(syntheticEnvironment.contact_matrix)
-plt.show()
+N = [6000, 12000, 8000, 14000,0,0,0,0,0,0,0,0,0,0,0]
+
+
+
 memberReplacement = list(range(sum(N)))
 partitionEnumerator = {i: [] for i in range(16)}
 peopleAdded = 0
@@ -34,13 +34,20 @@ for i in range(len(N)):
     partitionEnumerator[i] = set
     peopleAdded = peopleAdded+n
 
-syntheticEnvironment.members = list(range(sum(N)))
-syntheticEnvironment.partitioned_members = partitionEnumerator
-syntheticEnvironment.population = sum(N)
+school = model.environments[450124041]
+school.members = list(range(sum(N)))
+school.partitioned_members = partitionEnumerator
+school.population = sum(N)
+id_to_partition = dict.fromkeys(school.members)
+for person in partitionEnumerator[set]:
+    id_to_partition[person] = (set)
+school.id_to_partition = id_to_partition
+
+print(school.returnReciprocatedCM())
 model.environment_degrees = env_degrees
-
-model.addEnvironment(syntheticEnvironment)
-model.plotNodeDegreeHistogram(syntheticEnvironment)
-
-
-
+model.addEnvironment(school)
+#model.plotNodeDegreeHistogram(syntheticEnvironment)
+plt.imshow(school.contact_matrix)
+plt.show()
+plt.imshow(school.returnReciprocatedCM())
+plt.imshow(model.returnContactMatrix())

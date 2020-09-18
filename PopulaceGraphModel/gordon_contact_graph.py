@@ -131,9 +131,7 @@ def makeGraph(N, index_range, cmm):
 #------------------------------------------------------------------
 # This is Bryan Azbill's routine slightly modified for GE
 def GEclusterBipartite(environment, members_A, members_B, edge_count, weight_scalar = 1, p_random = 0.2):
-
     edge_list = []  # list of node pairs
-
     #reorder groups by size
 
     if len(members_A) < len(members_B):
