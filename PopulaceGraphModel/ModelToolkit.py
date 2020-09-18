@@ -185,11 +185,13 @@ class PopulaceGraph:
             self.addEnvironment(environment)
         self.isBuilt = True
 
+    #------------------------
     def addEdge(self, nodeA, nodeB, environment, weight_scalar = 1):
         weight = self.trans_weighter.getWeight(nodeA, nodeB, environment)*weight_scalar
         self.total_weight += weight
         self.total_edges += 1
         self.graph.add_edge(nodeA, nodeB, transmission_weight = weight)
+    #------------------------
 
     #merge environments, written for plotting and exploration
     def returnMultiEnvironment(self, env_indexes, partition):
@@ -247,6 +249,7 @@ class PopulaceGraph:
                 self.addEdge(nodeA, nodeB, environment, weight_scalar)
 
     #clusterBipartite is particularly written to be used in clusterStrogatzByContact
+    #-------------------------
     def clusterBipartite(self, environment, members_A, members_B, edge_count, weight_scalar = 1, p_random = 0.2):
         #reorder groups by size
         A = min(members_A, members_B, key = len)
@@ -283,6 +286,7 @@ class PopulaceGraph:
         for i in range(remainder):
             self.addEdge(random.choice(A), random.choice(B), environment, weight_scalar)
 
+    #-------------------------
     def clusterPartitionedStrogatz(self, environment, avg_degree):
         assert isinstance(environment, PartitionedEnvironment), "must be a partitioned environment"
         #determine total edges needed for entire subgraph, and note there are 2 node connections per edge
