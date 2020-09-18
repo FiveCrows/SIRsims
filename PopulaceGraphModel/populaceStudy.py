@@ -35,7 +35,6 @@ with_distancing['workplace']['distancing'] = 1
 model.build(trans_weighter, with_distancing, env_degrees)
 model.simulate(gamma, tau, title = 'school and workplace distancing')
 
-
 env_degrees['school'] = 0
 model.build(trans_weighter, preventions, env_degrees)
 model.simulate(gamma, tau, title = 'schools closed')

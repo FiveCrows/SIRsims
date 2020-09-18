@@ -20,8 +20,6 @@ class Partitioner:
         self.attribute_values = dict.fromkeys(set(enumerator.values()))
         self.num_sets = (len(np.unique(list(enumerator.values()))))
 
-
-
     def partitionGroup(self, members, populace):
         partitioned_members = {i: [] for i in range(self.num_sets)}
         for person in members:
@@ -189,6 +187,7 @@ class PopulaceGraph:
         #self.record.print("building populace into graphs with the {} clustering algorithm".format(clusteringAlg.__name__))
         #start = time.time()
         self.graph = nx.Graph()
+        print("GE: Total number of environments (homes+workplaces+schools): ", len(self.environments))
         for index in self.environments:
             environment = self.environments[index]
             environment.preventions = preventions[environment.type]
@@ -225,7 +224,9 @@ class PopulaceGraph:
         if environment.type == 'household':
             self.clusterDense(environment)
         else:
-            self.clusterPartitionedStrogatz(environment, self.environment_degrees[environment.type])
+            # the graph is computed according to contact matrix of environment
+            # self.clusterPartitionedStrogatz(environment, self.environment_degrees[environment.type])
+            self.clusterMakeGraph(environment, self.environment_degrees[environment.type])
 
 
     def clusterStrogatz(self, environment,  num_edges, weight_scalar = 1, subgroup = None, rewire_p = 0.2):
@@ -293,6 +294,40 @@ class PopulaceGraph:
             self.addEdge(random.choice(A), random.choice(B), environment, weight_scalar)
 
 
+    def clusterMakeGraph(self, environment, avg_degree):
+        print("**** Enter clusterMakeGraph, created by G. Erlebacher")
+        # Create graph according to makeGraph, developed by G. Erlebacher (in Julia)
+        #G = Gordon()
+        #G.makeGraph(N, index_range, cmm)
+        # len(p_sets) = 16 age categories, dictionaries
+        p_sets = environment.partitioned_members
+        print([k for k in p_sets.keys()])
+        CM = environment.returnReciprocatedCM()
+        print("CM= ", CM)  # single CM matrix
+
+        assert isinstance(environment, PartitionedEnvironment), "must be a partitioned environment"
+        #determine total edges needed for entire network. There are two connections per edge)
+        total_edges = math.floor(avg_degree * environment.population/2)
+        #a list of the number of people in each partition set
+        partition_sizes = [len(p_sets[i]) for i in p_sets]
+        print("partition_sizes= ", partition_sizes)
+        print("len(p_sets)= ", len(p_sets))
+
+        num_sets = len(p_sets) # nb age bins
+        #get total contact, keeping in mind the contact matrix elements are divided by num people in group
+        total_contact = 0
+        #for i in range(len(CM)):
+        for i,cm in enumerate(CM):
+            print("i= ", i)
+            #for element in cm:
+            for j,element in enumerate(cm):
+                #print("j, element= ", j, element)
+                total_contact +=element*partition_sizes[i]
+        #default_weight = total_contact/totalEdges
+
+        quit()
+        
+        
     def clusterPartitionedStrogatz(self, environment, avg_degree):
         #to clean up code just a little
         p_sets = environment.partitioned_members
