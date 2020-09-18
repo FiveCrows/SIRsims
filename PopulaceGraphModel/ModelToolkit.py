@@ -60,6 +60,19 @@ class PartitionedEnvironment(Environment):
             for person in self.partitioned_members[set]:
                 self.id_to_partition[person] = (set)
 
+    def returnReciprocatedCM(self):
+        CM = self.contact_matrix
+        dim = CM.shape
+        RM = np.zeros(dim)
+        set_sizes = [len(self.partitioned_members[i]) for i in self.partitioned_members]
+
+        for i in range(dim[0]):
+            for j in range(dim[1]):
+                if set_sizes[i] != 0:
+                    RM[i,j] = (CM[i,j]*set_sizes[i]+CM[j,i]*set_sizes[j])/(2*set_sizes[i])
+        return RM
+
+
 
 class TransmissionWeighter:
     def __init__(self, env_scalars, prevention_reductions, name ='default'):#, loc_masking):
@@ -137,9 +150,6 @@ class PopulaceGraph:
         #load contact_matrices and build environments
         with open("../ContactMatrices/Leon/ContactMatrixSchools.pkl", 'rb') as file:
             schoolCM = pickle.load(file)
-        with open("../ContactMatrices/Leon/ContactMatrixSchools.pkl", 'rb') as file:
-            schoolCM = pickle.load(file)
-
 
         # env_name_alternate = {"household": "sp_hh_id", "work": "work_id", "school": "school_id"} outdated
         #adding households to environment list
@@ -195,7 +205,7 @@ class PopulaceGraph:
     def returnMultiEnvironment(self, env_indexes, partition):
         members = []
         for index in env_indexes:
-            members.extend ((self.environments[index].members))
+            members.extend(self.environments[index].members)
         return PartitionedEnvironment(None, members, 'multiEnvironment', self.populace, None, partition)
 
     def clusterDense(self, environment, subgroup = None, weight_scalar = 1):
@@ -269,7 +279,6 @@ class PopulaceGraph:
         remainder = edge_count%size_A
         p_random = max(0, p_random - remainder/edge_count)
 
-
         for i in range(size_A):
             begin_B_edges = (i * separation - k // 2)%size_B
 
@@ -283,48 +292,57 @@ class PopulaceGraph:
         for i in range(remainder):
             self.addEdge(random.choice(A), random.choice(B), environment, weight_scalar)
 
-    def clusterPartitionedStrogatz(self, environment, avg_degree):
-        assert isinstance(environment, PartitionedEnvironment), "must be a partitioned environment"
-        #determine total edges needed for entire subgraph, and note there are 2 node connections per edge
-        totalEdges = math.floor(avg_degree * environment.population/2)
-        #a list of the number of people in each partition set
-        partition_sizes = [len(environment.partitioned_members[i]) for i in environment.partitioned_members]
-        #get total contact, keeping in mind the contact matrix elements are divided by num people in group
-        totalContact = 0
-        for i in range(len(environment.contact_matrix)):
-            for element in environment.contact_matrix[i]:
-                totalContact +=element*partition_sizes[i]
-        #default_weight = totalContact/totalEdges
 
-        #for each number between two groups
-        for index_i in environment.partitioned_members:
-            sizeA = len(environment.partitioned_members[index_i])
+    def clusterPartitionedStrogatz(self, environment, avg_degree):
+        #to clean up code just a little
+        p_sets = environment.partitioned_members
+        CM = environment.returnReciprocatedCM()
+
+        assert isinstance(environment, PartitionedEnvironment), "must be a partitioned environment"
+        #determine total edges needed for entire network. There are two connections per edge)
+        total_edges = math.floor(avg_degree * environment.population/2)
+        #a list of the number of people in each partition set
+        partition_sizes = [len(p_sets[i]) for i in p_sets]
+        num_sets = len(p_sets)
+        #get total contact, keeping in mind the contact matrix elements are divided by num people in group
+        total_contact = 0
+        for i in range(len(CM)):
+            for element in CM[i]:
+                total_contact +=element*partition_sizes[i]
+        #default_weight = total_contact/totalEdges
+
+        #for each number between two groups, don't iterate zeros
+        for index_i in p_sets:
+            sizeA = len(p_sets[index_i])
             if sizeA == 0:
                 continue
-            for index_j in environment.partitioned_members:
-                sizeB = len(environment.partitioned_members[index_j])
+
+            for index_j in range(index_i, num_sets):
+                sizeB = len(p_sets[index_j])
                 if sizeB == 0:
                     continue
-                weightFraction = environment.contact_matrix[index_i, index_j]*partition_sizes[index_i]/(totalContact)
-                number_edges = int(totalEdges*weightFraction)
+                #get the fraction of contact that should be occur between sets i and j
+                contactFraction = CM[index_i, index_j]*partition_sizes[index_i]/(total_contact)
+                number_edges = int(total_edges*contactFraction)
                 if number_edges == 0:
                     continue
+
                 if index_i == index_j:
                     max_edges = sizeA * (sizeA-1)/2
                     if max_edges < number_edges:
                         number_edges = max_edges
-                    residual_scalar = totalEdges * weightFraction / number_edges
-                    self.clusterStrogatz(environment, num_edges = number_edges, subgroup = environment.partitioned_members[index_i], weight_scalar = residual_scalar)
+                    #if the expected number of edges cannot be added, compensate by scaling the weights up a bit
+                    residual_scalar = total_edges * contactFraction / number_edges
+                    self.clusterStrogatz(environment, num_edges = number_edges, subgroup = p_sets[index_i], weight_scalar = residual_scalar)
 
                 else:
                     max_edges = sizeA*sizeB
                     if max_edges < number_edges:
                         number_edges = max_edges
-                    residual_scalar = totalEdges * weightFraction / number_edges
-                    self.clusterBipartite(environment, environment.partitioned_members[index_i],environment.partitioned_members[index_j], number_edges, weight_scalar = residual_scalar)
+                    residual_scalar = total_edges * contactFraction / number_edges
+                    self.clusterBipartite(environment, p_sets[index_i], p_sets[index_j], number_edges, weight_scalar = residual_scalar)
 
     #written for the clusterMatrixGuidedPreferentialAttachment function
-
     def addEdgeWithAttachmentTracking(self, nodeA, nodeB, attachments, environment):
         self.add_edge(nodeA, nodeB, environment)
         groupA = environment.id_to_partition[nodeA]
@@ -441,17 +459,15 @@ class PopulaceGraph:
         self.sims.append([simResult, title])
 
     def returnContactMatrix(self, environment):
+        graph = self.graph.subgraph(environment.members)
         partition = environment.partition
         contact_matrix = np.zeros([partition.num_sets, partition.num_sets])
         partition_sizes = [len(environment.partitioned_members[i]) for i in environment.partitioned_members]
 
-        for i in environment.members:
+        for i in graph.nodes():
             iPartition = environment.id_to_partition[i]
-            try:
-                iHomies = list(set(environment.members) & set(self.graph[i]))
-            except:
-                continue
-            for j in iHomies:
+            contacts = graph[i]
+            for j in contacts:
                 jPartition = environment.id_to_partition[j]
                 contact_matrix[iPartition, jPartition] += self.graph[i][j]['transmission_weight'] / partition_sizes[iPartition]
         # plt.imshow(np.array([row / np.linalg.norm(row) for row in contact_matrix]))
@@ -467,10 +483,25 @@ class PopulaceGraph:
 
 
     def plotNodeDegreeHistogram(self, environment = None):
+
         if environment != None:
-            graph = self.graph.subgraph(environment.members)
+            people = environment.members
+            graph = self.graph.subgraph(people)
             plt.title("Degree plot for members of {} # {}".format(environment.type, environment.index))
-        plt.hist([degree[1] for degree in nx.degree(graph)], 50, align = 'mid')
+        else:
+            graph = self.graph
+            people = self.populace.keys()
+
+        degreeCounts = [0]*100
+        for person in people:
+            try:
+                degree = len(graph[person])
+            except:
+                degree = 0
+            degreeCounts[degree] += 1
+        while degreeCounts[-1] == 0:
+            degreeCounts.pop()
+        plt.bar(range(len(degreeCounts)), degreeCounts)
         plt.ylabel("total people")
         plt.xlabel("degree")
         plt.show()
