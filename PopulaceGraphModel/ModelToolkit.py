@@ -20,8 +20,6 @@ class Partitioner:
         self.attribute_values = dict.fromkeys(set(enumerator.values()))
         self.num_sets = (len(np.unique(list(enumerator.values()))))
 
-
-
     def partitionGroup(self, members, populace):
         partitioned_members = {i: [] for i in range(self.num_sets)}
         for person in members:
@@ -189,6 +187,7 @@ class PopulaceGraph:
         #self.record.print("building populace into graphs with the {} clustering algorithm".format(clusteringAlg.__name__))
         #start = time.time()
         self.graph = nx.Graph()
+        print("GE: Total number of environments (homes+workplaces+schools): ", len(self.environments))
         for index in self.environments:
             environment = self.environments[index]
             environment.preventions = preventions[environment.type]
@@ -225,7 +224,9 @@ class PopulaceGraph:
         if environment.type == 'household':
             self.clusterDense(environment)
         else:
-            self.clusterPartitionedStrogatz(environment, self.environment_degrees[environment.type])
+            # the graph is computed according to contact matrix of environment
+            # self.clusterPartitionedStrogatz(environment, self.environment_degrees[environment.type])
+            self.clusterMakeGraph(environment, self.environment_degrees[environment.type])
 
 
     def clusterStrogatz(self, environment,  num_edges, weight_scalar = 1, subgroup = None, rewire_p = 0.2):
@@ -293,6 +294,40 @@ class PopulaceGraph:
             self.addEdge(random.choice(A), random.choice(B), environment, weight_scalar)
 
 
+    def clusterMakeGraph(self, environment, avg_degree):
+        print("**** Enter clusterMakeGraph, created by G. Erlebacher")
+        # Create graph according to makeGraph, developed by G. Erlebacher (in Julia)
+        #G = Gordon()
+        #G.makeGraph(N, index_range, cmm)
+        # len(p_sets) = 16 age categories, dictionaries
+        p_sets = environment.partitioned_members
+        print([k for k in p_sets.keys()])
+        CM = environment.returnReciprocatedCM()
+        print("CM= ", CM)  # single CM matrix
+
+        assert isinstance(environment, PartitionedEnvironment), "must be a partitioned environment"
+        #determine total edges needed for entire network. There are two connections per edge)
+        total_edges = math.floor(avg_degree * environment.population/2)
+        #a list of the number of people in each partition set
+        partition_sizes = [len(p_sets[i]) for i in p_sets]
+        print("partition_sizes= ", partition_sizes)
+        print("len(p_sets)= ", len(p_sets))
+
+        num_sets = len(p_sets) # nb age bins
+        #get total contact, keeping in mind the contact matrix elements are divided by num people in group
+        total_contact = 0
+        #for i in range(len(CM)):
+        for i,cm in enumerate(CM):
+            print("i= ", i)
+            #for element in cm:
+            for j,element in enumerate(cm):
+                #print("j, element= ", j, element)
+                total_contact +=element*partition_sizes[i]
+        #default_weight = total_contact/totalEdges
+
+        quit()
+        
+        
     def clusterPartitionedStrogatz(self, environment, avg_degree):
         #to clean up code just a little
         p_sets = environment.partitioned_members
@@ -617,5 +652,109 @@ class Record:
             comment_txt = open("./simResults/{}/comments.txt".format(self.stamp),"w+")
             comment_txt.write(self.comments)
 
+#----------------------------------------------------------------------
+class Gordon:
+    def __init__(self):
+        pass
 
-
+    def reciprocity(self, cm, N):
+        # The simplest approach to symmetrization is Method 1 (M1) in paper by Arregui
+        cmm = np.zeros([4,4])
+        for i in range(4):
+            for j in range(4):
+                if N[i] == 0:
+                    cmm[i,j] = 0
+                else:
+                    cmm[i,j] = 1/(2 * N[i])  * (cm[i,j]*N[i] + cm[j,i]*N[j])
+    
+                if N[j] == 0:
+                    cmm[j,i] = 0
+                else:
+                    cmm[j,i] = 1/(2 * N[j])  * (cm[j,i]*N[j] + cm[i,j]*N[i])
+        return cmm
+    
+    #---------------------------------------------
+    # This is GE's algorithm, a copy of what I implemented in Julia. 
+    # We need to try both approaches for our paper. 
+    def makeGraph(self, N, index_range, cmm):
+        # N: array of age category sizes
+        # index_range: lo:hi tuple 
+        # cmm: contact matrix with the property: cmm[i,j]*N[i] = cmm[j,i]*N[j]
+        # Output: a list of edges to feed into a graph
+    
+        edge_list = []
+        Nv = sum(N)
+        if Nv < 25: return edge_list # <<<<< All to all connection below Nv = 25. Not done yet.
+    
+        lo, hi = index_range
+        # Assign age groups to the nodes. Randomness not important
+        # These are also the node numbers for each category, sorted
+        age_bins = [np.repeat([i], N[i]) for i in range(lo,hi)]
+    
+        # Efficiently store cummulative sums for age brackets
+        cum_N = np.append([0], np.cumsum(N))
+    
+        ddict = {}
+        total_edges = 0
+    
+        print("lo,hi= ", lo, hi)
+        for i in range(lo,hi):
+            for j in range(lo,i+1):
+                #print("lo,i= ", lo, i)
+                ddict = {}
+                Nij = int(N[i] * cmm[i,j])
+                print("i,j= ", i, j, ",    Nij= ", Nij)
+    
+                if Nij == 0:
+                    continue 
+    
+                total_edges += Nij
+                # List of nodes in both graphs for age brackets i and j
+                Vi = list(range(cum_N[i], cum_N[i+1]))  # Check limits
+                Vj = list(range(cum_N[j], cum_N[j+1]))  # Check limits
+    
+                # Treat the case when the number of edges dictated by the
+                # contact matrices is greater than the number of available edges
+                # The connectivity is then cmoplete
+                lg = len(Vi)
+                nbe = lg*(lg-1) // 2
+    
+                if Vi == Vj and Nij > nbe:
+                    Nij = nbe
+    
+                count = 0
+    
+                while True:
+                    # p ~ Vi, q ~ Vj
+                    # no self-edges
+                    # only reallocate when necessary (that would provide speedup)
+                    # allocate 1000 at t time
+                    #p = getRand(Vi, 1) # I could use memoization
+                    #q = getRand(Vi, 1) # I could use memoization
+    
+                    #p = rand(Vi, 1)[]
+                    #q = rand(Vj, 1)[]
+                    p = random.choice(Vi)
+                    q = random.choice(Vj)
+    
+                    if p == q: continue 
+    
+                    # multiple edges between p,q not allowed
+                    # Dictionaries only store an edge once
+                    if p <  q:
+                        ddict[(p,q)] = 1
+                    else:
+                        ddict[(q,p)] = 1
+    
+                    # stop when desired number of edges is reached
+                    lg = len(ddict)
+                    if lg == Nij: break 
+    
+                for k in ddict.keys():
+                    s, d = k
+                    edge_list.append((s,d))
+    
+        print("total_edges: ", total_edges)
+        print("size of edge_list: ", len(edge_list))
+        return edge_list
+    #------------------------------------------------------------------

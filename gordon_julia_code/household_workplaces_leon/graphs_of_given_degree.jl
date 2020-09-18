@@ -435,6 +435,7 @@ for i in 1:4
     println("================================")
     # return graph and list of node degrees
     g, deg = makeGraph(N, index_range, cmm);
+    println("g= ", g)
     checkContactMatrices(g, cmm, index_range)
     push!(deg_l, degree(g))
 end
