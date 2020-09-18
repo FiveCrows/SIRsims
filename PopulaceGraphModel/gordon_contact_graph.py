@@ -43,9 +43,7 @@ def reciprocity(cm, N):
 
 #---------------------------------------------
 def GEclusterBipartite(environment, members_A, members_B, edge_count, weight_scalar = 1, p_random = 0.2):
-
     edge_list = []  # list of node pairs
-
     #reorder groups by size
     A = min(members_A, members_B, key = len)
     if A == members_A:

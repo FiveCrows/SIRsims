@@ -61,16 +61,16 @@ class PartitionedEnvironment(Environment):
                 self.id_to_partition[person] = (set)
 
     def returnReciprocatedCM(self):
-        CM = self.contact_matrix
-        dim = CM.shape
-        RM = np.zeros(dim)
+        cm = self.contact_matrix
+        dim = cm.shape
+        rm = np.zeros(dim)
         set_sizes = [len(self.partitioned_members[i]) for i in self.partitioned_members]
 
         for i in range(dim[0]):
             for j in range(dim[1]):
                 if set_sizes[i] != 0:
-                    RM[i,j] = (CM[i,j]*set_sizes[i]+CM[j,i]*set_sizes[j])/(2*set_sizes[i])
-        return RM
+                    rm[i,j] = (cm[i,j]*set_sizes[i]+cm[j,i]*set_sizes[j])/(2*set_sizes[i])
+        return rm
 
 
 
@@ -256,7 +256,7 @@ class PopulaceGraph:
                     nodeB = members[(i + j) % member_count]
                 self.addEdge(nodeA, nodeB, environment, weight_scalar)
 
-    #clusterBipartite is particularly written to be used in clusterStrogatzByContact
+    #o
     def clusterBipartite(self, environment, members_A, members_B, edge_count, weight_scalar = 1, p_random = 0.2):
         #reorder groups by size
         A = min(members_A, members_B, key = len)
