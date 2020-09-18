@@ -96,7 +96,7 @@ def buildNewGammaAndContactMatrix(loc_type):
         age_distribution=APBG_workplaces
         base_M=workplaceBaseCM
         pickle_fileCM=contactMatricesByWorkplaceFile
-        pickle_fileGamma=gammaByWorkplaceFile
+        pickle_fileGamma=gammaWorkplaceFile
         print("Creating gamma and contact matrices for workplaces...")
     else:
         print("Invalid location type")
@@ -122,8 +122,10 @@ def buildNewGammaAndContactMatrix(loc_type):
         CMNew[key]=temp_CM
         Gammas[key]=temp_gamma
     print("Contact matrices written to ",pickle_fileCM)
-    print("Gamma values written to ",pickle_fileCM)
+    
     pickle.dump(CMNew, open(pickle_fileCM,'wb'))
+    #Uncomment following lines to write out gamma values as well
+    #print("Gamma values written to ",pickle_fileGamma)
     #pickle.dump(Gammas, open(pickle_fileGamma,'wb'))
 
 for loc_type in ["school","workplace"]:
