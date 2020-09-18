@@ -488,7 +488,6 @@ class PopulaceGraph:
         plt.yticks(axisticks, labels)
         plt.xlabel('Age Group')
         plt.ylabel('Age Group')
-        
         plt.show()
 
 
