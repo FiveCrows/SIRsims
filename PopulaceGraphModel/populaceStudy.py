@@ -3,7 +3,7 @@ import copy
 # plot chance of infection
 mask_scalar = 0.3
 default_env_scalars = {"school": 0.3, "workplace": 0.3, "household": 1}
-env_degrees = {'workplace': 15, 'school': 13}
+env_degrees = {'workplace': None, 'school': None}
 default_env_masking = {'workplace': 0, 'school':0, 'household': 0}
 workplace_preventions = {'masking': 0, 'distancing': 0}
 school_preventions = {'masking':0, 'distancing': 0}
@@ -20,7 +20,7 @@ enumerator.update({i:15 for i in range(75,100)})
 names = ["{}:{}".format(5 * i, 5 * (i + 1)) for i in range(15)]
 partition = Partitioner(enumerator, 'age', names)
 
-model = PopulaceGraph( partition, slim = True)
+model = PopulaceGraph( partition, slim = False)
 model.build(trans_weighter, preventions, env_degrees)
 model.simulate(gamma, tau, title = 'base-test')
 
@@ -53,7 +53,7 @@ model.plotNodeDegreeHistogram(largestWorkplace)
 model.plotBars(globalMultiEnvironment)
 model.plotContactMatrix(largestWorkplace)
 plt.imshow(largestWorkplace.contact_matrix)
-largestWorkplace
+
 #priority
 #Show charts for bipartite n1,n2,m1,m2
 #add plots to overleaf

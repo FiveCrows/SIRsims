@@ -16,13 +16,11 @@ enumerator = {i:i//5 for i in range(75)}
 enumerator.update({i:15 for i in range(75,100)})
 names = ["{}:{}".format(5 * i, 5 * (i + 1)) for i in range(15)]
 partition = Partitioner(enumerator, 'age', names)
-model = PopulaceGraph( partition, slim = True)
+model = PopulaceGraph( partition, slim = False)
 model.trans_weighter = trans_weighter
 
 
 N = [6000, 12000, 8000, 14000,0,0,0,0,0,0,0,0,0,0,0]
-
-
 
 memberReplacement = list(range(sum(N)))
 partitionEnumerator = {i: [] for i in range(16)}
