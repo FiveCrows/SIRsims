@@ -418,35 +418,58 @@ N = [6000, 12000, 8000, 14000]
 N = [60, 120, 80, 140]
 N = [600, 1200, 800, 1400]
 index_range = (1,4)
-@benchmark makeGraph(N, index_range, cmm) samples=10 evals=4
+@gesbenchmark makeGraph(N, index_range, cmm) samples=10 evals=4
 
 # The new contact matrix is identical across multiple random runs
 # The graph changes slightly
-deg_l = []
-filenm = "ContactMatrices/Leon/ContactMatrixSchools.pkl"
-index_range = (1,4)
+case = 2
+if case == 1
+    filenm = "ContactMatrices/Leon/ContactMatrixSchools.pkl"
+    index_range = (1,4)
+    school_id = 450124041
+    id = school_id
+else # case == 2
+    filenm = "ContactMatrices/Leon/ContactMatrixWorkplaces.pkl"
+    index_range = (5,8)
+    work_id = 504997909
+    id = work_id
+    N = [4000, 6000, 2000, 1200]
+    #N[1:4] = repeat([0],4)
+    #N[9:16] = repeat([0],8)
+end
+
+
 N_ages = N
-school_id = 450124041
-cmm = getContactMatrix(filenm, N_ages, school_id, index_range)
+cmm = getContactMatrix(filenm, N_ages, id, index_range)
+lo, hi = index_range
+lo, hi = 1, hi-lo+1
+cmm = cmm[lo:hi, lo:hi]  # nonzero elements in lower-left hand corner
+#cmm = getContactMatrix(filenm, N_ages, work_id, index_range)
 include("make_contact_graph_functions.jl")
 
 # Construct the graph four times to investigate variability
+deg_l = []
 for i in 1:4
     println("================================")
     # return graph and list of node degrees
     g, deg = makeGraph(N, index_range, cmm);
     println("g= ", g)
+    println("deg= ", deg)
     checkContactMatrices(g, cmm, index_range)
-    push!(deg_l, degree(g))
+    push!(deg_l, deg)
 end
 
 
 plist = []
-p = histogram(deg_l[1], bins=25, fillalpha=0.9)
+#p = histogram(deg_l[1], bins=25, fillalpha=0.9)
+p = plot(deg_l[1][2:end])
+@show mean(deg_l[1])
 push!(plist, p)
 for i in 2:4
-    p = histogram(deg_l[i], bins=25, fillalpha=0.1, color=:red)
+    #p = histogram(deg_l[i], bins=25, fillalpha=0.1, color=:red)
+    p = plot(deg_l[i][2:end])
     push!(plist, p)
+    @show mean(deg_l[i])
 end
 
 # A graph with four degree histograms.
