@@ -187,6 +187,7 @@ class PopulaceGraph:
         #self.record.print("building populace into graphs with the {} clustering algorithm".format(clusteringAlg.__name__))
         #start = time.time()
         self.graph = nx.Graph()
+        #  30,000 of them
         print("GE: Total number of environments (homes+workplaces+schools): ", len(self.environments))
         for index in self.environments:
             environment = self.environments[index]
@@ -221,11 +222,14 @@ class PopulaceGraph:
 
 
     def addEnvironment(self, environment):
+        # GE: Adds a single enronment to the global graph (I think)
         if environment.type == 'household':
             self.clusterDense(environment)
         else:
             # the graph is computed according to contact matrix of environment
+            # Created by B. Azbill
             # self.clusterPartitionedStrogatz(environment, self.environment_degrees[environment.type])
+            # Created by G. Erlebacher (not completed yet). DO NOT REMOVE. Allow choice via parameter choice
             self.clusterMakeGraph(environment, self.environment_degrees[environment.type])
 
 
@@ -257,7 +261,6 @@ class PopulaceGraph:
                     nodeB = members[(i + j) % member_count]
                 self.addEdge(nodeA, nodeB, environment, weight_scalar)
 
-    #o
     def clusterBipartite(self, environment, members_A, members_B, edge_count, weight_scalar = 1, p_random = 0.2):
         #reorder groups by size
         A = min(members_A, members_B, key = len)
@@ -296,6 +299,7 @@ class PopulaceGraph:
 
     def clusterMakeGraph(self, environment, avg_degree):
         print("**** Enter clusterMakeGraph, created by G. Erlebacher")
+        print("**** avg_degree= ", avg_degree)
         # Create graph according to makeGraph, developed by G. Erlebacher (in Julia)
         #G = Gordon()
         #G.makeGraph(N, index_range, cmm)
@@ -325,6 +329,7 @@ class PopulaceGraph:
                 total_contact +=element*partition_sizes[i]
         #default_weight = total_contact/totalEdges
 
+        print("total_contact= ", total_contact)
         quit()
         
         
