@@ -72,15 +72,20 @@ end
 # cmm: contact matrix
 function makeGraph(N, index_range::Tuple, cmm)
     Nv = sum(N)
+    println("Nv= ", Nv)
     g = SimpleGraph(Nv)
     g = MetaGraph(g)
     if Nv < 25 return g, [0,0] end   # <<<<< All to all connection below Nv = 25. Not done yet.
 
     lo, hi = index_range
+    lo, hi = 1, hi-lo+1
     # Assign age groups to the nodes. Randomness not important
     # These are also the node numbers for each category, sorted
     age_bins = [repeat([i], N[i]) for i in lo:hi]
+    println("N= ", N)
+    println("cumsumN= ", cumsum(N))
     cum_N = append!([0], cumsum(N))
+    println("cum_N= ", cum_N)
     all_bins = []
     for i in lo:hi append!(all_bins, age_bins[i]) end
     set_prop!(g, :age_bins, all_bins)
@@ -238,6 +243,7 @@ end
 
 function checkContactMatrices(g, cm, index_range::Tuple)
     lo, hi = index_range
+    lo, hi = 1, hi-lo+1
     age_bins = get_prop(g, :age_bins)
     counts = zeros(Int64, size(cm))
     for e in edges(g)
@@ -277,20 +283,39 @@ function checkContactMatrices(g, cm, index_range::Tuple)
 end
 
 # The simplest approach to symmetrization is Method 1 (M1) in paper by Arregui
-function reciprocity(cm, N)
-    println("reciprocity, cm= ", cm)
-    cmm = zeros(4,4)
-    for i in 1:4
-        for j in 1:4
+function reciprocity(cm, N, index_range)
+    #println("reciprocity, cm= ", cm)
+    #println("reciprocity, cm= ", size(cm))
+    lo, hi = index_range
+    cmm = zeros(hi-lo+1, hi-lo+1)
+    for i in 1:hi-lo+1
+        for j in 1:hi-lo+1
             if N[i] == 0
                 cmm[i,j] = 0
             else
+                #println("top")
+                #println("Nj= $(N[j])")
+                #println("Ni= $(N[i])")
+                #println("i,j= $i, $j")
+                #println("size(cmm)= ", size(cmm))
+
+                #println("cmm(i,j)= ", cmm[i,j])
+                #println("cmm(j,i)= ", cmm[j,i])
                 cmm[i,j] = 1/(2 * N[i])  * (cm[i,j]*N[i] + cm[j,i]*N[j])
+                #println("*** cmm(i,j)= ", cmm[i,j])
             end
             if N[j] == 0
                 cmm[j,i] = 0
             else
+                #println("Nj= $(N[j])")
+                #println("Ni= $(N[i])")
+                #println("i,j= $i, $j")
+                #println("size(cmm)= ", size(cmm))
+
+                #println("cmm(i,j)= ", cmm[i,j])
+                #println("cmm(j,i)= ", cmm[j,i])
                 cmm[j,i] = 1/(2 * N[j])  * (cm[j,i]*N[j] + cm[i,j]*N[i])
+                #println("*** cmm(j,i)= ", cmm[j,i])
             end
         end
     end
@@ -310,8 +335,14 @@ function getContactMatrix(filenm, N, school_id, index_range)
 	# index_range: age range of interest in the contact matrix
     lo, hi = index_range
     dict = myunpickle(filenm)
+    #println("getContactMatrix, school_id: ", school_id)
     cm = dict[school_id]
+    #print("size cm= ", size(cm))
     cm = cm[lo:hi,lo:hi]   # CM for the school. (I really need the school numbers)
-    cmm = reciprocity(cm, N)
+    #print("size cm= ", size(cm))
+    cmm = reciprocity(cm, N, index_range)
+    #println("after reciprocity, cmm= ", cmm)
+    #println("after reciprocity, cm= ", cm)
+    #print("size cmm= ", size(cmm))
     return cmm
 end
