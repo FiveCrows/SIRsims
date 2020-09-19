@@ -375,7 +375,8 @@ end
 
 include("make_contact_graph_functions.jl")
 # person_id starts from 0
-function createWorkGraph(nb_nodes, df, workplaces, β_strogatz, weight)
+function createWorkGraph(where_str::String, nb_nodes, df, location, β_strogatz, weight)
+#function createWorkGraph(where_str, nb_nodes, df, workplaces, β_strogatz, weight)
 
     # Get Contact Matrices for Schools
 
@@ -389,13 +390,13 @@ function createWorkGraph(nb_nodes, df, workplaces, β_strogatz, weight)
     master_graph = MetaGraph(nb_nodes)
 
     ### Add all the szes of workplaces. They must add up to nrow(df)
-    println("nb workplaces: ", length(workplaces))
+    println("nb workplaces: ", length(locations))
     ss = 0
-    work_dict = Dict()
-    for (r,wp) in enumerate(workplaces)
-       #println("===== NEW WORKPLACE ($(nrow(wp))) ======")
-       grps = groupby(wp, :age_bin)
-       println("properties(wp)= ", propertynames(wp))
+    location_dict = Dict()
+    for (r,loc) in enumerate(locations)
+       #println("===== NEW WORKPLACE ($(nrow(loc))) ======")
+       grps = groupby(loc, :age_bin)
+       println("properties(wp)= ", propertynames(loc))
        #println("nb age bins in group: ", length(grps))
        # Create a database with :age_bin set to the count
        counts = combine(grps, nrow => :age_bin_count)
@@ -403,7 +404,8 @@ function createWorkGraph(nb_nodes, df, workplaces, β_strogatz, weight)
        #println("=== counts= ", counts)
        N_ages = zeros(Int64, 4)
        N_ages[counts.age_bin] = counts.age_bin_count
-       school_id = wp[1,:orig_school_id]
+
+       school_id = loc[1,:orig_school_id]    # <<<<< school or work_id. What is orig_school_id?
        println("school_id= ", school_id)
 
        # ************   LOCATION *****
@@ -418,14 +420,14 @@ function createWorkGraph(nb_nodes, df, workplaces, β_strogatz, weight)
        index_range = (1,4)
        println("N_ages= ", N_ages)
        mgh, deg_list = makeGraph(N_ages, index_range, cmm)  # make contact graph # inf loop
-       work_dict[school_id] = (deg_list, nv(mgh), N_ages, index_range)
+       location_dict[school_id] = (deg_list, nv(mgh), N_ages, index_range)
 
        @show mgh
-       person_ids = workplaces[r].person_id
+       person_ids = locations[r].person_id
        myMerge!(master_graph, mgh, person_ids, weight)
    end
    # work_dict[i]: deg_list, nb_nodes in graph, age distribution, index_range
-   return master_graph, work_dict
+   return master_graph, location_dict
 
 
     # Create smallworld graph (follow Bryan)

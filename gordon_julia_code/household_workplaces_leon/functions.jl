@@ -68,8 +68,9 @@ function generateDemographicGraphs(params)
     school_ids_dict = idToIndex(school_df.school_id)
     work_ids_dict   = idToIndex(work_df.work_id)
 
-    # Replace the columns in three three databases with the respective
-    # indexes
+    # Replace the columns in the three databases with the respective indexes
+	# orig_school_id: as found in the synthetic population data
+	# school_id: numbered 1 through #schools
     school_df.orig_school_id = school_df.school_id
     school_df.school_id = [school_ids_dict[is] for is in school_df.school_id]
     work_df.orig_work_id = work_df.work_id
@@ -133,7 +134,7 @@ function generateDemographicGraphs(params)
     # make true once I get the school stuff working
     if false
         weight = 0.8
-        @time work_graph, deg_dict = createWorkGraph(tot_nb_people, work_df, work_groups, 0.1, weight, cmm)
+        @time work_graph, deg_dict = createWorkGraph("workplace", tot_nb_people, work_df, work_groups, 0.1, weight, cmm)
         set_prop!(work_graph, :node_ids, work_df[:person_id])
     end
 
@@ -149,8 +150,9 @@ function generateDemographicGraphs(params)
     println("school_df: ", first(school_df, 5))
     weight = 0.4
 
+	# ^^^^^^^^^^^^^^^^^^^^^ =======> Make sure this works. 
     # school_dict[i]: deg_list, nb_nodes in graph, age distribution, index_range
-    @time school_graph, school_dict = createWorkGraph(tot_nb_people, school_df, school_groups, 0.1, weight)
+    @time school_graph, school_dict = createWorkGraph("schools", tot_nb_people, school_df, school_groups, 0.1, weight)
 
     println("RETURN from createWorkGraph on schools")
     println("prop names(school_df): ", propertynames(school_df))
