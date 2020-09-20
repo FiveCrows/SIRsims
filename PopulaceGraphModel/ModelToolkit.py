@@ -180,7 +180,11 @@ class PopulaceGraph:
 
 
 
-    def build(self, weighter, preventions, env_degrees):
+    def build(self, weighter, preventions, env_degrees, alg = None):
+        #none is default so old scripts can still run. self not defined in signature
+        if alg == None:
+            alg = self.clusterPartitionedStrogatz
+
         self.trans_weighter = weighter
         self.preventions = preventions
         self.environment_degrees = env_degrees
@@ -192,7 +196,7 @@ class PopulaceGraph:
         for index in self.environments:
             environment = self.environments[index]
             environment.preventions = preventions[environment.type]
-            self.addEnvironment(environment)
+            self.addEnvironment(environment, alg)
         self.isBuilt = True
 
     def addEdge(self, nodeA, nodeB, environment, weight_scalar = 1):
@@ -221,13 +225,13 @@ class PopulaceGraph:
                 self.addEdge(members[i], members[j], environment, weight_scalar)
 
 
-    def addEnvironment(self, environment):
+    def addEnvironment(self, environment, alg):
         if environment.type == 'household':
             self.clusterDense(environment)
         else:
             # the graph is computed according to contact matrix of environment
             # self.clusterPartitionedStrogatz(environment, self.environment_degrees[environment.type])
-            self.clusterPartitionedStrogatz(environment, self.environment_degrees[environment.type])
+            alg(environment, self.environment_degrees[environment.type])
 
 
     def clusterStrogatz(self, environment,  num_edges, weight_scalar = 1, subgroup = None, rewire_p = 0.2):
@@ -257,8 +261,10 @@ class PopulaceGraph:
                 else:
                     nodeB = members[(i + j) % member_count]
                 self.addEdge(nodeA, nodeB, environment, weight_scalar)
+        edgeList = self.genRandEdgeList(members, members, remainder)
+        for edge in edgeList: self.addEdge(edge[0], edge[1], environment)
 
-    #o
+
     def clusterBipartite(self, environment, members_A, members_B, edge_count, weight_scalar = 1, p_random = 0.2):
         #reorder groups by size
         A = min(members_A, members_B, key = len)
@@ -294,55 +300,92 @@ class PopulaceGraph:
         for i in range(remainder):
             self.addEdge(random.choice(A), random.choice(B), environment, weight_scalar)
 
+    #for clusterRandGraph
+    def genRandEdgeList(self, setA, setB, n_edges):
+        if n_edges == 0:
+            return []
+        n_edges = int(n_edges)
+        n_A = len(setA)
+        n_B = len(setB)
+        if setA == setB:
+            pos_edges = n_A*(n_A-1)/2
+            same_sets = True
+        else:
+            pos_edges = n_A*n_B
+            same_sets = False
 
-    def clusterMakeGraph(self, environment, avg_degree):
-        print("**** Enter clusterMakeGraph, created by G. Erlebacher")
+        p_duplicate = n_edges/pos_edges
+        if p_duplicate< 0.001:
+            list = [(random.choice(setA),random.choice(setB)) for i in range(n_edges)]
+        else:
+            edge_dict = {}
+            while len(edge_dict)<n_edges:
+                edge_dict[(random.choice(setA),random.choice(setB))] = 1
+            list = edge_dict.keys()
+        return list
+
+    def clusterRandGraph(self, environment, avg_degree):
+        print("**** Enter clusterRandGraph, created by G. Erlebacher")
         # Create graph according to makeGraph, developed by G. Erlebacher (in Julia)
         #G = Gordon()
         #G.makeGraph(N, index_range, cmm)
         # len(p_sets) = 16 age categories, dictionaries
         p_sets = environment.partitioned_members
-        print([k for k in p_sets.keys()])
+        population = environment.population
         CM = environment.returnReciprocatedCM()
         print("CM= ", CM)  # single CM matrix
 
         assert isinstance(environment, PartitionedEnvironment), "must be a partitioned environment"
         #determine total edges needed for entire network. There are two connections per edge)
-        total_edges = math.floor(avg_degree * environment.population/2)
         #a list of the number of people in each partition set
-        partition_sizes = [len(p_sets[i]) for i in p_sets]
-        print("partition_sizes= ", partition_sizes)
-        print("len(p_sets)= ", len(p_sets))
-
+        p_sizes = [len(p_sets[i]) for i in p_sets]
         num_sets = len(p_sets) # nb age bins
         #get total contact, keeping in mind the contact matrix elements are divided by num people in group
         total_contact = 0
         #for i in range(len(CM)):
-        for i,cm in enumerate(CM):
-            print("i= ", i)
-            #for element in cm:
-            for j,element in enumerate(cm):
-                #print("j, element= ", j, element)
-                total_contact +=element*partition_sizes[i]
+        for i,row in enumerate(CM):
+            #add total contacts for everyone in set i
+            total_contact +=sum(np.array(row))*p_sizes[i]
+        if avg_degree == None:
+            total_edges = math.floor(total_contact)
+        else:
+            total_edges = math.floor(avg_degree*population/ 2)
+
+        #for every entry in the contact matrix
+        edge_list = []
+        for i,row in enumerate(CM):
+            for j, cm in enumerate(row):
+                #decide how many edges it implies
+                if i == j:
+                    n_edges = math.floor(cm/(total_contact*2))
+                else:
+                    n_edges = math.floor(cm/total_contact)
+                if n_edges == 0:
+                    continue
+                edge_list = self.genRandEdgeList(p_sets[i], p_sets[j], n_edges)
+                for edge in edge_list: self.addEdge(edge[0],edge[1],environment)
+
         #default_weight = total_contact/totalEdges
 
-        quit()
-        
-        
-    def clusterPartitionedStrogatz(self, environment, avg_degree = None):
+    def clusterPartitionedStrogatz(self, environment, avg_degree = 13):
+        self.clusterWithMatrix( environment, avg_degree, 'strogatz')
+
+    def clusterPartitionedRandom(self, environment, avg_degree = None):
+        self.clusterWithMatrix(environment, avg_degree, 'random')
+
+    def clusterWithMatrix(self, environment, avg_degree, topology):
         #to clean up code just a little
         p_sets = environment.partitioned_members
         CM = environment.returnReciprocatedCM()
 
         assert isinstance(environment, PartitionedEnvironment), "must be a partitioned environment"
         #a list of the number of people in each partition set
-        partition_sizes = [len(p_sets[i]) for i in p_sets]
+        p_n = [len(p_sets[i]) for i in p_sets]
         num_sets = len(p_sets)
         #get total contact, keeping in mind the contact matrix elements are divided by num people in group
         total_contact = 0
-        for i in range(len(CM)):
-            for element in CM[i]:
-                total_contact +=element*partition_sizes[i]
+        for i, row in enumerate(CM):
+                total_contact += sum(row)*p_n[i]
         #default_weight = total_contact/totalEdges
         if avg_degree == None:
             avg_degree = total_contact/environment.population
@@ -350,38 +393,44 @@ class PopulaceGraph:
         total_edges = math.floor(avg_degree * environment.population/2)
 
         #for each number between two groups, don't iterate zeros
-        for index_i in p_sets:
-            sizeA = len(p_sets[index_i])
-            if sizeA == 0:
-                continue
-
-            for index_j in range(index_i, num_sets):
-                sizeB = len(p_sets[index_j])
-                if sizeB == 0:
+        for i in p_sets:
+            for j in range(i, num_sets):
+                if p_n[j] == 0:
                     continue
                 #get the fraction of contact that should be occur between sets i and j
-                contactFraction = CM[index_i, index_j]*partition_sizes[index_i]/(total_contact)
-                number_edges = int(total_edges*contactFraction)
-                if index_i == index_j:
-                    max_edges = sizeA * (sizeA-1)/2
-                    if max_edges < number_edges:
-                        number_edges = max_edges
-                    if number_edges == 0:
-                        continue
-                    #if the expected number of edges cannot be added, compensate by scaling the weights up a bit
-                    residual_scalar = total_edges * contactFraction / number_edges
-                    #if residual_scalar>2 and sizeA>3:
-                        #print("error in environment # {}, it's contacts count for i,j = {} is {}but there are only {} people in that set".format(environment.index, index_i, CM[index_i,index_j], len(environment.partitioned_members[index_i])))
-                    self.clusterStrogatz(environment, num_edges = number_edges, subgroup = p_sets[index_i], weight_scalar = residual_scalar)
+                contactFraction = CM[i, j]*p_n[i]/(total_contact)
 
+                #make sure there are enough people to fit num_edges
+                if i == j:
+                    num_edges = int(total_edges * contactFraction / 2)
+                    max_edges = p_n[i] * (p_n[i]-1)
                 else:
-                    max_edges = sizeA*sizeB
-                    if max_edges < number_edges:
-                        number_edges = max_edges
-                    if number_edges == 0:
-                        continue
-                    residual_scalar = total_edges * contactFraction / number_edges
-                    self.clusterBipartite(environment, p_sets[index_i], p_sets[index_j], number_edges, weight_scalar = residual_scalar)
+                    num_edges = int(total_edges*contactFraction)
+                    max_edges = p_n[i] * p_n[j]
+                if max_edges < num_edges:
+                    num_edges = max_edges
+                if num_edges == 0:
+                    continue
+
+                #if the expected number of edges cannot be added, compensate by scaling the weights up a bit
+                residual_scalar = total_edges * contactFraction / num_edges
+                #if residual_scalar>2 and sizeA>3:
+                    #print("error in environment # {}, it's contacts count for i,j = {} is {}but there are only {} people in that set".format(environment.index, index_i, CM[index_i,index_j], len(environment.partitioned_members[index_i])))
+                if topology == 'random':
+                    edgeList = self.genRandEdgeList(p_sets[i], p_sets[j], num_edges)
+                    for edge in edgeList:
+                        self.addEdge(edge[0], edge[1], environment)
+                else:
+                    if i == j:
+                        self.clusterStrogatz(environment, num_edges, residual_scalar, subgroup = p_sets[i])
+                    else:
+                        self.clusterBipartite(environment, p_sets[i], p_sets[j], num_edges,weight_scalar=residual_scalar)
+
+
+
+
+
+
 
     #written for the clusterMatrixGuidedPreferentialAttachment function
     def addEdgeWithAttachmentTracking(self, nodeA, nodeB, attachments, environment):
@@ -617,9 +666,11 @@ class PopulaceGraph:
         herd_immunity = list.index(max(sim.I))
         return(self.population/sim.S([herd_immunity]))
 
-    def clearSims(self):
+    def reset(self):
         self.sims = []
-
+        self.graph = nx.Graph()
+        self.total_weight = 0
+        self.total_edges = 0
 class Record:
     def __init__(self):
         self.log = ""
