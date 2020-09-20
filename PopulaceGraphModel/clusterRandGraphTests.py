@@ -1,6 +1,6 @@
 from ModelToolkit import *
 import copy
-# plot chance of infection
+
 mask_scalar = 0.3
 default_env_scalars = {"school": 0.3, "workplace": 0.3, "household": 1}
 env_degrees = {'workplace': None, 'school': None}

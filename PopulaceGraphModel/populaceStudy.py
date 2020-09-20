@@ -47,7 +47,7 @@ largestSchool = model.environments[450059802]
 #bigHousehold = model.environments[58758613]
 
 model.plotSIR()
-model.plotNodeDegreeHistogram(largestWorkplace)model.plotBars(globalMultiEnvironment)
+model.plotNodeDegreeHistogram(largestWorkplace)
 model.plotContactMatrix(largestWorkplace)
 plt.imshow(largestWorkplace.contact_matrix)
 
