@@ -72,23 +72,25 @@ end
 # cmm: contact matrix
 function makeGraph(N, index_range::Tuple, cmm)
     Nv = sum(N)
-    println("Nv= ", Nv)
-    g = SimpleGraph(Nv)
-    g = MetaGraph(g)
-    if Nv < 25 return g, [0,0] end   # <<<<< All to all connection below Nv = 25. Not done yet.
+    #println("Nv= ", Nv)
+    edge_list = []
+    #g = SimpleGraph(Nv) # TEMP
+    #g = MetaGraph(g) # TEMP
+    #if Nv < 25 return g, [0,0] end   # <<<<< All to all connection below Nv = 25. Not done yet.
+    if Nv < 25 return edge_list, [0,0] end   # <<<<< All to all connection below Nv = 25. Not done yet.
 
     lo, hi = index_range
     lo, hi = 1, hi-lo+1
     # Assign age groups to the nodes. Randomness not important
     # These are also the node numbers for each category, sorted
     age_bins = [repeat([i], N[i]) for i in lo:hi]
-    println("N= ", N)
-    println("cumsumN= ", cumsum(N))
+    #println("N= ", N)
+    #println("cumsumN= ", cumsum(N))
     cum_N = append!([0], cumsum(N))
-    println("cum_N= ", cum_N)
+    #println("cum_N= ", cum_N)
     all_bins = []
     for i in lo:hi append!(all_bins, age_bins[i]) end
-    set_prop!(g, :age_bins, all_bins)
+    #set_prop!(g, :age_bins, all_bins)  # ORIGINAL
     ddict = Dict()
     total_edges = 0
 
@@ -96,7 +98,7 @@ function makeGraph(N, index_range::Tuple, cmm)
         for j in lo:i
             ddict = Dict()
             Nij = Int64(floor(N[i] * cmm[i,j]))
-            println("i,j= $i, $j,  Nij= $Nij")
+            #println("i,j= $i, $j,  Nij= $Nij")
 
             if Nij == 0 continue end
 
@@ -136,23 +138,48 @@ function makeGraph(N, index_range::Tuple, cmm)
             end
             for k in keys(ddict)
                 s, d = k
-                add_edge!(g, s, d)
+                #add_edge!(g, s, d)  # ORIGINAL
+                push!(edge_list, (s, d))  # OWN EDGE MANAGEMENT
             end
         end
     end
-    degrees = degree(g)
+
+    # create the graph degree distribution
+    node_degree = zeros(Int, Nv)
+
+    for (s,d) in edge_list
+        node_degree[s] += 1
+        node_degree[d] += 1
+    end
+
+    max_degree = maximum(node_degree)
+    #println("max_degree= ", max_degree)
+    deg_hist = zeros(Int64, max_degree+1)
+
+    #println("Nv= $Nv")
+    for n in 1:Nv
+        dg = node_degree[n]
+        #println("dg= $dg")
+        deg_hist[dg+1] += 1
+    end
+
+    # managing edges myself for speed
+    return edge_list, deg_hist
+    #--------------------------------------
+
     deg = zeros(Int64, Δ(g)+1)
+    degrees = degree(g)
     for i in 1:nv(g)
         deg[1+degrees[i]] += 1
     end
-    println("Degree distribution")
-    println("(N=nv(g)), deg: ")
-    for i in 1:length(deg)
-        println("$(deg[i]), ")
-    end
+    #println("Degree distribution")
+    #println("(N=nv(g)), deg: ")
+    #for i in 1:length(deg)
+        #println("$(deg[i]), ")
+    #end
     #println("")
     # N is the age distribution in the schools
-    println("total edges: ", total_edges)
+    #println("total edges: ", total_edges)
     return g, deg
 end
 nothing
@@ -288,6 +315,10 @@ function reciprocity(cm, N, index_range)
     #println("reciprocity, cm= ", size(cm))
     lo, hi = index_range
     cmm = zeros(hi-lo+1, hi-lo+1)
+    #@show size(cmm)
+    #@show size(cm)
+    #@show index_range
+    #@show cm
     for i in 1:hi-lo+1
         for j in 1:hi-lo+1
             if N[i] == 0
@@ -301,6 +332,7 @@ function reciprocity(cm, N, index_range)
 
                 #println("cmm(i,j)= ", cmm[i,j])
                 #println("cmm(j,i)= ", cmm[j,i])
+                #@show size(N), size(cmm)
                 cmm[i,j] = 1/(2 * N[i])  * (cm[i,j]*N[i] + cm[j,i]*N[j])
                 #println("*** cmm(i,j)= ", cmm[i,j])
             end
@@ -324,6 +356,7 @@ end
 
 function myunpickle(filename)
     r = nothing
+    #println("2 filename: $filename")
     @pywith pybuiltin("open")(filename,"rb") as f begin
         r = pickle.load(f)
     end
@@ -331,18 +364,24 @@ function myunpickle(filename)
 end
 
 
-function getContactMatrix(filenm, N, school_id, index_range)
+#return dictionary of non-reciprocal matrices
+function getContactMatrices(filenm) #, N, id, index_range)
+    dict = myunpickle(filenm)
+    cm_dict = Dict()
+    for id in keys(dict)
+        # N ???
+        cm = dict[id]
+        cm_dict[id] = cm
+    end
+    return cm_dict  # non reciprocal
+end
+
+function getContactMatrix(filenm, N, id, index_range)
 	# index_range: age range of interest in the contact matrix
     lo, hi = index_range
     dict = myunpickle(filenm)
-    #println("getContactMatrix, school_id: ", school_id)
-    cm = dict[school_id]
-    #print("size cm= ", size(cm))
+    cm = dict[id]
     cm = cm[lo:hi,lo:hi]   # CM for the school. (I really need the school numbers)
-    #print("size cm= ", size(cm))
     cmm = reciprocity(cm, N, index_range)
-    #println("after reciprocity, cmm= ", cmm)
-    #println("after reciprocity, cm= ", cm)
-    #print("size cmm= ", size(cmm))
     return cmm
 end
