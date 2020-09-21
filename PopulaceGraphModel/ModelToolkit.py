@@ -192,7 +192,6 @@ class PopulaceGraph:
         #self.record.print("building populace into graphs with the {} clustering algorithm".format(clusteringAlg.__name__))
         #start = time.time()
         self.graph = nx.Graph()
-        print("GE: Total number of environments (homes+workplaces+schools): ", len(self.environments))
         for index in self.environments:
             environment = self.environments[index]
             environment.preventions = preventions[environment.type]
