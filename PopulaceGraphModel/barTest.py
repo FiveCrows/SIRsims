@@ -27,6 +27,6 @@ model.simulate(gamma, tau, title  =  'comparison test')
 
 globalMultiEnvironment = model.returnMultiEnvironment(model.environments.keys(), partition)
 largestWorkplace = model.environments[505001334]
-model.plotBars(partition)#(environment = model.environments[505001334])
+model.plotBars(environment)#(environment = model.environments[505001334])
 model.plotNodeDegreeHistogram(largestWorkplace)
 model.plotContactMatrix(largestWorkplace)

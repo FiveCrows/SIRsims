@@ -69,7 +69,8 @@ class PartitionedEnvironment(Environment):
                 if set_sizes[i] != 0:
                     rm[i,j] = (cm[i,j]*set_sizes[i]+cm[j,i]*set_sizes[j])/(2*set_sizes[i])
         return rm
-
+        def __str__(self):
+            print("{}population: {}".type)
 
 
 class TransmissionWeighter:
@@ -126,7 +127,6 @@ class PopulaceGraph:
         else:
             self.populace = ({key: (vars(x[key])) for key in x})  # .transpose()
         self.population = len(self.populace)
-
         if pops_by_category == None:
         # for sorting people into categories
         # takes a dict of dicts to rep resent populace and returns a list of dicts of lists to represent groups of people with the same
@@ -183,7 +183,7 @@ class PopulaceGraph:
     def build(self, weighter, preventions, env_degrees, alg = None):
         #none is default so old scripts can still run. self not defined in signature
         if alg == None:
-            alg = self.clusterPartitionedStrogatz
+            alg = self.clusterPartitionedRandom
 
         self.trans_weighter = weighter
         self.preventions = preventions
@@ -572,7 +572,7 @@ class PopulaceGraph:
         plt.show()
 
 
-    def plotNodeDegreeHistogram(self, environment = None):
+    def plotNodeDegreeHistogram(self, environment = None, layout = 'lines', show = True):
 
         if environment != None:
             people = environment.members
@@ -582,7 +582,7 @@ class PopulaceGraph:
             graph = self.graph
             people = self.populace.keys()
 
-        degreeCounts = [0]*100
+        degreeCounts = [0] * 100
         for person in people:
             try:
                 degree = len(graph[person])
@@ -591,7 +591,10 @@ class PopulaceGraph:
             degreeCounts[degree] += 1
         while degreeCounts[-1] == 0:
             degreeCounts.pop()
-        plt.bar(range(len(degreeCounts)), degreeCounts)
+        if layout == 'lines':
+            plt.plot(range(len(degreeCounts)), degreeCounts)
+        else:
+            plt.bar(range(len(degreeCounts)), degreeCounts)
         plt.ylabel("total people")
         plt.xlabel("degree")
         plt.show()
