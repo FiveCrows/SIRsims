@@ -251,7 +251,7 @@ function breakupGroup(group; subgroup_size::Int64=20)
 end
 
 s = breakupGroup(rand(1:2000, 300), subgroup_size=50)
-print("length(s)= $(length(s))")
+println("length(s)= $(length(s))")
 for i in s
     println(length(i))
 end
@@ -375,60 +375,69 @@ end
 
 include("make_contact_graph_functions.jl")
 # person_id starts from 0
-function createWorkGraph(where_str::String, nb_nodes, df, location, β_strogatz, weight)
-#function createWorkGraph(where_str, nb_nodes, df, workplaces, β_strogatz, weight)
+function createWorkGraph(location_str::String, nb_nodes, df, locations, β_strogatz, weight)
+#function createWorkGraph(location_str, nb_nodes, df, workplaces, β_strogatz, weight)
 
     # Get Contact Matrices for Schools
+    # Handle either schools or workplaces, depending on location_str
+    # My code was inefficient because it was reading the pkl file for every graph.
+    # I should read it only once (as does Bryan)
 
-
-    println("Top of createWorkGraph")
-    #@show propertynames(df)
-    #@show first(df, 5)
-    println("nrow: ", nrow(df))
-    println("propertynames(workplaces[1]= ", propertynames(workplaces[1]))
-    println("propertynames(df= ", propertynames(df))
-    master_graph = MetaGraph(nb_nodes)
+    if location_str == "schools"
+        filenm = "ContactMatrices/Leon/ContactMatrixSchools.pkl"
+    else
+        filenm = "ContactMatrices/Leon/ContactMatrixWorkplaces.pkl"
+    end
+    println("nb $location_str: ", length(locations))
+    cm_dict = getContactMatrices(filenm) #, N_ages, id, index_range)
 
     ### Add all the szes of workplaces. They must add up to nrow(df)
-    println("nb workplaces: ", length(locations))
     ss = 0
     location_dict = Dict()
     for (r,loc) in enumerate(locations)
-       #println("===== NEW WORKPLACE ($(nrow(loc))) ======")
+       #if r % 500 == 0
+           #print("$r.")
+       #end
        grps = groupby(loc, :age_bin)
-       println("properties(wp)= ", propertynames(loc))
-       #println("nb age bins in group: ", length(grps))
        # Create a database with :age_bin set to the count
        counts = combine(grps, nrow => :age_bin_count)
        counts = sort(counts, :age_bin)
-       #println("=== counts= ", counts)
-       N_ages = zeros(Int64, 4)
+       N_ages = zeros(Int64, 16)
        N_ages[counts.age_bin] = counts.age_bin_count
+       #println("N_ages[1:4 and 1:end]= $(sum(N_ages[1:4])), $(sum(N_ages)), $(size(N_ages))")
 
-       school_id = loc[1,:orig_school_id]    # <<<<< school or work_id. What is orig_school_id?
-       println("school_id= ", school_id)
-
+       index_range = (1,16)
+       filenm = nothing
        # ************   LOCATION *****
-       filenm = "ContactMatrices/Leon/ContactMatrixSchools.pkl"
-       #school_id = 450124041
-       index_range = (1,4)
-       cmm = getContactMatrix(filenm, N_ages, school_id, index_range)
-       println("cmm= ", cmm)
+       if location_str == "schools"
+           filenm = "ContactMatrices/Leon/ContactMatrixSchools.pkl"
+           school_id = loc[1,:orig_school_id]    # <<<<< school or work_id. What is orig_school_id?
+           id = school_id
+        elseif location_str == "workplaces"
+           filenm = "ContactMatrices/Leon/ContactMatrixWorkplaces.pkl"
+           work_id = loc[1,:orig_work_id]    # <<<<< school or work_id. What is orig_school_id?
+           id = work_id
+       end
+       cm = cm_dict[id]
+       cmm = reciprocity(cm, N_ages, index_range)
 
+       #mgh, deg_list = makeGraph(N_ages, index_range, cmm)  # make contact graph # inf loop   # ORIGINAL
+       edge_list, deg_list = makeGraph(N_ages, index_range, cmm)  # make contact graph # inf loop  # OWN EDGE MANAGEMENT (GE)
+       #println("deg_list= ", deg_list)
+       #println("return makeGraph, edge_list= ", edge_list)
 
-       #println("N= ", N)
-       index_range = (1,4)
-       println("N_ages= ", N_ages)
-       mgh, deg_list = makeGraph(N_ages, index_range, cmm)  # make contact graph # inf loop
-       location_dict[school_id] = (deg_list, nv(mgh), N_ages, index_range)
+       # Dictionary with (degree_list, graph size, N_age_bins, index_range)
+       #location_dict[id] = (deg_list, nv(mgh), N_ages, index_range)  # ORIGINAL
+       location_dict[id] = (edge_list, deg_list, sum(N_ages), N_ages, index_range)  # OWN EDGE LIST MANAGEMENT
 
-       @show mgh
+       #@show mgh
        person_ids = locations[r].person_id
-       myMerge!(master_graph, mgh, person_ids, weight)
+       #myMerge!(master_graph, mgh, person_ids, weight)  # ORIGINAL
    end
    # work_dict[i]: deg_list, nb_nodes in graph, age distribution, index_range
-   return master_graph, location_dict
-
+   #return master_graph, location_dict # ORIGINAL
+   return location_dict   # OWN EDGE LIST MANAGEMENT
+   #--------  FINISH NEW VERSION  with makeGraph
 
     # Create smallworld graph (follow Bryan)
     tot_sz = 0

@@ -132,47 +132,43 @@ function generateDemographicGraphs(params)
 
     #println("========================================")
     # make true once I get the school stuff working
-    if false
+	# Initialize in case
+	work_dict = Dict()
+	school_dict = Dict()
+
+    if true
+        println("===========================================")
+        println("=== Generate Workplace graphs =============")
+
         weight = 0.8
-        @time work_graph, deg_dict = createWorkGraph("workplace", tot_nb_people, work_df, work_groups, 0.1, weight, cmm)
-        set_prop!(work_graph, :node_ids, work_df[:person_id])
+        #@time work_graph, work_dict = createWorkGraph("workplace", tot_nb_people, work_df, work_groups, 0.1, weight, cmm)
+        #@time work_graph, work_dict = createWorkGraph("workplaces", tot_nb_people, work_df, work_groups, 0.1, weight)  # ORIGINAL
+        @time work_dict = createWorkGraph("workplaces", tot_nb_people, work_df, work_groups, 0.1, weight)
+        #set_prop!(work_graph, :node_ids, work_df[:person_id])  # ORIGiNAL
+		work_graph = nothing
     end
 
-    #@time old_work_graph = createOldWorkGraph(work_df, work_groups, 0.21, 0.8)
-    #set_prop!(old_work_graph, :node_ids, work_df[:person_id])
-    #@show old_work_graph
-    #println("========================================")
-    #println("finished work")
-    #return nothing, nothing, nothing
+    #println("school_df: ", first(school_df, 5))
 
-    println("========================================")
-    println("=== Generate school graphs =============")
-    println("school_df: ", first(school_df, 5))
-    weight = 0.4
-
-	# ^^^^^^^^^^^^^^^^^^^^^ =======> Make sure this works. 
-    # school_dict[i]: deg_list, nb_nodes in graph, age distribution, index_range
-    @time school_graph, school_dict = createWorkGraph("schools", tot_nb_people, school_df, school_groups, 0.1, weight)
-
-    println("RETURN from createWorkGraph on schools")
-    println("prop names(school_df): ", propertynames(school_df))
-    println("type(school_graph): ", typeof(school_graph))
-    set_prop!(school_graph, :node_ids, school_df[:person_id])
-    #println("finished school")
-    #println("========================================")
-    #@time school_graph = createOldWorkGraph(tot_nb_people, school_df, school_groups, 0.3, weight)
-    #println("finished school")
-    #println("========================================")
-    #return nothing, nothing, nothing
+    if true
+        println("========================================")
+        println("=== Generate school graphs =============")
+        weight = 0.4
+		# First element of tuple in school_dict values is an edge_list
+        @time school_dict = createWorkGraph("schools", tot_nb_people, school_df, school_groups, 0.1, weight) # OWN EDGE LIST
+		school_graph = nothing
+	end
 
     weight = 0.6
+	println("===================================")
+	println("==== Create Home Graphs ===========")
     @time home_graph = createHomeGraph(tot_nb_people, df, groups, weight)
     set_prop!(home_graph, :node_ids, df[:person_id])
     println("finished home")
 
     # TODO: Must make all graphs weighted
 
-    return home_graph, work_graph, school_graph, school_dict
+    return home_graph, work_graph, school_graph, work_dict, school_dict
 end
 
 # ---------------------------------------------------

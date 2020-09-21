@@ -29,32 +29,91 @@ replace!(all_df.age, 0 => 1)
 
 # deg_graph_dict[school_id] = (degrees, N_tot, N_age[i], index_range)
 # Ntot = sum(N_age)
-@time home_graph, work_graph, school_graph, deg_graph_dict = generateDemographicGraphs(p)
-a = collect(deg_graph_dict)
-println("a[1]= $(a[1])")
+include("./modules.jl")
+include("./functions.jl")
+include("./make_contact_graph_functions.jl")
+#]@time home_graph, work_graph, school_graph, deg_graph_dict = generateDemographicGraphs(p) # ORIGINAL
+@time home_graph, work_graph, school_graph, work_dict, school_dict = generateDemographicGraphs(p)
 
+deg_graph_dict = work_dict
+kk = collect(keys(deg_graph_dict))
+
+deg = deg_graph_dict[kk[1]][2]
+deg = deg ./ sum(deg)
+p = plot(deg)
+count = [1]
+for k in kk
+    N = deg_graph_dict[k][3]
+    if N < 26 continue end
+    println("N= ", deg_graph_dict[k][3])
+    deg = deg_graph_dict[k][2]
+    deg = deg ./ sum(deg)
+    p = plot!(deg)
+    count[1] += 1
+end
+print("nb graphs: $(count[1])")
+display(p)
+
+# Create a 8x8 grid
+nothing
+
+kk = collect(keys(deg_graph_dict))
+deg, n_v, N_age, ix_range = deg_graph_dict[kk[1]]
+deg = deg ./ sum(deg)
+p = []
+push!(p, plot(deg))
+for k in kk[2:end]
+    deg, n_v, N_age, ix_range_loc = deg_graph_dict[k]
+    print("deg= ", deg)
+    println("nv= $n_v")
+    println("N_age= ", N_age)
+    println("ix_range= ", ix_range_loc)
+    deg = deg ./ sum(deg)
+    print("deg= ", deg)
+    push!(p, plot(deg))
+end
+# unroll p into its individual elements
+legend = false
+fntsm = Plots.font("sans-serif", pointsize=round(10.0*0.2))
+Plots.scalefontsizes(1.5)
+plot(p[1:25]..., size=(1000,600), layout=(5,5), xlim=(0,50), legend=false)
+plot(p[26:50]..., size=(1000,600), layout=(5,5), legend=false, xlim=(0,50))
+plot(p[37:61]..., size=(1000,600), layout=(5,5), legend=false, xlim=(0,50))
+nothing
+
+# Returns a plot of degree histogram for the top 20 schools.
+# The plots are normalized to have unit integral so that the ordinates
+# can be interpreted as probabilities.
+# Calling the function as pp = plotDegGraph(...) will generate a plot.
+# The function is self-contained
 function plotDegGraph(deg_graph; stype="")
     # Values of dictionary: (degrees, N_tot, N_age[i], index_range)
+    #
+    plot_size = (1200, 800)
+    pp = plot(size=plot_size)
+
     yy = collect(values(deg_graph)) |> deepcopy
-    pp = plot(displaysize=(1200,800))
     for (i,z) in enumerate(yy)
         tup = yy[i]
+        # yy[i] = (deg, nb_graph_vertex, age_bins, index_range)
         yy[i] = (tup[2], tup[1], tup[3], tup[4])
     end
     yy = sort(yy, rev=true)
-    fntsm = Plots.font("sans-serif", pointsize=round(10.0*0.4))
+    fntsm = Plots.font("sans-serif", pointsize=round(10.0*1.4))
     default(legendfont = fntsm)
 
     for (i,k) in enumerate(yy)
         N, dg, N_age, index_range = yy[i]
+        dg = dg / sum(dg)
         if i > 20 break end
-        label = string(N) * ", " * string(N_age)
+        label = string(N) * ", " * string(N_age[1:4])  # 1:4 for schools
         if i <=5 style = :solid;  shape=:square
         elseif i <=10 style = :solid; shape=:circle
         elseif i <=15 style = :solid;  shape=:dtriangle
-        elseif i <=20 style = :solid;  shape=:utriangle end
+        elseif i <=20 style = :solid;  shape=:utriangle
+        else style = :solid; shape=:x; end
         plot!(dg, label=label, fontsize=5, style=style, shape=shape,
-            msize=3.0, msc=:match, msw=0, size=(800,600))
+            msize=4.5, msc=:match, msw=0)
         xlabel!("Degree")
         ylabel!("Number of nodes")
         if stype == ""
