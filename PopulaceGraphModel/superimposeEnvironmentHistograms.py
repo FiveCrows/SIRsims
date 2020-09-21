@@ -17,7 +17,7 @@ enumerator.update({i:15 for i in range(75,100)})
 names = ["{}:{}".format(5 * i, 5 * (i + 1)) for i in range(15)]
 partition = Partitioner(enumerator, 'age', names)
 
-model = PopulaceGraph( partition, slim = False)
+model = PopulaceGraph( partition, slim = True)
 model.build(trans_weighter, preventions, env_degrees)
 
 #schools = list(filter(lambda environment: model.environments[environment].type == 'school' and model.environments[environment].population>25,model.environments))
@@ -27,7 +27,7 @@ workplaces = sorted(list(filter(lambda environment: model.environments[environme
 
 num_plots = 25
 for list in [schools, workplaces]:
-    for index in list[-1:-num_plots]:
+    for index in reversed(list[-num_plots:]):
         environment = model.environments[index]
         people = environment.members
 
