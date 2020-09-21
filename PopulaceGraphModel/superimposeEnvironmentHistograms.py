@@ -20,15 +20,16 @@ partition = Partitioner(enumerator, 'age', names)
 
 # Choose one or the other model
 which_model = 'random_GE'           # AB contact graph algorithm
-which_model = 'strogatz_AB'         # GE contact graph algorithm (makeGraph)
+#which_model = 'strogatz_AB'         # GE contact graph algorithm (makeGraph)
 
-model = PopulaceGraph( partition, slim = False)
+model = PopulaceGraph( partition, slim = True)
 
 if which_model == 'strogatz_AB':
     model.build(trans_weighter, preventions, env_degrees, alg = model.clusterPartitionedStrogatz)
+    name = "Strogatz (Bryan)"
 elif which_model == 'random_GE':
     model.build(trans_weighter, preventions, env_degrees, alg = model.clusterPartitionedRandom)
-
+    name = "random edge selection (Gordon)"
 
 #schools = list(filter(lambda environment: model.environments[environment].type == 'school' and model.environments[environment].population>25,model.environments))
 #workplaces = list(filter(lambda environment: model.environments[environment].type == 'workplace' and model.environments[environment].population>25, model.environments))
@@ -37,56 +38,31 @@ workplaces = sorted(list(filter(lambda environment: model.environments[environme
 num_plots = 25
 
 
-if which_model == 'strogatz_AB':
+
+
+for list in [schools, workplaces]:
     fig, ax = plt.subplots(5, 5)
     fig.set_size_inches(18.5, 10.5)
+    plot_num = 0
+    for index in reversed(list[-num_plots:]):
+        environment = model.environments[index]
+        people = environment.members
 
-    for list in [schools, workplaces]:
-        plot_num = 0
-        for index in reversed(list[-num_plots:]):
-            environment = model.environments[index]
-            people = environment.members
+        graph = model.graph.subgraph(people)
 
-            graph = model.graph.subgraph(people)
+        degreeCounts = [0] * 40
+        for person in people:
+            try:
+                degree = len(graph[person])
+            except:
+                degree = 0
+            degreeCounts[degree] += 1 / environment.population
+        ax[plot_num//5, plot_num%5].plot(range(len(degreeCounts)), degreeCounts, label="Population: {}".format(environment.population))
+        plot_num +=1
 
-            degreeCounts = [0] * 50
-            for person in people:
-                try:
-                    degree = len(graph[person])
-                except:
-                    degree = 0
-                degreeCounts[degree] += 1 / environment.population
-            ax[plot_num//5, plot_num%5].plot(range(len(degreeCounts)), degreeCounts, label="Population: {}".format(environment.population))
-            plot_num +=1
-        plt.title("histogram for top 25 {}s using Strogatz (Bryan)".format(environment.type))
-        plt.ylabel("total people")
-        plt.xlabel("degree")
-        plt.legend()
-        plt.show()
-
-
-if which_model == 'random_GE':
-    fig, ax = plt.subplots(5, 5)
-    fig.set_size_inches(18.5, 10.5)
-
-    for list in [schools, workplaces]:
-        for index in reversed(list[-num_plots:]):
-            environment = model.environments[index]
-            people = environment.members
-
-            graph = model.graph.subgraph(people)
-
-            degreeCounts = [0] * 50
-            for person in people:
-                try:
-                    degree = len(graph[person])
-                except:
-                    degree = 0
-                degreeCounts[degree] += 1 / environment.population
-            plt.plot(range(len(degreeCounts)), degreeCounts, label="Population: {}".format(environment.population))
-        plt.title("histogram for top 25 {}s by random edge selection (Gordon)".format(environment.type))
-        plt.ylabel("Fraction of People")
-        plt.xlabel("degree")
-        plt.legend()
+    plt.ylabel("total people")
+    plt.xlabel("degree")
+    plt.title("histogram for top 25 {}s using ".format(model.environments[list[0]].type) + name)
+    plt.legend()
     plt.show()
 
