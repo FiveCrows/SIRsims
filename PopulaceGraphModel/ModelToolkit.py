@@ -565,6 +565,8 @@ class PopulaceGraph:
             for j in contacts:
                 jPartition = environment.id_to_partition[j]
                 contact_matrix[iPartition, jPartition] += self.graph[i][j]['transmission_weight'] / partition_sizes[iPartition]
+        
+        
         # plt.imshow(np.array([row / np.linalg.norm(row) for row in contact_matrix]))
         return contact_matrix 
 
@@ -574,6 +576,13 @@ class PopulaceGraph:
             environment = self.returnMultiEnvironment()
         contact_matrix = self.returnContactMatrix(environment)
         plt.imshow(contact_matrix)
+        plt.title("Contact Matrix for members of {} # {}".format(environment.type, environment.index))
+        labels = ["{}-{}".format(5 * i, (5 * (i + 1))-1) for i in range(15)]
+        axisticks= list(range(15))
+        plt.xticks(axisticks, labels, rotation= 'vertical')
+        plt.yticks(axisticks, labels)
+        plt.xlabel('Age Group')
+        plt.ylabel('Age Group')
         plt.show()
 
 
