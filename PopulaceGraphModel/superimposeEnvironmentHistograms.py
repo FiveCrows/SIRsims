@@ -71,6 +71,6 @@ for list in [schools, workplaces]:
     plt.title("histogram for top 25 {}s by random edge selection".format(environment.type))
     plt.ylabel("Fraction of People")
     plt.xlabel("degree")
-    plt.legend()
+    #plt.legend()
     plt.show()
 
