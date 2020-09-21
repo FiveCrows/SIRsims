@@ -1,6 +1,6 @@
 from ModelToolkit import *
 default_env_scalars = {"school": 0.3, "workplace": 0.3, "household": 1}
-env_degrees = {'workplace': 13, 'school': 13}
+env_degrees = {'workplace': None, 'school': None}
 default_env_masking = {'workplace': 0, 'school':0, 'household': 0}
 
 workplace_preventions = {'masking': 0, 'distancing': 0}
@@ -18,7 +18,7 @@ names = ["{}:{}".format(5 * i, 5 * (i + 1)) for i in range(15)]
 partition = Partitioner(enumerator, 'age', names)
 
 model = PopulaceGraph( partition, slim = False)
-model.build(trans_weighter, preventions, env_degrees, alg = model.clusterPartitionedStrogatz)
+model.build(trans_weighter, preventions, env_degrees, alg = model.clusterPartitionedRandom)
 
 #schools = list(filter(lambda environment: model.environments[environment].type == 'school' and model.environments[environment].population>25,model.environments))
 #workplaces = list(filter(lambda environment: model.environments[environment].type == 'workplace' and model.environments[environment].population>25, model.environments))
@@ -26,8 +26,6 @@ schools = sorted(list(filter(lambda environment: model.environments[environment]
 workplaces = sorted(list(filter(lambda environment: model.environments[environment].type == 'workplace', model.environments)), key = lambda environment: model.environments[environment].population)
 num_plots = 25
 if False:
-
-
     fig, ax = plt.subplots(5, 5)
     fig.set_size_inches(18.5, 10.5)
 
@@ -62,7 +60,7 @@ for list in [schools, workplaces]:
 
         graph = model.graph.subgraph(people)
 
-        degreeCounts = [0] * 100
+        degreeCounts = [0] * 50
         for person in people:
             try:
                 degree = len(graph[person])
@@ -70,8 +68,8 @@ for list in [schools, workplaces]:
                 degree = 0
             degreeCounts[degree] += 1 / environment.population
         plt.plot(range(len(degreeCounts)), degreeCounts, label="Population: {}".format(environment.population))
-    plt.title("histogram for top 25 {}s".format(environment.type))
-    plt.ylabel("total people")
+    plt.title("histogram for top 25 {}s by random edge selection".format(environment.type))
+    plt.ylabel("Fraction of People")
     plt.xlabel("degree")
     plt.legend()
     plt.show()
