@@ -27,7 +27,7 @@ workplaces = sorted(list(filter(lambda environment: model.environments[environme
 
 num_plots = 25
 for list in [schools, workplaces]:
-    for index in list[-1,-num_plots]:
+    for index in list[-1:-num_plots]:
         environment = model.environments[index]
         people = environment.members
 
