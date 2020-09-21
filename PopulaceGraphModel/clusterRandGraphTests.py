@@ -18,11 +18,13 @@ enumerator.update({i:15 for i in range(75,100)})
 names = ["{}:{}".format(5 * i, 5 * (i + 1)) for i in range(15)]
 partition = Partitioner(enumerator, 'age', names)
 model = PopulaceGraph( partition, slim = False)
-largestWorkplace = model.environments[504994237]
+largestWorkplace = model.environments[505001334]
 model.environment_degrees = env_degrees
 model.trans_weighter = trans_weighter
 model.addEnvironment(largestWorkplace, model.clusterPartitionedStrogatz)
 model.plotNodeDegreeHistogram(largestWorkplace)
+plt.imshow(largestWorkplace.contact_matrix)
+plt.show()
 model.plotContactMatrix(largestWorkplace)
 
 print("after strogatz, clustering is: {}".format(nx.average_clustering(model.graph)))

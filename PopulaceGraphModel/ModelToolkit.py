@@ -183,7 +183,7 @@ class PopulaceGraph:
     def build(self, weighter, preventions, env_degrees, alg = None):
         #none is default so old scripts can still run. self not defined in signature
         if alg == None:
-            alg = self.clusterPartitionedRandom
+            alg = self.clusterPartitionedStrogatz
 
         self.trans_weighter = weighter
         self.preventions = preventions
@@ -293,12 +293,14 @@ class PopulaceGraph:
             for j in range(k):
                 if random.random()>p_random:
                     B_side = (begin_B_edges +j)%size_B
-                    self.addEdge(A[i], B[B_side],environment, weight_scalar)
+                    self.addEdge(A[i], B[B_side], environment, weight_scalar)
                 else:
-                    self.addEdge(random.choice(A), random.choice(B), environment, weight_scalar)
+                    remainder +=1
 
-        for i in range(remainder):
-            self.addEdge(random.choice(A), random.choice(B), environment, weight_scalar)
+
+        eList = self.genRandEdgeList(members_A, members_B, remainder)
+        for edge in eList: self.addEdge(edge[0], edge[1],environment, weight_scalar)
+
 
     #for clusterRandGraph
     def genRandEdgeList(self, setA, setB, n_edges):
@@ -314,14 +316,16 @@ class PopulaceGraph:
             pos_edges = n_A*n_B
             same_sets = False
 
-        p_duplicate = n_edges/pos_edges
-        if p_duplicate< 0.001:
-            list = [(random.choice(setA),random.choice(setB)) for i in range(n_edges)]
-        else:
-            edge_dict = {}
-            while len(edge_dict)<n_edges:
-                edge_dict[(random.choice(setA),random.choice(setB))] = 1
-            list = edge_dict.keys()
+#        p_duplicate = n_edges/pos_edges
+#        if p_duplicate< 0.001:
+#            list = [(random.choice(setA),random.choice(setB)) for i in range(n_edges)]
+#        else:
+        edge_dict = {}
+        while len(edge_dict)<n_edges:
+            A, B = random.choice(setA), random.choice(setB)
+            if A>B: edge_dict[A,B] = 1
+            elif B>A: edge_dict[A,B] = 1
+        list = edge_dict.keys()
         return list
 
     def clusterRandGraph(self, environment, avg_degree):
@@ -347,7 +351,7 @@ class PopulaceGraph:
             #add total contacts for everyone in set i
             total_contact +=sum(np.array(row))*p_sizes[i]
         if avg_degree == None:
-            total_edges = math.floor(total_contact)
+            total_edges = math.floor(total_contact) / 2
         else:
             total_edges = math.floor(avg_degree*population/ 2)
 
@@ -367,7 +371,7 @@ class PopulaceGraph:
 
         #default_weight = total_contact/totalEdges
 
-    def clusterPartitionedStrogatz(self, environment, avg_degree = 13):
+    def clusterPartitionedStrogatz(self, environment, avg_degree = None):
         self.clusterWithMatrix( environment, avg_degree, 'strogatz')
 
     def clusterPartitionedRandom(self, environment, avg_degree = None):
@@ -389,6 +393,7 @@ class PopulaceGraph:
         #default_weight = total_contact/totalEdges
         if avg_degree == None:
             avg_degree = total_contact/environment.population
+        #print('by the sum of the CM, avg_degree should be : {}'.format(avg_degree ))
         #determine total edges needed for entire network. There are two connections per edge)
         total_edges = math.floor(avg_degree * environment.population/2)
 
@@ -397,15 +402,16 @@ class PopulaceGraph:
             for j in range(i, num_sets):
                 if p_n[j] == 0:
                     continue
-                #get the fraction of contact that should be occur between sets i and j
+                #get the fraction of contact that should occur between sets i and j
                 contactFraction = CM[i, j]*p_n[i]/(total_contact)
-
+                if contactFraction == 0:
+                    continue
                 #make sure there are enough people to fit num_edges
                 if i == j:
-                    num_edges = int(total_edges * contactFraction / 2)
+                    num_edges = int(total_edges * contactFraction)
                     max_edges = p_n[i] * (p_n[i]-1)
                 else:
-                    num_edges = int(total_edges*contactFraction)
+                    num_edges = int(total_edges*contactFraction*2)
                     max_edges = p_n[i] * p_n[j]
                 if max_edges < num_edges:
                     num_edges = max_edges
@@ -422,9 +428,9 @@ class PopulaceGraph:
                         self.addEdge(edge[0], edge[1], environment)
                 else:
                     if i == j:
-                        self.clusterStrogatz(environment, num_edges, residual_scalar, subgroup = p_sets[i])
+                        self.clusterStrogatz(environment, num_edges, weight_scalar =1, subgroup = p_sets[i])
                     else:
-                        self.clusterBipartite(environment, p_sets[i], p_sets[j], num_edges,weight_scalar=residual_scalar)
+                        self.clusterBipartite(environment, p_sets[i], p_sets[j], num_edges,weight_scalar=1)
 
 
 
@@ -572,7 +578,7 @@ class PopulaceGraph:
         plt.show()
 
 
-    def plotNodeDegreeHistogram(self, environment = None, layout = 'lines', show = True):
+    def plotNodeDegreeHistogram(self, environment = None, layout = 'bars', show = True):
 
         if environment != None:
             people = environment.members
@@ -801,11 +807,7 @@ class Gordon:
     
                     # multiple edges between p,q not allowed
                     # Dictionaries only store an edge once
-                    if p <  q:
-                        ddict[(p,q)] = 1
-                    else:
-                        ddict[(q,p)] = 1
-    
+
                     # stop when desired number of edges is reached
                     lg = len(ddict)
                     if lg == Nij: break 

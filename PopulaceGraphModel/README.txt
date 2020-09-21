@@ -9,3 +9,8 @@ The most recent script for building and simulating a model, then generating some
 PopulaceStudy.py
 
 Many different simulations and plots can easily be built by editing PopulaceStudy.py
+
+
+Other scripts:
+superimposeEnvironmentHistograms superimposes histograms for all the schools in one plot, and all the workplaces in another.
+It also has code, in comments, which produces

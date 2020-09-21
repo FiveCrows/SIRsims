@@ -17,15 +17,44 @@ enumerator.update({i:15 for i in range(75,100)})
 names = ["{}:{}".format(5 * i, 5 * (i + 1)) for i in range(15)]
 partition = Partitioner(enumerator, 'age', names)
 
-model = PopulaceGraph( partition, slim = True)
-model.build(trans_weighter, preventions, env_degrees)
+model = PopulaceGraph( partition, slim = False)
+model.build(trans_weighter, preventions, env_degrees, alg = model.clusterPartitionedStrogatz)
 
 #schools = list(filter(lambda environment: model.environments[environment].type == 'school' and model.environments[environment].population>25,model.environments))
 #workplaces = list(filter(lambda environment: model.environments[environment].type == 'workplace' and model.environments[environment].population>25, model.environments))
 schools = sorted(list(filter(lambda environment: model.environments[environment].type == 'school', model.environments)), key = lambda environment: model.environments[environment].population)
 workplaces = sorted(list(filter(lambda environment: model.environments[environment].type == 'workplace', model.environments)), key = lambda environment: model.environments[environment].population)
-
 num_plots = 25
+if False:
+
+
+    fig, ax = plt.subplots(5, 5)
+    fig.set_size_inches(18.5, 10.5)
+
+    for list in [schools, workplaces]:
+        plot_num = 0
+        for index in reversed(list[-num_plots:]):
+            environment = model.environments[index]
+            people = environment.members
+
+            graph = model.graph.subgraph(people)
+
+            degreeCounts = [0] * 25
+            for person in people:
+                try:
+                    degree = len(graph[person])
+                except:
+                    degree = 0
+                degreeCounts[degree] += 1 / environment.population
+            ax[plot_num//5, plot_num%5].plot(range(len(degreeCounts)), degreeCounts, label="Population: {}".format(environment.population))
+            plot_num +=1
+        plt.title("histogram for top 25 {}s".format(environment.type))
+        plt.ylabel("total people")
+        plt.xlabel("degree")
+        plt.legend()
+        plt.show()
+
+
 for list in [schools, workplaces]:
     for index in reversed(list[-num_plots:]):
         environment = model.environments[index]
@@ -33,17 +62,17 @@ for list in [schools, workplaces]:
 
         graph = model.graph.subgraph(people)
 
-        degreeCounts = [0] * 25
+        degreeCounts = [0] * 100
         for person in people:
             try:
                 degree = len(graph[person])
             except:
                 degree = 0
-            degreeCounts[degree] += 1/environment.population
-        plt.plot(range(len(degreeCounts)), degreeCounts, label = "Population: {}".format(environment.population))
+            degreeCounts[degree] += 1 / environment.population
+        plt.plot(range(len(degreeCounts)), degreeCounts, label="Population: {}".format(environment.population))
     plt.title("histogram for top 25 {}s".format(environment.type))
     plt.ylabel("total people")
-    plt.xlabel("degree" )
+    plt.xlabel("degree")
     plt.legend()
     plt.show()
 
