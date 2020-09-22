@@ -120,6 +120,7 @@ class PopulaceGraph:
         #renames = {"sp_hh_id": "household", "work_id": "work", "school_id": "school"} maybe later...
 
         if slim == True:
+            print("WARNING! Slim = True, 90% of people are filtered out")
             self.populace = {}
             for key in x:
                 if random.random()>0.9:
