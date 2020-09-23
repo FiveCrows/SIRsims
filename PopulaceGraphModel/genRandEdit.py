@@ -1,3 +1,4 @@
+#this is an edited version of ModelToolkit for testing MakeGraph in class Gordon
 import random
 from os import mkdir
 import EoN
@@ -323,8 +324,10 @@ class PopulaceGraph:
         edge_dict = {}
         while len(edge_dict)<n_edges:
             A, B = random.choice(setA), random.choice(setB)
-            if A>B: edge_dict[A,B] = 1
-            elif B>A: edge_dict[A,B] = 1
+        if A > B:
+            edge_dict[A, B] = 1
+        elif B > A:
+            edge_dict[A, B] = 1
         list = edge_dict.keys()
         return list
 
@@ -386,8 +389,17 @@ class PopulaceGraph:
         #a list of the number of people in each partition set
         p_n = [len(p_sets[i]) for i in p_sets]
         num_sets = len(p_sets)
+
+        list = Gordon.makeGraph(p_n, (0,15), CM)
+        for edge in list:
+            self.addEdge(edge[0], edge[1], environment)
+        print("stop here")
+        return
+
         #get total contact, keeping in mind the contact matrix elements are divided by num people in group
         total_contact = 0
+
+
         for i, row in enumerate(CM):
                 total_contact += sum(row)*p_n[i]
         #default_weight = total_contact/totalEdges
@@ -750,7 +762,8 @@ class Gordon:
     
     #---------------------------------------------
     # This is GE's algorithm, a copy of what I implemented in Julia. 
-    # We need to try both approaches for our paper. 
+    # We need to try both approaches for our paper.
+    @classmethod
     def makeGraph(self, N, index_range, cmm):
         # N: array of age category sizes
         # index_range: lo:hi tuple 
@@ -787,15 +800,15 @@ class Gordon:
                 # List of nodes in both graphs for age brackets i and j
                 Vi = list(range(cum_N[i], cum_N[i + 1]))  # Check limits
                 Vj = list(range(cum_N[j], cum_N[j+1]))  # Check limits
-
+    
                 # Treat the case when the number of edges dictated by the
                 # contact matrices is greater than the number of available edges
                 # The connectivity is then cmoplete
                 if i == j:
                     lg = len(Vi)
-                    nbe = lg*(lg-1) // 2
+                    nbe = lg * (lg - 1) // 2
                 else:
-                    nbe = len(Vi)*len(Vj)
+                    nbe = len(Vi) * len(Vj)
                     if nbe == 0:
                         continue
 

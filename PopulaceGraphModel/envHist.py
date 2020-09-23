@@ -1,5 +1,5 @@
-
-from ModelToolkit import *
+#this script is written to test histograms from makeGraph in class Gordon
+from genRandEdit import *
 default_env_scalars = {"school": 0.3, "workplace": 0.3, "household": 1}
 env_degrees = {'workplace': None, 'school': None}
 default_env_masking = {'workplace': 0, 'school':0, 'household': 0}
@@ -19,18 +19,13 @@ names = ["{}:{}".format(5 * i, 5 * (i + 1)) for i in range(15)]
 partition = Partitioner(enumerator, 'age', names)
 
 # Choose one or the other model
-which_model = 'random_GE'           # GE contact graph algorithm
-#which_model = 'strogatz_AB'         # AB contact graph algorithm (makeGraph)
+
+
 
 model = PopulaceGraph( partition, slim = False)
-
-if which_model == 'strogatz_AB':
-    model.build(trans_weighter, preventions, env_degrees, alg = model.clusterPartitionedStrogatz)
-    name = "Strogatz (Bryan)"
-elif which_model == 'random_GE':
-    model.build(trans_weighter, preventions, env_degrees, alg = model.clusterPartitionedRandom)
-    name = "random edge selection (Gordon)"
-
+model.environment_degrees = env_degrees
+model.trans_weighter = trans_weighter
+model.reset()
 #schools = list(filter(lambda environment: model.environments[environment].type == 'school' and model.environments[environment].population>25,model.environments))
 #workplaces = list(filter(lambda environment: model.environments[environment].type == 'workplace' and model.environments[environment].population>25, model.environments))
 schools = sorted(list(filter(lambda environment: model.environments[environment].type == 'school', model.environments)), key = lambda environment: model.environments[environment].population)
@@ -39,8 +34,6 @@ workplaces = sorted(list(filter(lambda environment: model.environments[environme
 lst = schools
 for index in reversed(lst):
     print("pop= ", model.environments[index].population)
-
-
 
 # list is a command. Do not use as a variable
 for lst in [schools, workplaces]:
@@ -52,12 +45,13 @@ for lst in [schools, workplaces]:
 
     for index in reversed(lst[-num_plots:]):
         environment = model.environments[index]
-        people = environment.members
+        model.reset()
+        model.addEnvironment(environment, model.clusterPartitionedRandom)
+        people = list(model.graph.adj.keys())
+        graph = model.graph
         pop = environment.population
         print("pop= ", pop)
-
-        graph = model.graph.subgraph(people)
-        degreeCounts = [0] * 40
+        degreeCounts = [0] * 75
 
         for person in people:
             try:
