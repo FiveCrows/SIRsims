@@ -17,7 +17,7 @@ class Partitioner:
     Objects of this class can be used to split a list of people into disjoint sets
     """
 
-    def __init__(self, attribute, enumerator, names=None):
+    def __init__(self, attribute, enumerator, labels=None):
         """
         :param attribute: string
         The attribute by which to partition must match one of the attributes in 'populace'
@@ -25,13 +25,13 @@ class Partitioner:
         :param enumerator: dict
         The enumerator should map each possible values for the given attribute to the index of a partition set
 
-        :param names: list
+        :param labels: list
         A list of names for plotting with partitioned sets
         """
 
         self.enumerator = enumerator
         self.attribute = attribute
-        self.names = names
+        self.names = labels
         self.attribute_values = dict.fromkeys(set(enumerator.values()))
         self.num_sets = (len(np.unique(list(enumerator.values()))))
 
@@ -87,8 +87,9 @@ class Environment:
 
 class PartitionedEnvironment(Environment):
     """
-    An environment that contains a partitioner,
+    being partitioned, it also holds a contact matrix and a partitioner
     """
+
     def __init__(self, index, members, type, populace, contact_matrix, partitioner, preventions = None):
         """
         :param index: int
@@ -102,11 +103,9 @@ class PartitionedEnvironment(Environment):
         with keys for 'masking', and 'distancing', which should map to an int in range[0:1] that represents
         the prevelance of the prevention strategy in the environment
         :param populace: dict
-
         :param contact_matrix: 2d array
-
         :param partitioner: Partitioner
-        :param preventions: dict
+        for creating a partition
         """
         super().__init__(index,members, type, preventions)
         self.partitioner = partitioner
@@ -120,6 +119,11 @@ class PartitionedEnvironment(Environment):
                 self.id_to_partition[person] = (set)
 
     def returnReciprocatedCM(self):
+        '''
+        :return: this function  averages to returs a modified version of the contact matrix where
+        CM_[i,j]*N[i]= CM_[j,i]*N[j]
+        '''
+
         cm = self.contact_matrix
         dim = cm.shape
         rm = np.zeros(dim)
@@ -135,15 +139,36 @@ class PartitionedEnvironment(Environment):
 
 
 class TransmissionWeighter:
-    def __init__(self, env_scalars, prevention_reductions, name ='default'):#, loc_masking):
-        self.name = name
+    """
+    a transmission weighter object carries all parameters and functions that involve calculating weight for edges in the graph
+    """
+    def __init__(self, env_type_scalars, prevention_reductions):#, loc_masking):
+        """                        
+        :param env_type_scalars: dict
+        must map to a scalar for each environment type, for scaling weights
+
+        :param prevention_reductions: dict
+        must map prevention names, currently either 'masking' or 'distancing' to scalars
+        """
+
         self.global_weight = 1
         self.prevention_reductions = prevention_reductions
-        self.env_scalars = env_scalars
+        self.env_scalars = env_type_scalars
 
         #self.loc_masking = loc_masking
         #self.age_scalars = age_scalars
+
     def getWeight(self, personA, personB, environment):
+        """
+        Uses the environments type and preventions to deternmine weight
+        :param personA: int
+        currently unused
+        :param personB: int
+        currently unused
+        :param environment: environment
+         the shared environment of two nodes for the weight
+        :return:
+        """
         weight = self.global_weight*self.env_scalars[environment.type]
         #including masks
         if environment.preventions != None:
@@ -157,8 +182,24 @@ class TransmissionWeighter:
 
 
 class PopulaceGraph:
-    "The class PopulaceGa"
-    def __init__(self, partition = None, graph = None, populace = None, pops_by_category = None, categories = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False):
+    """
+    A list of people, environments, and functions need to track a weighted graph to represent contacts between members of the populace
+    """
+    def __init__(self, partition, graph = None, populace = None, attributes = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False):
+        """        
+        :param partition: Partitioner
+        needed to build schools and workplaces into partitioned environments         
+        :param graph: nx.Graph 
+         a weighted graph to represent contact and hence chances of infection between people
+        :param populace: dict
+        maps a persons index to a list of their attributes
+        :param pops_by_category:         
+        :param attributes:
+        names for the characteristics each person has
+        :param slim: bool
+        will filter 90% of people from the object to speed debugging
+        """
+
         self.isBuilt = False
         #self.record = Record()
         self.sims = []
@@ -195,10 +236,10 @@ class PopulaceGraph:
         # takes a dict of dicts to rep resent populace and returns a list of dicts of lists to represent groups of people with the same
         # attributes
 
-            pops_by_category = {category: {} for category in categories}
+            pops_by_category = {category: {} for category in attributes}
             #pops_by_category{'populace'} = []
             for person in self.populace:
-                for category in categories:
+                for category in attributes:
                     try:
                         pops_by_category[category][self.populace[person][category]].append(person)
                     except:
@@ -244,7 +285,17 @@ class PopulaceGraph:
 
 
     def build(self, weighter, preventions, env_degrees, alg = None):
-        #none is default so old scripts can still run. self not defined in signature
+        """
+        constructs a graph for the objects populace
+
+        :param weighter: TransmissionWeighter
+        will be used to determine the graphs weights
+        :param preventions: dict
+        :param env_degrees:
+        :param alg:
+        :return:
+        """
+        #None is default so old scripts can still run. self not defined in signature
         if alg == None:
             alg = self.clusterPartitionedStrogatz
 
