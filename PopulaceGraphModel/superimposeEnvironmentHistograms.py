@@ -16,7 +16,7 @@ tau = 0.08
 enumerator = {i:i//5 for i in range(75)}
 enumerator.update({i:15 for i in range(75,100)})
 names = ["{}:{}".format(5 * i, 5 * (i + 1)) for i in range(15)]
-partition = Partitioner(enumerator, 'age', names)
+partition = Partitioner('age', enumerator, names)
 
 # Choose one or the other model
 which_model = 'random_GE'           # GE contact graph algorithm

@@ -13,7 +13,22 @@ import math
 
 
 class Partitioner:
-    def __init__(self, enumerator, attribute, names = None):
+    """
+    Objects of this class can be used to split a list of people into disjoint sets
+    """
+
+    def __init__(self, attribute, enumerator, names=None):
+        """
+        :param attribute: string
+        The attribute by which to partition must match one of the attributes in 'populace'
+
+        :param enumerator: dict
+        The enumerator should map each possible values for the given attribute to the index of a partition set
+
+        :param names: list
+        A list of names for plotting with partitioned sets
+        """
+
         self.enumerator = enumerator
         self.attribute = attribute
         self.names = names
@@ -21,6 +36,15 @@ class Partitioner:
         self.num_sets = (len(np.unique(list(enumerator.values()))))
 
     def partitionGroup(self, members, populace):
+        """
+        :param members: list
+        An list of indexes for the peaple to partition
+        :param populace:
+        A dict associating people to a list of their attributes is required for applying the enumerator
+
+        :return: dict
+
+        """
         partitioned_members = {i: [] for i in range(self.num_sets)}
         for person in members:
             #determine the number for which group the person belongs in, depending on their attribute
@@ -36,7 +60,23 @@ class memberedPartition:
         self.partitioned_members = super.partitionGroup(members, populace)
 
 class Environment:
+    """
+    Objects to the carry details of every home, workplace, and school
+    """
     def __init__(self, index, members, type, preventions = None):
+        """
+        :param index: int
+        an identifier
+        :param members: list
+        a list of people who attend the environment
+        :param type: string
+        either 'household', 'school', or 'workplace'
+        :param preventions: dict
+        keys should be 'household', 'school', or 'workplace'. Each should map to another dict,
+        with keys for 'masking', and 'distancing', which should map to an int in range[0:1] that represents
+        the prevelance of the prevention strategy in the environment
+        """
+
         self.index = index
         self.members = members
         self.type = type
@@ -46,23 +86,44 @@ class Environment:
 
 
 class PartitionedEnvironment(Environment):
-    def __init__(self, index, members, type, populace, contact_matrix, partition, preventions = None):
+    """
+    An environment that contains a partitioner,
+    """
+    def __init__(self, index, members, type, populace, contact_matrix, partitioner, preventions = None):
+        """
+        :param index: int
+        an identifier
+        :param members: list
+        a list of people who attend the environment
+        :param type: string
+        either 'household', 'school', or 'workplace'
+        :param preventions: dict
+        keys should be 'household', 'school', or 'workplace'. Each should map to another dict,
+        with keys for 'masking', and 'distancing', which should map to an int in range[0:1] that represents
+        the prevelance of the prevention strategy in the environment
+        :param populace: dict
+
+        :param contact_matrix: 2d array
+
+        :param partitioner: Partitioner
+        :param preventions: dict
+        """
         super().__init__(index,members, type, preventions)
-        self.partition = partition
+        self.partitioner = partitioner
         self.contact_matrix = contact_matrix
         self.id_to_partition = dict.fromkeys(members)
 
         #self.total_matrix_contact = contact_matrix.sum()
-        self.partitioned_members = partition.partitionGroup(members, populace)
-        for set in self.partitioned_members:
-            for person in self.partitioned_members[set]:
+        self.partition = partitioner.partitionGroup(members, populace)
+        for set in self.partition:
+            for person in self.partition[set]:
                 self.id_to_partition[person] = (set)
 
     def returnReciprocatedCM(self):
         cm = self.contact_matrix
         dim = cm.shape
         rm = np.zeros(dim)
-        set_sizes = [len(self.partitioned_members[i]) for i in self.partitioned_members]
+        set_sizes = [len(self.partition[i]) for i in self.partition]
 
         for i in range(dim[0]):
             for j in range(dim[1]):
@@ -96,6 +157,7 @@ class TransmissionWeighter:
 
 
 class PopulaceGraph:
+    "The class PopulaceGa"
     def __init__(self, partition = None, graph = None, populace = None, pops_by_category = None, categories = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False):
         self.isBuilt = False
         #self.record = Record()
@@ -334,7 +396,7 @@ class PopulaceGraph:
         #G = Gordon()
         #G.makeGraph(N, index_range, cmm)
         # len(p_sets) = 16 age categories, dictionaries
-        p_sets = environment.partitioned_members
+        p_sets = environment.partition
         population = environment.population
         CM = environment.returnReciprocatedCM()
         print("CM= ", CM)  # single CM matrix
@@ -379,7 +441,7 @@ class PopulaceGraph:
 
     def clusterWithMatrix(self, environment, avg_degree, topology):
         #to clean up code just a little
-        p_sets = environment.partitioned_members
+        p_sets = environment.partition
         CM = environment.returnReciprocatedCM()
 
         assert isinstance(environment, PartitionedEnvironment), "must be a partitioned environment"
@@ -556,9 +618,9 @@ class PopulaceGraph:
 
     def returnContactMatrix(self, environment):
         graph = self.graph.subgraph(environment.members)
-        partition = environment.partition
+        partition = environment.partitioner
         contact_matrix = np.zeros([partition.num_sets, partition.num_sets])
-        partition_sizes = [len(environment.partitioned_members[i]) for i in environment.partitioned_members]
+        partition_sizes = [len(environment.partition[i]) for i in environment.partition]
 
         for i in graph.nodes():
             iPartition = environment.id_to_partition[i]
@@ -572,13 +634,20 @@ class PopulaceGraph:
         return contact_matrix 
 
 
-    def plotContactMatrix(self, environment):
-        if environment == None:
-            environment = self.returnMultiEnvironment()
-        contact_matrix = self.returnContactMatrix(environment)
+    def plotContactMatrix(self, p_env):
+        '''
+        This function plots the contact matrix for a partitioned environment
+        :param p_env: must be a partitioned environment
+        '''
+
+        if p_env == None:
+            p_env = self.returnMultiEnvironment()
+        contact_matrix = self.returnContactMatrix(p_env)
         plt.imshow(contact_matrix)
-        plt.title("Contact Matrix for members of {} # {}".format(environment.type, environment.index))
-        labels = ["{}-{}".format(5 * i, (5 * (i + 1))-1) for i in range(15)]
+        plt.title("Contact Matrix for members of {} # {}".format(p_env.type, p_env.index))
+        labels = p_env.partitioner.labels
+        if labels == None:
+            labels = ["{}-{}".format(5 * i, (5 * (i + 1))-1) for i in range(15)]
         axisticks= list(range(15))
         plt.xticks(axisticks, labels, rotation= 'vertical')
         plt.yticks(axisticks, labels)
@@ -587,7 +656,14 @@ class PopulaceGraph:
         plt.show()
 
 
-    def plotNodeDegreeHistogram(self, environment = None, layout = 'bars', show = True):
+    def plotNodeDegreeHistogram(self, environment = None, layout = 'bars', ax = None, normalized = True):
+        """
+        creates a histogram which displays the frequency of degrees for all nodes in the specified environment.
+        :param environment: The environment to plot for. if not specified, a histogram for everyone in the model will be plotted
+        :param layout: if 'lines', a line plot will be generated. otherwise a barplot will be used
+        :param ax: if an pyplot axis is specified, the plot will be added to it. Otherwise, the plot will be shown
+        :param normalized, when true the histogram will display the portion of total
+        """
 
         if environment != None:
             people = environment.members
@@ -617,6 +693,10 @@ class PopulaceGraph:
 
 
     def plotSIR(self, memberSelection = None):
+        """
+        For members of the entire graph, will generate three charts in one plot, representing the frequency of S,I, and R, for all nodes in each simulation
+        """
+
         rowTitles = ['S','I','R']
         fig, ax = plt.subplots(3,1,sharex = True, sharey = True)
         simCount = len(self.sims)
@@ -641,14 +721,19 @@ class PopulaceGraph:
         plt.show()
 
     #If a partitionedEnvironment is specified, the partition of the environment is applied, otherwise, a partition must be passed
-    def plotBars(self, environment = None, SIRstatus = 'R'):
-        partition = environment.partition
+    def plotBars(self, environment = None, SIRstatus = 'R', normalized = False):
+        """
+        Will show a bar chart that details the final status of each partition set in the environment, at the end of the simulation
+        :param environment: must be a partitioned environment
+        :param SIRstatus: should be 'S', 'I', or 'R'; is the status bars will represent
+        :param normalized: whether to plot each bar as a fraction or the number of people with the given status
+
+        """
+        partition = environment.partitioner
         if isinstance(environment, PartitionedEnvironment):
-            partitioned_people = environment.partitioned_members
-            partition = environment.partition
-        else:
-            assert partition != None
-            partitioned_people = partition.partitionGroup(self.populace.keys(), self.populace)
+            partitioned_people = environment.partition
+            partition = environment.partitioner
+
         simCount = len(self.sims)
         partitionCount = partition.num_sets
         barGroupWidth = 0.8
@@ -663,12 +748,15 @@ class PopulaceGraph:
             totals = []
             end_time = sim.t()[-1]
             for index in partitioned_people:
-                element = partitioned_people[index]
-                if len(element) == 0:
+                set = partitioned_people[index]
+                if len(set) == 0:
                     #no bar if no people
                     totals.append(0)
                     continue
-                totals.append(sum(status == SIRstatus for status in sim.get_statuses(element, end_time).values()) / len(element))
+                    total = sum(status == SIRstatus for status in sim.get_statuses(set, end_time).values()) / len(set)
+                    if normalized == True:  total = total/len(set)
+                    totals.append[total]
+
             #totals = sorted(totals)
             xCoor = [offset + x for x in list(range(len(totals)))]
             plt.bar(xCoor,totals, barWidth, label = title)

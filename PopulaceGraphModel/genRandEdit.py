@@ -337,7 +337,7 @@ class PopulaceGraph:
         #G = Gordon()
         #G.makeGraph(N, index_range, cmm)
         # len(p_sets) = 16 age categories, dictionaries
-        p_sets = environment.partitioned_members
+        p_sets = environment.partition
         population = environment.population
         CM = environment.returnReciprocatedCM()
         print("CM= ", CM)  # single CM matrix
@@ -382,7 +382,7 @@ class PopulaceGraph:
 
     def clusterWithMatrix(self, environment, avg_degree, topology):
         #to clean up code just a little
-        p_sets = environment.partitioned_members
+        p_sets = environment.partition
         CM = environment.returnReciprocatedCM()
 
         assert isinstance(environment, PartitionedEnvironment), "must be a partitioned environment"
@@ -568,9 +568,9 @@ class PopulaceGraph:
 
     def returnContactMatrix(self, environment):
         graph = self.graph.subgraph(environment.members)
-        partition = environment.partition
+        partition = environment.partitioner
         contact_matrix = np.zeros([partition.num_sets, partition.num_sets])
-        partition_sizes = [len(environment.partitioned_members[i]) for i in environment.partitioned_members]
+        partition_sizes = [len(environment.partition[i]) for i in environment.partition]
 
         for i in graph.nodes():
             iPartition = environment.id_to_partition[i]
@@ -654,7 +654,7 @@ class PopulaceGraph:
 
     #If a partitionedEnvironment is specified, the partition of the environment is applied, otherwise, a partition must be passed
     def plotBars(self, environment = None, SIRstatus = 'R'):
-        partition = environment.partition
+        partition = environment.partitioner
         if isinstance(environment, PartitionedEnvironment):
             partitioned_people = environment.partitioned_members
             partition = environment.partition
