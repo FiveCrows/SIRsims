@@ -572,22 +572,32 @@ class PopulaceGraph:
         return contact_matrix 
 
 
-    def plotContactMatrix(self, environment):
+    def plotContactMatrix(self, environment, show = True, save = False):
         if environment == None:
             environment = self.returnMultiEnvironment()
         contact_matrix = self.returnContactMatrix(environment)
         plt.imshow(contact_matrix)
         plt.title("Contact Matrix for members of {} # {}".format(environment.type, environment.index))
-        labels = ["{}-{}".format(5 * i, (5 * (i + 1))-1) for i in range(15)]
+        if environment.partition.attribute == 'age':
+            labels = ["{}-{}".format(5 * i, (5 * (i + 1))-1) for i in range(15)]
+            axislabel = ('Age Group')
+        else:
+            labels = ["{}:{}".format(5 * i, 5 * (i + 1)) for i in range(15)]
+            axislabel = ('Group')
         axisticks= list(range(15))
+        plt.xlabel(axislabel)
+        plt.ylabel(axislabel)
         plt.xticks(axisticks, labels, rotation= 'vertical')
         plt.yticks(axisticks, labels)
-        plt.xlabel('Age Group')
-        plt.ylabel('Age Group')
-        plt.show()
+        if save == True:
+            fig1= plt.gcf()
+            fig1.savefig("./simResults/{}/CM_{}_{}".format(self.record.stamp, environment.type, environment.index))
+        if show == True:
+            plt.show()
+        
 
 
-    def plotNodeDegreeHistogram(self, environment = None, layout = 'bars', show = True):
+    def plotNodeDegreeHistogram(self, environment = None, layout = 'bars', show = True, save = False):
 
         if environment != None:
             people = environment.members
@@ -612,12 +622,16 @@ class PopulaceGraph:
             plt.bar(range(len(degreeCounts)), degreeCounts)
         plt.ylabel("total people")
         plt.xlabel("degree")
-        plt.show()
-        plt.savefig("./simResults/{}/".format(self.record.stamp))
+        if save == True:
+            fig1= plt.gcf()
+            fig1.savefig("./simResults/{}/NDH_{}_{}".format(self.record.stamp, environment.type, environment.index))
+        if show == True:
+            plt.show()
 
 
-    def plotSIR(self, memberSelection = None):
-        rowTitles = ['S','I','R']
+
+    def plotSIR(self, memberSelection = None, show = True, save = False):
+        rowTitles = ['S','I','R','Legend']
         fig, ax = plt.subplots(3,1,sharex = True, sharey = True)
         simCount = len(self.sims)
         if simCount == []:
@@ -637,11 +651,17 @@ class PopulaceGraph:
                 ax[2].plot(t, sim.R())
                 ax[2].set_title('R')
                 ax[2].set_xlabel("days")
-        ax[1].legend()
-        plt.show()
+        ax[1].legend(fontsize ='small', frameon=False)
+        plt.tight_layout()
+        if save == True:
+            fig1= plt.gcf()
+            fig1.savefig("./simResults/{}/SIR".format(self.record.stamp))
+        if show == True:
+            plt.show()
+
 
     #If a partitionedEnvironment is specified, the partition of the environment is applied, otherwise, a partition must be passed
-    def plotBars(self, environment = None, SIRstatus = 'R'):
+    def plotBars(self, environment = None, SIRstatus = 'R', show = True, save = False):
         partition = environment.partition
         if isinstance(environment, PartitionedEnvironment):
             partitioned_people = environment.partitioned_members
@@ -676,8 +696,12 @@ class PopulaceGraph:
         plt.legend()
         plt.ylabel("Fraction of people with status {}".format(SIRstatus))
         plt.xlabel("Age groups of 5 years")
-        plt.show()
-        plt.savefig("./simResults/{}/evasionChart".format(self.record.stamp))
+        if save == True:
+            fig1= plt.gcf()
+            fig1.savefig("./simResults/{}/evasionChart".format(self.record.stamp))
+        if show == True:
+            plt.show()
+
 
     def getR0(self):
         sim = self.sims[-1]
