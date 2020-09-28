@@ -231,7 +231,7 @@ class PopulaceGraph:
         else:
             self.populace = ({key: (vars(x[key])) for key in x})  # .transpose()
         self.population = len(self.populace)
-        if pops_by_category == None:
+        if True:
         # for sorting people into categories
         # takes a dict of dicts to rep resent populace and returns a list of dicts of lists to represent groups of people with the same
         # attributes
@@ -287,7 +287,7 @@ class PopulaceGraph:
     def build(self, weighter, preventions, env_degrees, alg = None):
         """
         constructs a graph for the objects populace
-
+        this model is built to use 
         :param weighter: TransmissionWeighter
         will be used to determine the graphs weights
         :param preventions: dict
@@ -313,6 +313,20 @@ class PopulaceGraph:
         self.isBuilt = True
 
     def addEdge(self, nodeA, nodeB, environment, weight_scalar = 1):
+        '''
+        fThis helper function  not only makes it easier to track
+        variables like total weight and edges for the whole graph, each time
+        a graph is added, it can be useful for debugging
+        :param nodeA: int
+         The node for one side of the edge
+        :param nodeB: int
+        The noden for the other side
+        :param environment: Environment
+         needed to get weight
+        :param weight_scalar: double
+        may be used if one wants to scale the edgesweight bigger/smaller than the trasmission_weighter would regurarly predict
+
+        '''
         weight = self.trans_weighter.getWeight(nodeA, nodeB, environment)*weight_scalar
         self.total_weight += weight
         self.total_edges += 1
@@ -326,6 +340,23 @@ class PopulaceGraph:
         return PartitionedEnvironment(None, members, 'multiEnvironment', self.populace, None, partition)
 
     def clusterDense(self, environment, subgroup = None, weight_scalar = 1):
+        """
+        This function will add every edge possible for the group. Thats n*(n-1)/2 edges
+
+        :param environment: Environment
+        The environment to add edges to
+        :param subgroup: list
+        may be used if one intends to only add edgse for members of the environments subgroup
+        :param weight_scalar: double
+         may be used if one wants the weights scaled larger/smaller than normal
+        """
+        """
+                      
+        :param environment:
+        :param subgroup:
+        :param weight_scalar:
+        :return:
+        """
         if subgroup == None:
             members = environment.members
         else:
@@ -339,6 +370,20 @@ class PopulaceGraph:
 
 
     def addEnvironment(self, environment, alg):
+        """
+        This function iterates over the models list of environment and networks them one by one
+        by calling clusterDense, every edge in everyhousehold will be added to the model. However,
+        the edges for the other, partitioned environments, alg, which must a function, must
+        be able to determine how to build he network, and along with the environment, the alg will also be passed a value
+        which specify what avg node degree it should produce
+
+        :param environment: Environment
+        the environment that needs to be added
+        :param alg: function
+        The algorithm to be used for networking the PartitionedEnvironments
+        :return:
+        """
+
         if environment.type == 'household':
             self.clusterDense(environment)
         else:
@@ -347,7 +392,18 @@ class PopulaceGraph:
             alg(environment, self.environment_degrees[environment.type])
 
 
-    def clusterStrogatz(self, environment,  num_edges, weight_scalar = 1, subgroup = None, rewire_p = 0.2):
+     def clusterStrogatz(self, environment,  num_edges, weight_scalar = 1, subgroup = None, rewire_p = 0.2):
+         """
+         clusterStrogatz
+
+         :param environment:  environment which needs to be added
+         :param num_edges:
+         :param weight_scalar:
+         :param subgroup:
+         :param rewire_p:
+         :return:
+         """
+
         if subgroup == None:
             members = environment.members
         else:
@@ -488,9 +544,31 @@ class PopulaceGraph:
         self.clusterWithMatrix( environment, avg_degree, 'strogatz')
 
     def clusterPartitionedRandom(self, environment, avg_degree = None):
+        '''
+        This calls upon clusterWithMatrix, with topology set as 'random'
+
+        :param environment: partionedEnvironment
+         the environment to add edges for
+        :param avg_degree:  int or double
+        edges/(2*population), or implied by the contact matrix if argument is "None"
+        '''
         self.clusterWithMatrix(environment, avg_degree, 'random')
 
     def clusterWithMatrix(self, environment, avg_degree, topology):
+        """
+        cluster With Matrix takes a partitioned environment, and reciprocates its contact matrix so it
+        can be used to determine the number of edges needed between each pair of partition sets to match as closely as possible.
+        In cases where the contact matrix expects more edges than are possible given two sets, the algorithm will add just the max possible
+        edges. The algorithm used to add actually add edges is dependent on the topology
+
+        :param environment: a PartitionedEnvironment
+        the environment to add edges for
+        :param avg_degree: int or double
+         if avg_degree is not None, then the contact matrix will be scaled such that the average degree
+        :param topology: string
+        can be either 'random', or 'strogatz'
+        :return:
+        """
         #to clean up code just a little
         p_sets = environment.partition
         CM = environment.returnReciprocatedCM()
@@ -596,7 +674,6 @@ class PopulaceGraph:
 
         # speed up, in case there aren't many duplicates likely anyways
         random_duplicate_rate = (random_edges - 1) / total_pos_edges
-        # above, so much cancelled... hows that for some prob?
         if random_duplicate_rate > 0.01:
             rand_edges = random.choices(list(itertools.combinations(environment.members, 2)), k=random_edges)
             for edge in rand_edges:
@@ -778,7 +855,7 @@ class PopulaceGraph:
         :param environment: must be a partitioned environment
         :param SIRstatus: should be 'S', 'I', or 'R'; is the status bars will represent
         :param normalized: whether to plot each bar as a fraction or the number of people with the given status
-
+        #TODO finish implementing None environment as entire graph
         """
         partition = environment.partitioner
         if isinstance(environment, PartitionedEnvironment):
