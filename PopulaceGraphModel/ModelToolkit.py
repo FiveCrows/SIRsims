@@ -392,8 +392,8 @@ class PopulaceGraph:
             alg(environment, self.environment_degrees[environment.type])
 
 
-     def clusterStrogatz(self, environment,  num_edges, weight_scalar = 1, subgroup = None, rewire_p = 0.2):
-         """
+    def clusterStrogatz(self, environment,  num_edges, weight_scalar = 1, subgroup = None, rewire_p = 0.2):
+        """
          clusterStrogatz
 
          :param environment:  environment which needs to be added
@@ -402,7 +402,7 @@ class PopulaceGraph:
          :param subgroup:
          :param rewire_p:
          :return:
-         """
+        """
 
         if subgroup == None:
             members = environment.members
