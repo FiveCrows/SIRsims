@@ -55,7 +55,8 @@ model.simulate(gamma, tau, title = 'base-test')
 
 school_masks = copy.deepcopy(preventions)
 school_masks['school']['masking'] = 1
-model.build(trans_weighter, school_masks, env_degrees)
+#model.build(trans_weighter, school_masks, env_degrees)
+model.reassignWeights()
 model.simulate(gamma, tau, title = 'in-school masks')
 pass
 
