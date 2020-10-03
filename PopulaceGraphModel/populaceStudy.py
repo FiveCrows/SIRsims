@@ -15,7 +15,9 @@ household_preventions = {'masking':0, 'distancing':0}
 preventions = {'workplace': workplace_preventions, 'school': school_preventions, 'household': household_preventions}
 prevention_reductions = {'masking': 0.1722, 'distancing': 0.2071}# dustins values
 trans_weighter = TransmissionWeighter(default_env_scalars, prevention_reductions)
+#gamma is the recovery rate, and the inverse of expected recovery time
 gamma = 0.1
+#tau is the transmission rate
 tau = 0.08
 enumerator = {i:i//5 for i in range(75)}
 enumerator.update({i:15 for i in range(75,100)})
@@ -28,7 +30,7 @@ model.simulate(gamma, tau, title = 'base-test')
 
 school_masks = copy.deepcopy(preventions)
 school_masks['school']['masking'] = 1
-model.build(trans_weighter, school_masks, env_degrees)
+model.reweight(trans_weighter, school_masks)
 model.simulate(gamma, tau, title = 'in-school masks')
 pass
 
