@@ -224,6 +224,23 @@ class PopulaceGraph:
                                             school_matrices[index], partition )
             self.environments[index] = (school)
            
+    #----------------
+    def printEnvironments(self):
+        keys = list(self.environments.keys())
+        envs = set()
+        for k in keys:
+            envs.add(self.environments[k].type)
+
+        # Environment type can be "household", "workplace", "school"
+        print("envs= ", envs)
+        # attributers of environments[keys[1]]: "index', 'members', 'population', 'preventions', 'type'"
+        print(dir(self.environments[keys[1]]))
+        for k in range(25000,25200):
+            print("-----------------")
+            print(self.environments[keys[k]].members)  # list of one element [12]. Meaning? 
+            print(self.environments[keys[k]].population)  # 1  (nb of members)
+            print(self.environments[keys[k]].preventions)  # None (or a list?
+            print(self.environments[keys[k]].type)  # list of one element [12]. Meaning? 
 
     #-------------------------------
     def __init__(self, partition, graph = None, populace = None, 
@@ -320,6 +337,7 @@ class PopulaceGraph:
 
 
     #-------------------------------
+    #---------------------------------
     def build(self, weighter, preventions, env_degrees, alg = None):
         """
         constructs a graph for the objects populace
@@ -338,16 +356,25 @@ class PopulaceGraph:
         self.trans_weighter = weighter
         self.preventions = preventions
         self.environment_degrees = env_degrees
+
+        # For Debugging and record keeping
         #self.record.print('\n')
         #self.record.print("building populace into graphs with the {} clustering algorithm".format(clusteringAlg.__name__))
         #start = time.time()
+
+        # Create empty graph
         self.graph = nx.Graph()
+
+        #self.printEnvironments()  # for debugging and understanding
+
+        # loop through all schools, workplaces, households
         for index in self.environments:
-            environment = self.environments[index]
-            environment.preventions = preventions[environment.type]
-            self.addEnvironment(environment, alg)
+            env = self.environments[index]
+            env.preventions = preventions[env.type]  # how are preventions used in the model? 
+            self.constructGraphFromCM(env, alg)
         self.isBuilt = True
 
+    #---------------------------------
     def addEdge(self, nodeA, nodeB, environment, weight_scalar = 1):
         '''
         fThis helper function  not only makes it easier to track
@@ -405,12 +432,12 @@ class PopulaceGraph:
                 self.addEdge(members[i], members[j], environment, weight_scalar)
 
 
-    def addEnvironment(self, environment, alg):
+    def constructGraphFromCM(self, environment, alg):
         """
-        This function iterates over the models list of environment and networks them one by one
-        by calling clusterDense, every edge in everyhousehold will be added to the model. However,
+        This function iterates over the models list of environments and networks them one by one
+        by calling clusterDense. Every edge in everyhousehold will be added to the model. However,
         the edges for the other, partitioned environments, alg, which must a function, must
-        be able to determine how to build he network, and along with the environment, the alg will also be passed a value
+        be able to determine how to build the network, and along with the environment, the alg will also be passed a value
         which specify what avg node degree it should produce
 
         :param environment: Environment
@@ -765,6 +792,7 @@ class PopulaceGraph:
                 # try:
                 # attachments[""]
 
+    #-----------------------------------------
     def simulate(self, gamma, tau, simAlg = EoN.fast_SIR, title = None, full_data = True):
         start = time.time()
         simResult = simAlg(self.graph, gamma, tau, rho=0.001, transmission_weight='transmission_weight', return_full_data=full_data)
@@ -798,6 +826,7 @@ class PopulaceGraph:
         return contact_matrix 
 
 
+    #----------------------------------------------------
     def plotContactMatrix(self, p_env):
         '''
         This function plots the contact matrix for a partitioned environment
@@ -820,6 +849,7 @@ class PopulaceGraph:
         plt.show()
 
 
+    #----------------------------------------------------
     def plotNodeDegreeHistogram(self, environment = None, layout = 'bars', ax = None, normalized = True):
         """
         creates a histogram which displays the frequency of degrees for all nodes in the specified environment.
@@ -856,6 +886,7 @@ class PopulaceGraph:
         plt.savefig("./simResults/{}/".format(self.record.stamp))
 
 
+    #----------------------------------------------------
     def plotSIR(self, memberSelection = None):
         """
         For members of the entire graph, will generate three charts in one plot, representing the frequency of S,I, and R, for all nodes in each simulation
@@ -1033,6 +1064,7 @@ class Gordon:
                 ddict = {}
                 Nij = int(N[i] * cmm[i,j])
                 print("i,j= ", i, j, ",    Nij= ", Nij)
+                if i == j: Nij = Nij // 2
     
                 if Nij == 0:
                     continue 

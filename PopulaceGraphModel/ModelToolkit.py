@@ -771,8 +771,10 @@ class PopulaceGraph:
         contact_matrix = self.returnContactMatrix(p_env)
         plt.imshow(contact_matrix)
         plt.title("Contact Matrix for members of {} # {}".format(p_env.type, p_env.index))
-        labels = p_env.partitioner.labels
-        if labels == None:
+
+        try:
+            labels = p_env.partitioner.labels
+        except:
             labels = ["{}-{}".format(5 * i, (5 * (i + 1))-1) for i in range(15)]
         axisticks= list(range(15))
         plt.xticks(axisticks, labels, rotation= 'vertical')

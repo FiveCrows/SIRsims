@@ -14,9 +14,11 @@ school_preventions    = {'masking':0, 'distancing': 0}
 household_preventions = {'masking':0, 'distancing':0}
 preventions           = {'workplace': workplace_preventions, 'school': school_preventions, 'household': household_preventions}
 prevention_reductions = {'masking': 0.1722, 'distancing': 0.2071}# dustins values
-gamma                 = 0.1
-tau                   = 0.08
-names                 = ["{}:{}".format(5 * i, 5 * (i + 1)) for i in range(15)]
+gamma                 = 0.1   # Per edge transmission or recovery? 
+tau                   = 0.08  # Per edge transmission or recovery? 
+names                 = ["{}:{}".format(5 * i, 5 * (i + 1)-1) for i in range(15)]
+names.append("75-100")
+print("Age brackets: ", names)
 
 # Dictionary of ages: enumerator[i] => age bracket[i]
 # Age brackets: range(0,5), range(5:10), ..., range(70:75), range(75:100)
@@ -33,6 +35,7 @@ model          = PopulaceGraph( partition, slim = True)
 
 # Create Graph
 model.build(trans_weighter, preventions, env_degrees)
+# Run SIR simulation
 model.simulate(gamma, tau, title = 'base-test')
 
 school_masks = copy.deepcopy(preventions)
