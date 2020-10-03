@@ -12,6 +12,7 @@ import math
 
 
 
+#----------------------------------------------------------------------
 class Partitioner:
     """
     Objects of this class can be used to split a list of people into disjoint sets
@@ -53,12 +54,14 @@ class Partitioner:
             partitioned_members[group].append(person)
         return partitioned_members
 
+#----------------------------------------------------------------------
 #was a thought, but I never used it
 class memberedPartition:
     def __init__(self, members, populace, enumerator, attribute, names = None):
         super.__init__()
         self.partitioned_members = super.partitionGroup(members, populace)
 
+#----------------------------------------------------------------------
 class Environment:
     """
     Objects to the carry details of every home, workplace, and school
@@ -85,6 +88,7 @@ class Environment:
        # self.distancing = distancing
 
 
+#----------------------------------------------------------------------
 class PartitionedEnvironment(Environment):
     """
     being partitioned, it also holds a contact matrix and a partitioner
@@ -138,6 +142,7 @@ class PartitionedEnvironment(Environment):
             print("{}population: {}".type)
 
 
+#----------------------------------------------------------------------
 class TransmissionWeighter:
     """
     a transmission weighter object carries all parameters and functions that involve calculating weight for edges in the graph
@@ -151,9 +156,9 @@ class TransmissionWeighter:
         must map prevention names, currently either 'masking' or 'distancing' to scalars
         """
 
-        self.global_weight = 1
         self.prevention_reductions = prevention_reductions
-        self.env_scalars = env_type_scalars
+        self.env_scalars           = env_type_scalars
+        self.global_weight         = 1
 
         #self.loc_masking = loc_masking
         #self.age_scalars = age_scalars
@@ -181,11 +186,65 @@ class TransmissionWeighter:
         return weight
 
 
+#-----------------------------------------------------
 class PopulaceGraph:
     """
-    A list of people, environments, and functions need to track a weighted graph to represent contacts between members of the populace
+    A list of people, environments, and functions need to track a weighted graph 
+        to represent contacts between members of the populace
     """
-    def __init__(self, partition, graph = None, populace = None, attributes = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False):
+
+    #-----------------
+    def setup_households(self):
+        households = self.pops_by_category["sp_hh_id"]
+
+        for index in households:
+            houseObject              = Environment(index, households[index], "household", 0)
+            self.environments[index] = (houseObject)
+
+    #-----------------
+    def setup_workplaces(self, partition):
+        workplaces = self.pops_by_category["work_id"]
+        with open("../ContactMatrices/Leon/ContactMatrixWorkplaces.pkl", 'rb') as file:
+            work_matrices = pickle.load(file)
+
+        for index in workplaces:
+            if index == None: continue
+            workplace = PartitionedEnvironment(index, workplaces[index], "workplace", 
+                                               self.populace, work_matrices[index], partition)
+            self.environments[index] = (workplace)
+
+    #-----------------
+    def setup_schools(self, partition):
+        schools = self.pops_by_category["school_id"]
+        with open("../ContactMatrices/Leon/ContactMatrixSchools.pkl", 'rb') as file:
+            school_matrices = pickle.load(file)
+        for index in schools:
+            if index == None: continue
+            school = PartitionedEnvironment(index, schools[index], "school", self.populace, 
+                                            school_matrices[index], partition )
+            self.environments[index] = (school)
+           
+    #----------------
+    def printEnvironments(self):
+        keys = list(self.environments.keys())
+        envs = set()
+        for k in keys:
+            envs.add(self.environments[k].type)
+
+        # Environment type can be "household", "workplace", "school"
+        print("envs= ", envs)
+        # attributers of environments[keys[1]]: "index', 'members', 'population', 'preventions', 'type'"
+        print(dir(self.environments[keys[1]]))
+        for k in range(25000,25200):
+            print("-----------------")
+            print(self.environments[keys[k]].members)  # list of one element [12]. Meaning? 
+            print(self.environments[keys[k]].population)  # 1  (nb of members)
+            print(self.environments[keys[k]].preventions)  # None (or a list?
+            print(self.environments[keys[k]].type)  # list of one element [12]. Meaning? 
+
+    #-------------------------------
+    def __init__(self, partition, graph = None, populace = None, 
+                 attributes = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False):
         """        
         :param partition: Partitioner
         needed to build schools and workplaces into partitioned environments         
@@ -200,6 +259,8 @@ class PopulaceGraph:
         will filter 90% of people from the object to speed debugging
         """
 
+        # Graphs are not yet set up in the constructor
+
         self.isBuilt = False
         #self.record = Record()
         self.sims = []
@@ -209,6 +270,12 @@ class PopulaceGraph:
         self.total_edges = 0
         self.total_weight = 0
         self.environments_added = 0
+
+        # What is this for? 
+        if partition != None:
+            self.hasPartition = True
+        else:
+            self.hasPartition = False
 
         if graph == None:
             self.graph = nx.Graph()
@@ -231,59 +298,46 @@ class PopulaceGraph:
         else:
             self.populace = ({key: (vars(x[key])) for key in x})  # .transpose()
         self.population = len(self.populace)
-        if True:
+        keys = list(self.populace.keys())
+
+        # print(self.populace[keys[1]])
+        # {'sp_id': 164082714, 'sp_hh_id': 58565423, 'age': 64, 'sex': 0, 'race': 1, 'relate': 0, 
+        #   'school_id': None, 'work_id': 505089288, 'comorbidities': {'Hypertension': False, 
+        #   'Obesity': False, 'Lung disease': False, 'Diabetes': False, 'Heart disease': False, 
+        #   'MaskUsage': False, 'Other': False}}
+
         # for sorting people into categories
         # takes a dict of dicts to rep resent populace and returns a list of dicts of lists to represent groups of people with the same
         # attributes
 
-            pops_by_category = {category: {} for category in attributes}
-            #pops_by_category{'populace'} = []
-            for person in self.populace:
-                for category in attributes:
-                    try:
-                        pops_by_category[category][self.populace[person][category]].append(person)
-                    except:
-                        pops_by_category[category][self.populace[person][category]] = [person]
-            self.pops_by_category = pops_by_category
-        else:
-            self.pops_by_category = pops_by_category
+        # pops_by_category: for each category, a dictionary
+        # attributes:  ['sp_hh_id', 'work_id', 'school_id', 'race', 'age']
+        print("attributes: ", attributes)
+        pops_by_category = {category: {} for category in attributes}
 
-        #list households:
+        for person in self.populace:
+            for category in attributes:
+                try:
+                    # Append to list of persons
+                    # I am not sure of the meaning of self.populace[person][category]: it is a key
+                    pops_by_category[category][self.populace[person][category]].append(person)
+                except:
+                    # Initialize dictionary value to a list
+                    pops_by_category[category][self.populace[person][category]] = [person]
 
-        #load contact_matrices and build environments
-        with open("../ContactMatrices/Leon/ContactMatrixSchools.pkl", 'rb') as file:
-            schoolCM = pickle.load(file)
+        self.pops_by_category = pops_by_category
+        #print("pops_by_category['race']", pops_by_category['race'])  # just a list of numbers
 
         # env_name_alternate = {"household": "sp_hh_id", "work": "work_id", "school": "school_id"} outdated
         #adding households to environment list
-        households = self.pops_by_category["sp_hh_id"]
         self.environments = {}
-        for index in households:
-            houseObject = Environment(index, households[index], "household", 0)
-            self.environments[index] = (houseObject)
-
-        #adding workplaces to environment list
-        workplaces = self.pops_by_category["work_id"]
-        with open("../ContactMatrices/Leon/ContactMatrixWorkplaces.pkl", 'rb') as file:
-            work_matrices = pickle.load(file)
-
-        if partition != None:
-            self.hasPartition = True
-            for index in workplaces:
-                if index != None:
-                    workplace = PartitionedEnvironment(index, workplaces[index], "workplace", self.populace, work_matrices[index], partition)
-                    self.environments[index] = (workplace)
-            schools = self.pops_by_category["school_id"]
-            with open("../ContactMatrices/Leon/ContactMatrixSchools.pkl", 'rb') as file:
-                school_matrices = pickle.load(file)
-            for index in schools:
-                if index != None:
-                    school = PartitionedEnvironment(index, schools[index], "school", self.populace, school_matrices[index], partition )
-                    self.environments[index] = (school)
+        self.setup_households()
+        self.setup_workplaces(partition)
+        self.setup_schools(partition)
 
 
-
-
+    #-------------------------------
+    #---------------------------------
     def build(self, weighter, preventions, env_degrees, alg = None):
         """
         constructs a graph for the objects populace
@@ -302,16 +356,25 @@ class PopulaceGraph:
         self.trans_weighter = weighter
         self.preventions = preventions
         self.environment_degrees = env_degrees
+
+        # For Debugging and record keeping
         #self.record.print('\n')
         #self.record.print("building populace into graphs with the {} clustering algorithm".format(clusteringAlg.__name__))
         #start = time.time()
+
+        # Create empty graph
         self.graph = nx.Graph()
+
+        #self.printEnvironments()  # for debugging and understanding
+
+        # loop through all schools, workplaces, households
         for index in self.environments:
-            environment = self.environments[index]
-            environment.preventions = preventions[environment.type]
-            self.addEnvironment(environment, alg)
+            env = self.environments[index]
+            env.preventions = preventions[env.type]  # how are preventions used in the model? 
+            self.constructGraphFromCM(env, alg)
         self.isBuilt = True
 
+    #---------------------------------
     def addEdge(self, nodeA, nodeB, environment, weight_scalar = 1):
         '''
         fThis helper function  not only makes it easier to track
@@ -369,12 +432,12 @@ class PopulaceGraph:
                 self.addEdge(members[i], members[j], environment, weight_scalar)
 
 
-    def addEnvironment(self, environment, alg):
+    def constructGraphFromCM(self, environment, alg):
         """
-        This function iterates over the models list of environment and networks them one by one
-        by calling clusterDense, every edge in everyhousehold will be added to the model. However,
+        This function iterates over the models list of environments and networks them one by one
+        by calling clusterDense. Every edge in everyhousehold will be added to the model. However,
         the edges for the other, partitioned environments, alg, which must a function, must
-        be able to determine how to build he network, and along with the environment, the alg will also be passed a value
+        be able to determine how to build the network, and along with the environment, the alg will also be passed a value
         which specify what avg node degree it should produce
 
         :param environment: Environment
@@ -392,8 +455,8 @@ class PopulaceGraph:
             alg(environment, self.environment_degrees[environment.type])
 
 
-     def clusterStrogatz(self, environment,  num_edges, weight_scalar = 1, subgroup = None, rewire_p = 0.2):
-         """
+    def clusterStrogatz(self, environment,  num_edges, weight_scalar = 1, subgroup = None, rewire_p = 0.2):
+        """
          clusterStrogatz
 
          :param environment:  environment which needs to be added
@@ -402,7 +465,7 @@ class PopulaceGraph:
          :param subgroup:
          :param rewire_p:
          :return:
-         """
+        """
 
         if subgroup == None:
             members = environment.members
@@ -729,6 +792,7 @@ class PopulaceGraph:
                 # try:
                 # attachments[""]
 
+    #-----------------------------------------
     def simulate(self, gamma, tau, simAlg = EoN.fast_SIR, title = None, full_data = True):
         start = time.time()
         simResult = simAlg(self.graph, gamma, tau, rho=0.001, transmission_weight='transmission_weight', return_full_data=full_data)
@@ -762,6 +826,7 @@ class PopulaceGraph:
         return contact_matrix 
 
 
+    #----------------------------------------------------
     def plotContactMatrix(self, p_env):
         '''
         This function plots the contact matrix for a partitioned environment
@@ -784,6 +849,7 @@ class PopulaceGraph:
         plt.show()
 
 
+    #----------------------------------------------------
     def plotNodeDegreeHistogram(self, environment = None, layout = 'bars', ax = None, normalized = True):
         """
         creates a histogram which displays the frequency of degrees for all nodes in the specified environment.
@@ -820,6 +886,7 @@ class PopulaceGraph:
         plt.savefig("./simResults/{}/".format(self.record.stamp))
 
 
+    #----------------------------------------------------
     def plotSIR(self, memberSelection = None):
         """
         For members of the entire graph, will generate three charts in one plot, representing the frequency of S,I, and R, for all nodes in each simulation
@@ -905,6 +972,8 @@ class PopulaceGraph:
         self.graph = nx.Graph()
         self.total_weight = 0
         self.total_edges = 0
+
+#----------------------------------------------------------------------
 class Record:
     def __init__(self):
         self.log = ""
@@ -995,6 +1064,7 @@ class Gordon:
                 ddict = {}
                 Nij = int(N[i] * cmm[i,j])
                 print("i,j= ", i, j, ",    Nij= ", Nij)
+                if i == j: Nij = Nij // 2
     
                 if Nij == 0:
                     continue 

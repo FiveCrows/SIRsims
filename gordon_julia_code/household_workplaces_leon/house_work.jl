@@ -35,18 +35,20 @@ include("./make_contact_graph_functions.jl")
 #]@time home_graph, work_graph, school_graph, deg_graph_dict = generateDemographicGraphs(p) # ORIGINAL
 @time home_graph, work_graph, school_graph, work_dict, school_dict = generateDemographicGraphs(p)
 
-deg_graph_dict = work_dict
-kk = collect(keys(deg_graph_dict))
+deg_graph_dict = school_dict
+deg_graph_list = collect(deg_graph_dict |> values)
+deg_graph_list = sort(deg_graph_list, lt=(x,y)->isless(x[3], y[3]), rev=true)
+kk = collect(keys(deg_graph_list))
 
-deg = deg_graph_dict[kk[1]][2]
+deg = deg_graph_list[kk[1]][2]
 deg = deg ./ sum(deg)
 p = plot(deg)
 count = [1]
 for k in kk
-    N = deg_graph_dict[k][3]
+    N = deg_graph_list[k][3]
     if N < 26 continue end
-    println("N= ", deg_graph_dict[k][3])
-    deg = deg_graph_dict[k][2]
+    println("N= ", deg_graph_list[k][3])
+    deg = deg_graph_list[k][2]
     deg = deg ./ sum(deg)
     p = plot!(deg)
     count[1] += 1
@@ -58,27 +60,23 @@ display(p)
 nothing
 
 kk = collect(keys(deg_graph_dict))
-deg, n_v, N_age, ix_range = deg_graph_dict[kk[1]]
+edge_list, deg, n_v, N_age, ix_range = deg_graph_list[1]
 deg = deg ./ sum(deg)
 p = []
-push!(p, plot(deg))
-for k in kk[2:end]
-    deg, n_v, N_age, ix_range_loc = deg_graph_dict[k]
-    print("deg= ", deg)
-    println("nv= $n_v")
-    println("N_age= ", N_age)
-    println("ix_range= ", ix_range_loc)
+for list_el in deg_graph_list
+    edge_list, deg, n_v, N_age, ix_range_loc = list_el #deg_graph_list[k]
     deg = deg ./ sum(deg)
-    print("deg= ", deg)
-    push!(p, plot(deg))
+    push!(p, plot(deg, title=n_v))
 end
 # unroll p into its individual elements
 legend = false
 fntsm = Plots.font("sans-serif", pointsize=round(10.0*0.2))
-Plots.scalefontsizes(1.5)
-plot(p[1:25]..., size=(1000,600), layout=(5,5), xlim=(0,50), legend=false)
-plot(p[26:50]..., size=(1000,600), layout=(5,5), legend=false, xlim=(0,50))
-plot(p[37:61]..., size=(1000,600), layout=(5,5), legend=false, xlim=(0,50))
+font_scale = 1.
+Plots.scalefontsizes(font_scale)
+plot(p[1:25]..., size=(1000,800), layout=(5,5), fontscale=.2, xlim=(0,50), legend=false)
+plot(p[26:50]..., size=(1000,800), layout=(5,5), legend=false, xlim=(0,50))
+plot(p[37:61]..., size=(1000,800), layout=(5,5), legend=false, xlim=(0,50))
+Plots.scalefontsizes(1. / font_scale)
 nothing
 
 # Returns a plot of degree histogram for the top 20 schools.

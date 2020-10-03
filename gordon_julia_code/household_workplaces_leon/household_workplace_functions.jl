@@ -423,7 +423,7 @@ function createWorkGraph(location_str::String, nb_nodes, df, locations, β_strog
 
        #mgh, deg_list = makeGraph(N_ages, index_range, cmm)  # make contact graph # inf loop   # ORIGINAL
        edge_list, deg_list = makeGraph(N_ages, index_range, cmm)  # make contact graph # inf loop  # OWN EDGE MANAGEMENT (GE)
-       #println("deg_list= ", deg_list)
+       #println("edge_list, deg_list= $(typeof(edge_list)), $(typeof(deg_list))")
        #println("return makeGraph, edge_list= ", edge_list)
 
        # Dictionary with (degree_list, graph size, N_age_bins, index_range)
@@ -436,6 +436,7 @@ function createWorkGraph(location_str::String, nb_nodes, df, locations, β_strog
    end
    # work_dict[i]: deg_list, nb_nodes in graph, age distribution, index_range
    #return master_graph, location_dict # ORIGINAL
+   println("loc_dict: ", collect(location_dict[id])[1])
    return location_dict   # OWN EDGE LIST MANAGEMENT
    #--------  FINISH NEW VERSION  with makeGraph
 

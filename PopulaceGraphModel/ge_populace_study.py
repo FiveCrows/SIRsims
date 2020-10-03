@@ -1,29 +1,41 @@
-from ModelToolkit import *
+from ge_ModelToolkit import *
 import copy
 # plot chance of infection
 
-#TODO Upgrade the paper
-#TODO run a range for default_env_scalars, and plot ???
-#TODO recreate model object for multiple sims
-#TODO test contact matrix sensitivities
-#TODO
-default_env_scalars = {"school": 0.3, "workplace": 0.3, "household": 1} # base case
-env_degrees = {'workplace': None, 'school': None}
-workplace_preventions = {'masking': 0, 'distancing': 0}
-school_preventions = {'masking':0, 'distancing': 0}
-household_preventions = {'masking':0, 'distancing':0}
-preventions = {'workplace': workplace_preventions, 'school': school_preventions, 'household': household_preventions}
-prevention_reductions = {'masking': 0.1722, 'distancing': 0.2071}# dustins values
-trans_weighter = TransmissionWeighter(default_env_scalars, prevention_reductions)
-gamma = 0.1
-tau = 0.08
-enumerator = {i:i//5 for i in range(75)}
-enumerator.update({i:15 for i in range(75,100)})
-names = ["{}:{}".format(5 * i, 5 * (i + 1)) for i in range(15)]
-partition = Partitioner('age', enumerator, names)
-model = PopulaceGraph( partition, slim = True)
+#################################################################################
+#####   Begin setting up model variables  #######################################
+#################################################################################
 
+default_env_scalars   = {"school": 0.3, "workplace": 0.3, "household": 1}
+env_degrees           = {'workplace': None, 'school': None}
+default_env_masking   = {'workplace': 0, 'school':0, 'household': 0}
+workplace_preventions = {'masking': 0, 'distancing': 0}
+school_preventions    = {'masking':0, 'distancing': 0}
+household_preventions = {'masking':0, 'distancing':0}
+preventions           = {'workplace': workplace_preventions, 'school': school_preventions, 'household': household_preventions}
+prevention_reductions = {'masking': 0.1722, 'distancing': 0.2071}# dustins values
+gamma                 = 0.1   # Per edge transmission or recovery? 
+tau                   = 0.08  # Per edge transmission or recovery? 
+names                 = ["{}:{}".format(5 * i, 5 * (i + 1)-1) for i in range(15)]
+names.append("75-100")
+print("Age brackets: ", names)
+
+# Dictionary of ages: enumerator[i] => age bracket[i]
+# Age brackets: range(0,5), range(5:10), ..., range(70:75), range(75:100)
+enumerator            = {i:i//5 for i in range(75)}
+enumerator.update({i:15 for i in range(75,100)})
+
+#################################################################################
+#####   End setting up model variables  #######################################
+#################################################################################
+
+trans_weighter = TransmissionWeighter(default_env_scalars, prevention_reductions)
+partition      = Partitioner('age', enumerator, names)
+model          = PopulaceGraph( partition, slim = True)
+
+# Create Graph
 model.build(trans_weighter, preventions, env_degrees)
+# Run SIR simulation
 model.simulate(gamma, tau, title = 'base-test')
 
 school_masks = copy.deepcopy(preventions)
