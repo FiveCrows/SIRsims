@@ -14,7 +14,6 @@ school_preventions    = {'masking':0, 'distancing': 0}
 household_preventions = {'masking':0, 'distancing':0}
 preventions           = {'workplace': workplace_preventions, 'school': school_preventions, 'household': household_preventions}
 prevention_reductions = {'masking': 0.1722, 'distancing': 0.2071}# dustins values
-trans_weighter        = TransmissionWeighter(default_env_scalars, prevention_reductions)
 gamma                 = 0.1
 tau                   = 0.08
 names                 = ["{}:{}".format(5 * i, 5 * (i + 1)) for i in range(15)]
@@ -28,8 +27,11 @@ enumerator.update({i:15 for i in range(75,100)})
 #####   End setting up model variables  #######################################
 #################################################################################
 
-partition = Partitioner('age', enumerator, names)
-model     = PopulaceGraph( partition, slim = True)
+trans_weighter = TransmissionWeighter(default_env_scalars, prevention_reductions)
+partition      = Partitioner('age', enumerator, names)
+model          = PopulaceGraph( partition, slim = True)
+
+# Create Graph
 model.build(trans_weighter, preventions, env_degrees)
 model.simulate(gamma, tau, title = 'base-test')
 

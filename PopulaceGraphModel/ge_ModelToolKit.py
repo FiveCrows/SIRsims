@@ -242,6 +242,8 @@ class PopulaceGraph:
         will filter 90% of people from the object to speed debugging
         """
 
+        # Graphs are not yet set up in the constructor
+
         self.isBuilt = False
         #self.record = Record()
         self.sims = []
@@ -291,18 +293,21 @@ class PopulaceGraph:
         # takes a dict of dicts to rep resent populace and returns a list of dicts of lists to represent groups of people with the same
         # attributes
 
-        # pops_by_category: for each category, a list of people
-        // attributes:  ['sp_hh_id', 'work_id', 'school_id', 'race', 'age']
+        # pops_by_category: for each category, a dictionary
+        # attributes:  ['sp_hh_id', 'work_id', 'school_id', 'race', 'age']
         print("attributes: ", attributes)
         pops_by_category = {category: {} for category in attributes}
-        #pops_by_category{'populace'} = []
 
         for person in self.populace:
             for category in attributes:
                 try:
+                    # Append to list of persons
+                    # I am not sure of the meaning of self.populace[person][category]: it is a key
                     pops_by_category[category][self.populace[person][category]].append(person)
                 except:
+                    # Initialize dictionary value to a list
                     pops_by_category[category][self.populace[person][category]] = [person]
+
         self.pops_by_category = pops_by_category
         #print("pops_by_category['race']", pops_by_category['race'])  # just a list of numbers
 
@@ -312,7 +317,6 @@ class PopulaceGraph:
         self.setup_households()
         self.setup_workplaces(partition)
         self.setup_schools(partition)
-
 
 
     #-------------------------------
