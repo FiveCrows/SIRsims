@@ -194,7 +194,7 @@ class PopulaceGraph:
             self.environments[index] = (houseObject)
 
     #-----------------
-    def setup_workplaces(self):
+    def setup_workplaces(self, partition):
         workplaces = self.pops_by_category["work_id"]
         with open("../ContactMatrices/Leon/ContactMatrixWorkplaces.pkl", 'rb') as file:
             work_matrices = pickle.load(file)
@@ -205,7 +205,7 @@ class PopulaceGraph:
             self.environments[index] = (workplace)
 
     #-----------------
-    def setup_schools(self):
+    def setup_schools(self, partition):
         schools = self.pops_by_category["school_id"]
         with open("../ContactMatrices/Leon/ContactMatrixSchools.pkl", 'rb') as file:
             school_matrices = pickle.load(file)
@@ -290,8 +290,8 @@ class PopulaceGraph:
         #adding households to environment list
         self.environments = {}
         self.setup_households()
-        self.setup_workplaces()
-        self.setup_schools()
+        self.setup_workplaces(partition)
+        self.setup_schools(partition)
 
 
 
