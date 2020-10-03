@@ -231,22 +231,20 @@ class PopulaceGraph:
         else:
             self.populace = ({key: (vars(x[key])) for key in x})  # .transpose()
         self.population = len(self.populace)
-        if True:
+
         # for sorting people into categories
         # takes a dict of dicts to rep resent populace and returns a list of dicts of lists to represent groups of people with the same
         # attributes
 
-            pops_by_category = {category: {} for category in attributes}
-            #pops_by_category{'populace'} = []
-            for person in self.populace:
-                for category in attributes:
-                    try:
-                        pops_by_category[category][self.populace[person][category]].append(person)
-                    except:
-                        pops_by_category[category][self.populace[person][category]] = [person]
-            self.pops_by_category = pops_by_category
-        else:
-            self.pops_by_category = pops_by_category
+        pops_by_category = {category: {} for category in attributes}
+        #pops_by_category{'populace'} = []
+        for person in self.populace:
+            for category in attributes:
+                try:
+                    pops_by_category[category][self.populace[person][category]].append(person)
+                except:
+                    pops_by_category[category][self.populace[person][category]] = [person]
+        self.pops_by_category = pops_by_category
 
         #list households:
 

@@ -12,6 +12,7 @@ import math
 
 
 
+#----------------------------------------------------------------------
 class Partitioner:
     """
     Objects of this class can be used to split a list of people into disjoint sets
@@ -53,12 +54,14 @@ class Partitioner:
             partitioned_members[group].append(person)
         return partitioned_members
 
+#----------------------------------------------------------------------
 #was a thought, but I never used it
 class memberedPartition:
     def __init__(self, members, populace, enumerator, attribute, names = None):
         super.__init__()
         self.partitioned_members = super.partitionGroup(members, populace)
 
+#----------------------------------------------------------------------
 class Environment:
     """
     Objects to the carry details of every home, workplace, and school
@@ -85,6 +88,7 @@ class Environment:
        # self.distancing = distancing
 
 
+#----------------------------------------------------------------------
 class PartitionedEnvironment(Environment):
     """
     being partitioned, it also holds a contact matrix and a partitioner
@@ -138,6 +142,7 @@ class PartitionedEnvironment(Environment):
             print("{}population: {}".type)
 
 
+#----------------------------------------------------------------------
 class TransmissionWeighter:
     """
     a transmission weighter object carries all parameters and functions that involve calculating weight for edges in the graph
@@ -151,9 +156,9 @@ class TransmissionWeighter:
         must map prevention names, currently either 'masking' or 'distancing' to scalars
         """
 
-        self.global_weight = 1
         self.prevention_reductions = prevention_reductions
-        self.env_scalars = env_type_scalars
+        self.env_scalars           = env_type_scalars
+        self.global_weight         = 1
 
         #self.loc_masking = loc_masking
         #self.age_scalars = age_scalars
@@ -181,16 +186,19 @@ class TransmissionWeighter:
         return weight
 
 
+#-----------------------------------------------------
 class PopulaceGraph:
     """
-    A list of people, environments, and functions need to track a weighted graph to represent contacts between members of the populace
+    A list of people, environments, and functions need to track a weighted graph 
+        to represent contacts between members of the populace
     """
 
     #-----------------
     def setup_households(self):
         households = self.pops_by_category["sp_hh_id"]
+
         for index in households:
-            houseObject = Environment(index, households[index], "household", 0)
+            houseObject              = Environment(index, households[index], "household", 0)
             self.environments[index] = (houseObject)
 
     #-----------------
@@ -201,7 +209,8 @@ class PopulaceGraph:
 
         for index in workplaces:
             if index == None: continue
-            workplace = PartitionedEnvironment(index, workplaces[index], "workplace", self.populace, work_matrices[index], partition)
+            workplace = PartitionedEnvironment(index, workplaces[index], "workplace", 
+                                               self.populace, work_matrices[index], partition)
             self.environments[index] = (workplace)
 
     #-----------------
@@ -211,12 +220,14 @@ class PopulaceGraph:
             school_matrices = pickle.load(file)
         for index in schools:
             if index == None: continue
-            school = PartitionedEnvironment(index, schools[index], "school", self.populace, school_matrices[index], partition )
+            school = PartitionedEnvironment(index, schools[index], "school", self.populace, 
+                                            school_matrices[index], partition )
             self.environments[index] = (school)
            
 
-    #------------------
-    def __init__(self, partition, graph = None, populace = None, attributes = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False):
+    #-------------------------------
+    def __init__(self, partition, graph = None, populace = None, 
+                 attributes = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False):
         """        
         :param partition: Partitioner
         needed to build schools and workplaces into partitioned environments         
@@ -268,23 +279,32 @@ class PopulaceGraph:
         else:
             self.populace = ({key: (vars(x[key])) for key in x})  # .transpose()
         self.population = len(self.populace)
+        keys = list(self.populace.keys())
 
-        if True:
-            # for sorting people into categories
-            # takes a dict of dicts to rep resent populace and returns a list of dicts of lists to represent groups of people with the same
-            # attributes
+        # print(self.populace[keys[1]])
+        # {'sp_id': 164082714, 'sp_hh_id': 58565423, 'age': 64, 'sex': 0, 'race': 1, 'relate': 0, 
+        #   'school_id': None, 'work_id': 505089288, 'comorbidities': {'Hypertension': False, 
+        #   'Obesity': False, 'Lung disease': False, 'Diabetes': False, 'Heart disease': False, 
+        #   'MaskUsage': False, 'Other': False}}
 
-            pops_by_category = {category: {} for category in attributes}
-            #pops_by_category{'populace'} = []
-            for person in self.populace:
-                for category in attributes:
-                    try:
-                        pops_by_category[category][self.populace[person][category]].append(person)
-                    except:
-                        pops_by_category[category][self.populace[person][category]] = [person]
-            self.pops_by_category = pops_by_category
-        else:
-            self.pops_by_category = pops_by_category
+        # for sorting people into categories
+        # takes a dict of dicts to rep resent populace and returns a list of dicts of lists to represent groups of people with the same
+        # attributes
+
+        # pops_by_category: for each category, a list of people
+        // attributes:  ['sp_hh_id', 'work_id', 'school_id', 'race', 'age']
+        print("attributes: ", attributes)
+        pops_by_category = {category: {} for category in attributes}
+        #pops_by_category{'populace'} = []
+
+        for person in self.populace:
+            for category in attributes:
+                try:
+                    pops_by_category[category][self.populace[person][category]].append(person)
+                except:
+                    pops_by_category[category][self.populace[person][category]] = [person]
+        self.pops_by_category = pops_by_category
+        #print("pops_by_category['race']", pops_by_category['race'])  # just a list of numbers
 
         # env_name_alternate = {"household": "sp_hh_id", "work": "work_id", "school": "school_id"} outdated
         #adding households to environment list
@@ -295,6 +315,7 @@ class PopulaceGraph:
 
 
 
+    #-------------------------------
     def build(self, weighter, preventions, env_degrees, alg = None):
         """
         constructs a graph for the objects populace
@@ -916,6 +937,8 @@ class PopulaceGraph:
         self.graph = nx.Graph()
         self.total_weight = 0
         self.total_edges = 0
+
+#----------------------------------------------------------------------
 class Record:
     def __init__(self):
         self.log = ""
