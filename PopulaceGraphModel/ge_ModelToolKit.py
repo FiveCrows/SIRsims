@@ -270,6 +270,7 @@ class PopulaceGraph:
         self.total_edges = 0
         self.total_weight = 0
         self.environments_added = 0
+        self.edge_envs = {}  # keep track of the environment associated with each edge
 
         # What is this for? 
         if partition != None:
@@ -374,6 +375,21 @@ class PopulaceGraph:
             self.constructGraphFromCM(env, alg)
         self.isBuilt = True
 
+    #----------------------------------
+    def reassignWeights(self):
+        weights = {}
+        weight_scalar = 1.   # Bryan: is weight_scalar ever different from 1? 
+        keys = list(self.environments.keys())
+
+        for e in self.graph.edges():
+            try:
+                #print("edge_envs: ", self.edge_envs[(e[0],e[1])] )
+                env = self.edge_envs[(e[0],e[1])]
+            except:
+                #print("edge_envs: ", self.edge_envs[(e[1],e[0])] )
+                env = self.edge_envs[(e[1],e[0])]
+            self.addEdge(e[0], e[1], env, weight_scalar)
+
     #---------------------------------
     def addEdge(self, nodeA, nodeB, environment, weight_scalar = 1):
         '''
@@ -394,6 +410,8 @@ class PopulaceGraph:
         self.total_weight += weight
         self.total_edges += 1
         self.graph.add_edge(nodeA, nodeB, transmission_weight = weight)
+        #print("nodes: ", nodeA, nodeB)
+        self.edge_envs[(nodeA, nodeB)] = environment
 
     #merge environments, written for plotting and exploration
     def returnMultiEnvironment(self, env_indexes, partition):
@@ -601,7 +619,6 @@ class PopulaceGraph:
                 edge_list = self.genRandEdgeList(p_sets[i], p_sets[j], n_edges)
                 for edge in edge_list: self.addEdge(edge[0],edge[1],environment)
 
-        #default_weight = total_contact/totalEdges
 
     def clusterPartitionedStrogatz(self, environment, avg_degree = None):
         self.clusterWithMatrix( environment, avg_degree, 'strogatz')
@@ -751,6 +768,7 @@ class PopulaceGraph:
         partition_dist = [sum(vecM[:i] for i in range(num_partitions))] / sum(vecM)
         # partition_dist projects the edge_partition to  [0,1], such that the space between elements is in proportion to
         # the elements contact
+
         for i in range(remaining_edges):
             # this selects a partition element using partition_dist
             # then, from vec back to row/col
@@ -795,7 +813,8 @@ class PopulaceGraph:
     #-----------------------------------------
     def simulate(self, gamma, tau, simAlg = EoN.fast_SIR, title = None, full_data = True):
         start = time.time()
-        simResult = simAlg(self.graph, gamma, tau, rho=0.001, transmission_weight='transmission_weight', return_full_data=full_data)
+        # Bryan had the arguments reversed. 
+        simResult = simAlg(self.graph, tau, gamma, rho=0.001, transmission_weight='transmission_weight', return_full_data=full_data)
         stop = time.time()
         self.record.print("simulation completed in {} seconds".format(stop - start))
 
@@ -838,8 +857,9 @@ class PopulaceGraph:
         contact_matrix = self.returnContactMatrix(p_env)
         plt.imshow(contact_matrix)
         plt.title("Contact Matrix for members of {} # {}".format(p_env.type, p_env.index))
-        labels = p_env.partitioner.labels
-        if labels == None:
+        try:
+            labels = p_env.partitioner.labels
+        except:
             labels = ["{}-{}".format(5 * i, (5 * (i + 1))-1) for i in range(15)]
         axisticks= list(range(15))
         plt.xticks(axisticks, labels, rotation= 'vertical')

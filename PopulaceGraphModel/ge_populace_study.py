@@ -14,8 +14,23 @@ school_preventions    = {'masking':0, 'distancing': 0}
 household_preventions = {'masking':0, 'distancing':0}
 preventions           = {'workplace': workplace_preventions, 'school': school_preventions, 'household': household_preventions}
 prevention_reductions = {'masking': 0.1722, 'distancing': 0.2071}# dustins values
-gamma                 = 0.1   # Per edge transmission or recovery? 
-tau                   = 0.08  # Per edge transmission or recovery? 
+# https://epidemicsonnetworks.readthedocs.io/en/latest/functions/EoN.fast_SIR.html
+# Argument to EoN.fast_SIR(G, tau, gamma, initial_infecteds=None,
+gamma                 = 0.2  # Recovery rate per edge (EoN.fast_SIR)
+tau                   = 0.2  # Transmission rate per node (EoN.fast_SIR) (also called beta in the literature)
+
+# https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7254020/
+#  Provided by Derek. No sueful data. 
+# https://www.who.int/docs/default-source/coronaviruse/who-china-joint-mission-on-covid-19-final-report.pdf#:~:text=Using%20available%20preliminary%20data%2C,severe%20or%20critical%20disease.
+#   - gives average rcovery rates
+# https://www.cdc.gov/coronavirus/2019-ncov/hcp/planning-scenarios.html
+#   - paper has tables of parameters sometimes stratified by age
+# https://journals.plos.org/plosmedicine/article/file?id=10.1371/journal.pmed.1003346&type=printable
+#    Tons of tables of studies, but use is not clear. 
+# https://f1000researchdata.s3.amazonaws.com/manuscripts/28897/a4d3438e-54c8-4f2f-bdbe-cd913f104085_26186_-_mudatsir.pdf?doi=10.12688/f1000research.26186.1&numberOfBrowsableCollections=27&numberOfBrowsableInstitutionalCollections=5&numberOfBrowsableGateways=26 (Predictors of COVID-19 severity: a systematic review and meta-analysis [version 1; peer review: 1 approved]
+# https://pubmed.ncbi.nlm.nih.gov/32497510/ (Physical distancing, face masks, and eye protection to prevent person-to-person transmission of SARS-CoV-2 and COVID-19: a systematic review and meta-analysis)
+#   Has to do with masks. 
+
 names                 = ["{}:{}".format(5 * i, 5 * (i + 1)-1) for i in range(15)]
 names.append("75-100")
 print("Age brackets: ", names)
@@ -31,7 +46,7 @@ enumerator.update({i:15 for i in range(75,100)})
 
 trans_weighter = TransmissionWeighter(default_env_scalars, prevention_reductions)
 partition      = Partitioner('age', enumerator, names)
-model          = PopulaceGraph( partition, slim = True)
+model          = PopulaceGraph( partition, slim = False)
 
 # Create Graph
 model.build(trans_weighter, preventions, env_degrees)
@@ -46,8 +61,10 @@ pass
 
 with_distancing = copy.deepcopy(preventions)
 with_distancing['workplace']['distancing'] = 1
-model.build(trans_weighter, with_distancing, env_degrees)
+#model.build(trans_weighter, with_distancing, env_degrees)
+model.reassignWeights()
 model.simulate(gamma, tau, title = 'school and workplace distancing')
+quit()
 
 env_degrees['school'] = 0
 model.build(trans_weighter, preventions, env_degrees)

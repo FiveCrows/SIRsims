@@ -280,8 +280,7 @@ class PopulaceGraph:
                     self.environments[index] = (school)
 
 
-
-
+    #---------------------------------------
     def build(self, weighter, preventions, env_degrees, alg = None):
         """
         constructs a graph for the objects populace
@@ -309,6 +308,7 @@ class PopulaceGraph:
             environment.preventions = preventions[environment.type]
             self.addEnvironment(environment, alg)
         self.isBuilt = True
+
 
     def addEdge(self, nodeA, nodeB, environment, weight_scalar = 1):
         '''
