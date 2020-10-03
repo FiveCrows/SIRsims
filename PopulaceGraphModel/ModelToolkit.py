@@ -200,7 +200,7 @@ class PopulaceGraph:
     A list of people, environments, and functions needed to build
     """
 
-    def __init__(self, partition, graph = None, populace = None, attributes = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False):
+    def __init__(self, partitioner, graph = None, populace = None, attributes = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False):
         """
         unless a populace is passed as an argument,
         init needs to be able to load:
@@ -209,7 +209,7 @@ class PopulaceGraph:
         "../ContactMatrices/Leon/ContactMatrixSchools.pkl"
          in order to create the necessary list of environments
 
-        :param partition: Partitioner
+        :param partitioner: Partitioner
         needed to build schools and workplaces into partitioned environments         
         :param graph: nx.Graph 
          a weighted graph to represent contact and hence chances of infection between people
@@ -253,22 +253,21 @@ class PopulaceGraph:
         else:
             self.populace = ({key: (vars(x[key])) for key in x})  # .transpose()
         self.population = len(self.populace)
-        if True:
+
         # for sorting people into categories
         # takes a dict of dicts to rep resent populace and returns a list of dicts of lists to represent groups of people with the same
         # attributes
+        pops_by_category = {category: {} for category in attributes}
+        #pops_by_category{'populace'} = []
+        for person in self.populace:
+            for category in attributes:
+                try:
+                    pops_by_category[category][self.populace[person][category]].append(person)
+                except:
+                    pops_by_category[category][self.populace[person][category]] = [person]
+        self.pops_by_category = pops_by_category
 
-            pops_by_category = {category: {} for category in attributes}
-            #pops_by_category{'populace'} = []
-            for person in self.populace:
-                for category in attributes:
-                    try:
-                        pops_by_category[category][self.populace[person][category]].append(person)
-                    except:
-                        pops_by_category[category][self.populace[person][category]] = [person]
-            self.pops_by_category = pops_by_category
-        else:
-            self.pops_by_category = pops_by_category
+
 
         #list households:
 
@@ -289,48 +288,48 @@ class PopulaceGraph:
         with open("../ContactMatrices/Leon/ContactMatrixWorkplaces.pkl", 'rb') as file:
             work_matrices = pickle.load(file)
 
-        if partition != None:
-            self.hasPartition = True
-            for index in workplaces:
-                if index != None:
-                    workplace = PartitionedEnvironment(index, workplaces[index], "workplace", self.populace, work_matrices[index], partition)
-                    self.environments[index] = (workplace)
-            schools = self.pops_by_category["school_id"]
-            with open("../ContactMatrices/Leon/ContactMatrixSchools.pkl", 'rb') as file:
-                school_matrices = pickle.load(file)
-            for index in schools:
-                if index != None:
-                    school = PartitionedEnvironment(index, schools[index], "school", self.populace, school_matrices[index], partition )
-                    self.environments[index] = (school)
 
-    def build(self, weighter, preventions, env_degrees, alg = None):
-        """
-        constructs a graph for the objects populace
-        this model is built to use 
-        :param weighter: TransmissionWeighter
-        will be used to determine the graphs weights
-        :param preventions: dict
-        specifies the prevention
-        :param env_degrees: dict
-        :param alg: function
-        :return:
-        """
-        # None is default so old scripts can still run. self not defined in signature
-        if alg == None:
+        self.hasPartition = True
+        for index in workplaces:
+            if index != None:
+                workplace = PartitionedEnvironment(index, workplaces[index], "workplace", self.populace, work_matrices[index], partitioner)
+                self.environments[index] = (workplace)
+        schools = self.pops_by_category["school_id"]
+        with open("../ContactMatrices/Leon/ContactMatrixSchools.pkl", 'rb') as file:
+            school_matrices = pickle.load(file)
+        for index in schools:
+            if index != None:
+                school = PartitionedEnvironment(index, schools[index], "school", self.populace, school_matrices[index], partitioner)
+                self.environments[index] = (school)
+
+def build(self, weighter, preventions, env_degrees, alg = None):
+    """
+    constructs a graph for the objects populace
+    this model is built to use
+    :param weighter: TransmissionWeighter
+    will be used to determine the graphs weights
+    :param preventions: dict
+    specifies the prevention
+    :param env_degrees: dict
+    :param alg: function
+    :return:
+    """
+    # None is default so old scripts can still run. self not defined in signature
+    if alg == None:
 
 
-        self.trans_weighter = weighter
-        self.preventions = preventions
-        self.environment_degrees = env_degrees
-        #self.record.print('\n')
-        #self.record.print("building populace into graphs with the {} clustering algorithm".format(clusteringAlg.__name__))
-        #start = time.time()
-        self.graph = nx.Graph()
-        for index in self.environments:
-            environment = self.environments[index]
-            environment.preventions = preventions[environment.type]
-            self.addEnvironment(environment, alg)
-        self.isBuilt = True
+    self.trans_weighter = weighter
+    self.preventions = preventions
+    self.environment_degrees = env_degrees
+    #self.record.print('\n')
+    #self.record.print("building populace into graphs with the {} clustering algorithm".format(clusteringAlg.__name__))
+    #start = time.time()
+    self.graph = nx.Graph()
+    for index in self.environments:
+        environment = self.environments[index]
+        environment.preventions = preventions[environment.type]
+        self.addEnvironment(environment, alg)
+    self.isBuilt = True
 
     def addEdge(self, nodeA, nodeB, environment, weight_scalar = 1):
         '''
