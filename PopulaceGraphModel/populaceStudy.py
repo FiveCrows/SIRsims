@@ -2,9 +2,13 @@ from ModelToolkit import *
 import copy
 # plot chance of infection
 
-default_env_scalars = {"school": 0.3, "workplace": 0.3, "household": 1}
+#TODO Upgrade the paper
+#TODO run a range for default_env_scalars, and plot ???
+#TODO recreate model object for multiple sims
+#TODO test contact matrix sensitivities
+#TODO
+default_env_scalars = {"school": 0.3, "workplace": 0.3, "household": 1} # base case
 env_degrees = {'workplace': None, 'school': None}
-default_env_masking = {'workplace': 0, 'school':0, 'household': 0}
 workplace_preventions = {'masking': 0, 'distancing': 0}
 school_preventions = {'masking':0, 'distancing': 0}
 household_preventions = {'masking':0, 'distancing':0}

@@ -1,3 +1,11 @@
+"""
+This is a module for building, simulating, and investigating Pandemic Models.
+Each model is contained within a PopulaceGraph Object, which loads synthetic data sets, and contact matrices, and
+environment lists to construct a weighted graph, where each edge is added to represent the probobality of contagion spreading
+between two nodes. This model keeps a list of all simulations run on it. One may repeat the process of fixing model parameters,
+building the graph, and then running a simulation, in order to call function for plotting multiple simulations against each other.
+"""
+
 import random
 from os import mkdir
 import EoN
@@ -12,9 +20,11 @@ import math
 
 
 
+
+
 class Partitioner:
     """
-    Objects of this class can be used to split a list of people into disjoint sets
+    Objects of this class are useful for using an attribute to process lists of people into disjoint sets.
     """
 
     def __init__(self, attribute, enumerator, labels=None):
@@ -31,21 +41,22 @@ class Partitioner:
 
         self.enumerator = enumerator
         self.attribute = attribute
-        self.names = labels
+        self.labels = labels
         self.attribute_values = dict.fromkeys(set(enumerator.values()))
-        self.num_sets = (len(np.unique(list(enumerator.values()))))
+        self.num_sets = len(np.unique(list(enumerator.values())))
 
     def partitionGroup(self, members, populace):
         """
+        This function returns a list of values for each index of the listed members
+
         :param members: list
-        An list of indexes for the peaple to partition
+        A list of indexes for the peaple to partition
         :param populace:
         A dict associating people to a list of their attributes is required for applying the enumerator
-
         :return: dict
 
         """
-        partitioned_members = {i: [] for i in range(self.num_sets)}
+        partitioned_members = [[] for i in range(self.num_sets)]
         for person in members:
             #determine the number for which group the person belongs in, depending on their attribute
             group = self.enumerator[populace[person][self.attribute]]
@@ -61,8 +72,9 @@ class memberedPartition:
 
 class Environment:
     """
-    Objects to the carry details of every home, workplace, and school
+    Represents a group of people who interact in a particular location, like a home
     """
+
     def __init__(self, index, members, type, preventions = None):
         """
         :param index: int
@@ -115,19 +127,19 @@ class PartitionedEnvironment(Environment):
         #self.total_matrix_contact = contact_matrix.sum()
         self.partition = partitioner.partitionGroup(members, populace)
         for set in self.partition:
-            for person in self.partition[set]:
+            for person in set:
                 self.id_to_partition[person] = (set)
 
     def returnReciprocatedCM(self):
-        '''
-        :return: this function  averages to returs a modified version of the contact matrix where
+        """
+        :return: this function  averages and  returns a modified version of the contact matrix, where
         CM_[i,j]*N[i]= CM_[j,i]*N[j]
-        '''
+        """
 
         cm = self.contact_matrix
         dim = cm.shape
         rm = np.zeros(dim)
-        set_sizes = [len(self.partition[i]) for i in self.partition]
+        set_sizes = [len(set) for set in self.partition]
 
         for i in range(dim[0]):
             for j in range(dim[1]):
@@ -172,9 +184,11 @@ class TransmissionWeighter:
         weight = self.global_weight*self.env_scalars[environment.type]
         #including masks
         if environment.preventions != None:
-            if random.random() < environment.preventions["masking"]:
+            #fix here
+            draw = random.random()
+            if draw < environment.preventions["masking"]:
                 weight = weight * self.prevention_reductions["masking"]
-                if random.random() < environment.preventions["masking"]**2:
+                if draw < environment.preventions["masking"]**2:
                     weight = weight * self.prevention_reductions["masking"]
             #distancing weight reduction
             weight = weight*(1-(1-self.prevention_reductions["distancing"]) * environment.preventions["distancing"])
@@ -183,10 +197,18 @@ class TransmissionWeighter:
 
 class PopulaceGraph:
     """
-    A list of people, environments, and functions need to track a weighted graph to represent contacts between members of the populace
+    A list of people, environments, and functions needed to build
     """
+
     def __init__(self, partition, graph = None, populace = None, attributes = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False):
-        """        
+        """
+        unless a populace is passed as an argument,
+        init needs to be able to load:
+        "people_list_serialized.pkl"
+         ../ContactMatrices/Leon/ContactMatrixWorkplaces.pkl,
+        "../ContactMatrices/Leon/ContactMatrixSchools.pkl"
+         in order to create the necessary list of environments
+
         :param partition: Partitioner
         needed to build schools and workplaces into partitioned environments         
         :param graph: nx.Graph 
@@ -281,9 +303,6 @@ class PopulaceGraph:
                     school = PartitionedEnvironment(index, schools[index], "school", self.populace, school_matrices[index], partition )
                     self.environments[index] = (school)
 
-
-
-
     def build(self, weighter, preventions, env_degrees, alg = None):
         """
         constructs a graph for the objects populace
@@ -291,13 +310,14 @@ class PopulaceGraph:
         :param weighter: TransmissionWeighter
         will be used to determine the graphs weights
         :param preventions: dict
-        :param env_degrees:
-        :param alg:
+        specifies the prevention
+        :param env_degrees: dict
+        :param alg: function
         :return:
         """
-        #None is default so old scripts can still run. self not defined in signature
+        # None is default so old scripts can still run. self not defined in signature
         if alg == None:
-            alg = self.clusterPartitionedStrogatz
+
 
         self.trans_weighter = weighter
         self.preventions = preventions
@@ -392,17 +412,15 @@ class PopulaceGraph:
             alg(environment, self.environment_degrees[environment.type])
 
 
-     def clusterStrogatz(self, environment,  num_edges, weight_scalar = 1, subgroup = None, rewire_p = 0.2):
-         """
-         clusterStrogatz
-
-         :param environment:  environment which needs to be added
-         :param num_edges:
-         :param weight_scalar:
-         :param subgroup:
-         :param rewire_p:
-         :return:
-         """
+    def clusterStrogatz(self, environment,  num_edges, weight_scalar = 1, subgroup = None, rewire_p = 0.2):
+        """
+        :param environment:  environment which needs to be added
+        :param num_edges:
+        :param weight_scalar:
+        :param subgroup:
+        :param rewire_p:
+        :return:
+        """
 
         if subgroup == None:
             members = environment.members
@@ -472,6 +490,7 @@ class PopulaceGraph:
 
 
     #for clusterRandGraph
+    #
     def genRandEdgeList(self, setA, setB, n_edges):
         if n_edges == 0:
             return []
@@ -498,7 +517,7 @@ class PopulaceGraph:
         return list
 
     def clusterRandGraph(self, environment, avg_degree):
-        print("**** Enter clusterRandGraph, created by G. Erlebacher")
+        print("**** Enter clusterRandGraph, an alg by G. Erlebacher")
         # Create graph according to makeGraph, developed by G. Erlebacher (in Julia)
         #G = Gordon()
         #G.makeGraph(N, index_range, cmm)
@@ -570,13 +589,13 @@ class PopulaceGraph:
         :return:
         """
         #to clean up code just a little
-        p_sets = environment.partition
+        partition = environment.partition
         CM = environment.returnReciprocatedCM()
 
         assert isinstance(environment, PartitionedEnvironment), "must be a partitioned environment"
         #a list of the number of people in each partition set
-        p_n = [len(p_sets[i]) for i in p_sets]
-        num_sets = len(p_sets)
+        p_n = [len(set) for set in partition]
+        part_sets = len(partition)
         #get total contact, keeping in mind the contact matrix elements are divided by num people in group
         total_contact = 0
         for i, row in enumerate(CM):
@@ -589,8 +608,8 @@ class PopulaceGraph:
         total_edges = math.floor(avg_degree * environment.population/2)
 
         #for each number between two groups, don't iterate zeros
-        for i in p_sets:
-            for j in range(i, num_sets):
+        for i in range(part_sets):
+            for j in range(i, part_sets):
                 if p_n[j] == 0:
                     continue
                 #get the fraction of contact that should occur between sets i and j
@@ -614,14 +633,14 @@ class PopulaceGraph:
                 #if residual_scalar>2 and sizeA>3:
                     #print("error in environment # {}, it's contacts count for i,j = {} is {}but there are only {} people in that set".format(environment.index, index_i, CM[index_i,index_j], len(environment.partitioned_members[index_i])))
                 if topology == 'random':
-                    edgeList = self.genRandEdgeList(p_sets[i], p_sets[j], num_edges)
+                    edgeList = self.genRandEdgeList(partition[i], partition[j], num_edges)
                     for edge in edgeList:
                         self.addEdge(edge[0], edge[1], environment)
                 else:
                     if i == j:
-                        self.clusterStrogatz(environment, num_edges, weight_scalar =1, subgroup = p_sets[i])
+                        self.clusterStrogatz(environment, num_edges, weight_scalar =1, subgroup = partition[i])
                     else:
-                        self.clusterBipartite(environment, p_sets[i], p_sets[j], num_edges,weight_scalar=1)
+                        self.clusterBipartite(environment, partition[i], partition[j], num_edges,weight_scalar=1)
 
 
 
@@ -786,11 +805,16 @@ class PopulaceGraph:
 
     def plotNodeDegreeHistogram(self, environment = None, layout = 'bars', ax = None, normalized = True):
         """
-        creates a histogram which displays the frequency of degrees for all nodes in the specified environment.
-        :param environment: The environment to plot for. if not specified, a histogram for everyone in the model will be plotted
-        :param layout: if 'lines', a line plot will be generated. otherwise a barplot will be used
-        :param ax: if an pyplot axis is specified, the plot will be added to it. Otherwise, the plot will be shown
-        :param normalized, when true the histogram will display the portion of total
+        Creates a histogram which displays the frequency of degrees for all nodes in the specified environment.
+
+        :param environment: Environment object
+         The environment to plot for. if not specified, a histogram for everyone in the model will be plotted
+        :param layout: string
+         if 'lines', a line plot will be generated. otherwise a barplot will be used
+        :param ax: pyplot Axis object
+        if a pyplot axis is specified, the plot will be added to it. Otherwise, the plot will be displayed
+        :param normalized: bool
+        if True, the bars will represent portion instead of totals
         """
 
         if environment != None:
@@ -814,7 +838,11 @@ class PopulaceGraph:
             plt.plot(range(len(degreeCounts)), degreeCounts)
         else:
             plt.bar(range(len(degreeCounts)), degreeCounts)
-        plt.ylabel("total people")
+        if normalized == True:
+            plt.ylabel("fraction of people")
+        else:
+            plt.ylabel("total people")
+
         plt.xlabel("degree")
         plt.show()
         plt.savefig("./simResults/{}/".format(self.record.stamp))

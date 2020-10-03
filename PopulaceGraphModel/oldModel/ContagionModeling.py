@@ -10,9 +10,33 @@ import matplotlib.pyplot as plt
 import numpy as np
 import json
 import math
-
-
 class TransmissionWeighter:
+    def __init__(self, env_scalars, mask_scalar, env_masking, name ='default'):#, loc_masking):
+        self.name = name
+        self.global_weight = 1
+        self.mask_scalar = mask_scalar
+        self.env_masking = env_masking
+        self.env_scalars = env_scalars
+
+        #self.loc_masking = loc_masking
+        #self.age_scalars = age_scalars
+
+    def getWeight(self, personA, personB, env, masking):
+        masking = self.env_masking[env]
+        weight = self.global_weight
+        try:
+            weight = weight*self.env_scalars[env]
+        except:
+            print("locale type not identified")
+
+        if (masking != 0):
+            if random.random()<masking:
+                weight = weight*self.mask_scalar
+        if masking != None:
+            if random.random()<masking:
+                weight = weight*self.mask_scalar
+        return weight
+
     def genMaskScalar(self, mask_p):
         if random.random() < mask_p:
             mask_scalar = self.trans_weighter.mask_scalar
@@ -38,28 +62,6 @@ class TransmissionWeighter:
         string += json.dumps(self.env_scalars)
         return string
 
-class Partition:
-    def __init__(self, members, populace, attribute, enumerator, contact_matrix, group_names = None):
-        self.members = members
-        self.attribute = attribute
-        self.enumerator = enumerator
-        self.num_groups = len(enumerator)
-        self.group_names = group_names
-        self.contact_matrix = contact_matrix
-        self.partition = dict.fromkeys(set(enumerator.values()))
-        self.id_to_partition = dict.fromkeys(members)
-
-        for person in members:
-            #determine the number for which group the person belongs in, depending on their attribute
-            group = enumerator[populace[person][attribute]]
-            #add person to  to dict in group
-            self.partition[group].append(person)
-
-        for group in self.partition:
-            for person in group:
-                self.id_to_partition[person]= group
-
-    pass
 
 class PopulaceGraph:
     def __init__(self, weighter, environment_degrees, environment_masking =  {'work': 0, 'school':0}, graph = None, populace = None, pops_by_category = None, categories = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False):
@@ -288,39 +290,39 @@ class PopulaceGraph:
                 self.total_weight+=weight
                 self.graph.add_edge(nodeA, nodeB, transmission_weight=weight, environment=env)
 
-            def clusterBipartite(self, members_A, members_B, edge_count, weight, p_random=0.1):
-                # reorder groups by size
-                A = min(members_A, members_B, key=len)
-                if A == members_A:
-                    B = members_B
+    def clusterBipartite(self, members_A, members_B, edge_count, weight, p_random = 0.1):
+        #reorder groups by size
+        A = min(members_A, members_B, key = len)
+        if A == members_A:
+            B = members_B
+        else:
+            B = members_A
+        size_A = len(A)
+        size_B = len(B)
+
+        if members_A*members_B > edge_count:
+            print("warning, not enough possible edges for cluterBipartite")
+
+        #distance between edge groups
+        separation = int(math.ceil(size_B/size_A))
+
+        #size of edge groups and remaining edges
+        k = edge_count//size_A
+        remainder = edge_count%size_A
+        p_random = max(0, p_random - remainder/edge_count)
+
+        for i in range(size_A):
+            begin_B_edges = (i * separation - k // 2)%size_B
+
+            for j in range(k):
+                if random.random()>p_random:
+                    B_side = (begin_B_edges +j)%size_B
+                    self.graph.add_edge(A[i], B[B_side], transmission_weight=weight)
                 else:
-                    B = members_A
-                size_A = len(A)
-                size_B = len(B)
-
-                if members_A * members_B > edge_count:
-                    print("warning, not enough possible edges for cluterBipartite")
-
-                # distance between edge groups
-                separation = int(math.ceil(size_B / size_A))
-
-                # size of edge groups and remaining edges
-                k = edge_count // size_A
-                remainder = edge_count % size_A
-                p_random = max(0, p_random - remainder / edge_count)
-
-                for i in range(size_A):
-                    begin_B_edges = (i * separation - k // 2) % size_B
-
-                    for j in range(k):
-                        if random.random() > p_random:
-                            B_side = (begin_B_edges + j) % size_B
-                            self.graph.add_edge(A[i], B[B_side], transmission_weight=weight)
-                        else:
-                            self.graph.add_edge(random.choice(A), random.choice(B))
-
-                for i in range(remainder):
                     self.graph.add_edge(random.choice(A), random.choice(B))
+
+        for i in range(remainder):
+            self.graph.add_edge(random.choice(A), random.choice(B))
 
             #don't for get to add remainder edges too
 
@@ -385,11 +387,11 @@ class PopulaceGraph:
                 N[iPartition, jPartition] += self.getInfectionProb(weight,beta,gamma)/iMemberCount
         return N
 
-    def clusterGroups(self, environment, clusterAlg, masking, params=None, weight = None):
+    def clusterGroups(self, environment, clusterAlg, masking, params=None):
         #self.record.print("clustering {} groups with the {} algorithm".format(classifier, clusterAlg.__name__))
         start = time.time()
         # # stats = {"classifier": }
-        env_to_category = {"household": "sp_hh_id", "work": "work_id", "school": "school_id"}
+        env_to_category = {"household": "sp_hh_id", "work":"work_id", "school": "school_id"}
         groups = self.pops_by_category[env_to_category[environment]]
         group_count = len(groups)
 
@@ -398,12 +400,11 @@ class PopulaceGraph:
             if key == None:
                 continue
             group = groups[key]
-        clusterAlg(group, environment,  masking, params, w = weight)
+            clusterAlg(group, environment, masking, params)
 
         weights_added = self.graph.size() - initial_weights
         stop = time.time()
         self.record.print("{} weights added for {} environments in {} seconds".format(weights_added, len(self.pops_by_category[env_to_category[environment]].keys()), stop - start))
-
 
     def build(self, clusteringAlg, params=None, exemption=None, masking = {'schools': None, 'workplaces': None}):
         self.record.print('\n')
@@ -415,9 +416,9 @@ class PopulaceGraph:
         self.clusterGroups('household', self.clusterDense, None)
         #cluster schools and workplaces with specified clustering alg
         if exemption != 'workplaces':
-            self.clusterGroups('work', clusteringAlg, self.environment_masking['work'], [self.environment_degrees['work'], 0.5])
+            self.clusterGroups('work', self.clusterStrogatz, self.environment_masking['work'], [self.environment_degrees['work'], 0.5])
         if exemption != 'schools':
-            self.clusterGroups('school', clusteringAlg, self.environment_masking['school'], [self.environment_degrees['school'], 0.5])
+            self.clusterGroups('school', self.clusterStrogatz, self.environment_masking['school'], [self.environment_degrees['school'], 0.5])
         stop_a = time.time()
         #self.record.print("Graph completed in {} seconds.".format((stop_a -
         self.isBuilt = True

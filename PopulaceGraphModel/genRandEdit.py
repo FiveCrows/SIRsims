@@ -814,7 +814,9 @@ class Gordon:
 
                 if Vi == Vj and Nij > nbe:
                     Nij = nbe
-    
+                if i == j:
+                    Nij = Nij / 2
+
                 count = 0
     
                 while True:
