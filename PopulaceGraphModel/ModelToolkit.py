@@ -295,6 +295,7 @@ class PopulaceGraph:
         :param alg:
         :return:
         """
+        start_time = time.time()
         #None is default so old scripts can still run. self not defined in signature
         if alg == None:
             alg = self.clusterPartitionedStrogatz
@@ -311,6 +312,35 @@ class PopulaceGraph:
             environment.preventions = preventions[environment.type]
             self.addEnvironment(environment, alg)
         self.isBuilt = True
+        finish_time = time.time()
+        print("build took {} seconds to finish".format(finish_time-start_time))
+    def reweight(self, weighter, preventions):
+        """
+        Rechooses the weights on each edge with, presumably, new arguments
+
+        :param weighter: Transmission_weighter
+        :param preventions: dict
+        :param env_degrees: dict
+        :param alg: function
+        :return:
+        """
+        start_time = time.time()
+        self.trans_weighter = weighter
+        self.preventions = preventions
+
+        #update new prevention strategies on each environment
+        for index in self.environments:
+            environment = self.environments[index]
+            environment.preventions = preventions[environment.type]
+
+        #pick and replace weights for each environment
+        for edge in self.graph.edges():
+            #get environment
+            environment = self.environments[self.graph.adj[edge[0]][edge[1]]['environment']]
+            new_weight = weighter.getWeight(edge[0], edge[1], environment)
+            self.graph.adj[edge[0]][edge[1]]['transmission_weight'] = new_weight
+        finish_time = time.time()
+        print("graph has been reweighted in {} seconds".format(finish_time-start_time))
 
     def addEdge(self, nodeA, nodeB, environment, weight_scalar = 1):
         '''
@@ -330,7 +360,7 @@ class PopulaceGraph:
         weight = self.trans_weighter.getWeight(nodeA, nodeB, environment)*weight_scalar
         self.total_weight += weight
         self.total_edges += 1
-        self.graph.add_edge(nodeA, nodeB, transmission_weight = weight)
+        self.graph.add_edge(nodeA, nodeB, transmission_weight = weight, environment = environment.index)
 
     #merge environments, written for plotting and exploration
     def returnMultiEnvironment(self, env_indexes, partition):
@@ -392,8 +422,8 @@ class PopulaceGraph:
             alg(environment, self.environment_degrees[environment.type])
 
 
-     def clusterStrogatz(self, environment,  num_edges, weight_scalar = 1, subgroup = None, rewire_p = 0.2):
-         """
+    def clusterStrogatz(self, environment,  num_edges, weight_scalar = 1, subgroup = None, rewire_p = 0.2):
+        """
          clusterStrogatz
 
          :param environment:  environment which needs to be added
@@ -402,7 +432,7 @@ class PopulaceGraph:
          :param subgroup:
          :param rewire_p:
          :return:
-         """
+        """
 
         if subgroup == None:
             members = environment.members
@@ -731,7 +761,7 @@ class PopulaceGraph:
 
     def simulate(self, gamma, tau, simAlg = EoN.fast_SIR, title = None, full_data = True):
         start = time.time()
-        simResult = simAlg(self.graph, gamma, tau, rho=0.001, transmission_weight='transmission_weight', return_full_data=full_data)
+        simResult = simAlg(self.graph, tau, gamma, rho=0.001, transmission_weight='transmission_weight', return_full_data=full_data)
         stop = time.time()
         self.record.print("simulation completed in {} seconds".format(stop - start))
 
