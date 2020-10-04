@@ -874,6 +874,11 @@ class PopulaceGraph:
         start = time.time()
         # Bryan had the arguments reversed. 
         simResult = simAlg(self.graph, tau, gamma, rho=0.001, transmission_weight='transmission_weight', return_full_data=full_data)
+        sr = simResult
+        SIR_results = {'S':sr.S(), 'I':sr.I(), 'R':sr.R(), 't':sr.t()}
+        print("SIR_results= ", SIR_results)
+
+
         stop = time.time()
         self.record.print("simulation completed in {} seconds".format(stop - start))
 
@@ -884,7 +889,38 @@ class PopulaceGraph:
         #percent_uninfected = final_uninfected / (final_uninfected + final_recovered)
         #self.record.last_runs_percent_uninfected = percent_uninfected
         #self.record.print("The infection quit spreading after {} days, and {} of people were never infected".format(time_to_immunity,percent_uninfected))
+
+        # Do all this in Record class?  (GE)
+        data = {}
+        data['sim_results'] = SIR_results
+        data['title'] = title
+        data['params'] = {'gamma':gamma, 'tau=':tau}, 
+        data['preventions'] = preventions
+
         self.sims.append([simResult, title, [gamma, tau], preventions])
+
+        self.stamp = datetime.now().strftime("%m_%d_%H_%M_%S")
+        mkdir("./simResults/{}".format(self.stamp))
+        log_txt = open("./simResults/{}/log.txt".format(self.stamp), "w+")
+        
+        x = datetime.now().strftime("%Y-%m-%d,%I.%Mpm")
+        filename = "title=%s, gamma=%s, tau=%s, %s" % (title, gamma, tau, x)
+        self.saveResults("./simResults/" + filename, data)
+        quit()
+
+    #-------------------------------------------
+    def saveResults(self, filename, data_dict):
+        """
+        :param filename: string
+        File to save results to
+        :param data_dict: dictionary
+        Save SIR traces, title, [gamma, tau], preventions
+        # save simulation results and metadata to filename
+        """
+        print("filename= ", filename)
+ 
+        with open(filename, "wb") as pickle_file:
+            pickle.dump(data_dict, pickle_file)
 
     #-------------------------------------------
     def returnContactMatrix(self, environment):

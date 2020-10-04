@@ -47,7 +47,7 @@ enumerator.update({i:15 for i in range(75,100)})
 
 trans_weighter = TransmissionWeighter(default_env_scalars, prevention_reductions)
 partition      = Partitioner('age', enumerator, names)
-model          = PopulaceGraph(partition, slim = False)
+model          = PopulaceGraph(partition, slim = True)
 
 # Create Graph
 model.build(trans_weighter, preventions, env_degrees)
@@ -59,21 +59,21 @@ pass
 
 #-----
 # Run SIR simulation
-model.simulate(tau, gamma, title = 'base-test', preventions=preventions)
+model.simulate(gamma, tau, title = 'base-test', preventions=preventions)
 
 #-----
 with_distancing = copy.deepcopy(preventions)
 with_distancing['workplace']['distancing'] = 1
 with_distancing['school']['distancing'] = 1
 model.reweight(trans_weighter, with_distancing)
-model.simulate(tau, gamma, title='school and workplace distancing', preventions=preventions)
+model.simulate(gamma, tau, title='school and workplace distancing', preventions=preventions)
 
 #-----
 with_distancing = copy.deepcopy(preventions)
 model.reweight(trans_weighter, with_distancing)
 # zero out weights after the weights have been recomputed
 model.zeroWeights('school')   # close the schools
-model.simulate(tau, gamma, title='schools closed', preventions=preventions)
+model.simulate(gamma, tau, title='schools closed', preventions=preventions)
 
 #-----
 with_distancing = copy.deepcopy(preventions)
@@ -81,7 +81,7 @@ with_distancing['workplace']['masking'] = 1
 model.zeroWeights('school')   # close the schools
 model.reweight(trans_weighter, with_distancing)
 #model.zeroWeights('school')   # close the schools
-model.simulate(tau, gamma, title='schools closed, and workplaces masked', preventions=preventions)
+model.simulate(gamma, tau, title='schools closed, and workplaces masked', preventions=preventions)
 
 
 #-----------------------------------------
