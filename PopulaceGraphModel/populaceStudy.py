@@ -30,8 +30,7 @@ model.simulate(gamma, tau, title = 'base-test')
 
 school_masks = copy.deepcopy(preventions)
 school_masks['school']['masking'] = 1
-model.reweight(trans_weighter, school_masks)
-model.simulate(gamma, tau, title = 'in-school masks')
+
 pass
 
 with_distancing = copy.deepcopy(preventions)
