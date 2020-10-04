@@ -270,7 +270,7 @@ class PopulaceGraph:
         self.total_edges = 0
         self.total_weight = 0
         self.environments_added = 0
-        self.edge_envs = {}  # keep track of the environment associated with each edge
+        #self.edge_envs = {}  # keep track of the environment associated with each edge
 
         # What is this for? 
         if partition != None:
@@ -377,6 +377,7 @@ class PopulaceGraph:
 
     #----------------------------------
     def reassignWeights(self):
+        """
         weights = {}
         weight_scalar = 1.   # Bryan: is weight_scalar ever different from 1? 
         keys = list(self.environments.keys())
@@ -389,8 +390,38 @@ class PopulaceGraph:
                 #print("edge_envs: ", self.edge_envs[(e[1],e[0])] )
                 env = self.edge_envs[(e[1],e[0])]
             self.addEdge(e[0], e[1], env, weight_scalar)
+        """
 
     #---------------------------------
+    def reweight(self, weighter, preventions, alg = None):
+        """
+        Recomputes the weights on each edge using with, presumably new, arguments
+
+        :param weighter:
+        :param preventions:
+        :param env_degrees:
+        :param alg:
+        :return:
+        """
+        start_time = time.time()
+        self.trans_weighter = weighter
+        self.preventions = preventions
+
+        #update new prevention strategies on each environment
+        for index in self.environments:
+            environment = self.environments[index]
+            environment.preventions = preventions[environment.type]
+
+        #pick and replace weights for each environment
+        for edge in self.graph.edges():
+            #get environment
+            environment = self.environments[self.graph.adj[edge[0]][edge[1]]['environment']]
+            new_weight = weighter.getWeight(edge[0], edge[1], environment)
+            self.graph.adj[edge[0]][edge[1]]['transmission_weight'] = new_weight
+        finish_time = time.time()
+        print("graph has been reweighted in {} seconds".format(finish_time-start_time))
+
+    #------------------------------------------[
     def addEdge(self, nodeA, nodeB, environment, weight_scalar = 1):
         '''
         fThis helper function  not only makes it easier to track
@@ -411,7 +442,7 @@ class PopulaceGraph:
         self.total_edges += 1
         self.graph.add_edge(nodeA, nodeB, transmission_weight = weight)
         #print("nodes: ", nodeA, nodeB)
-        self.edge_envs[(nodeA, nodeB)] = environment
+        #self.edge_envs[(nodeA, nodeB)] = environment
 
     #merge environments, written for plotting and exploration
     def returnMultiEnvironment(self, env_indexes, partition):

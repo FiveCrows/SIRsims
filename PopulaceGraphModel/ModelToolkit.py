@@ -314,6 +314,8 @@ class PopulaceGraph:
         self.isBuilt = True
         finish_time = time.time()
         print("build took {} seconds to finish".format(finish_time-start_time))
+
+    #-----------------------------------
     def reweight(self, weighter, preventions, alg = None):
         """
         Rechooses the weights on each edge using with, presumably new, arguments

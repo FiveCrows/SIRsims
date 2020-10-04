@@ -51,30 +51,34 @@ model          = PopulaceGraph( partition, slim = False)
 # Create Graph
 model.build(trans_weighter, preventions, env_degrees)
 # Run SIR simulation
-model.simulate(gamma, tau, title = 'base-test')
+model.simulate(tau, gamma, title = 'base-test')
 
 school_masks = copy.deepcopy(preventions)
 school_masks['school']['masking'] = 1
 #model.build(trans_weighter, school_masks, env_degrees)
-model.reassignWeights()
-model.simulate(gamma, tau, title = 'in-school masks')
+#model.reassignWeights()  # GE version
+model.reweight(trans_weighter, preventions) #BA version
+model.simulate(tau, gamma, title = 'in-school masks')
 pass
 
 with_distancing = copy.deepcopy(preventions)
 with_distancing['workplace']['distancing'] = 1
+
 #model.build(trans_weighter, with_distancing, env_degrees)
-model.reassignWeights()
-model.simulate(gamma, tau, title = 'school and workplace distancing')
-quit()
+model.reweight(trans_weighter, preventions) #BA version
+model.simulate(tau, gamma, title = 'school and workplace distancing')
 
 env_degrees['school'] = 0
-model.build(trans_weighter, preventions, env_degrees)
-model.simulate(gamma, tau, title = 'schools closed')
+#model.build(trans_weighter, preventions, env_degrees)
+model.reweight(trans_weighter, preventions) #BA version
+model.simulate(tau, gamma, title = 'schools closed')
 
 preventions['workplace']['masking'] = 1
-model.build(trans_weighter, preventions, env_degrees)
-model.simulate(gamma, tau, title = 'schools closed, and workplaces masked')
+#model.build(trans_weighter, preventions, env_degrees)
+model.reweight(trans_weighter, preventions) #BA version
+model.simulate(tau, gamma, title = 'schools closed, and workplaces masked')
 
+# Simulations ended
 globalMultiEnvironment = model.returnMultiEnvironment(model.environments.keys(), partition)
 largestWorkplace = model.environments[505001334]
 largestSchool = model.environments[450059802]

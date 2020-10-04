@@ -17,7 +17,7 @@ enumerator = {i:i//5 for i in range(75)}
 enumerator.update({i:15 for i in range(75,100)})
 names = ["{}:{}".format(5 * i, 5 * (i + 1)) for i in range(15)]
 partition = Partitioner('age', enumerator, names)
-model = PopulaceGraph( partition, slim = True)
+model = PopulaceGraph( partition, slim = False)
 
 model.build(trans_weighter, preventions, env_degrees)
 model.simulate(gamma, tau, title = 'base-test')
