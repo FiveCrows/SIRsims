@@ -231,20 +231,22 @@ class PopulaceGraph:
         else:
             self.populace = ({key: (vars(x[key])) for key in x})  # .transpose()
         self.population = len(self.populace)
-
+        if True:
         # for sorting people into categories
         # takes a dict of dicts to rep resent populace and returns a list of dicts of lists to represent groups of people with the same
         # attributes
 
-        pops_by_category = {category: {} for category in attributes}
-        #pops_by_category{'populace'} = []
-        for person in self.populace:
-            for category in attributes:
-                try:
-                    pops_by_category[category][self.populace[person][category]].append(person)
-                except:
-                    pops_by_category[category][self.populace[person][category]] = [person]
-        self.pops_by_category = pops_by_category
+            pops_by_category = {category: {} for category in attributes}
+            #pops_by_category{'populace'} = []
+            for person in self.populace:
+                for category in attributes:
+                    try:
+                        pops_by_category[category][self.populace[person][category]].append(person)
+                    except:
+                        pops_by_category[category][self.populace[person][category]] = [person]
+            self.pops_by_category = pops_by_category
+        else:
+            self.pops_by_category = pops_by_category
 
         #list households:
 
@@ -280,7 +282,8 @@ class PopulaceGraph:
                     self.environments[index] = (school)
 
 
-    #---------------------------------------
+
+
     def build(self, weighter, preventions, env_degrees, alg = None):
         """
         constructs a graph for the objects populace
@@ -292,6 +295,7 @@ class PopulaceGraph:
         :param alg:
         :return:
         """
+        start_time = time.time()
         #None is default so old scripts can still run. self not defined in signature
         if alg == None:
             alg = self.clusterPartitionedStrogatz
@@ -308,7 +312,35 @@ class PopulaceGraph:
             environment.preventions = preventions[environment.type]
             self.addEnvironment(environment, alg)
         self.isBuilt = True
+        finish_time = time.time()
+        print("build took {} seconds to finish".format(finish_time-start_time))
+    def reweight(self, weighter, preventions, alg = None):
+        """
+        Rechooses the weights on each edge using with, presumably new, arguments
 
+        :param weighter:
+        :param preventions:
+        :param env_degrees:
+        :param alg:
+        :return:
+        """
+        start_time = time.time()
+        self.trans_weighter = weighter
+        self.preventions = preventions
+
+        #update new prevention strategies on each environment
+        for index in self.environments:
+            environment = self.environments[index]
+            environment.preventions = preventions[environment.type]
+
+        #pick and replace weights for each environment
+        for edge in self.graph.edges():
+            #get environment
+            environment = self.environments[self.graph.adj[edge[0]][edge[1]]['environment']]
+            new_weight = weighter.getWeight(edge[0], edge[1], environment)
+            self.graph.adj[edge[0]][edge[1]]['transmission_weight'] = new_weight
+        finish_time = time.time()
+        print("graph has been reweighted in {} seconds".format(finish_time-start_time))
 
     def addEdge(self, nodeA, nodeB, environment, weight_scalar = 1):
         '''
@@ -328,7 +360,7 @@ class PopulaceGraph:
         weight = self.trans_weighter.getWeight(nodeA, nodeB, environment)*weight_scalar
         self.total_weight += weight
         self.total_edges += 1
-        self.graph.add_edge(nodeA, nodeB, transmission_weight = weight)
+        self.graph.add_edge(nodeA, nodeB, transmission_weight = weight, environment = environment.index)
 
     #merge environments, written for plotting and exploration
     def returnMultiEnvironment(self, env_indexes, partition):
@@ -729,7 +761,7 @@ class PopulaceGraph:
 
     def simulate(self, gamma, tau, simAlg = EoN.fast_SIR, title = None, full_data = True):
         start = time.time()
-        simResult = simAlg(self.graph, gamma, tau, rho=0.001, transmission_weight='transmission_weight', return_full_data=full_data)
+        simResult = simAlg(self.graph, tau, gamma, rho=0.001, transmission_weight='transmission_weight', return_full_data=full_data)
         stop = time.time()
         self.record.print("simulation completed in {} seconds".format(stop - start))
 
@@ -771,10 +803,8 @@ class PopulaceGraph:
         contact_matrix = self.returnContactMatrix(p_env)
         plt.imshow(contact_matrix)
         plt.title("Contact Matrix for members of {} # {}".format(p_env.type, p_env.index))
-
-        try:
-            labels = p_env.partitioner.labels
-        except:
+        labels = p_env.partitioner.labels
+        if labels == None:
             labels = ["{}-{}".format(5 * i, (5 * (i + 1))-1) for i in range(15)]
         axisticks= list(range(15))
         plt.xticks(axisticks, labels, rotation= 'vertical')
