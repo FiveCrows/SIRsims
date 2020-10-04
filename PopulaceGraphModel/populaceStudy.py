@@ -35,15 +35,15 @@ pass
 
 with_distancing = copy.deepcopy(preventions)
 with_distancing['workplace']['distancing'] = 1
-model.build(trans_weighter, with_distancing, env_degrees)
+model.reweight(trans_weighter, with_distancing)
 model.simulate(gamma, tau, title = 'school and workplace distancing')
 
 env_degrees['school'] = 0
-model.build(trans_weighter, preventions, env_degrees)
+model.reweight(trans_weighter, with_distancing)
 model.simulate(gamma, tau, title = 'schools closed')
 
 preventions['workplace']['masking'] = 1
-model.build(trans_weighter, preventions, env_degrees)
+model.reweight(trans_weighter, with_distancing)
 model.simulate(gamma, tau, title = 'schools closed, and workplaces masked')
 
 globalMultiEnvironment = model.returnMultiEnvironment(model.environments.keys(), partition)

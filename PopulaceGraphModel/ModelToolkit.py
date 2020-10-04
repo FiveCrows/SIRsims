@@ -316,12 +316,12 @@ class PopulaceGraph:
         print("build took {} seconds to finish".format(finish_time-start_time))
     def reweight(self, weighter, preventions):
         """
-        Rechooses the weights on each edge using with, presumably new, arguments
+        Rechooses the weights on each edge with, presumably, new arguments
 
-        :param weighter:
-        :param preventions:
-        :param env_degrees:
-        :param alg:
+        :param weighter: Transmission_weighter
+        :param preventions: dict
+        :param env_degrees: dict
+        :param alg: function
         :return:
         """
         start_time = time.time()
