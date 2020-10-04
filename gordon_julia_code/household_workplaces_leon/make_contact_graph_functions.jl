@@ -97,10 +97,14 @@ function makeGraph(N, index_range::Tuple, cmm)
     for i in lo:hi
         for j in lo:i
             ddict = Dict()
-            Nij = Int64(floor(N[i] * cmm[i,j]))
-            #println("i,j= $i, $j,  Nij= $Nij")
 
             if Nij == 0 continue end
+
+            if i == j
+                Nij = Int64(floor(0.5*N[i] * cmm[i,j]))
+            else
+                Nij = Int64(floor(N[i] * cmm[i,j]))
+            end
 
             total_edges += Nij
             Vi = cum_N[i]+1:cum_N[i+1]
@@ -209,9 +213,14 @@ function makeBipartite(N1, N2, C12, C21)
     for i in lo:hi
         for j in lo:i
             ddict = Dict()
-            Nij = Int64(floor(N[i] * cmm[i,j]))
 
             if Nij == 0 continue end
+
+            if i == j
+                Nij = Int64(floor(0.5*N[i] * cmm[i,j]))
+            else
+                Nij = Int64(floor(N[i] * cmm[i,j]))
+            end
 
             total_edges += Nij
             Vi = cum_N[i]+1:cum_N[i+1]
