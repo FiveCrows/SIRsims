@@ -31,7 +31,7 @@ class Partitioner:
 
         self.enumerator = enumerator
         self.attribute = attribute
-        self.names = labels
+        self.labels = labels
         self.attribute_values = dict.fromkeys(set(enumerator.values()))
         self.num_sets = (len(np.unique(list(enumerator.values()))))
 
@@ -41,7 +41,6 @@ class Partitioner:
         An list of indexes for the peaple to partition
         :param populace:
         A dict associating people to a list of their attributes is required for applying the enumerator
-
         :return: dict
 
         """
@@ -83,6 +82,22 @@ class Environment:
         self.preventions = None
         self.population = len(members)
        # self.distancing = distancing
+
+    def drawMasks(self):
+        '''
+        creates a dict linking each member of the environment with a mask
+        :param p: the proportion of people with masks
+        :return:
+        '''
+
+        # assign masks
+        if self.preventions == None:
+            num_masks = 0
+        else:
+            num_masks = int(self.population * self.preventions["masking"])
+        mask_status = [1] * num_masks + [0] * (self.population - num_masks)
+        random.shuffle(mask_status)
+        self.mask_status = dict(zip(self.members, mask_status))
 
 
 class PartitionedEnvironment(Environment):
@@ -162,9 +177,9 @@ class TransmissionWeighter:
         """
         Uses the environments type and preventions to deternmine weight
         :param personA: int
-        currently unused
+
         :param personB: int
-        currently unused
+
         :param environment: environment
          the shared environment of two nodes for the weight
         :return:
@@ -172,12 +187,11 @@ class TransmissionWeighter:
         weight = self.global_weight*self.env_scalars[environment.type]
         #including masks
         if environment.preventions != None:
-            if random.random() < environment.preventions["masking"]:
-                weight = weight * self.prevention_reductions["masking"]
-                if random.random() < environment.preventions["masking"]**2:
-                    weight = weight * self.prevention_reductions["masking"]
-            #distancing weight reduction
+            n_masks = (environment.mask_status[personA] + environment.mask_status[personB])
+            weight = weight*self.prevention_reductions["masking"]**n_masks
+            #distancing weight reduction of form (1-(1-c)*p)
             weight = weight*(1-(1-self.prevention_reductions["distancing"]) * environment.preventions["distancing"])
+
         return weight
 
 
@@ -288,11 +302,14 @@ class PopulaceGraph:
         """
         constructs a graph for the objects populace
         this model is built to use 
-        :param weighter: TransmissionWeighter
+        :param weighter: TransmissionWeighter object
         will be used to determine the graphs weights
         :param preventions: dict
-        :param env_degrees:
-        :param alg:
+        should associate each environment type to another dict, which associates each prevention to a prevalence
+        :param env_degrees: dict
+         a dict of degrees for each environment type. Can be None
+        :param alg: function
+         the algorithm to use for choosing edges
         :return:
         """
         start_time = time.time()
@@ -308,20 +325,20 @@ class PopulaceGraph:
         #start = time.time()
         self.graph = nx.Graph()
         for index in self.environments:
+            #assign preventions and masks
             environment = self.environments[index]
-            environment.preventions = preventions[environment.type]
             self.addEnvironment(environment, alg)
         self.isBuilt = True
         finish_time = time.time()
         print("build took {} seconds to finish".format(finish_time-start_time))
     def reweight(self, weighter, preventions):
         """
-        Rechooses the weights on each edge with, presumably, new arguments
-
-        :param weighter: Transmission_weighter
+        Rechooses the weights on each edge with, presumably, a distinct weighter or preventions
+        :param weighter: TransmissionWeighter object
+        will be used to determine the graphs weights
         :param preventions: dict
-        :param env_degrees: dict
-        :param alg: function
+        should associate each environment type to another dict, which associates each prevention to a prevalence
+
         :return:
         """
         start_time = time.time()
@@ -331,7 +348,7 @@ class PopulaceGraph:
         #update new prevention strategies on each environment
         for index in self.environments:
             environment = self.environments[index]
-            environment.preventions = preventions[environment.type]
+            environment.drawMasks()
 
         #pick and replace weights for each environment
         for edge in self.graph.edges():
@@ -402,7 +419,7 @@ class PopulaceGraph:
     def addEnvironment(self, environment, alg):
         """
         This function iterates over the models list of environment and networks them one by one
-        by calling clusterDense, every edge in everyhousehold will be added to the model. However,
+        by calling clusterDense, every edge in every household will be added to the model. However,
         the edges for the other, partitioned environments, alg, which must a function, must
         be able to determine how to build he network, and along with the environment, the alg will also be passed a value
         which specify what avg node degree it should produce
@@ -419,6 +436,9 @@ class PopulaceGraph:
         else:
             # the graph is computed according to contact matrix of environment
             # self.clusterPartitionedStrogatz(environment, self.environment_degrees[environment.type])
+            preventions = self.preventions[environment.type]
+            environment.preventions = preventions
+            environment.drawMasks()
             alg(environment, self.environment_degrees[environment.type])
 
 
@@ -603,9 +623,10 @@ class PopulaceGraph:
         p_sets = environment.partition
         CM = environment.returnReciprocatedCM()
 
+
         assert isinstance(environment, PartitionedEnvironment), "must be a partitioned environment"
         #a list of the number of people in each partition set
-        p_n = [len(p_sets[i]) for i in p_sets]
+        p_n      = [len(p_sets[i]) for i in p_sets]
         num_sets = len(p_sets)
         #get total contact, keeping in mind the contact matrix elements are divided by num people in group
         total_contact = 0

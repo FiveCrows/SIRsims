@@ -4,7 +4,7 @@ import copy
 mask_scalar = 0.3
 default_env_scalars = {"school": 0.3, "workplace": 0.3, "household": 1}
 env_degrees = {'workplace': 15, 'school': 13}
-default_env_masking = {'workplace': 0, 'school':0, 'household': 0}
+#default_env_masking = {'workplace': 0.3, 'school':0.3, 'household': 0}
 workplace_preventions = {'masking': 0, 'distancing': 0}
 school_preventions = {'masking':0, 'distancing': 0}
 household_preventions = {'masking':0, 'distancing':0}
