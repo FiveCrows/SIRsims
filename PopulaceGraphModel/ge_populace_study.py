@@ -1,4 +1,4 @@
-from ge_ModelToolkit import *
+from ge_modelingToolkit import *
 import copy
 # plot chance of infection
 
@@ -12,12 +12,13 @@ default_env_masking   = {'workplace': 0, 'school':0, 'household': 0}
 workplace_preventions = {'masking': 0, 'distancing': 0}
 school_preventions    = {'masking':0, 'distancing': 0}
 household_preventions = {'masking':0, 'distancing':0}
+# Dictionary of dictionaries
 preventions           = {'workplace': workplace_preventions, 'school': school_preventions, 'household': household_preventions}
 prevention_reductions = {'masking': 0.1722, 'distancing': 0.2071}# dustins values
 # https://epidemicsonnetworks.readthedocs.io/en/latest/functions/EoN.fast_SIR.html
 # Argument to EoN.fast_SIR(G, tau, gamma, initial_infecteds=None,
-gamma                 = 0.2  # Recovery rate per edge (EoN.fast_SIR)
-tau                   = 0.2  # Transmission rate per node (EoN.fast_SIR) (also called beta in the literature)
+gamma                 = 0.1  # Recovery rate per edge (EoN.fast_SIR)
+tau                   = 0.1  # Transmission rate per node (EoN.fast_SIR) (also called beta in the literature)
 
 # https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7254020/
 #  Provided by Derek. No sueful data. 
@@ -46,38 +47,44 @@ enumerator.update({i:15 for i in range(75,100)})
 
 trans_weighter = TransmissionWeighter(default_env_scalars, prevention_reductions)
 partition      = Partitioner('age', enumerator, names)
-model          = PopulaceGraph( partition, slim = False)
+model          = PopulaceGraph(partition, slim = True)
 
 # Create Graph
 model.build(trans_weighter, preventions, env_degrees)
-# Run SIR simulation
-model.simulate(tau, gamma, title = 'base-test')
 
 school_masks = copy.deepcopy(preventions)
 school_masks['school']['masking'] = 1
-#model.build(trans_weighter, school_masks, env_degrees)
-#model.reassignWeights()  # GE version
-model.reweight(trans_weighter, preventions) #BA version
-model.simulate(tau, gamma, title = 'in-school masks')
+
 pass
 
+#-----
+# Run SIR simulation
+model.simulate(gamma, tau, title = 'base-test', preventions=preventions)
+
+#-----
 with_distancing = copy.deepcopy(preventions)
 with_distancing['workplace']['distancing'] = 1
+with_distancing['school']['distancing'] = 1
+model.reweight(trans_weighter, with_distancing)
+model.simulate(gamma, tau, title='school and workplace distancing', preventions=preventions)
 
-#model.build(trans_weighter, with_distancing, env_degrees)
-model.reweight(trans_weighter, preventions) #BA version
-model.simulate(tau, gamma, title = 'school and workplace distancing')
+#-----
+with_distancing = copy.deepcopy(preventions)
+model.reweight(trans_weighter, with_distancing)
+# zero out weights after the weights have been recomputed
+model.zeroWeights('school')   # close the schools
+model.simulate(gamma, tau, title='schools closed', preventions=preventions)
 
-env_degrees['school'] = 0
-#model.build(trans_weighter, preventions, env_degrees)
-model.reweight(trans_weighter, preventions) #BA version
-model.simulate(tau, gamma, title = 'schools closed')
+#-----
+with_distancing = copy.deepcopy(preventions)
+with_distancing['workplace']['masking'] = 1    
+model.zeroWeights('school')   # close the schools
+model.reweight(trans_weighter, with_distancing)
+#model.zeroWeights('school')   # close the schools
+model.simulate(gamma, tau, title='schools closed, and workplaces masked', preventions=preventions)
 
-preventions['workplace']['masking'] = 1
-#model.build(trans_weighter, preventions, env_degrees)
-model.reweight(trans_weighter, preventions) #BA version
-model.simulate(tau, gamma, title = 'schools closed, and workplaces masked')
 
+#-----------------------------------------
 # Simulations ended
 globalMultiEnvironment = model.returnMultiEnvironment(model.environments.keys(), partition)
 largestWorkplace = model.environments[505001334]

@@ -155,6 +155,7 @@ class TransmissionWeighter:
         :param prevention_reductions: dict
         must map prevention names, currently either 'masking' or 'distancing' to scalars
         """
+        self.getWeight_time = 0.
 
         self.prevention_reductions = prevention_reductions
         self.env_scalars           = env_type_scalars
@@ -164,6 +165,7 @@ class TransmissionWeighter:
         #self.age_scalars = age_scalars
 
     def getWeight(self, personA, personB, environment):
+        start_time = time.time()
         """
         Uses the environments type and preventions to deternmine weight
         :param personA: int
@@ -174,7 +176,15 @@ class TransmissionWeighter:
          the shared environment of two nodes for the weight
         :return:
         """
-        weight = self.global_weight*self.env_scalars[environment.type]
+
+        """
+        This function is called for a single person 
+        self.env_scalars = default_env_scalars   = {"school": 0.3, "workplace": 0.3, "household": 1}
+        1. If no preventions, weight = w_global * 0.3 (global_weight = 1. When is it not 1?)
+        2. If there are preventions, there is randomness. Let r1 and r2 be two random numbers
+        """
+
+        weight = self.global_weight * self.env_scalars[environment.type]
         #including masks
         if environment.preventions != None:
             if random.random() < environment.preventions["masking"]:
@@ -183,6 +193,7 @@ class TransmissionWeighter:
                     weight = weight * self.prevention_reductions["masking"]
             #distancing weight reduction
             weight = weight*(1-(1-self.prevention_reductions["distancing"]) * environment.preventions["distancing"])
+        self.getWeight_time += time.time() - start_time
         return weight
 
 
@@ -336,8 +347,26 @@ class PopulaceGraph:
         self.setup_workplaces(partition)
         self.setup_schools(partition)
 
-
     #-------------------------------
+    def zeroWeights(self, env):
+        # GE: How to turn off a school without reconstructing the school graph? 
+        # NOT USED
+        # Run through the edges and set the weight to zero
+        start_time = time.time()
+        G = self.graph
+        for e in G.edges():
+            environment = self.environments[self.graph.adj[e[0]][e[1]]['environment']]
+            print("env, envi= ", env, environment.type)
+            if env == environment.type:
+                self.graph.adj[e[0]][e[1]]['transmission_weight'] = 0
+        print("zeroWeights[%s]: %f sec" % (env, time.time() - start_time))
+    #---------------------------------
+    def printWeights(self):
+        G = self.graph
+        for e in G.edges():
+            w = G[e[0]][e[1]]['transmission_weight']
+            env = self.environments[G[e[0]][e[1]]['environment']]
+            print("weight(e): ", e, " => ", w, env.type)
     #---------------------------------
     def build(self, weighter, preventions, env_degrees, alg = None):
         """
@@ -350,6 +379,8 @@ class PopulaceGraph:
         :param alg:
         :return:
         """
+
+        start_time = time.time()
         #None is default so old scripts can still run. self not defined in signature
         if alg == None:
             alg = self.clusterPartitionedStrogatz
@@ -375,24 +406,14 @@ class PopulaceGraph:
             self.constructGraphFromCM(env, alg)
         self.isBuilt = True
 
+        finish_time = time.time()
+        print("build took {} seconds to finish".format(finish_time-start_time))
+
+        # Although the reweighing can probably be made a lot more efficient, the same is not true for 
+        # the simulation time A factor two savings is not worth it. Why? For each reweighing, the simulation 
+        # should be repeated multiple times with different initial infections, different contact matrices, etc. 
+
     #----------------------------------
-    def reassignWeights(self):
-        """
-        weights = {}
-        weight_scalar = 1.   # Bryan: is weight_scalar ever different from 1? 
-        keys = list(self.environments.keys())
-
-        for e in self.graph.edges():
-            try:
-                #print("edge_envs: ", self.edge_envs[(e[0],e[1])] )
-                env = self.edge_envs[(e[0],e[1])]
-            except:
-                #print("edge_envs: ", self.edge_envs[(e[1],e[0])] )
-                env = self.edge_envs[(e[1],e[0])]
-            self.addEdge(e[0], e[1], env, weight_scalar)
-        """
-
-    #---------------------------------
     def reweight(self, weighter, preventions, alg = None):
         """
         Recomputes the weights on each edge using with, presumably new, arguments
@@ -403,13 +424,13 @@ class PopulaceGraph:
         :param alg:
         :return:
         """
-        start_time = time.time()
+        start_time          = time.time()
         self.trans_weighter = weighter
-        self.preventions = preventions
+        self.preventions    = preventions
 
         #update new prevention strategies on each environment
         for index in self.environments:
-            environment = self.environments[index]
+            environment             = self.environments[index]
             environment.preventions = preventions[environment.type]
 
         #pick and replace weights for each environment
@@ -420,8 +441,10 @@ class PopulaceGraph:
             self.graph.adj[edge[0]][edge[1]]['transmission_weight'] = new_weight
         finish_time = time.time()
         print("graph has been reweighted in {} seconds".format(finish_time-start_time))
+        print("total time in getWeight: ", weighter.getWeight_time, " sec")
 
     #------------------------------------------[
+    #-------------------
     def addEdge(self, nodeA, nodeB, environment, weight_scalar = 1):
         '''
         fThis helper function  not only makes it easier to track
@@ -440,17 +463,19 @@ class PopulaceGraph:
         weight = self.trans_weighter.getWeight(nodeA, nodeB, environment)*weight_scalar
         self.total_weight += weight
         self.total_edges += 1
-        self.graph.add_edge(nodeA, nodeB, transmission_weight = weight)
+        self.graph.add_edge(nodeA, nodeB, transmission_weight = weight, environment = environment.index)
         #print("nodes: ", nodeA, nodeB)
         #self.edge_envs[(nodeA, nodeB)] = environment
 
     #merge environments, written for plotting and exploration
+    #-------------------
     def returnMultiEnvironment(self, env_indexes, partition):
         members = []
         for index in env_indexes:
             members.extend(self.environments[index].members)
         return PartitionedEnvironment(None, members, 'multiEnvironment', self.populace, None, partition)
 
+    #-------------------
     def clusterDense(self, environment, subgroup = None, weight_scalar = 1):
         """
         This function will add every edge possible for the group. Thats n*(n-1)/2 edges
@@ -481,6 +506,7 @@ class PopulaceGraph:
                 self.addEdge(members[i], members[j], environment, weight_scalar)
 
 
+    #-------------------
     def constructGraphFromCM(self, environment, alg):
         """
         This function iterates over the models list of environments and networks them one by one
@@ -504,6 +530,7 @@ class PopulaceGraph:
             alg(environment, self.environment_degrees[environment.type])
 
 
+    #-------------------
     def clusterStrogatz(self, environment,  num_edges, weight_scalar = 1, subgroup = None, rewire_p = 0.2):
         """
          clusterStrogatz
@@ -546,6 +573,7 @@ class PopulaceGraph:
         for edge in edgeList: self.addEdge(edge[0], edge[1], environment)
 
 
+    #-------------------
     def clusterBipartite(self, environment, members_A, members_B, edge_count, weight_scalar = 1, p_random = 0.2):
         #reorder groups by size
         A = min(members_A, members_B, key = len)
@@ -584,6 +612,7 @@ class PopulaceGraph:
 
 
     #for clusterRandGraph
+    #-------------------
     def genRandEdgeList(self, setA, setB, n_edges):
         if n_edges == 0:
             return []
@@ -609,6 +638,7 @@ class PopulaceGraph:
         list = edge_dict.keys()
         return list
 
+    #-------------------
     def clusterRandGraph(self, environment, avg_degree):
         print("**** Enter clusterRandGraph, created by G. Erlebacher")
         # Create graph according to makeGraph, developed by G. Erlebacher (in Julia)
@@ -651,9 +681,11 @@ class PopulaceGraph:
                 for edge in edge_list: self.addEdge(edge[0],edge[1],environment)
 
 
+    #-------------------
     def clusterPartitionedStrogatz(self, environment, avg_degree = None):
         self.clusterWithMatrix( environment, avg_degree, 'strogatz')
 
+    #-------------------
     def clusterPartitionedRandom(self, environment, avg_degree = None):
         '''
         This calls upon clusterWithMatrix, with topology set as 'random'
@@ -665,6 +697,7 @@ class PopulaceGraph:
         '''
         self.clusterWithMatrix(environment, avg_degree, 'random')
 
+    #-------------------
     def clusterWithMatrix(self, environment, avg_degree, topology):
         """
         cluster With Matrix takes a partitioned environment, and reciprocates its contact matrix so it
@@ -734,12 +767,7 @@ class PopulaceGraph:
                     else:
                         self.clusterBipartite(environment, p_sets[i], p_sets[j], num_edges,weight_scalar=1)
 
-
-
-
-
-
-
+    #-------------------
     #written for the clusterMatrixGuidedPreferentialAttachment function
     def addEdgeWithAttachmentTracking(self, nodeA, nodeB, attachments, environment):
         self.add_edge(nodeA, nodeB, environment)
@@ -842,10 +870,15 @@ class PopulaceGraph:
                 # attachments[""]
 
     #-----------------------------------------
-    def simulate(self, gamma, tau, simAlg = EoN.fast_SIR, title = None, full_data = True):
+    def simulate(self, gamma, tau, simAlg = EoN.fast_SIR, title = None, full_data = True, preventions=None):
         start = time.time()
         # Bryan had the arguments reversed. 
         simResult = simAlg(self.graph, tau, gamma, rho=0.001, transmission_weight='transmission_weight', return_full_data=full_data)
+        sr = simResult
+        SIR_results = {'S':sr.S(), 'I':sr.I(), 'R':sr.R(), 't':sr.t()}
+        print("SIR_results= ", SIR_results)
+
+
         stop = time.time()
         self.record.print("simulation completed in {} seconds".format(stop - start))
 
@@ -856,8 +889,40 @@ class PopulaceGraph:
         #percent_uninfected = final_uninfected / (final_uninfected + final_recovered)
         #self.record.last_runs_percent_uninfected = percent_uninfected
         #self.record.print("The infection quit spreading after {} days, and {} of people were never infected".format(time_to_immunity,percent_uninfected))
-        self.sims.append([simResult, title])
 
+        # Do all this in Record class?  (GE)
+        data = {}
+        data['sim_results'] = SIR_results
+        data['title'] = title
+        data['params'] = {'gamma':gamma, 'tau=':tau}, 
+        data['preventions'] = preventions
+
+        self.sims.append([simResult, title, [gamma, tau], preventions])
+
+        self.stamp = datetime.now().strftime("%m_%d_%H_%M_%S")
+        mkdir("./simResults/{}".format(self.stamp))
+        log_txt = open("./simResults/{}/log.txt".format(self.stamp), "w+")
+        
+        x = datetime.now().strftime("%Y-%m-%d,%I.%Mpm")
+        filename = "title=%s, gamma=%s, tau=%s, %s" % (title, gamma, tau, x)
+        self.saveResults("./simResults/" + filename, data)
+        quit()
+
+    #-------------------------------------------
+    def saveResults(self, filename, data_dict):
+        """
+        :param filename: string
+        File to save results to
+        :param data_dict: dictionary
+        Save SIR traces, title, [gamma, tau], preventions
+        # save simulation results and metadata to filename
+        """
+        print("filename= ", filename)
+ 
+        with open(filename, "wb") as pickle_file:
+            pickle.dump(data_dict, pickle_file)
+
+    #-------------------------------------------
     def returnContactMatrix(self, environment):
         graph = self.graph.subgraph(environment.members)
         partition = environment.partitioner
