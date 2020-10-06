@@ -188,6 +188,7 @@ class TransmissionWeighter:
         #including masks
         if environment.preventions != None:
             n_masks = (environment.mask_status[personA] + environment.mask_status[personB])
+            weight = weight*self.prevention_reductions["masking"]**n_masks
             #distancing weight reduction of form (1-(1-c)*p)
             weight = weight*(1-(1-self.prevention_reductions["distancing"]) * environment.preventions["distancing"])
 
