@@ -7,7 +7,7 @@ import copy
 #TODO recreate model object for multiple sims
 #TODO test contact matrix sensitivities
 #TODO
-default_env_scalars = {"school": 0, "workplace": 0, "household": 0} # base case
+default_env_scalars = {"school": 0.3, "workplace": 0.3, "household": 1} # base case
 env_degrees = {'workplace': None, 'school': None}
 workplace_preventions = {'masking': 0.3, 'distancing': 0}
 school_preventions = {'masking':0.3, 'distancing': 0}
