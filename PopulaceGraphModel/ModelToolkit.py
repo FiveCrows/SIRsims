@@ -177,9 +177,8 @@ class TransmissionWeighter:
         """
         Uses the environments type and preventions to deternmine weight
         :param personA: int
-
+        a persons index, which should be a member of the environment
         :param personB: int
-
         :param environment: environment
          the shared environment of two nodes for the weight
         :return:
@@ -190,6 +189,8 @@ class TransmissionWeighter:
             n_masks = (environment.mask_status[personA] + environment.mask_status[personB])
             weight = weight*self.prevention_reductions["masking"]**n_masks
             #distancing weight reduction of form (1-(1-c)*p)
+            # just to be linear, and so that as p ranges from zero to one, weight drops from original to
+            # c * weight
             weight = weight*(1-(1-self.prevention_reductions["distancing"]) * environment.preventions["distancing"])
 
         return weight
@@ -339,7 +340,7 @@ class PopulaceGraph:
         :param preventions: dict
         should associate each environment type to another dict, which associates each prevention to a prevalence
 
-        :return:
+        :return: None
         """
         start_time = time.time()
         self.trans_weighter = weighter
@@ -380,16 +381,23 @@ class PopulaceGraph:
         self.graph.add_edge(nodeA, nodeB, transmission_weight = weight, environment = environment.index)
 
     #merge environments, written for plotting and exploration
-    def returnMultiEnvironment(self, env_indexes, partition):
+    def returnMultiEnvironment(self, env_indexes, partitioner = None):
+        """
+        :param env_indexes: environments to combine
+        :param partitioner:  to partition the  new combo environment, optional
+        :return:
+        """
+
+        if partitioner == None:
+            partitioner = self.environments[env_indexes[0]]
         members = []
         for index in env_indexes:
             members.extend(self.environments[index].members)
-        return PartitionedEnvironment(None, members, 'multiEnvironment', self.populace, None, partition)
+        return PartitionedEnvironment(None, members, 'multiEnvironment', self.populace, None, partitioner)
 
     def clusterDense(self, environment, subgroup = None, weight_scalar = 1):
         """
         This function will add every edge possible for the group. Thats n*(n-1)/2 edges
-
         :param environment: Environment
         The environment to add edges to
         :param subgroup: list
@@ -442,15 +450,20 @@ class PopulaceGraph:
             alg(environment, self.environment_degrees[environment.type])
 
 
-    def clusterStrogatz(self, environment,  num_edges, weight_scalar = 1, subgroup = None, rewire_p = 0.2):
+    def clusterStrogatz(self, environment,  num_edges, weight_scalar = 1, subgroup = None, rewire_p = 0.1):
         """
-         clusterStrogatz
+         clusterStrogatz creates a strogatz net in the given environment
 
-         :param environment:  environment which needs to be added
-         :param num_edges:
-         :param weight_scalar:
-         :param subgroup:
+         :param environment: Environment object,
+        where to add edges
+         :param num_edges: int
+         the number of edges to add to the environment
+         :param weight_scalar: int
+          optional in case a larger or smaller weight is desired than transmission_weighter returns by default
+         :param subgroup: list
+         optional in case only edges for select members of the environment are wanted
          :param rewire_p:
+         the portion of edges to be included into the net by random
          :return:
         """
 
@@ -485,6 +498,20 @@ class PopulaceGraph:
 
 
     def clusterBipartite(self, environment, members_A, members_B, edge_count, weight_scalar = 1, p_random = 0.2):
+        """
+        cluster bipartite is for linking edges between two disjoint sets of people in the given environment
+        :param environment: environment Object
+        :param members_A: list
+        a list of people
+        :param members_B: list
+        another list of people
+        :param edge_count: int
+        the number of edges to add to the environment
+        :param weight_scalar: int
+        :param p_random: int
+        the rate at which random edges need to be added
+        :return:
+        """
         #reorder groups by size
         A = min(members_A, members_B, key = len)
         if A == members_A:
@@ -591,6 +618,16 @@ class PopulaceGraph:
         #default_weight = total_contact/totalEdges
 
     def clusterPartitionedStrogatz(self, environment, avg_degree = None):
+        """
+        mainly this function is created to be passed as an argument.
+        will call
+        :param environment: environment object
+        the environment to network
+        :param avg_degree: int
+        optional, the default, None, will imply the avg_degree by the contact matrices
+        :return:
+        """
+
         self.clusterWithMatrix( environment, avg_degree, 'strogatz')
 
     def clusterPartitionedRandom(self, environment, avg_degree = None):
@@ -675,13 +712,18 @@ class PopulaceGraph:
                         self.clusterBipartite(environment, p_sets[i], p_sets[j], num_edges,weight_scalar=1)
 
 
-
-
-
-
-
-    #written for the clusterMatrixGuidedPreferentialAttachment function
     def addEdgeWithAttachmentTracking(self, nodeA, nodeB, attachments, environment):
+        """
+        not finished yet.
+        #written for the clusterMatrixGuidedPreferentialAttachment function
+
+        :param nodeA:
+        :param nodeB:
+        :param attachments:
+        :param environment:
+        :return:
+        """
+
         self.add_edge(nodeA, nodeB, environment)
         groupA = environment.id_to_partition[nodeA]
         groupB = environment.id_to_partition[nodeB]
