@@ -24,3 +24,4 @@ model.simulate(gamma, tau, title = 'base-test')
 largestWorkplace = model.environments[505001334]
 model.plotContactMatrix(largestWorkplace)
 plt.imshow(largestWorkplace.returnReciprocatedCM())
+plt.show()

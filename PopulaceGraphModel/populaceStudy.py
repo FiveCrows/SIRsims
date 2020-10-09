@@ -56,7 +56,7 @@ default_env_scalars['school'] = 0
 model.reweight(trans_weighter, with_distancing)
 model.simulate(gamma, tau, title = 'schools closed')
 
-#I chance the default preventions here to use but it doesn't matter because this is the last one
+#I change the default preventions here to use but it doesn't matter because this is the last one
 preventions['workplace']['masking'] = 1
 model.reweight(trans_weighter, with_distancing)
 model.simulate(gamma, tau, title = 'schools closed, and workplaces masked')
