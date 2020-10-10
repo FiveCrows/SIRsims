@@ -1,16 +1,25 @@
 from ge1_modelingToolkit import *
 import copy
-import datetime
+import os
 # plot chance of infection
+
+# Time stamp to identify the simulation, and the directories where the data is stored
+# Called in constructor of Partioning graph (used to be called in simulate() method
+timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+dstdirname = "/".join(["ge_simResults", timestamp, "src"])
+# Insecure approach
+os.system("mkdir -p %s" % dstdirname)
+os.system("cp %s %s" % ('ge2_populace_study.py', dstdirname))
+os.system("cp %s %s" % ('ge1_modelingToolkit.py', dstdirname))
 
 #################################################################################
 #####   Begin setting up model variables  #######################################
 #################################################################################
 
-# Time stamp to identify the simulation, and the directories where the data is stored
-# Called in constructor of Partioning graph (used to be called in simulate() method
-timestamp = datetime.now().strftime("%Y_%m_%d-%H_%M_%S")
-srcdirname = "/".join([timestamp, "src"])
+# Run with 10% of the data: slim=True
+# Run with all the data: slim=False
+#slim = True
+slim = False
 
 #These values scale the weight that goes onto edges by the environment type involved
 default_env_scalars   = {"school": 0.3, "workplace": 0.3, "household": 1}
@@ -65,11 +74,23 @@ print("Age brackets: ", names)
 # Create Graph
 
 #init, build simulate
-model = PopulaceGraph(partition, slim = True)
-model.setTimestamp(timestamp)
+model = PopulaceGraph(partition, timestamp, slim = slim)
 model.build(trans_weighter, preventions, env_degrees)
 model.simulate(gamma, tau, title = 'base-test')
 #----------------------------
+
+# Create a range of simulation
+# 'masking': 0.1, 0.2, 0.3, 0.4
+# 'distancing': 0.1, 0.2, 0.3, 0.4
+masking    = np.linspace(0.1,0.4,4)
+distancing = np.linspace(0.1,0.4,4)
+for m in masking:
+    for d in distancing:
+        prevention_reductions = "{'masking': %f, 'distancing': %f}" % (m, d)
+        trans_weighter.setPreventionReductions(prevention_reductions)
+        model.simulate(gamma, tau, title= "reductions, mask: %f, distancing: %f" % (m, d))
+quit()
+
 
 #new parameter sets for different tests
 school_masks = copy.deepcopy(preventions)

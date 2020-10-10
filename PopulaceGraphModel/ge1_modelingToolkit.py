@@ -276,11 +276,13 @@ class PopulaceGraph:
             print(self.environments[keys[k]].type)  # list of one element [12]. Meaning? 
 
     #-------------------------------
-    def __init__(self, partition, graph = None, populace = None, 
+    def __init__(self, partition, timestamp, graph = None, populace = None, 
                  attributes = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False):
         """        
         :param partition: Partitioner
         needed to build schools and workplaces into partitioned environments         
+        :param timestamp
+        Time stamp that corresponds to a collection of simulations
         :param graph: nx.Graph 
          a weighted graph to represent contact and hence chances of infection between people
         :param populace: dict
@@ -293,6 +295,10 @@ class PopulaceGraph:
         """
 
         # Graphs are not yet set up in the constructor
+
+        # Timestamp call only once per partitioning
+        self.stamp = timestamp
+        #self.stamp = datetime.now().strftime("%m_%d_%H_%M_%S")
 
         self.isBuilt = False
         #self.record = Record()
@@ -947,18 +953,16 @@ class PopulaceGraph:
 
         self.sims.append([simResult, title, [gamma, tau], preventions])
 
-        self.stamp = datetime.now().strftime("%m_%d_%H_%M_%S")
-        print("log_txt = ./simResults/{}/log.txt".format(self.stamp))
+        dirname = "./ge_simResults/{}".format(self.stamp)
         try:
-            mkdir("./simResults/{}".format(self.stamp))
+            mkdir(dirname)
         except:
             # accept an existing directory. Not a satisfying solution
             pass
-        log_txt = open("./simResults/{}/log.txt".format(self.stamp), "w+")
         
         x = datetime.now().strftime("%Y-%m-%d,%I.%Mpm")
         filename = "title=%s, gamma=%s, tau=%s, %s" % (title, gamma, tau, x)
-        self.saveResults("./simResults/" + filename, data)
+        self.saveResults("/".join([dirname,filename]), data)
 
     #-------------------------------------------
     def saveResults(self, filename, data_dict):
@@ -1148,7 +1152,6 @@ class Record:
         self.stamp = datetime.now().strftime("%m_%d_%H_%M_%S")
         self.graph_stats = {}
         self.last_runs_percent_uninfected = 1
-        print("mkdir: ", self.stamp)
         mkdir("./simResults/{}".format(self.stamp))
 
     def print(self, string):
