@@ -173,6 +173,9 @@ class TransmissionWeighter:
         #self.loc_masking = loc_masking
         #self.age_scalars = age_scalars
 
+    def setEnvScalars(self, env_scalars):
+        self.env_scalars = env_scalars
+
     def getWeight(self, personA, personB, environment):
         """
         Uses the environments type and preventions to deternmine weight

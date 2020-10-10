@@ -182,6 +182,7 @@ class TransmissionWeighter:
         self.env_scalars = default_env_scalars   = {"school": 0.3, "workplace": 0.3, "household": 1}
         1. If no preventions, weight = w_global * 0.3 (global_weight = 1. When is it not 1?)
         2. If there are preventions, there is randomness. Let r1 and r2 be two random numbers
+            p1 = 
         """
 
         weight = self.global_weight * self.env_scalars[environment.type]
@@ -400,6 +401,8 @@ class PopulaceGraph:
         #self.printEnvironments()  # for debugging and understanding
 
         # loop through all schools, workplaces, households
+        # Keeping prevents for each environment separately, allows different schools to have 
+        # different preventions
         for index in self.environments:
             env = self.environments[index]
             env.preventions = preventions[env.type]  # how are preventions used in the model? 
@@ -878,7 +881,6 @@ class PopulaceGraph:
         SIR_results = {'S':sr.S(), 'I':sr.I(), 'R':sr.R(), 't':sr.t()}
         print("SIR_results= ", SIR_results)
 
-
         stop = time.time()
         self.record.print("simulation completed in {} seconds".format(stop - start))
 
@@ -906,7 +908,6 @@ class PopulaceGraph:
         x = datetime.now().strftime("%Y-%m-%d,%I.%Mpm")
         filename = "title=%s, gamma=%s, tau=%s, %s" % (title, gamma, tau, x)
         self.saveResults("./simResults/" + filename, data)
-        quit()
 
     #-------------------------------------------
     def saveResults(self, filename, data_dict):
@@ -917,7 +918,6 @@ class PopulaceGraph:
         Save SIR traces, title, [gamma, tau], preventions
         # save simulation results and metadata to filename
         """
-        print("filename= ", filename)
  
         with open(filename, "wb") as pickle_file:
             pickle.dump(data_dict, pickle_file)

@@ -9,12 +9,19 @@ import copy
 default_env_scalars   = {"school": 0.3, "workplace": 0.3, "household": 1}
 env_degrees           = {'workplace': None, 'school': None}
 default_env_masking   = {'workplace': 0, 'school':0, 'household': 0}
-workplace_preventions = {'masking': 0, 'distancing': 0}
-school_preventions    = {'masking':0, 'distancing': 0}
-household_preventions = {'masking':0, 'distancing':0}
+
+# Binary variables. Either there are preventions or not
+workplace_preventions = {'masking':0,  'distancing': 0}
+school_preventions    = {'masking':0,  'distancing': 0}
+household_preventions = {'masking':0,  'distancing': 0}
+
 # Dictionary of dictionaries
-preventions           = {'workplace': workplace_preventions, 'school': school_preventions, 'household': household_preventions}
-prevention_reductions = {'masking': 0.1722, 'distancing': 0.2071}# dustins values
+preventions           = {'workplace': workplace_preventions, 
+                         'school'   : school_preventions, 
+                         'household': household_preventions}
+# Parameters found by Dustin
+prevention_reductions = {'masking': 0.1722, 'distancing': 0.2071}
+
 # https://epidemicsonnetworks.readthedocs.io/en/latest/functions/EoN.fast_SIR.html
 # Argument to EoN.fast_SIR(G, tau, gamma, initial_infecteds=None,
 gamma                 = 0.1  # Recovery rate per edge (EoN.fast_SIR)

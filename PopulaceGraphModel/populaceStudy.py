@@ -36,6 +36,8 @@ enumerator.update({i:15 for i in range(75,100)})
 names = ["{}:{}".format(5 * i, 5 * (i + 1)) for i in range(15)]
 partition = Partitioner('age', enumerator, names)
 
+#----------- BEGIN SIMULATIONS ------------------------------------
+
 #init, build simulate
 model = PopulaceGraph( partition, slim = False)
 model.build(trans_weighter, preventions, env_degrees)
@@ -51,8 +53,9 @@ with_distancing['workplace']['distancing'] = 1
 model.reweight(trans_weighter, with_distancing)
 model.simulate(gamma, tau, title = 'school and workplace distancing')
 
-#close scales
+#close schools
 default_env_scalars['school'] = 0
+trans_weigher.setEnvScalars(default_env_scalars)
 model.reweight(trans_weighter, with_distancing)
 model.simulate(gamma, tau, title = 'schools closed')
 
@@ -60,6 +63,8 @@ model.simulate(gamma, tau, title = 'schools closed')
 preventions['workplace']['masking'] = 1
 model.reweight(trans_weighter, with_distancing)
 model.simulate(gamma, tau, title = 'schools closed, and workplaces masked')
+
+#----------- END SIMULATIONS ---------------------------------------
 
 #the globalMultiEnvironment is useful if one wants to make the all of leon country
 globalMultiEnvironment = model.returnMultiEnvironment(model.environments.keys(), partition)
