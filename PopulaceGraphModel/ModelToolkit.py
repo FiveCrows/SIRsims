@@ -176,6 +176,9 @@ class TransmissionWeighter:
     def setEnvScalars(self, env_scalars):
         self.env_scalars = env_scalars
 
+    def setPreventionReductions(self, prevention_reductions):
+        self.prevention_reductions = prevention_reductions
+
     def getWeight(self, personA, personB, environment):
         """
         Uses the environments type and preventions to deternmine weight

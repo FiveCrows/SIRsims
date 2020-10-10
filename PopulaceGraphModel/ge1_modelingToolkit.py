@@ -87,6 +87,22 @@ class Environment:
         self.population = len(members)
        # self.distancing = distancing
 
+    def drawMasks(self):
+        '''
+        creates a dict linking each member of the environment with a mask
+        :param p: the proportion of people with masks
+        :return:
+        '''
+
+        # assign masks
+        if self.preventions == None:
+            num_masks = 0
+        else:
+            num_masks = int(self.population * self.preventions["masking"])
+        mask_status = [1] * num_masks + [0] * (self.population - num_masks)
+        random.shuffle(mask_status)
+        self.mask_status = dict(zip(self.members, mask_status))
+
 
 #----------------------------------------------------------------------
 class PartitionedEnvironment(Environment):
@@ -155,7 +171,6 @@ class TransmissionWeighter:
         :param prevention_reductions: dict
         must map prevention names, currently either 'masking' or 'distancing' to scalars
         """
-        self.getWeight_time = 0.
 
         self.prevention_reductions = prevention_reductions
         self.env_scalars           = env_type_scalars
@@ -166,6 +181,9 @@ class TransmissionWeighter:
 
     def setEnvScalars(self, env_scalars):
         self.env_scalars = env_scalars
+
+    def setPreventionReductions(self, prevention_reductions):
+        self.prevention_reductions = prevention_reductions
 
     def getWeight(self, personA, personB, environment):
         start_time = time.time()
@@ -191,13 +209,13 @@ class TransmissionWeighter:
         weight = self.global_weight * self.env_scalars[environment.type]
         #including masks
         if environment.preventions != None:
-            if random.random() < environment.preventions["masking"]:
-                weight = weight * self.prevention_reductions["masking"]
-                if random.random() < environment.preventions["masking"]**2:
-                    weight = weight * self.prevention_reductions["masking"]
-            #distancing weight reduction
+            n_masks = (environment.mask_status[personA] + environment.mask_status[personB])
+            weight = weight*self.prevention_reductions["masking"]**n_masks
+            #distancing weight reduction of form (1-(1-c)*p)
+            # just to be linear, and so that as p ranges from zero to one, weight drops from original to
+            # c * weight
             weight = weight*(1-(1-self.prevention_reductions["distancing"]) * environment.preventions["distancing"])
-        self.getWeight_time += time.time() - start_time
+        
         return weight
 
 
@@ -408,16 +426,14 @@ class PopulaceGraph:
         # different preventions
         for index in self.environments:
             env = self.environments[index]
-            env.preventions = preventions[env.type]  # how are preventions used in the model? 
-            self.constructGraphFromCM(env, alg)
-        self.isBuilt = True
+            self.addEnvironment(env, alg)
+            # GE: WHY ARE THESE LINES NO LONGER REQUIRED?
+            #env.preventions = preventions[env.type]  # how are preventions used in the model? 
+            #self.constructGraphFromCM(env, alg)
 
+        self.isBuilt = True
         finish_time = time.time()
         print("build took {} seconds to finish".format(finish_time-start_time))
-
-        # Although the reweighing can probably be made a lot more efficient, the same is not true for 
-        # the simulation time A factor two savings is not worth it. Why? For each reweighing, the simulation 
-        # should be repeated multiple times with different initial infections, different contact matrices, etc. 
 
     #----------------------------------
     def reweight(self, weighter, preventions, alg = None):
@@ -436,7 +452,9 @@ class PopulaceGraph:
 
         #update new prevention strategies on each environment
         for index in self.environments:
-            environment             = self.environments[index]
+            environment = self.environments[index]
+            environment.drawMasks()
+            # GE: WHY IS THIS NOT USED in ModelToolkit.py?
             environment.preventions = preventions[environment.type]
 
         #pick and replace weights for each environment
@@ -447,7 +465,6 @@ class PopulaceGraph:
             self.graph.adj[edge[0]][edge[1]]['transmission_weight'] = new_weight
         finish_time = time.time()
         print("graph has been reweighted in {} seconds".format(finish_time-start_time))
-        print("total time in getWeight: ", weighter.getWeight_time, " sec")
 
     #------------------------------------------[
     #-------------------
@@ -533,6 +550,32 @@ class PopulaceGraph:
         else:
             # the graph is computed according to contact matrix of environment
             # self.clusterPartitionedStrogatz(environment, self.environment_degrees[environment.type])
+            alg(environment, self.environment_degrees[environment.type])
+
+    #---------------------
+    def addEnvironment(self, environment, alg):
+        """
+        This function iterates over the models list of environment and networks them one by one
+        by calling clusterDense, every edge in every household will be added to the model. However,
+        the edges for the other, partitioned environments, alg, which must a function, must
+        be able to determine how to build he network, and along with the environment, the alg will also be passed a value
+        which specify what avg node degree it should produce
+
+        :param environment: Environment
+        the environment that needs to be added
+        :param alg: function
+        The algorithm to be used for networking the PartitionedEnvironments
+        :return:
+        """
+
+        if environment.type == 'household':
+            self.clusterDense(environment)
+        else:
+            # the graph is computed according to contact matrix of environment
+            # self.clusterPartitionedStrogatz(environment, self.environment_degrees[environment.type])
+            preventions = self.preventions[environment.type]
+            environment.preventions = preventions
+            environment.drawMasks()
             alg(environment, self.environment_degrees[environment.type])
 
 
@@ -905,7 +948,12 @@ class PopulaceGraph:
         self.sims.append([simResult, title, [gamma, tau], preventions])
 
         self.stamp = datetime.now().strftime("%m_%d_%H_%M_%S")
-        mkdir("./simResults/{}".format(self.stamp))
+        print("log_txt = ./simResults/{}/log.txt".format(self.stamp))
+        try:
+            mkdir("./simResults/{}".format(self.stamp))
+        except:
+            # accept an existing directory. Not a satisfying solution
+            pass
         log_txt = open("./simResults/{}/log.txt".format(self.stamp), "w+")
         
         x = datetime.now().strftime("%Y-%m-%d,%I.%Mpm")
@@ -1100,6 +1148,7 @@ class Record:
         self.stamp = datetime.now().strftime("%m_%d_%H_%M_%S")
         self.graph_stats = {}
         self.last_runs_percent_uninfected = 1
+        print("mkdir: ", self.stamp)
         mkdir("./simResults/{}".format(self.stamp))
 
     def print(self, string):
