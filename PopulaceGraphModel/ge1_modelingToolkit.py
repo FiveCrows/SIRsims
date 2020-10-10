@@ -961,7 +961,7 @@ class PopulaceGraph:
             pass
         
         x = datetime.now().strftime("%Y-%m-%d,%I.%Mpm")
-        filename = "title=%s, gamma=%s, tau=%s, %s" % (title, gamma, tau, x)
+        filename = "%s, gamma=%s, tau=%s, %s" % (title, gamma, tau, x)
         self.saveResults("/".join([dirname,filename]), data)
 
     #-------------------------------------------
