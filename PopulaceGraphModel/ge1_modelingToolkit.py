@@ -414,18 +414,19 @@ class PopulaceGraph:
         #print(list(pops_by_category["school_id"].keys())); quit()
 
         pops_by_category["age_groups"] = {}
-        print("keys: ", pops_by_category["age"])
-        print("keys: ", list(pops_by_category["age"]))
+        #print("keys: ", pops_by_category["age"])
+        #print("keys: ", list(pops_by_category["age"]))
 
 
         for bracket in range(0,20):
-            print(bracket)
+            #print(bracket)
             pops_by_category["age_groups"][bracket] = []
             for i in range(0,5):
-                try:
+                try:   # easier than conditionals. I divided all ages into groups of 5
                     pops_by_category["age_groups"][bracket].extend(pops_by_category["age"][5*bracket+i])
                 except:
                     break
+            #print("bracket: %d, size: %d" % (bracket, len(pops_by_category["age_groups"][bracket])))
 
         self.pops_by_category = pops_by_category
         #print("pops_by_category['race']", pops_by_category['race'])  # just a list of numbers
@@ -1039,21 +1040,56 @@ class PopulaceGraph:
         #t10 = sr.get_statuses(time=10.)
         #t20 = sr.get_statuses(time=20.)
         tlast = sr.get_statuses(time=sr.t()[-1])
+        len_tlast = len(tlast)
+        #for k in tlast.keys():
+            #print("key: ", k)
+
+        for i in range(0,len_tlast):
+            try:
+                a = tlast[i]
+            except:
+                print("tlast index does not exist, i= ", i)
+                quit()
+
+        print(type(tlast)); quit()
 
         # Next: calculate final S,I,R for the different age groups. 
 
+        print("len(tlast)= ", len(tlast))
         #print("tlast= ", tlast)
         #print("t10.t= ", t10.t())
         #print("simResult= ", dir(sr)); 
         #print(sr.get_statuses())
         #print(sr.node_history())
-        print(sr.I())
-        quit()
+        #print(sr.I())
         SIR_results = {'S':sr.S(), 'I':sr.I(), 'R':sr.R(), 't':sr.t()}
         #print("SIR_results= ", SIR_results)
 
         stop = time.time()
         self.record.print("simulation completed in {} seconds".format(stop - start))
+
+        ag = self.pops_by_category["age_groups"]
+
+        # Collect the S,I,R at the last time: tlast
+        #print("tlast.R= ", list(tlast.keys())); 
+        # Replace 'S', 'I', 'R' by [0,1,2]
+        brackets = {}
+        for bracket in ag.keys():
+            start1 = time.time()
+            s = i = r = 0
+            nodes = ag[bracket]
+            b = brackets[bracket] = []
+            #print("nodes= ", nodes)
+            #print("tlast= ", tlast)
+            #print("len tlast= ", len(tlast))
+            for n in nodes:
+                #print(n); print(tlast[n])
+                b.append(tlast[n])
+            print("len(brackets[%d]= " % bracket, len(brackets[bracket]))
+            timer = time.time() - start1
+            self.record.print("time to restructure age brackets: %f sec" % timer)
+            
+        print("gordon"); quit()
 
         #doesn't work returning full results
         #time_to_immunity = simResult[0][-1]

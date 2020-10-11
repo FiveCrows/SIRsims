@@ -24,8 +24,8 @@ copyfile ('ge1_modelingToolkit.py',os.path.join(dstdirname,'ge1_modelingToolkit.
 
 # Run with 10% of the data: slim=True
 # Run with all the data: slim=False
-slim = False
 slim = True
+slim = False
 
 #These values scale the weight that goes onto edges by the environment type involved
 # Parameters less than 1 reduce the infectivity
