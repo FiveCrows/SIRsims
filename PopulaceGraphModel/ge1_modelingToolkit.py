@@ -539,6 +539,9 @@ class PopulaceGraph:
         # Attach list of edges to each environment
         self.envEdges()
 
+        # Add all missing nodes. These will have no edges. 
+        self.graph.add_nodes_from(self.populace.keys()-self.graph.nodes())
+
     #----------------------------------
     def reweight(self, weighter, preventions, alg = None):
         """
@@ -1036,11 +1039,24 @@ class PopulaceGraph:
         start = time.time()
         # Bryan had the arguments reversed. 
         simResult = simAlg(self.graph, tau, gamma, rho=0.001, transmission_weight='transmission_weight', return_full_data=full_data)
+        stop = time.time()
+        self.record.print("simulation completed in {} seconds".format(stop - start))
+
+        graph = self.graph
+        print("nb nodes in graph: ", nx.number_of_nodes(graph))
+
+        start2 = time.time()
         sr = simResult
-        #t10 = sr.get_statuses(time=10.)
-        #t20 = sr.get_statuses(time=20.)
+        t10 = sr.get_statuses(time=10.)
+        t20 = sr.get_statuses(time=20.)
         tlast = sr.get_statuses(time=sr.t()[-1])
+        print("len(t10)= ", len(t10))
+        print("len(t20)= ", len(t20))
+        print("len(tlast)= ", len(tlast))
         len_tlast = len(tlast)
+
+        self.record.print("handle simulation output: {} seconds".format(time.time() - start2))
+
         #for k in tlast.keys():
             #print("key: ", k)
 
@@ -1048,7 +1064,7 @@ class PopulaceGraph:
             try:
                 a = tlast[i]
             except:
-                print("tlast index does not exist, i= ", i)
+                print("tlast index does not exist, i= ", i)   ### WHY NOT!!!
                 quit()
 
         print(type(tlast)); quit()
@@ -1065,8 +1081,6 @@ class PopulaceGraph:
         SIR_results = {'S':sr.S(), 'I':sr.I(), 'R':sr.R(), 't':sr.t()}
         #print("SIR_results= ", SIR_results)
 
-        stop = time.time()
-        self.record.print("simulation completed in {} seconds".format(stop - start))
 
         ag = self.pops_by_category["age_groups"]
 
