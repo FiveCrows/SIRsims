@@ -1078,9 +1078,9 @@ class PopulaceGraph:
         txx = {}
         last_time = simResult.t()[-1]
 
-        for tix in range(0, int(last_time)+2, 10):
+        for tix in range(0, int(last_time)+2, 2):
             txx[tix] = sr.get_statuses(time=tix)
-        txx['last'] = sr.get_statuses(time=sr.t()[-1])
+        #txx['last'] = sr.get_statuses(time=sr.t()[-1])
 
         self.record.print("handle simulation output: {} seconds".format(time.time() - start2))
 
