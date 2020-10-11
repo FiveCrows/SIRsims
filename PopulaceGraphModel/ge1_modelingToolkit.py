@@ -1035,6 +1035,34 @@ class PopulaceGraph:
                 # attachments[""]
 
     #-----------------------------------------
+    def SIRperBracket(self, tlast): 
+        # Collect the S,I,R at the last time: tlast
+        #print("tlast.R= ", list(tlast.keys())); 
+        # Replace 'S', 'I', 'R' by [0,1,2]
+
+        ag = self.pops_by_category["age_groups"]
+
+        brackets = {}
+        count = 0
+        for bracket in ag.keys():
+            s = i = r = 0
+            nodes = ag[bracket]
+            b = brackets[bracket] = []
+            for n in nodes:
+                b.append(tlast[n])
+            count += len(brackets[bracket])
+            
+        ages_d = {}
+        for bracket in ag.keys():
+            blist = brackets[bracket]
+            ages_d[bracket] = {'S':0, 'I':0, 'R':0}  # nb S, I, R
+            for s in blist:
+                ages_d[bracket][s] += 1
+        #print("inside SIRperBracket")
+        #print("  keys(ages_d): ", list(ages_d.keys()))
+        return ages_d
+   
+    #-----------------------------------------
     def simulate(self, gamma, tau, simAlg = EoN.fast_SIR, title = None, full_data = True, preventions=None):
         start = time.time()
         # Bryan had the arguments reversed. 
@@ -1047,63 +1075,49 @@ class PopulaceGraph:
 
         start2 = time.time()
         sr = simResult
-        t10 = sr.get_statuses(time=10.)
-        t20 = sr.get_statuses(time=20.)
-        tlast = sr.get_statuses(time=sr.t()[-1])
-        print("len(t10)= ", len(t10))
-        print("len(t20)= ", len(t20))
-        print("len(tlast)= ", len(tlast))
-        len_tlast = len(tlast)
+        txx = {}
+        last_time = simResult.t()[-1]
+
+        for tix in range(0, int(last_time)+2, 10):
+            txx[tix] = sr.get_statuses(time=tix)
+        txx['last'] = sr.get_statuses(time=sr.t()[-1])
 
         self.record.print("handle simulation output: {} seconds".format(time.time() - start2))
 
         #for k in tlast.keys():
             #print("key: ", k)
 
+        """
         for i in range(0,len_tlast):
             try:
                 a = tlast[i]
             except:
                 print("tlast index does not exist, i= ", i)   ### WHY NOT!!!
                 quit()
-
-        print(type(tlast)); quit()
+        """
 
         # Next: calculate final S,I,R for the different age groups. 
 
-        print("len(tlast)= ", len(tlast))
-        #print("tlast= ", tlast)
-        #print("t10.t= ", t10.t())
-        #print("simResult= ", dir(sr)); 
-        #print(sr.get_statuses())
-        #print(sr.node_history())
-        #print(sr.I())
-        SIR_results = {'S':sr.S(), 'I':sr.I(), 'R':sr.R(), 't':sr.t()}
-        #print("SIR_results= ", SIR_results)
+        start3 = time.time()
 
+        ages_d = {}
+        for k in txx.keys():
+            #print("*** k= ", k, ",   len txx[k]= ", len(txx[k])) # list of first 10 statuses
+            ages_d[k] = self.SIRperBracket(txx[k])
+            #print("  return from SIRperBracket: ages_d[k]= ", ages_d[k])
 
-        ag = self.pops_by_category["age_groups"]
-
-        # Collect the S,I,R at the last time: tlast
-        #print("tlast.R= ", list(tlast.keys())); 
-        # Replace 'S', 'I', 'R' by [0,1,2]
-        brackets = {}
-        for bracket in ag.keys():
-            start1 = time.time()
-            s = i = r = 0
-            nodes = ag[bracket]
-            b = brackets[bracket] = []
-            #print("nodes= ", nodes)
-            #print("tlast= ", tlast)
-            #print("len tlast= ", len(tlast))
-            for n in nodes:
-                #print(n); print(tlast[n])
-                b.append(tlast[n])
-            print("len(brackets[%d]= " % bracket, len(brackets[bracket]))
-            timer = time.time() - start1
-            self.record.print("time to restructure age brackets: %f sec" % timer)
+            """
+            for bracket in ages_d[k].keys():  # bracket is either integer or string. How to change? 
+                #print("bracket: ", bracket)
+                #print("   keys: ", list(ages_d[k].keys()))
+                counts = ages_d[k][bracket]
+                print("bracket: ", bracket, ",  counts[S,I,R]: ", bracket, counts['S'], counts['I'], counts['R'])
+            """
             
-        print("gordon"); quit()
+        self.record.print("time to change 'S','I','R' to 0,1,2 for faster processing: %f sec" % (time.time()-start3))
+        #print("gordon"); quit()
+
+        # Now, count the number of S, I, R in each age bracket. 
 
         #doesn't work returning full results
         #time_to_immunity = simResult[0][-1]
@@ -1116,12 +1130,14 @@ class PopulaceGraph:
         # Do all this in Record class?  (GE)
         data = {}
         u = Utils()
+        SIR_results = {'S':sr.S(), 'I':sr.I(), 'R':sr.R(), 't':sr.t()}
         SIR_results = u.interpolate_SIR(SIR_results)
         data['sim_results'] = SIR_results
         #print("SIR_results: ", SIR_results['t']) # floats as they should be
         data['title'] = title
         data['params'] = {'gamma':gamma, 'tau':tau}
         data['preventions'] = preventions
+        data['ages_SIR'] = ages_d # ages_d[time][k] ==> S,I,R counts for age bracket k
 
         self.sims.append([simResult, title, [gamma, tau], preventions])
 
