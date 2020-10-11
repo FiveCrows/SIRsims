@@ -193,11 +193,14 @@ class TransmissionWeighter:
         #including masks
         if environment.preventions != None:
             n_masks = (environment.mask_status[personA] + environment.mask_status[personB])
-            weight = weight*self.prevention_reductions["masking"]**n_masks
+            # If two people do not wear masks, the weight is not affected
+            weight = weight*(1.-self.prevention_reductions["masking"])**n_masks
             #distancing weight reduction of form (1-(1-c)*p)
             # just to be linear, and so that as p ranges from zero to one, weight drops from original to
             # c * weight
-            weight = weight*(1-(1-self.prevention_reductions["distancing"]) * environment.preventions["distancing"])
+            #weight = weight*(1-(1-self.prevention_reductions["distancing"]) * environment.preventions["distancing"])
+            # Fixed by Gordon
+            weight = weight*(1-self.prevention_reductions["distancing"])
 
         return weight
 
@@ -251,7 +254,9 @@ class PopulaceGraph:
                     self.populace[key] = (vars(x[key]))
         else:
             self.populace = ({key: (vars(x[key])) for key in x})  # .transpose()
+
         self.population = len(self.populace)
+
         if True:
         # for sorting people into categories
         # takes a dict of dicts to rep resent populace and returns a list of dicts of lists to represent groups of people with the same

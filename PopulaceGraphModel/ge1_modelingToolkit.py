@@ -65,6 +65,7 @@ class memberedPartition:
 class Environment:
     """
     Objects to the carry details of every home, workplace, and school
+    Each environment is an individual school, workplace, or home 
     """
     def __init__(self, index, members, type, preventions = None):
         """
@@ -77,6 +78,7 @@ class Environment:
         :param preventions: dict
         keys should be 'household', 'school', or 'workplace'. Each should map to another dict,
         with keys for 'masking', and 'distancing', which should map to an int in range[0:1] that represents
+            #environment.drawSelfDistance(self.env_edges[environment.index])  # Is this needed?
         the prevelance of the prevention strategy in the environment
         """
 
@@ -87,11 +89,39 @@ class Environment:
         self.population = len(members)
        # self.distancing = distancing
 
+    #def drawSelfDistance(self, env_edges):
+    def drawSelfDistance(self):
+        '''
+        In each environment, I want to choose a fraction of edges that are social distancing
+        and for which there will be a reduction due to social distancing. 
+        How to do that? 
+
+        :param type: list of edge pairs [(v1,v2),(v3,v4),...] of environment index
+        List of edges in the graph of environment with index env_index
+        :return: void
+        '''
+
+        # I should collect all the edges of the environment, and assign 1 or zero regarding whether there 
+        # is social distancing. 
+
+        num_edges = len(self.edges)
+        #print("drawSelfDistance, num_edges= ", num_edges)
+
+        if self.preventions == None:
+            num_social = 0
+        else:
+            num_social = int(num_edges * self.preventions["distancing"])
+
+        distancing_status = [1] * num_social + [0] * (num_edges - num_social)
+        random.shuffle(distancing_status)
+        # class Environment
+        self.distancing_status = dict(zip(self.edges, distancing_status))
+        #print("self= ", self, ", distancing_status= ", self.distancing_status)
+
     def drawMasks(self):
         '''
         creates a dict linking each member of the environment with a mask
-        :param p: the proportion of people with masks
-        :return:
+        :return: void
         '''
 
         # assign masks
@@ -99,8 +129,10 @@ class Environment:
             num_masks = 0
         else:
             num_masks = int(self.population * self.preventions["masking"])
+
         mask_status = [1] * num_masks + [0] * (self.population - num_masks)
         random.shuffle(mask_status)
+        # class Environment
         self.mask_status = dict(zip(self.members, mask_status))
 
 
@@ -182,12 +214,16 @@ class TransmissionWeighter:
     def setEnvScalars(self, env_scalars):
         self.env_scalars = env_scalars
 
+    def setPreventions(self, preventions):
+        self.preventions = preventions
+
     def setPreventionReductions(self, prevention_reductions):
         self.prevention_reductions = prevention_reductions
 
     def getWeight(self, personA, personB, environment):
         start_time = time.time()
         """
+        In class TransmissionWeighter
         Uses the environments type and preventions to deternmine weight
         :param personA: int
         currently unused
@@ -206,16 +242,22 @@ class TransmissionWeighter:
             p1 = 
         """
 
+        #print(personA, personB)  # 30 29
+        #print(environment.distancing_status)
+        #wv = environment.distancing_status[(personA, personB)]
+
         weight = self.global_weight * self.env_scalars[environment.type]
-        #including masks
+        #including the effect of masks
         if environment.preventions != None:
+            # I like this: a mask_status per person. We also need mask_reduction per person
             n_masks = (environment.mask_status[personA] + environment.mask_status[personB])
-            weight = weight*self.prevention_reductions["masking"]**n_masks
-            #distancing weight reduction of form (1-(1-c)*p)
-            # just to be linear, and so that as p ranges from zero to one, weight drops from original to
-            # c * weight
-            weight = weight*(1-(1-self.prevention_reductions["distancing"]) * environment.preventions["distancing"])
-        
+            # self.prevnetion_reductions becomes a string!!! HOW!!!
+            # If two people do not wear masks, the weight is not affected
+            weight = weight*(1.-self.prevention_reductions["masking"])**n_masks
+            #weight = weight*(1-(1-self.prevention_reductions["distancing"]) * environment.preventions["distancing"])
+            # Fixed by Gordon
+            weight = weight*(1-self.prevention_reductions["distancing"])
+
         return weight
 
 
@@ -265,9 +307,9 @@ class PopulaceGraph:
             envs.add(self.environments[k].type)
 
         # Environment type can be "household", "workplace", "school"
-        print("envs= ", envs)
+        #print("envs= ", envs)
         # attributers of environments[keys[1]]: "index', 'members', 'population', 'preventions', 'type'"
-        print(dir(self.environments[keys[1]]))
+        #print(dir(self.environments[keys[1]]))
         for k in range(25000,25200):
             print("-----------------")
             print(self.environments[keys[k]].members)  # list of one element [12]. Meaning? 
@@ -352,7 +394,8 @@ class PopulaceGraph:
 
         # pops_by_category: for each category, a dictionary
         # attributes:  ['sp_hh_id', 'work_id', 'school_id', 'race', 'age']
-        print("attributes: ", attributes)
+
+        #print("attributes: ", attributes)
         pops_by_category = {category: {} for category in attributes}
 
         for person in self.populace:
@@ -364,6 +407,10 @@ class PopulaceGraph:
                 except:
                     # Initialize dictionary value to a list
                     pops_by_category[category][self.populace[person][category]] = [person]
+
+        #print(list(pops_by_category["age"].keys())); 
+        #print(list(pops_by_category["race"].keys())); 
+        #print(list(pops_by_category["school_id"].keys())); quit()
 
         self.pops_by_category = pops_by_category
         #print("pops_by_category['race']", pops_by_category['race'])  # just a list of numbers
@@ -396,6 +443,26 @@ class PopulaceGraph:
             env = self.environments[G[e[0]][e[1]]['environment']]
             print("weight(e): ", e, " => ", w, env.type)
     #---------------------------------
+    def envEdges(self):
+        # Added by Gordon Erlebacher, class PopulaceGraph
+        # Construct a dictionary for each environment, of its edges. This will be used
+        # to assign edge properties per environment. 
+        env_edges= {}
+        for ix in self.environments:
+            env_edges[ix] = []   # list of edges
+
+        for edge in self.graph.edges():
+            #get environment
+            env = self.environments[self.graph.adj[edge[0]][edge[1]]['environment']]
+            # env is an environment object
+            env_edges[env.index].append((edge[0], edge[1]))  ### ERROR
+
+        # attach edge list to the environment
+        for ix in self.environments:
+            env = self.environments[ix]
+            env.edges = env_edges[ix]
+
+    #------------------------------------
     def build(self, weighter, preventions, env_degrees, alg = None):
         """
         constructs a graph for the objects populace
@@ -427,23 +494,39 @@ class PopulaceGraph:
 
         #self.printEnvironments()  # for debugging and understanding
 
-        # loop through all schools, workplaces, households
+
+        # loop through all schools, workplaces, households (3 environments)
         # Keeping prevents for each environment separately, allows different schools to have 
         # different preventions
+        #for env in self.environments:
+            #print("env= ", env) # integers
         for index in self.environments:
-            env = self.environments[index]
+            #print("indexx= ", index)
+            env = self.environments[index] # environment
+            #print("env= ", env)
             self.addEnvironment(env, alg)
             # GE: WHY ARE THESE LINES NO LONGER REQUIRED?
             #env.preventions = preventions[env.type]  # how are preventions used in the model? 
             #self.constructGraphFromCM(env, alg)
 
+        # Graphs are done
+
+
         self.isBuilt = True
         finish_time = time.time()
         print("build took {} seconds to finish".format(finish_time-start_time))
 
+        # we are in class PopulaceGraph
+        # Create edge list for each environment keyed by the environment index
+        # It would be better if each environment had a set of edges
+        
+        # Attach list of edges to each environment
+        self.envEdges()
+
     #----------------------------------
     def reweight(self, weighter, preventions, alg = None):
         """
+        In class PopulaceGraph
         Recomputes the weights on each edge using with, presumably new, arguments
 
         :param weighter:
@@ -460,10 +543,15 @@ class PopulaceGraph:
         for index in self.environments:
             environment = self.environments[index]
             environment.drawMasks()
+            #environment.drawSelfDistance(self.env_edges[environment.index])
+            environment.drawSelfDistance()
             # GE: WHY IS THIS NOT USED in ModelToolkit.py?
             environment.preventions = preventions[environment.type]
 
         #pick and replace weights for each environment
+        # There is no easy way to collect the edges for a given environment unless one does 
+        # a pass on the graph once it has been created. I will do that. 
+
         for edge in self.graph.edges():
             #get environment
             environment = self.environments[self.graph.adj[edge[0]][edge[1]]['environment']]
@@ -561,6 +649,9 @@ class PopulaceGraph:
     #---------------------
     def addEnvironment(self, environment, alg):
         """
+        THE DESCRIPTION DOES NOT SEEM RIGHT. THERE IS NO ITERATION
+
+        Class PopulaceGraph
         This function iterates over the models list of environment and networks them one by one
         by calling clusterDense, every edge in every household will be added to the model. However,
         the edges for the other, partitioned environments, alg, which must a function, must
@@ -931,7 +1022,7 @@ class PopulaceGraph:
         simResult = simAlg(self.graph, tau, gamma, rho=0.001, transmission_weight='transmission_weight', return_full_data=full_data)
         sr = simResult
         SIR_results = {'S':sr.S(), 'I':sr.I(), 'R':sr.R(), 't':sr.t()}
-        print("SIR_results= ", SIR_results)
+        #print("SIR_results= ", SIR_results)
 
         stop = time.time()
         self.record.print("simulation completed in {} seconds".format(stop - start))
