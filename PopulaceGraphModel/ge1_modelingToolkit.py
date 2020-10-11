@@ -9,6 +9,7 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 import math
+from scipy.interpolate import interp1d
 
 
 
@@ -411,6 +412,20 @@ class PopulaceGraph:
         #print(list(pops_by_category["age"].keys())); 
         #print(list(pops_by_category["race"].keys())); 
         #print(list(pops_by_category["school_id"].keys())); quit()
+
+        pops_by_category["age_groups"] = {}
+        print("keys: ", pops_by_category["age"])
+        print("keys: ", list(pops_by_category["age"]))
+
+
+        for bracket in range(0,20):
+            print(bracket)
+            pops_by_category["age_groups"][bracket] = []
+            for i in range(0,5):
+                try:
+                    pops_by_category["age_groups"][bracket].extend(pops_by_category["age"][5*bracket+i])
+                except:
+                    break
 
         self.pops_by_category = pops_by_category
         #print("pops_by_category['race']", pops_by_category['race'])  # just a list of numbers
@@ -1021,6 +1036,19 @@ class PopulaceGraph:
         # Bryan had the arguments reversed. 
         simResult = simAlg(self.graph, tau, gamma, rho=0.001, transmission_weight='transmission_weight', return_full_data=full_data)
         sr = simResult
+        #t10 = sr.get_statuses(time=10.)
+        #t20 = sr.get_statuses(time=20.)
+        tlast = sr.get_statuses(time=sr.t()[-1])
+
+        # Next: calculate final S,I,R for the different age groups. 
+
+        #print("tlast= ", tlast)
+        #print("t10.t= ", t10.t())
+        #print("simResult= ", dir(sr)); 
+        #print(sr.get_statuses())
+        #print(sr.node_history())
+        print(sr.I())
+        quit()
         SIR_results = {'S':sr.S(), 'I':sr.I(), 'R':sr.R(), 't':sr.t()}
         #print("SIR_results= ", SIR_results)
 
@@ -1037,9 +1065,12 @@ class PopulaceGraph:
 
         # Do all this in Record class?  (GE)
         data = {}
+        u = Utils()
+        SIR_results = u.interpolate_SIR(SIR_results)
         data['sim_results'] = SIR_results
+        #print("SIR_results: ", SIR_results['t']) # floats as they should be
         data['title'] = title
-        data['params'] = {'gamma':gamma, 'tau=':tau}, 
+        data['params'] = {'gamma':gamma, 'tau':tau}
         data['preventions'] = preventions
 
         self.sims.append([simResult, title, [gamma, tau], preventions])
@@ -1067,6 +1098,15 @@ class PopulaceGraph:
  
         with open(filename, "wb") as pickle_file:
             pickle.dump(data_dict, pickle_file)
+
+        """
+        # reload pickle data
+        fd = open(filename, "rb")
+        d = pickle.load(fd)
+        SIR = d['sim_results']
+        print("SIR['t']= ", SIR['t'])
+        quit()
+        """
 
     #-------------------------------------------
     def returnContactMatrix(self, environment):
@@ -1385,3 +1425,30 @@ class Gordon:
         print("size of edge_list: ", len(edge_list))
         return edge_list
     #------------------------------------------------------------------
+
+class Utils:
+    def __init__(self):
+        pass
+
+    def interpolate_SIR(self, SIR):
+        S = SIR['S']
+        I = SIR['I']
+        R = SIR['R']
+        t = SIR['t']
+        # interpolate on daily intervals.
+        new_t = np.linspace(0., int(t[-1]), int(t[-1])+1)
+        func = interp1d(t, S)
+        Snew = func(new_t)
+        func = interp1d(t, I)
+        Inew = func(new_t)
+        func = interp1d(t, R)
+        Rnew = func(new_t)
+        #print("t= ", new_t)
+        #print("S= ", Snew)
+        #print("I= ", Inew)
+        #print("R= ", Rnew)
+        SIR['t'] = new_t
+        SIR['S'] = Snew
+        SIR['I'] = Inew
+        SIR['R'] = Rnew
+        return SIR
