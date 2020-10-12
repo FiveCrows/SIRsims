@@ -101,8 +101,8 @@ def reduction_study(s_mask, s_dist, w_mask, w_dist):
     prevent['school']['distancing'] = s_dist
     prevent['workplace']['masking'] = w_mask
     prevent['workplace']['distancing'] = w_dist
-    reduce_masking    = np.linspace(0.0,0.4,5)
-    reduce_distancing = np.linspace(0.0,0.4,5)
+    reduce_masking    = np.linspace(0.2,1.0,5)
+    reduce_distancing = np.linspace(0.2,1.0,5)
     for m in reduce_masking:
         for d in reduce_distancing:
             print("m,d= ", m,d)

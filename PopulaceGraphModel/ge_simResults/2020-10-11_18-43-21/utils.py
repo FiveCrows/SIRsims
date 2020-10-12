@@ -1,3 +1,4 @@
+import numpy as np
 
 #---------------------
 def generateCurves(row):
@@ -14,11 +15,20 @@ def generateCurves(row):
         curves[k]['t'] = []
 
     for k, v in ages.items():
+        # For each time, extract SIR curves for all ages
+        # k is the time level, v is the SIR data at that time
         ages_l = v
         for k_age, v_age in v.items():   # 1 .. 19
             curves[k_age]['S'].append(v_age['S'])
             curves[k_age]['I'].append(v_age['I'])
             curves[k_age]['R'].append(v_age['R'])
             curves[k_age]['t'].append(k)
+
+    # Convert to numpy array
+    for k_age in range(0,20):
+        curves[k_age]['S'] = np.asarray(curves[k_age]['S'])
+        curves[k_age]['I'] = np.asarray(curves[k_age]['I'])
+        curves[k_age]['R'] = np.asarray(curves[k_age]['R'])
+        curves[k_age]['t'] = np.asarray(curves[k_age]['t'])
 
     return curves
