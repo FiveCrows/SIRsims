@@ -34,8 +34,6 @@ df.to_csv("df.csv")
 #dff = df[(df.sm == 1) & (df.sd == 1) & (df.wm == 0) & (df.wd == 0), :]
 dfg = df.groupby(['sm','sd','wm','wd'])
 dfs = {}
-dfs[(1,1,0,0)] = dfg.get_group((1,1,0,0))
-dfs[(0,0,1,1)] = dfg.get_group((0,0,1,1))
 dfs[(1,1,1,1)] = dfg.get_group((1,1,1,1))
 dfs[(0,0,0,0)] = dfg.get_group((0,0,0,0))
 
@@ -101,7 +99,7 @@ def computeMaxInfections(age_bracket, df0):
         mat_d[(red_mask,red_dist)] = mx
 
     # How to convert this information into a matrix
-    red = np.linspace(0.,4,5) / 10.  # to avoid 0.3000004
+    red = np.linspace(0.,10,3) / 10.  # to avoid 0.3000004
     for i,r1 in enumerate(red):
         for j,r2 in enumerate(red):
             mat[i,j] = mat_d[r1,r2]
@@ -115,15 +113,15 @@ def plotMaxInfections(df0, fn):
     axes = axes.reshape(-1)
 
     #0  2   4  6  8  10
-    names = ['0', '0.1', '0.2', '0.3', '0.4']
-    ticks = [0., 0.1, 0.2, 0.3, 0.4]
+    names = ['0', '0.5', '1.0']
+    ticks = [0., 0.5, 1.0]
     for k in range(20):
         if 1:
             print("k= ", k)
             mat = computeMaxInfections(k, df0)
             ax = axes[k]
             ax.xaxis.set_ticks_position('bottom')
-            ax.imshow(mat, vmin=0.2, vmax=0.6, cmap='hot', extent=[-0.05,0.45,-0.05,0.45], interpolation='nearest')
+            ax.imshow(mat, vmin=0.2, vmax=0.6, cmap='hot', extent=[-0.05,1.05,-0.05,1.05], interpolation='nearest')
             ax.set_title("k=%02d" % k)
             ax.set_xticklabels(names)
             ax.set_yticklabels(names)
@@ -134,8 +132,6 @@ def plotMaxInfections(df0, fn):
     #plt.show()
     plt.savefig(fn + ".pdf")
     
-plotMaxInfections(dfs[(1,1,0,0)], 'fil1100')
-plotMaxInfections(dfs[(0,0,1,1)], 'fil0011')
 plotMaxInfections(dfs[(1,1,1,1)], 'fil1111')
 plotMaxInfections(dfs[(0,0,0,0)], 'fil0000')
 quit()

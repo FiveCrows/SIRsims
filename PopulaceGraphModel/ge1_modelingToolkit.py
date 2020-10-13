@@ -90,7 +90,6 @@ class Environment:
         self.population = len(members)
        # self.distancing = distancing
 
-    #def drawSelfDistance(self, env_edges):
     def drawSelfDistance(self):
         '''
         In each environment, I want to choose a fraction of edges that are social distancing
@@ -106,7 +105,6 @@ class Environment:
         # is social distancing. 
 
         num_edges = len(self.edges)
-        #print("drawSelfDistance, num_edges= ", num_edges)
 
         if self.preventions == None:
             num_social = 0
@@ -117,7 +115,6 @@ class Environment:
         random.shuffle(distancing_status)
         # class Environment
         self.distancing_status = dict(zip(self.edges, distancing_status))
-        #print("self= ", self, ", distancing_status= ", self.distancing_status)
 
     def drawMasks(self):
         '''
@@ -135,7 +132,7 @@ class Environment:
         random.shuffle(mask_status)
         # class Environment
         self.mask_status = dict(zip(self.members, mask_status))
-
+        #print("mask status: ", self.mask_status)
 
 #----------------------------------------------------------------------
 class PartitionedEnvironment(Environment):
@@ -249,6 +246,12 @@ class TransmissionWeighter:
 
         weight = self.global_weight * self.env_scalars[environment.type]
         #including the effect of masks
+
+        """
+        ISSUE: enviroment.distancing_status is per edge within an environment. However, it does not exist
+        before the graph is created
+        """
+
         if environment.preventions != None:
             # I like this: a mask_status per person. We also need mask_reduction per person
             n_masks = (environment.mask_status[personA] + environment.mask_status[personB])
@@ -257,7 +260,8 @@ class TransmissionWeighter:
             weight = weight*(1.-self.prevention_reductions["masking"])**n_masks
             #weight = weight*(1-(1-self.prevention_reductions["distancing"]) * environment.preventions["distancing"])
             # Fixed by Gordon
-            weight = weight*(1-self.prevention_reductions["distancing"])
+            if environment.is_built:
+                weight = weight * (1. - self.prevention_reductions["distancing"]*environment.distancing_status[(personA, personB)])
 
         return weight
 
@@ -520,7 +524,9 @@ class PopulaceGraph:
             #print("indexx= ", index)
             env = self.environments[index] # environment
             #print("env= ", env)
+            env.is_built = False  # Added by GE
             self.addEnvironment(env, alg)
+            env.isBuilt = True  # Added by GE
             # GE: WHY ARE THESE LINES NO LONGER REQUIRED?
             #env.preventions = preventions[env.type]  # how are preventions used in the model? 
             #self.constructGraphFromCM(env, alg)
@@ -542,6 +548,9 @@ class PopulaceGraph:
         # Add all missing nodes. These will have no edges. 
         self.graph.add_nodes_from(self.populace.keys()-self.graph.nodes())
 
+        for index in self.environments:
+            self.environments[index].drawSelfDistance()  # graph must already exist
+
     #----------------------------------
     def reweight(self, weighter, preventions, alg = None):
         """
@@ -558,11 +567,12 @@ class PopulaceGraph:
         self.trans_weighter = weighter
         self.preventions    = preventions
 
+        print("ENTER REWEIGHT")
+
         #update new prevention strategies on each environment
         for index in self.environments:
             environment = self.environments[index]
             environment.drawMasks()
-            #environment.drawSelfDistance(self.env_edges[environment.index])
             environment.drawSelfDistance()
             # GE: WHY IS THIS NOT USED in ModelToolkit.py?
             environment.preventions = preventions[environment.type]
