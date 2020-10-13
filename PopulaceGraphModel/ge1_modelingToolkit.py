@@ -263,7 +263,7 @@ class TransmissionWeighter:
             weight = weight*(1.-self.prevention_reductions["masking"])**n_masks
             # Fixed by Gordon
             distance_status = environment.distancing_status[(personA, personB)]
-            print("distancing reduction= ", distance_status, self.prevention_reductions["distancing"], environment.type)
+            #print("distancing reduction= ", distance_status, self.prevention_reductions["distancing"], environment.type)
             weight = weight * (1. - self.prevention_reductions["distancing"]*distance_status)
             #print("weight= ", weight)
 
