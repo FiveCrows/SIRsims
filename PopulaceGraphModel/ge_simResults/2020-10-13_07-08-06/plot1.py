@@ -126,8 +126,14 @@ def plotMaxInfections(df0, fn):
             mat = computeMaxInfections(k, df0)
             ax = axes[k]
             ax.xaxis.set_ticks_position('bottom')
-            ax.imshow(mat, vmin=0.0, vmax=0.5, cmap='hot', extent=[-0.05,0.45,-0.05,0.45], interpolation='nearest')
-            #ax.imshow(mat, cmap='hot', extent=[-0.05,1.05,-0.05,1.05], interpolation='nearest')
+            #ax.imshow(mat, vmin=0.0, vmax=0.4, cmap='hot', extent=[-0.05,0.45,-0.05,0.45], interpolation='nearest')
+            ax.imshow(mat, cmap='hot', extent=[-0.05,0.45,-0.05,0.45], interpolation='nearest')
+            nx,ny = len(names), len(names)  # not general
+            for i in range(nx):
+              for j in range(ny):
+                  txt = "%3.2f" % mat[i,j]
+                  text = ax.text(i*0.1, j*0.1, txt, ha="center", va="center", color="w", fontsize=6)
+
             ax.set_title("k=%02d" % k)
             ax.set_xlabel("mask red.")
             ax.set_ylabel("distance red.")
