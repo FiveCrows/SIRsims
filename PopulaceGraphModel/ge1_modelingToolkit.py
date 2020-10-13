@@ -248,7 +248,6 @@ class TransmissionWeighter:
         #wv = environment.distancing_status[(personA, personB)]
 
         weight = self.global_weight * self.env_scalars[environment.type]
-        #including the effect of masks
 
         """
         ISSUE: enviroment.distancing_status is per edge within an environment. However, it does not exist
@@ -264,9 +263,8 @@ class TransmissionWeighter:
             weight = weight*(1.-self.prevention_reductions["masking"])**n_masks
             # Fixed by Gordon
             distance_status = environment.distancing_status[(personA, personB)]
-            #if (distance_status > 0):
-                #print("distancing reduction > 0")
-            weight = weight * (1. - self.prevention_reductions["distancing"]) * distance_status
+            print("distancing reduction= ", distance_status, self.prevention_reductions["distancing"], environment.type)
+            weight = weight * (1. - self.prevention_reductions["distancing"]*distance_status)
             #print("weight= ", weight)
 
         return weight

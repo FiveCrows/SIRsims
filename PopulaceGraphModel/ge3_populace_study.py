@@ -24,12 +24,12 @@ copyfile ('ge1_modelingToolkit.py',os.path.join(dstdirname,'ge1_modelingToolkit.
 
 # Run with 10% of the data: slim=True
 # Run with all the data: slim=False
-slim = True
 slim = False
+slim = True
 
 #These values scale the weight that goes onto edges by the environment type involved
 # Parameters less than 1 reduce the infectivity
-default_env_scalars   = {"school": 1.0, "workplace": 1.0, "household": 1}
+default_env_scalars   = {"school": 1.0, "workplace": 1.0, "household": 1.0}
 
 #As None, the degrees of the environment are implicit in contact matrices
 env_degrees           = {'workplace': None, 'school': None}
@@ -102,6 +102,7 @@ def reduction_study(s_mask, s_dist, w_mask, w_dist):
     prevent['workplace']['distancing'] = w_dist
     reduce_masking    = [0.0, 0.5, 1.]  #np.linspace(0.2,1.0,5)
     reduce_distancing = [0.0, 0.5, 1.]  #np.linspace(0.2,1.0,5)
+    # value of zero indicate that masking and social distancing have no effect.
     reduce_masking    = [0.0, 0.1, 0.2, 0.3, 0.4]
     reduce_distancing = [0.0, 0.1, 0.2, 0.3, 0.4]
     for m in reduce_masking:
