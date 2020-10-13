@@ -85,7 +85,7 @@ print("Age brackets: ", names)
 
 #init, build simulate
 model = PopulaceGraph(partition, timestamp, slim = slim)
-model.build(trans_weighter, preventions, env_degrees)
+model.build(trans_weighter, preventions, prevention_reductions, env_degrees)
 model.simulate(gamma, tau, title = 'base-test')
 #----------------------------
 
@@ -101,15 +101,17 @@ def reduction_study(s_mask, s_dist, w_mask, w_dist):
     prevent['school']['distancing'] = s_dist
     prevent['workplace']['masking'] = w_mask
     prevent['workplace']['distancing'] = w_dist
-    reduce_masking    = [0., 0.5, 1.]  #np.linspace(0.2,1.0,5)
-    reduce_distancing = [0., 0.5, 1.]  #np.linspace(0.2,1.0,5)
+    reduce_masking    = [0.5, 0.5, 1.]  #np.linspace(0.2,1.0,5)
+    reduce_distancing = [0.5, 0.5, 1.]  #np.linspace(0.2,1.0,5)
     for m in reduce_masking:
         for d in reduce_distancing:
             print("m,d= ", m,d)
             prevention_reductions = {'masking': m, 'distancing': d} 
-            trans_weighter.setPreventions(preventions)   #### where does Bryan apply self.preventions = preventions? *******
+            print("script: preventions: ", prevent)
+            print("script: prevention_reductions: ", prevention_reductions)
+            trans_weighter.setPreventions(prevent)   #### where does Bryan apply self.preventions = preventions? *******
             trans_weighter.setPreventionReductions(prevention_reductions)
-            model.reweight(trans_weighter, preventions)  # 2nd arg not required because of setPreventions
+            model.reweight(trans_weighter, prevent, prevention_reductions)  # 2nd arg not required because of setPreventions
             model.simulate(gamma, tau, title= "red_mask=%4.2f,red_dist=%4.2f,sm=%1d,sd=%1d,wm=%1d,wd=%1d" % (m, d, s_mask, s_dist, w_mask, w_dist))
 
 s_mask = [0, 1]
@@ -119,6 +121,7 @@ w_dist = [0, 1]
 
 reduction_study(0, 0, 0, 0) # nobody with masks, nobody social distancing
 reduction_study(1, 1, 1, 1) # everybody with masks, everybody social distancing
+quit()
 
 # 16 cases * 16 cases for a total of 256 cases
 # Note: if s_mask == 0, prevention_reductions won't have an effect

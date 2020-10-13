@@ -123,11 +123,14 @@ class Environment:
         '''
 
         # assign masks
+        #print("environment?: ", type(self))
+        #print("drawMasks: self.preventions= ", self.preventions)
         if self.preventions == None:
             num_masks = 0
         else:
             num_masks = int(self.population * self.preventions["masking"])
 
+        if (num_masks > 0): print("num_masks= ", num_masks)
         mask_status = [1] * num_masks + [0] * (self.population - num_masks)
         random.shuffle(mask_status)
         # class Environment
@@ -255,13 +258,15 @@ class TransmissionWeighter:
         if environment.preventions != None:
             # I like this: a mask_status per person. We also need mask_reduction per person
             n_masks = (environment.mask_status[personA] + environment.mask_status[personB])
+            if (n_masks > 0): print("n_masks > 0")
             # self.prevnetion_reductions becomes a string!!! HOW!!!
             # If two people do not wear masks, the weight is not affected
             weight = weight*(1.-self.prevention_reductions["masking"])**n_masks
-            #weight = weight*(1-(1-self.prevention_reductions["distancing"]) * environment.preventions["distancing"])
             # Fixed by Gordon
-            if environment.is_built:
-                weight = weight * (1. - self.prevention_reductions["distancing"]*environment.distancing_status[(personA, personB)])
+            distance_status = environment.distancing_status[(personA, personB)]
+            if (distance_status > 0):
+                print("distancing reduction > 0")
+            weight = weight * (1. - self.prevention_reductions["distancing"]) * distance_status
 
         return weight
 
@@ -483,7 +488,7 @@ class PopulaceGraph:
             env.edges = env_edges[ix]
 
     #------------------------------------
-    def build(self, weighter, preventions, env_degrees, alg = None):
+    def build(self, weighter, preventions, prevention_reductions, env_degrees, alg = None):
         """
         constructs a graph for the objects populace
         this model is built to use 
@@ -495,6 +500,9 @@ class PopulaceGraph:
         :return:
         """
 
+        # GE: Do not call getWeight in addEdge. Instead, once the graph is created, loop through 
+        # all environments and call getWeight for each edge found.
+
         start_time = time.time()
         #None is default so old scripts can still run. self not defined in signature
         if alg == None:
@@ -502,6 +510,7 @@ class PopulaceGraph:
 
         self.trans_weighter = weighter
         self.preventions = preventions
+        self.prevention_reductions = prevention_reductions
         self.environment_degrees = env_degrees
 
         # For Debugging and record keeping
@@ -533,7 +542,6 @@ class PopulaceGraph:
 
         # Graphs are done
 
-
         self.isBuilt = True
         finish_time = time.time()
         print("build took {} seconds to finish".format(finish_time-start_time))
@@ -548,11 +556,14 @@ class PopulaceGraph:
         # Add all missing nodes. These will have no edges. 
         self.graph.add_nodes_from(self.populace.keys()-self.graph.nodes())
 
-        for index in self.environments:
-            self.environments[index].drawSelfDistance()  # graph must already exist
+        #for index in self.environments:
+            #env = self.environments[index]
+            #env.drawSelfDistance()  # graph must already exist
+
+        self.reweight(self.trans_weighter, self.preventions, self.prevention_reductions) 
 
     #----------------------------------
-    def reweight(self, weighter, preventions, alg = None):
+    def reweight(self, weighter, preventions, prevention_reductions, alg = None):
         """
         In class PopulaceGraph
         Recomputes the weights on each edge using with, presumably new, arguments
@@ -566,26 +577,33 @@ class PopulaceGraph:
         start_time          = time.time()
         self.trans_weighter = weighter
         self.preventions    = preventions
+        self.prevention_reductions = prevention_reductions
 
-        print("ENTER REWEIGHT")
+        #print("ENTER REWEIGHT")
+        #print("reweight: self.prevention_redutions= ", self.prevention_reductions)
+        #print("reweight: self.preventions= ", self.preventions)
 
         #update new prevention strategies on each environment
         for index in self.environments:
             environment = self.environments[index]
+            # GE: WHY IS THIS NOT USED in ModelToolkit.py?
+            environment.preventions = self.preventions[environment.type]
+            environment.prevention_reductions = self.prevention_reductions
+            #print("before drawMasks, preventions: ", self.preventions)
+            #print("before drawMasks, env.preventions: ", environment.preventions)
             environment.drawMasks()
             environment.drawSelfDistance()
-            # GE: WHY IS THIS NOT USED in ModelToolkit.py?
-            environment.preventions = preventions[environment.type]
+        #print("AFTER FOR LOOP"); 
 
         #pick and replace weights for each environment
         # There is no easy way to collect the edges for a given environment unless one does 
         # a pass on the graph once it has been created. I will do that. 
 
-        for edge in self.graph.edges():
+        for e0, e1 in self.graph.edges():
             #get environment
-            environment = self.environments[self.graph.adj[edge[0]][edge[1]]['environment']]
-            new_weight = weighter.getWeight(edge[0], edge[1], environment)
-            self.graph.adj[edge[0]][edge[1]]['transmission_weight'] = new_weight
+            environment = self.environments[self.graph.adj[e0][e1]['environment']]
+            new_weight = weighter.getWeight(e0, e1, environment)
+            self.graph.adj[e0][e1]['transmission_weight'] = new_weight
         finish_time = time.time()
         print("graph has been reweighted in {} seconds".format(finish_time-start_time))
 
@@ -606,7 +624,9 @@ class PopulaceGraph:
         may be used if one wants to scale the edgesweight bigger/smaller than the trasmission_weighter would regurarly predict
 
         '''
-        weight = self.trans_weighter.getWeight(nodeA, nodeB, environment)*weight_scalar
+        # GE Remove temporarily to simplify the code. Call once the graph is built
+        #weight = self.trans_weighter.getWeight(nodeA, nodeB, environment)*weight_scalar
+        weight = weight_scalar
         self.total_weight += weight
         self.total_edges += 1
         self.graph.add_edge(nodeA, nodeB, transmission_weight = weight, environment = environment.index)
@@ -701,6 +721,7 @@ class PopulaceGraph:
             # self.clusterPartitionedStrogatz(environment, self.environment_degrees[environment.type])
             preventions = self.preventions[environment.type]
             environment.preventions = preventions
+            environment.prevention_reductions = self.prevention_reductions # not sure it is needed
             environment.drawMasks()
             alg(environment, self.environment_degrees[environment.type])
 
