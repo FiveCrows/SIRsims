@@ -80,7 +80,6 @@ print("Age brackets: ", names)
 #####   End setting up model variables  #######################################
 #################################################################################
 
-
 # Create Graph
 
 #init, build simulate
@@ -101,8 +100,10 @@ def reduction_study(s_mask, s_dist, w_mask, w_dist):
     prevent['school']['distancing'] = s_dist
     prevent['workplace']['masking'] = w_mask
     prevent['workplace']['distancing'] = w_dist
-    reduce_masking    = [0.5, 0.5, 1.]  #np.linspace(0.2,1.0,5)
-    reduce_distancing = [0.5, 0.5, 1.]  #np.linspace(0.2,1.0,5)
+    reduce_masking    = [0.0, 0.5, 1.]  #np.linspace(0.2,1.0,5)
+    reduce_distancing = [0.0, 0.5, 1.]  #np.linspace(0.2,1.0,5)
+    reduce_masking    = [0.0, 0.1, 0.2, 0.3, 0.4]
+    reduce_distancing = [0.0, 0.1, 0.2, 0.3, 0.4]
     for m in reduce_masking:
         for d in reduce_distancing:
             print("m,d= ", m,d)
@@ -119,7 +120,8 @@ s_dist = [0, 1]
 w_mask = [0, 1]
 w_dist = [0, 1]
 
-reduction_study(0, 0, 0, 0) # nobody with masks, nobody social distancing
+#reduction_study(0, 0, 0, 0) # nobody with masks, nobody social distancing
+#reduction_study(1, 1, 1, 1) # everybody with masks, everybody social distancing
 reduction_study(1, 1, 1, 1) # everybody with masks, everybody social distancing
 quit()
 

@@ -130,7 +130,7 @@ class Environment:
         else:
             num_masks = int(self.population * self.preventions["masking"])
 
-        if (num_masks > 0): print("num_masks= ", num_masks)
+        #if (num_masks > 0): print("num_masks= ", num_masks)
         mask_status = [1] * num_masks + [0] * (self.population - num_masks)
         random.shuffle(mask_status)
         # class Environment
@@ -258,15 +258,16 @@ class TransmissionWeighter:
         if environment.preventions != None:
             # I like this: a mask_status per person. We also need mask_reduction per person
             n_masks = (environment.mask_status[personA] + environment.mask_status[personB])
-            if (n_masks > 0): print("n_masks > 0")
+            #if (n_masks > 0): print("n_masks > 0")
             # self.prevnetion_reductions becomes a string!!! HOW!!!
             # If two people do not wear masks, the weight is not affected
             weight = weight*(1.-self.prevention_reductions["masking"])**n_masks
             # Fixed by Gordon
             distance_status = environment.distancing_status[(personA, personB)]
-            if (distance_status > 0):
-                print("distancing reduction > 0")
+            #if (distance_status > 0):
+                #print("distancing reduction > 0")
             weight = weight * (1. - self.prevention_reductions["distancing"]) * distance_status
+            #print("weight= ", weight)
 
         return weight
 
