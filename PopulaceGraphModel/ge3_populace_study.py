@@ -24,8 +24,8 @@ copyfile ('ge1_modelingToolkit.py',os.path.join(dstdirname,'ge1_modelingToolkit.
 
 # Run with 10% of the data: slim=True
 # Run with all the data: slim=False
-slim = False
 slim = True
+slim = False
 
 #These values scale the weight that goes onto edges by the environment type involved
 # Parameters less than 1 reduce the infectivity
@@ -113,7 +113,7 @@ def reduction_study(s_mask, s_dist, w_mask, w_dist):
             trans_weighter.setPreventions(prevent)   #### where does Bryan apply self.preventions = preventions? *******
             trans_weighter.setPreventionReductions(prevention_reductions)
             model.reweight(trans_weighter, prevent, prevention_reductions)  # 2nd arg not required because of setPreventions
-            model.simulate(gamma, tau, title= "red_mask=%4.2f,red_dist=%4.2f,sm=%1d,sd=%1d,wm=%1d,wd=%1d" % (m, d, s_mask, s_dist, w_mask, w_dist))
+            model.simulate(gamma, tau, title= "red_mask=%4.2f,red_dist=%4.2f,sm=%2.1f,sd=%2.1f,wm=%2.1f,wd=%2.1f" % (m, d, s_mask, s_dist, w_mask, w_dist))
 
 s_mask = [0.7, 0.3]  # percentage of people wearing masks in schools
 s_dist = [0.7, 0.3]  # percentage of people social distancing in schools
