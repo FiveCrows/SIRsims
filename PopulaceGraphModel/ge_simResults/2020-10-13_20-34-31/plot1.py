@@ -34,7 +34,12 @@ df.to_csv("df.csv")
 #dff = df[(df.sm == 1) & (df.sd == 1) & (df.wm == 0) & (df.wd == 0), :]
 dfg = df.groupby(['sm','sd','wm','wd'])
 dfs = {}
+sm, sd, wm, wd = [0.7, 0.7, 0.7, 0.7]
 dfs[(0.7,0.7,0.7,0.7)] = dfg.get_group((0.7,0.7,0.7,0.7))
+sm, sd, wm, wd = [0.3, 0.7, 0.7, 0.7]
+sm, sd, wm, wd = [0.7, 0.3, 0.7, 0.7]
+sm, sd, wm, wd = [0.7, 0.7, 0.7, 0.3]
+dfs[(sm,sd,wm,wd)] = dfg.get_group((sm,sd,wm,wd))
 #dfs[(0,0,0,0)] = dfg.get_group((0,0,0,0))
 
 # Plot SIR curves per age as a function of time
@@ -150,9 +155,8 @@ def plotMaxInfections(df0, fn, sm, sd, wm, wd):
     #plt.show()
     plt.savefig(fn + ".pdf")
     
-sm, sd, wm, wd = [0.7, 0.7, 0.7, 0.7]
-plotMaxInfections(dfs[(sm,sd,wm,wd)], 'fil.7.7.7.7', sm, sd, wm, wd)
-#plotMaxInfections(dfs[(0,0,0,0)], 'fil0000')
+filnm = "fil%2.1f%2.1f%2.1f%2.1f" % (sm, sd, wm, wd)
+plotMaxInfections(dfs[(sm,sd,wm,wd)], filnm, sm, sd, wm, wd)
 quit()
 #-----------------------------------------------------
 age = 4
