@@ -53,7 +53,7 @@ dfc.drop("ages", axis=1)
 dfc['N_age'] = N_col
 dfc['maxI_age'] = maxI_col
 # Accuracy to within two days 
-dfc['argmaxI_age'] = t_maxI_col
+dfc['t_maxI_age'] = t_maxI_col
 dfc['SIR_age'] = curves_col
 
 
