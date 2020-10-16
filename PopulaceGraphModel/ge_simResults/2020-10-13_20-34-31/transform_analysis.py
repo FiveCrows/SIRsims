@@ -48,7 +48,7 @@ for row_tuple in df.itertuples():
 dfc = df.copy()
 #print("columns: ", dfc.columns)
 dfc.drop("ages", axis=1)
-#print("columns: ", dfc.columns)
+print("columns: ", dfc.columns)
 
 dfc['N_age'] = N_col
 dfc['maxI_age'] = maxI_col
