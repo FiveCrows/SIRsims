@@ -233,6 +233,7 @@ class PopulaceGraph:
         self.total_edges = 0
         self.total_weight = 0
         self.environments_added = 0
+        self.initial_recovered = None
 
         if graph == None:
             self.graph = nx.Graph()
@@ -835,8 +836,11 @@ class PopulaceGraph:
                 # attachments[""]
 
     def simulate(self, gamma, tau, simAlg = EoN.fast_SIR, title = None, full_data = True):
+        # in class PopulaceGraph
         start = time.time()
-        simResult = simAlg(self.graph, tau, gamma, rho=0.001, transmission_weight='transmission_weight', return_full_data=full_data)
+        # self.initial_recovered, default is None, otherwise a list of recovered people
+        # if rho is used, some of the recovered might be infected, but the overlap would be very small.
+        simResult = simAlg(self.graph, tau, gamma, self.initial_recovered, rho=0.001, transmission_weight='transmission_weight', return_full_data=full_data)
         stop = time.time()
         self.record.print("simulation completed in {} seconds".format(stop - start))
 

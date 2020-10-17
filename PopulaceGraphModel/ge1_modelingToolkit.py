@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math
 from scipy.interpolate import interp1d
+from scipy.stats import bernoulli
 
 
 
@@ -309,6 +310,20 @@ class PopulaceGraph:
             self.environments[index] = (school)
            
     #----------------
+    def vaccinatePopulace(self, perc):
+        # vaccinate a fraction perc 
+        """
+        :param perc
+        Vaccinate a fraction perc [0,1] of the population at random, all ages
+        """
+
+        vaccine = np.zeros(self.population, dtype='int')
+        rv = bernoulli(perc)
+        self.initial_vaccinated = bernoulli.rvs(perc, size=self.population)
+        perc_vaccinated = np.sum(self.initial_vaccinated) / self.population
+        print("percentage vaccinated: ", perc_vaccinated)
+        print("initial population: ", self.population)
+    #----------------
     def printEnvironments(self):
         keys = list(self.environments.keys())
         envs = set()
@@ -361,6 +376,9 @@ class PopulaceGraph:
         self.total_weight = 0
         self.environments_added = 0
         #self.edge_envs = {}  # keep track of the environment associated with each edge
+        # By default nobody in the population is recovered. 
+        # Vaccination is modeled by setting a person's status to recovered
+        self.initial_vaccinated = None
 
         # What is this for? 
         if partition != None:
@@ -1096,7 +1114,7 @@ class PopulaceGraph:
     def simulate(self, gamma, tau, simAlg = EoN.fast_SIR, title = None, full_data = True, preventions=None):
         start = time.time()
         # Bryan had the arguments reversed. 
-        simResult = simAlg(self.graph, tau, gamma, rho=0.001, transmission_weight='transmission_weight', return_full_data=full_data)
+        simResult = simAlg(self.graph, tau, gamma, initial_recovereds=self.initial_vaccinated, rho=0.001, transmission_weight='transmission_weight', return_full_data=full_data)
         stop = time.time()
         self.record.print("simulation completed in {} seconds".format(stop - start))
 

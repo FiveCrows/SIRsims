@@ -240,6 +240,24 @@ class PopulaceGraph:
             self.environments[index] = (school)
            
     #----------------
+    def vaccinatePopulace(self, perc):
+        # vaccinate a fraction perc 
+        """
+        :param perc
+        Vaccinate a fraction perc [0,1] of the population at random, all ages
+        """
+
+        print("perc to vaccinate: ", perc)
+        pop = 200000  # population size
+        vaccine = np.zeros(pop, dtype='int')
+        from scipy.stats import bernoulli
+        rv = bernoulli(perc)
+        msg = bernoulli.rvs(perc, pop)
+        print("msg: ", msg[1:100])
+        perc_vaccinated = np.sum(msg) / pop
+        print("perc vaccinated: ", perc_vaccinated)
+        quit()
+    #----------------
     def printEnvironments(self):
         keys = list(self.environments.keys())
         envs = set()
@@ -286,6 +304,9 @@ class PopulaceGraph:
         self.total_weight = 0
         self.environments_added = 0
         #self.edge_envs = {}  # keep track of the environment associated with each edge
+        # By default nobody in the population is recovered. 
+        # Vaccination is modeled by setting a person's status to recovered
+        self.initial_recovered = None
 
         # What is this for? 
         if partition != None:
@@ -309,7 +330,7 @@ class PopulaceGraph:
             print("WARNING! slim = True, 90% of people are filtered out")
             self.populace = {}
             for key in x:
-                if random.random()>0.9:
+                if random.random() > 0.9:
                     self.populace[key] = (vars(x[key]))
         else:
             self.populace = ({key: (vars(x[key])) for key in x})  # .transpose()
@@ -879,7 +900,7 @@ class PopulaceGraph:
     def simulate(self, gamma, tau, simAlg = EoN.fast_SIR, title = None, full_data = True, preventions=None):
         start = time.time()
         # Bryan had the arguments reversed. 
-        simResult = simAlg(self.graph, tau, gamma, rho=0.001, transmission_weight='transmission_weight', return_full_data=full_data)
+        simResult = simAlg(self.graph, tau, gamma, self.initial_recovered, rho=0.001, transmission_weight='transmission_weight', return_full_data=full_data)
         sr = simResult
         SIR_results = {'S':sr.S(), 'I':sr.I(), 'R':sr.R(), 't':sr.t()}
         print("SIR_results= ", SIR_results)
