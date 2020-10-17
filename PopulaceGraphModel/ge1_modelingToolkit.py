@@ -309,6 +309,17 @@ class PopulaceGraph:
                                             school_matrices[index], partition )
             self.environments[index] = (school)
            
+    #-----------------
+    def infectPopulace(self, perc):
+        # vaccinate a fraction perc 
+        """
+        :param perc
+        infect a fraction perc [0,1] of the population at random, all ages
+        """
+
+        infected_01 = bernoulli.rvs(perc, size=self.population)
+        self.initial_infected = np.asarray(list(self.populace.keys()))[infected_01 == 1]
+        print("nb initial infected: ", self.initial_infected.shape[0])
     #----------------
     def vaccinatePopulace(self, perc):
         # vaccinate a fraction perc 
@@ -317,12 +328,9 @@ class PopulaceGraph:
         Vaccinate a fraction perc [0,1] of the population at random, all ages
         """
 
-        vaccine = np.zeros(self.population, dtype='int')
-        rv = bernoulli(perc)
-        self.initial_vaccinated = bernoulli.rvs(perc, size=self.population)
-        perc_vaccinated = np.sum(self.initial_vaccinated) / self.population
-        print("percentage vaccinated: ", perc_vaccinated)
-        print("initial population: ", self.population)
+        vaccinated_01 = bernoulli.rvs(perc, size=self.population)
+        self.initial_vaccinated = np.asarray(list(self.populace.keys()))[vaccinated_01 == 1]
+        print("nb initial vaccinated: ", self.initial_vaccinated.shape[0])
     #----------------
     def printEnvironments(self):
         keys = list(self.environments.keys())
@@ -379,6 +387,7 @@ class PopulaceGraph:
         # By default nobody in the population is recovered. 
         # Vaccination is modeled by setting a person's status to recovered
         self.initial_vaccinated = None
+        self.initial_infected   = None
 
         # What is this for? 
         if partition != None:
@@ -395,8 +404,8 @@ class PopulaceGraph:
             with open("people_list_serialized.pkl", 'rb') as file:
                 x = pickle.load(file)
 
-            # return represented by dict of dicts
-        #renames = {"sp_hh_id": "household", "work_id": "work", "school_id": "school"} maybe later...
+        # return represented by dict of dicts
+        # renames = {"sp_hh_id": "household", "work_id": "work", "school_id": "school"} maybe later...
 
         if slim == True:
             print("WARNING! slim = True, 90% of people are filtered out")
@@ -406,6 +415,7 @@ class PopulaceGraph:
                     self.populace[key] = (vars(x[key]))
         else:
             self.populace = ({key: (vars(x[key])) for key in x})  # .transpose()
+
         self.population = len(self.populace)
         keys = list(self.populace.keys())
 
@@ -1114,7 +1124,8 @@ class PopulaceGraph:
     def simulate(self, gamma, tau, simAlg = EoN.fast_SIR, title = None, full_data = True, preventions=None):
         start = time.time()
         # Bryan had the arguments reversed. 
-        simResult = simAlg(self.graph, tau, gamma, initial_recovereds=self.initial_vaccinated, rho=0.001, transmission_weight='transmission_weight', return_full_data=full_data)
+        simResult = simAlg(self.graph, tau, gamma, initial_recovereds=self.initial_vaccinated, initial_infecteds=self.initial_infected, transmission_weight='transmission_weight', return_full_data=full_data)
+        #simResult = simAlg(self.graph, tau, gamma, initial_recovereds=self.initial_vaccinated, rho=0.001, transmission_weight='transmission_weight', return_full_data=full_data)
         stop = time.time()
         self.record.print("simulation completed in {} seconds".format(stop - start))
 

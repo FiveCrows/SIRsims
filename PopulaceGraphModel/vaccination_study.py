@@ -25,8 +25,8 @@ copyfile ('ge3_populace_study.py',os.path.join(dstdirname,'ge3_populace_study.py
 
 # Run with 10% of the data: slim=True
 # Run with all the data: slim=False
-slim = False
 slim = True
+slim = False
 
 #These values scale the weight that goes onto edges by the environment type involved
 # Parameters less than 1 reduce the infectivity
@@ -86,16 +86,17 @@ print("Age brackets: ", names)
 #init, build simulate
 model = PopulaceGraph(partition, timestamp, slim = slim)
 model.build(trans_weighter, preventions, prevention_reductions, env_degrees)
-perc = 0.7
+perc = 0.1
 model.vaccinatePopulace(perc)
+model.infectPopulace(0.001)
 model.simulate(gamma, tau, title = 'base-test')
-quit()
 #----------------------------
 
 # Create a range of simulation
 # 'masking': 0.1, 0.2, 0.3, 0.4
 # 'distancing': 0.0, 0.1, 0.2, 0.3, 0.4
 
+#-------------------------------------------------------------------
 def reduction_study(s_mask, s_dist, w_mask, w_dist):
     # Probably had no effect since masking and distancing initially set to zero
     # if s_mask = 0, prevention_reduction in school masks won't have an effect, but will in the workforce
@@ -117,21 +118,53 @@ def reduction_study(s_mask, s_dist, w_mask, w_dist):
             trans_weighter.setPreventions(prevent)   #### where does Bryan apply self.preventions = preventions? *******
             trans_weighter.setPreventionReductions(prevention_reductions)
             model.reweight(trans_weighter, prevent, prevention_reductions)  # 2nd arg not required because of setPreventions
-            model.simulate(gamma, tau, title= "red_mask=%4.2f,red_dist=%4.2f,sm=%2.1f,sd=%2.1f,wm=%2.1f,wd=%2.1f" % (m, d, s_mask, s_dist, w_mask, w_dist))
+            model.simulate(gamma, tau, title= "red_mask=%4.2f,red_dist=%4.2f,sm=%2.1f,sd=%2.1f,wm=%2.1f,wd=%2.1f" \
+                    % (m, d, s_mask, s_dist, w_mask, w_dist))
 
-s_mask = [0.7, 0.3]  # percentage of people wearing masks in schools
-s_dist = [0.7, 0.3]  # percentage of people social distancing in schools
+#-------------------------------------------------------------------
+def vaccination_study(s_mask, s_dist, w_mask, w_dist, count):
+    # Probably had no effect since masking and distancing initially set to zero
+    # if s_mask = 0, prevention_reduction in school masks won't have an effect, but will in the workforce
+    prevent = copy.deepcopy(preventions)
+    prevent['school']['masking'] = s_mask
+    prevent['school']['distancing'] = s_dist
+    prevent['workplace']['masking'] = w_mask
+    prevent['workplace']['distancing'] = w_dist
+    # value of zero indicate that masking and social distancing have no effect.
+    reduce_masking    = [0.0]
+    reduce_distancing = [0.0]
+    # Vaccination across the entire population
+    percent_vaccinated = [0., 0.30, 0.50, 0.70]
+    # If s_mask == 0, 
+    for v in percent_vaccinated:
+      for m in reduce_masking:
+        for d in reduce_distancing:
+            prevention_reductions = {'masking': m, 'distancing': d} 
+            trans_weighter.setPreventions(prevent)   #### where does Bryan apply self.preventions = preventions? *******
+            trans_weighter.setPreventionReductions(prevention_reductions)
+            model.infectPopulace(perc=0.001)
+            model.vaccinatePopulace(perc==percent_vaccinated)
+            model.reweight(trans_weighter, prevent, prevention_reductions)  # 2nd arg not required because of setPreventions
+            # The file data will be stored in a pandas file
+            model.simulate(gamma, tau, title= "red_mask=%4.2f,red_dist=%4.2f,sm=%2.1f,sd=%2.1f,wm=%2.1f,wd=%2.1f,count=%04d" \
+                    % (m, d, s_mask, s_dist, w_mask, w_dist, count))
+            count += 1
+    return count
+#-------------------------------------------------------------------
+
+s_mask = [0.0, 0.0]  # percentage of people wearing masks in schools
+s_dist = [0.3, 0.3]  # percentage of people social distancing in schools
 w_mask = [0.7, 0.3]  # percentage of people wearing masks in the workplace
-w_dist = [0.7, 0.3]  # percentage of people social distancing in the workplace
+w_dist = [1.0, 1.0]  # percentage of people social distancing in the workplace
 
-# 16 cases * 16 cases for a total of 256 cases
+levels = [0.0, 0.3, 0.7, 1.0]
+
+# 4 levels of vaccination, 4 levels of mask and social distancing. 16 cases today. 
 # Note: if s_mask == 0, prevention_reductions won't have an effect
-for sm in s_mask:
- for wm in w_mask:
-  for sd in s_dist:
-   for wd in w_dist:
-        reduction_study(sm, sd, wm, wd)
-        pass 
+count = 0
+for level in levels:
+    sm, wm, sd, wd = [level] * 4
+    count = vaccination_study(sm, sd, wm, wd, count)
 
 quit()
 

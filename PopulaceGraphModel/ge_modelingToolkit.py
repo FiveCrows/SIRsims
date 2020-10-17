@@ -240,6 +240,24 @@ class PopulaceGraph:
             self.environments[index] = (school)
            
     #----------------
+    def infectPopulace(self, perc):
+        # vaccinate a fraction perc 
+        """
+        :param perc
+        Vaccinate a fraction perc [0,1] of the population at random, all ages
+        """
+
+        print("perc to vaccinate: ", perc)
+        pop = 200000  # population size
+        vaccine = np.zeros(pop, dtype='int')
+        from scipy.stats import bernoulli
+        rv = bernoulli(perc)
+        msg = bernoulli.rvs(perc, pop)
+        print("msg: ", msg[1:100])
+        perc_vaccinated = np.sum(msg) / pop
+        print("perc vaccinated: ", perc_vaccinated)
+        quit()
+    #----------------
     def vaccinatePopulace(self, perc):
         # vaccinate a fraction perc 
         """
