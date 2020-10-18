@@ -1,7 +1,6 @@
 from ge1_modelingToolkit import *
 import copy
 import os
-import glob
 # OS independence
 from shutil import copyfile
 
@@ -18,11 +17,7 @@ dstdirname = os.path.join(".","ge_simResults", timestamp, "src")
 os.makedirs(dstdirname)
 
 # Independent of OS
-os.system("cp *.py %s" % dstdirname)  # not OS independent
-#copyfile ("*.py", 'ge3_populace_study.py',os.path.join(dstdirname,'ge3_populace_study.py'))
-#copyfile ('ge3_populace_study.py',os.path.join(dstdirname,'ge3_populace_study.py'))
-#copyfile ('vaccination_study.py',os.path.join(dstdirname,'vaccination_study.py'))
-#copyfile ('ge1_modelToolkit.py',os.path.join(dstdirname,'ge1_modelToolkit.py'))
+copyfile ('ge3_populace_study.py',os.path.join(dstdirname,'ge3_populace_study.py'))
 
 #################################################################################
 #####   Begin setting up model variables  #######################################

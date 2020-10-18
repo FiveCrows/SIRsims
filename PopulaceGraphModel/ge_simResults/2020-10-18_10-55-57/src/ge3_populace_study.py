@@ -1,12 +1,9 @@
 from ge1_modelingToolkit import *
 import copy
 import os
-import glob
 # OS independence
 from shutil import copyfile
-
-# In this study, we vaccinate 30% and 70% of the population by making them recovered. 
-# We then calculate SIR curves for each age group. 
+# plot chance of infection
 
 # Time stamp to identify the simulation, and the directories where the data is stored
 # Called in constructor of Partioning graph (used to be called in simulate() method
@@ -18,11 +15,8 @@ dstdirname = os.path.join(".","ge_simResults", timestamp, "src")
 os.makedirs(dstdirname)
 
 # Independent of OS
-os.system("cp *.py %s" % dstdirname)  # not OS independent
-#copyfile ("*.py", 'ge3_populace_study.py',os.path.join(dstdirname,'ge3_populace_study.py'))
-#copyfile ('ge3_populace_study.py',os.path.join(dstdirname,'ge3_populace_study.py'))
-#copyfile ('vaccination_study.py',os.path.join(dstdirname,'vaccination_study.py'))
-#copyfile ('ge1_modelToolkit.py',os.path.join(dstdirname,'ge1_modelToolkit.py'))
+copyfile ('ge3_populace_study.py',os.path.join(dstdirname,'ge3_populace_study.py'))
+copyfile ('ge1_modelingToolkit.py',os.path.join(dstdirname,'ge1_modelingToolkit.py'))
 
 #################################################################################
 #####   Begin setting up model variables  #######################################
@@ -91,9 +85,6 @@ print("Age brackets: ", names)
 #init, build simulate
 model = PopulaceGraph(partition, timestamp, slim = slim)
 model.build(trans_weighter, preventions, prevention_reductions, env_degrees)
-perc = 0.1
-model.vaccinatePopulace(perc)
-model.infectPopulace(0.001)
 model.simulate(gamma, tau, title = 'base-test')
 #----------------------------
 
@@ -101,7 +92,6 @@ model.simulate(gamma, tau, title = 'base-test')
 # 'masking': 0.1, 0.2, 0.3, 0.4
 # 'distancing': 0.0, 0.1, 0.2, 0.3, 0.4
 
-#-------------------------------------------------------------------
 def reduction_study(s_mask, s_dist, w_mask, w_dist):
     # Probably had no effect since masking and distancing initially set to zero
     # if s_mask = 0, prevention_reduction in school masks won't have an effect, but will in the workforce
@@ -123,52 +113,21 @@ def reduction_study(s_mask, s_dist, w_mask, w_dist):
             trans_weighter.setPreventions(prevent)   #### where does Bryan apply self.preventions = preventions? *******
             trans_weighter.setPreventionReductions(prevention_reductions)
             model.reweight(trans_weighter, prevent, prevention_reductions)  # 2nd arg not required because of setPreventions
-            model.simulate(gamma, tau, title= "red_mask=%4.2f,red_dist=%4.2f,sm=%3.2f,sd=%3.2f,wm=%3.2f,wd=%3.2f" \
-                    % (m, d, s_mask, s_dist, w_mask, w_dist))
+            model.simulate(gamma, tau, title= "red_mask=%4.2f,red_dist=%4.2f,sm=%2.1f,sd=%2.1f,wm=%2.1f,wd=%2.1f" % (m, d, s_mask, s_dist, w_mask, w_dist))
 
-#-------------------------------------------------------------------
-def vaccination_study(s_mask, s_dist, w_mask, w_dist, count):
-    # Probably had no effect since masking and distancing initially set to zero
-    # if s_mask = 0, prevention_reduction in school masks won't have an effect, but will in the workforce
-    prevent = copy.deepcopy(preventions)
-    prevent['school']['masking'] = s_mask
-    prevent['school']['distancing'] = s_dist
-    prevent['workplace']['masking'] = w_mask
-    prevent['workplace']['distancing'] = w_dist
-    # value of zero indicate that masking and social distancing have no effect.
-    reduce_masking    = [0.5]
-    reduce_distancing = [0.5]
-    # Vaccination across the entire population
-    percent_vaccinated = [0., 0.25, 0.50, 0.75,1.00]
-    # If s_mask == 0, 
-    for v in percent_vaccinated:
-      for m in reduce_masking:
-        for d in reduce_distancing:
-            prevention_reductions = {'masking': m, 'distancing': d} 
-            trans_weighter.setPreventions(prevent)   #### where does Bryan apply self.preventions = preventions? *******
-            trans_weighter.setPreventionReductions(prevention_reductions)
-            model.infectPopulace(perc=0.001)
-            model.vaccinatePopulace(perc=v)
-            model.reweight(trans_weighter, prevent, prevention_reductions)  # 2nd arg not required because of setPreventions
-            # The file data will be stored in a pandas file
-            model.simulate(gamma, tau, title= "red_mask=%4.2f,red_dist=%4.2f,sm=%3.2f,sd=%3.2f,wm=%3.2f,wd=%3.2f,v=%3.2f" \
-                    % (m, d, s_mask, s_dist, w_mask, w_dist, v))
-            count += 1
-    return count
-#-------------------------------------------------------------------
-
-s_mask = [0.0, 0.0]  # percentage of people wearing masks in schools
-s_dist = [0.3, 0.3]  # percentage of people social distancing in schools
+s_mask = [0.7, 0.3]  # percentage of people wearing masks in schools
+s_dist = [0.7, 0.3]  # percentage of people social distancing in schools
 w_mask = [0.7, 0.3]  # percentage of people wearing masks in the workplace
-w_dist = [1.0, 1.0]  # percentage of people social distancing in the workplace
+w_dist = [0.7, 0.3]  # percentage of people social distancing in the workplace
 
-levels = [0.0, 0.25, 0.5, 0.75, 1.0]  # different values of s_mask
-
-# 5 levels of vaccination, 5 levels of mask and social distancing. 25 cases.
-count = 0
-for level in levels:
-    sm, wm, sd, wd = [level] * 4
-    count = vaccination_study(sm, sd, wm, wd, count)
+# 16 cases * 16 cases for a total of 256 cases
+# Note: if s_mask == 0, prevention_reductions won't have an effect
+for sm in s_mask:
+ for wm in w_mask:
+  for sd in s_dist:
+   for wd in w_dist:
+        reduction_study(sm, sd, wm, wd)
+        pass 
 
 quit()
 

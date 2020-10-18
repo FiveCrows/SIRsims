@@ -217,10 +217,12 @@ class TransmissionWeighter:
         self.env_scalars = env_scalars
 
     def setPreventions(self, preventions):
+        print("setPreventions: ", preventions)
         self.preventions = preventions
 
     def setPreventionReductions(self, prevention_reductions):
         self.prevention_reductions = prevention_reductions
+        print("setPreventionReductions: ", prevention_reductions)
 
     def getWeight(self, personA, personB, environment):
         start_time = time.time()
@@ -328,6 +330,7 @@ class PopulaceGraph:
         Vaccinate a fraction perc [0,1] of the population at random, all ages
         """
 
+        self.percent_populace_vaccinated = perc
         vaccinated_01 = bernoulli.rvs(perc, size=self.population)
         self.initial_vaccinated = np.asarray(list(self.populace.keys()))[vaccinated_01 == 1]
         print("nb initial vaccinated: ", self.initial_vaccinated.shape[0])
@@ -388,6 +391,7 @@ class PopulaceGraph:
         # Vaccination is modeled by setting a person's status to recovered
         self.initial_vaccinated = None
         self.initial_infected   = None
+        self.percent_populace_vaccinated = None
 
         # What is this for? 
         if partition != None:
@@ -1122,6 +1126,8 @@ class PopulaceGraph:
    
     #-----------------------------------------
     def simulate(self, gamma, tau, simAlg = EoN.fast_SIR, title = None, full_data = True, preventions=None):
+        # :param: preventions 
+        # not used, but stored as an instance variable self.preventions
         start = time.time()
         # Bryan had the arguments reversed. 
         simResult = simAlg(self.graph, tau, gamma, initial_recovereds=self.initial_vaccinated, initial_infecteds=self.initial_infected, transmission_weight='transmission_weight', return_full_data=full_data)
@@ -1195,7 +1201,9 @@ class PopulaceGraph:
         #print("SIR_results: ", SIR_results['t']) # floats as they should be
         data['title'] = title
         data['params'] = {'gamma':gamma, 'tau':tau}
-        data['preventions'] = preventions
+        data['preventions'] = self.preventions
+        data['prevention_reductions'] = self.prevention_reductions
+        data['perc_populace_vaccinated'] = self.percent_populace_vaccinated
         data['ages_SIR'] = ages_d # ages_d[time][k] ==> S,I,R counts for age bracket k
 
         self.sims.append([simResult, title, [gamma, tau], preventions])
