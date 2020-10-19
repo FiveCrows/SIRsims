@@ -322,21 +322,23 @@ class PopulaceGraph:
         ordered_schools = map(lambda x: [x[0], len(x[1])], ordered_schools)
         ordered_schools = list(ordered_schools)
 
-        school_ids = [o[0] for o in ordered_schools[1:]]
-        school_pop = [o[1] for o in ordered_schools[1:]]
+        #school_ids = [o[0] for o in ordered_schools[:]]
+        #school_pop = [o[1] for o in ordered_schools[:]]
         self.ordered_school_ids = [o[0] for o in ordered_schools[:]]
         self.ordered_school_pop = [o[1] for o in ordered_schools[:]]
         print("school_pop: ", self.ordered_school_pop[0:10])
+        print("school_ids: ", self.ordered_school_ids[0:10])
 
         # Cumulative sum of school lengths
         # Sum from 1 since 0th index is a school with 200,000 students. Can't be right. 
-        self.cum_sum_school_pop = np.cumsum(school_pop[1:])
+        self.cum_sum_school_pop = np.cumsum(self.ordered_school_pop[1:])
         print("cum_sum, top 10: ", self.cum_sum_school_pop[0:10])
         self.school_population = self.cum_sum_school_pop[-1]
+        self.nb_schools = len(self.cum_sum_school_pop)
         print("* total school population: ", self.school_population)
         print("* total school population to vaccinate: ", self.cum_sum_school_pop[self.nb_top_schools_vaccinated])
-        self.largest_schools_vaccinated = school_ids[1:self.nb_top_schools_vaccinated]
-        print("* school_id[0:10]: ", school_ids[0:10])
+        self.largest_schools_vaccinated = self.ordered_school_ids[1:self.nb_top_schools_vaccinated]
+        print("* school_id[0:10]: ", self.ordered_school_ids[0:10])
         print("--------------")
 
     #----------------------------------
@@ -355,14 +357,15 @@ class PopulaceGraph:
 
         # Cumulative sum of business lengths
         # Sum from 1 since 0th index is a workplace with 120,000+ people. Can't be right. 
-        self.cum_sum_work_pop = np.cumsum(work_pop[1:])  # remove the first work which are the people with no workplace
+        self.cum_sum_work_pop = np.cumsum(self.ordered_work_pop[1:])  # remove the first work which are the people with no workplace
         print("cum_sum, top 10: ", self.cum_sum_work_pop[0:10])
         self.work_population = self.cum_sum_work_pop[-1]
+        self.nb_workplaces = len(self.cum_sum_work_pop)
         print("* total work population: ", self.work_population)
         print("... nb_top_workplaces_vaccinated: ", self.nb_top_workplaces_vaccinated)  # should be integer
         print("* total work population to vaccinate: ", self.cum_sum_work_pop[self.nb_top_workplaces_vaccinated])
-        self.largest_workplaces_vaccinated = work_ids[1:self.nb_top_workplaces_vaccinated]
-        print("* work_id[0]: ", work_ids[0])
+        self.largest_workplaces_vaccinated = self.ordered_work_ids[1:self.nb_top_workplaces_vaccinated]
+        print("* work_id[0]: ", self.ordered_work_ids[0])
         print("--------------")
 
     #--------------------------------------------
@@ -446,10 +449,10 @@ class PopulaceGraph:
         general_populace_vaccinated = np.asarray(list(self.populace.keys()))[vaccinated_01 == 1]
         self.initial_vaccinated.update(general_populace_vaccinated)
 
-        # Need to compute these
-        school_populace = [1]
+        self.workplace_population_vaccinated = len(workplace_populace_vaccinated)
+        self.school_population_vaccinated    = len(school_populace_vaccinated)
 
-        print("nb initial populace: ", self.population)
+        print("Total initial population: ", self.population)
         #print("initial vaccinated: ", self.initial_vaccinated)
         if len(self.initial_vaccinated) != 0: 
             print("nb initial vaccinated: ", len(self.initial_vaccinated))
@@ -462,14 +465,19 @@ class PopulaceGraph:
         print("nb worplaces vaccinated: ", self.nb_top_workplaces_vaccinated)
         print("nb people in workplace to vaccinate: ", len(workplace_populace_vaccinated))
         print("fraction of workplace populace vaccinated: ", len(workplace_populace_vaccinated) / self.work_population)
-        print("total workplace populace vaccinated: ", len(workplace_populace_vaccinated))
+        print("total workplace populace vaccinated: ", self.workplace_population_vaccinated)
         print("total workplace population: ", self.work_population)
 
         print()
   
         print("fraction of school populace vaccinated: ", len(school_populace_vaccinated) / self.school_population)
         print("total school population: ", self.school_population)
-        print("total school populace vaccinated: ", len(school_populace_vaccinated))
+        print("total school populace vaccinated: ", self.school_population_vaccinated)
+
+        vacc = self.createVaccinationDict()
+        for k,v in vacc.items():
+            print("vacc[%s]: "%k, v)
+                    
     #----------------
     def printEnvironments(self):
         keys = list(self.environments.keys())
@@ -489,9 +497,18 @@ class PopulaceGraph:
             print(self.environments[keys[k]].type)  # list of one element [12]. Meaning? 
 
     #-------------------------------
-    def resetVaccinations(self):
+    def resetVaccinated_Infected(self):
         # By default nobody in the population is recovered. 
         # Vaccination is modeled by setting a person's status to recovered
+
+        # Reset to not vaccinate anybody anywhere 
+        self.set_nbTopWorkplacesToVaccinate(0, 0.)
+        self.set_nbTopSchoolsToVaccinate(0, 0.)
+
+        # Rank locations. Must be called after setting nb places to vaccinate
+        self.rank_workplaces()
+        self.rank_schools()
+
         self.initial_vaccinated = []
         self.initial_infected   = []
         self.nb_top_workplaces_vaccinated = 0
@@ -503,10 +520,28 @@ class PopulaceGraph:
         self.perc_school_vaccinated = 0.0  # perc vaccinated in the schools
         self.work_population = 1
         self.school_population = 1
-        self.set_nbTopWorkplacesToVaccinate(0, 0.)
-        self.set_nbTopSchoolsToVaccinate(0, 0.)
-        self.rank_workplaces()
-        self.rank_schools()
+        self.nb_schools = 0
+        self.nb_workplaces = 0
+        self.workplace_population_vaccinated = 0,
+        self.school_population_vaccinated = 0,
+    #-------------------------------
+    def createVaccinationDict(self):
+        vacc_dict = {
+            'nb_top_workplaces_vaccinated': self.nb_top_workplaces_vaccinated,
+            'nb_top_schools_vaccinated': self.nb_top_schools_vaccinated,
+            'perc_people_vaccinated_in_workplaces': self.perc_people_vaccinated_in_workplaces,
+            'perc_populace_vaccinated': self.perc_populace_vaccinated,
+            'perc_people_vaccinated_in_schools': self.perc_people_vaccinated_in_schools,
+            'perc_workplace_vaccinated': self.perc_workplace_vaccinated,    # perc vaccinated in the workplace
+            'perc_school_vaccinated': self.perc_school_vaccinated, # perc vaccinated in the schools
+            'work_population': self.work_population,
+            'school_population': self.school_population,
+            'nb_schools': self.nb_schools,
+            'nb_workplaces': self.nb_workplaces,
+            'workplace_population_vaccinated': self.workplace_population_vaccinated,
+            'school_population_vaccinated': self.school_population_vaccinated,
+        }
+        return vacc_dict
     #-------------------------------
     def __init__(self, partition, timestamp, graph = None, populace = None, 
                  attributes = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False, save_output=False):
@@ -632,7 +667,7 @@ class PopulaceGraph:
         self.setup_schools(partition)
 
         # Must be called last
-        self.resetVaccinations()
+        self.resetVaccinated_Infected()
 
     #-------------------------------
     def zeroWeights(self, env):
@@ -1281,7 +1316,7 @@ class PopulaceGraph:
         return ages_d
    
     #-----------------------------------------
-    def simulate(self, gamma, tau, simAlg = EoN.fast_SIR, title = None, full_data = True, preventions=None):
+    def simulate(self, gamma, tau, simAlg = EoN.fast_SIR, title = None, full_data = True, preventions=None, prevention_reductions=None):
         # :param: preventions 
         # not used, but stored as an instance variable self.preventions
         start = time.time()
@@ -1292,16 +1327,9 @@ class PopulaceGraph:
 
         self.record.print("simulation completed in {} seconds".format(stop - start))
 
-        graph = self.graph
-        print("nb nodes in graph: ", nx.number_of_nodes(graph))
 
         start2 = time.time()
-        sr = simResult
-        txx = {}
-        last_time = simResult.t()[-1]
 
-        for tix in range(0, int(last_time)+2, 2):
-            txx[tix] = sr.get_statuses(time=tix)
 
         self.record.print("handle simulation output: {} seconds".format(time.time() - start2))
 
@@ -1310,10 +1338,10 @@ class PopulaceGraph:
         #start3 = time.time()
         #self.record.print("time to change 'S','I','R' to 0,1,2 for faster processing: %f sec" % (time.time()-start3))
 
-        self.saveResults(simResult)
+        self.saveResults(simResult, title, tau, gamma, preventions, prevention_reductions)
 
     #-------------------------------------------
-    def saveResults(self, simResult):
+    def saveResults(self, simResult, title, tau, gamma, preventions, prevention_reductions):
         """
         :param filename: string
         File to save results to
@@ -1322,9 +1350,15 @@ class PopulaceGraph:
         # save simulation results and metadata to filename
         """
 
-        print("saveResults, save_output: ", self.save_output)
+        print("enter saveResults")
         if not self.save_output: return
-        print("saveResults, cannot reach this point")
+
+        print("saveResults: prepare for saving")
+        last_time = simResult.t()[-1]
+        txx = {}
+
+        for tix in range(0, int(last_time)+2, 2):
+            txx[tix] = simResult.get_statuses(time=tix)
 
         ages_d = {}
         for k in txx.keys():
@@ -1339,26 +1373,38 @@ class PopulaceGraph:
                 counts = ages_d[k][bracket]
                 print("bracket: ", bracket, ",  counts[S,I,R]: ", bracket, counts['S'], counts['I'], counts['R'])
             """
+
+        vacc_dict = self.createVaccinationDict()
             
         # Do all this in Record class?  (GE)
-        data = {}
+        data_dict = {}
         u = Utils()
         sr = simResult
         SIR_results = {'S':sr.S(), 'I':sr.I(), 'R':sr.R(), 't':sr.t()}
         SIR_results = u.interpolate_SIR(SIR_results)
-        data['sim_results'] = SIR_results
+        data_dict['sim_results'] = SIR_results
         #print("SIR_results: ", SIR_results['t']) # floats as they should be
-        data['title'] = title
-        data['params'] = {'gamma':gamma, 'tau':tau}
-        data['preventions'] = self.preventions
-        data['prevention_reductions'] = self.prevention_reductions
-        data['perc_populace_vaccinated'] = self.perc_populace_vaccinated
-        data['ages_SIR'] = ages_d # ages_d[time][k] ==> S,I,R counts for age bracket k
+        data_dict['title'] = title
+        data_dict['params_dict'] = {'gamma':gamma, 'tau':tau}
+        data_dict['preventions'] = self.preventions
+        data_dict['prevention_reductions'] = self.prevention_reductions
+        data_dict['prevention_reductions'] = self.prevention_reductions
+        data_dict['perc_populace_vaccinated'] = self.perc_populace_vaccinated
+        data_dict['ages_SIR'] = ages_d # ages_d[time][k] ==> S,I,R counts for age bracket k
+        data_dict['vaccination_dict'] = vacc_dict
 
-        # Not used
-        self.sims.append([simResult, title, [gamma, tau], preventions])
+        graph = self.graph
 
-        dirname = "./ge_simResults/{}".format(self.stamp)
+        graph_dict = {}
+        graph_dict['nb_nodes'] = nx.number_of_nodes(graph)
+
+        data_dict['graph'] = graph_dict
+
+        print("nb nodes in graph: ", nx.number_of_nodes(graph))
+
+        #self.sims.append([simResult, title, [gamma, tau], preventions])
+
+        dirname = "./ge_simResults/{}/".format(self.stamp)
         try:
             mkdir(dirname)
         except:
@@ -1368,7 +1414,10 @@ class PopulaceGraph:
         x = datetime.now().strftime("%Y-%m-%d,%I-%M-%S")
         filename = "%s, gamma=%s, tau=%s, %s" % (title, gamma, tau, x)
 
-        with open(filename, "wb") as pickle_file:
+        print("save data in dirname: ", dirname)
+        print("save data in: ", filename)
+        # Not independent of OS
+        with open(dirname+filename, "wb") as pickle_file:
             pickle.dump(data_dict, pickle_file)
 
     #-------------------------------------------

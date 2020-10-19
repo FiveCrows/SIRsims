@@ -15,15 +15,6 @@ timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 # os has operating system aware functions (provided by Derek)
 # https://urldefense.com/v3/__https://www.geeksforgeeks.org/python-os-mkdir-method/__;!!PhOWcWs!nUjA_KItpfwobIwE_tQ_ogPwde2wU4O0EeqeEL0s7bv6kOvIMGkiWbnCzzMVIh3blQ$ 
 
-# Whether or not to save output files  <<<<<<<<<<<<<< Set to save directory
-save_output = False
-
-if not save_output:
-    dstdirname = os.path.join(".","ge_simResults", timestamp, "src")
-    os.makedirs(dstdirname)
-    # Independent of OS
-    os.system("cp *.py %s" % dstdirname)  # not OS independent
-    #copyfile ('ge1_modelToolkit.py',os.path.join(dstdirname,'ge1_modelToolkit.py'))
 
 #################################################################################
 #####   Begin setting up model variables  #######################################
@@ -31,9 +22,13 @@ if not save_output:
 
 # Run with 10% of the data: slim=True
 # Run with all the data: slim=False
-slim = False
 slim = True
+slim = False
 print("slim= ", slim)
+
+# Whether or not to save output files  <<<<<<<<<<<<<< Set to save directory
+save_output = False
+save_output = True
 
 #These values scale the weight that goes onto edges by the environment type involved
 # Parameters less than 1 reduce the infectivity
@@ -75,6 +70,17 @@ trans_weighter = TransmissionWeighter(default_env_scalars, prevention_reductions
 gamma  = 0.2  # Recovery rate per edge (EoN.fast_SIR)
 tau    = 0.2  # Transmission rate per node (EoN.fast_SIR) (also called beta in the literature)
 
+#################################################################################
+#####   End setting up model variables  #######################################
+#################################################################################
+
+if save_output:
+    dstdirname = os.path.join(".","ge_simResults", timestamp, "src")
+    os.makedirs(dstdirname)
+    # Independent of OS
+    os.system("cp *.py %s" % dstdirname)  # not OS independent
+    #copyfile ('ge1_modelToolkit.py',os.path.join(dstdirname,'ge1_modelToolkit.py'))
+
 #the partioner is needed to put the members of each environment into a partition,
 #currently, it is setup to match the partition that is implicit to the loaded contact matrices
 enumerator = {i:i//5 for i in range(75)}
@@ -83,10 +89,6 @@ names = ["{}:{}".format(5 * i, 5 * (i + 1)-1) for i in range(15)]
 names.append("75-100")
 partition = Partitioner('age', enumerator, names)
 print("Age brackets: ", names)
-
-#################################################################################
-#####   End setting up model variables  #######################################
-#################################################################################
 
 # Create Graph
 
@@ -125,8 +127,8 @@ def reduction_study(s_mask, s_dist, w_mask, w_dist):
             trans_weighter.setPreventions(prevent)   #### where does Bryan apply self.preventions = preventions? *******
             trans_weighter.setPreventionReductions(prevention_reductions)
             model.reweight(trans_weighter, prevent, prevention_reductions)  # 2nd arg not required because of setPreventions
-            model.simulate(gamma, tau, title= "red_mask=%4.2f,red_dist=%4.2f,sm=%3.2f,sd=%3.2f,wm=%3.2f,wd=%3.2f" \
-                    % (m, d, s_mask, s_dist, w_mask, w_dist))
+            title = "red_mask=%4.2f,red_dist=%4.2f,sm=%3.2f,sd=%3.2f,wm=%3.2f,wd=%3.2f" % (m, d, s_mask, s_dist, w_mask, w_dist)
+            model.simulate(gamma, tau, title=title, preventions=preventions, prevention_reductions=prevention_reductions)
 
 #-------------------------------------------------------------------
 def vaccination_study(s_mask, s_dist, w_mask, w_dist):
@@ -149,7 +151,7 @@ def vaccination_study(s_mask, s_dist, w_mask, w_dist):
      for m in reduce_masking:
       for d in reduce_distancing:
           for nb_wk in [50,100,200,400,600,800]:
-            model.resetVaccinations() # reset to default state (for safety)
+            model.resetVaccinated_Infected() # reset to default state (for safety)
             prevention_reductions = {'masking': m, 'distancing': d} 
             trans_weighter.setPreventions(prevent)   #### where does Bryan apply self.preventions = preventions? *******
             trans_weighter.setPreventionReductions(prevention_reductions)
@@ -162,8 +164,8 @@ def vaccination_study(s_mask, s_dist, w_mask, w_dist):
             model.vaccinatePopulace(perc=v)  # random vaccination of populace
             model.reweight(trans_weighter, prevent, prevention_reductions)  # 2nd arg not required because of setPreventions
             # The file data will be stored in a pandas file
-            model.simulate(gamma, tau, title= "red_mask=%4.2f,red_dist=%4.2f,sm=%3.2f,sd=%3.2f,wm=%3.2f,wd=%3.2f,v=%3.2f" \
-                    % (m, d, s_mask, s_dist, w_mask, w_dist, v))
+            title= "red_mask=%4.2f,red_dist=%4.2f,sm=%3.2f,sd=%3.2f,wm=%3.2f,wd=%3.2f,v=%3.2f" % (m, d, s_mask, s_dist, w_mask, w_dist, v)
+            model.simulate(gamma, tau, title=title, preventions=preventions, prevention_reductions=prevention_reductions)
     return 
 #-------------------------------------------------------------------
 
