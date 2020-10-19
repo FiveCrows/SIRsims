@@ -14,15 +14,16 @@ timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
 # os has operating system aware functions (provided by Derek)
 # https://urldefense.com/v3/__https://www.geeksforgeeks.org/python-os-mkdir-method/__;!!PhOWcWs!nUjA_KItpfwobIwE_tQ_ogPwde2wU4O0EeqeEL0s7bv6kOvIMGkiWbnCzzMVIh3blQ$ 
-dstdirname = os.path.join(".","ge_simResults", timestamp, "src")
-os.makedirs(dstdirname)
 
-# Independent of OS
-os.system("cp *.py %s" % dstdirname)  # not OS independent
-#copyfile ("*.py", 'ge3_populace_study.py',os.path.join(dstdirname,'ge3_populace_study.py'))
-#copyfile ('ge3_populace_study.py',os.path.join(dstdirname,'ge3_populace_study.py'))
-#copyfile ('vaccination_study.py',os.path.join(dstdirname,'vaccination_study.py'))
-#copyfile ('ge1_modelToolkit.py',os.path.join(dstdirname,'ge1_modelToolkit.py'))
+# Whether or not to save output files  <<<<<<<<<<<<<< Set to save directory
+save_output = False
+
+if not save_output:
+    dstdirname = os.path.join(".","ge_simResults", timestamp, "src")
+    os.makedirs(dstdirname)
+    # Independent of OS
+    os.system("cp *.py %s" % dstdirname)  # not OS independent
+    #copyfile ('ge1_modelToolkit.py',os.path.join(dstdirname,'ge1_modelToolkit.py'))
 
 #################################################################################
 #####   Begin setting up model variables  #######################################
@@ -30,8 +31,8 @@ os.system("cp *.py %s" % dstdirname)  # not OS independent
 
 # Run with 10% of the data: slim=True
 # Run with all the data: slim=False
-slim = True
 slim = False
+slim = True
 print("slim= ", slim)
 
 #These values scale the weight that goes onto edges by the environment type involved
@@ -90,7 +91,7 @@ print("Age brackets: ", names)
 # Create Graph
 
 #init, build simulate
-model = PopulaceGraph(partition, timestamp, slim = slim)
+model = PopulaceGraph(partition, timestamp, slim=slim, save_output=save_output)
 model.build(trans_weighter, preventions, prevention_reductions, env_degrees)
 vacc_perc = 0.0
 model.vaccinatePopulace(vacc_perc)
@@ -141,29 +142,29 @@ def vaccination_study(s_mask, s_dist, w_mask, w_dist):
     reduce_distancing = [0.5]
     # Vaccination across the entire population
     percent_vaccinated = [0., 0.25, 0.50, 0.75,1.00]
-    percent_vaccinated = [0.] # general population
+    percent_vaccinated = [0.75, 0.99] # In the workplace
     # If s_mask == 0, 
     print("enter vaccination study")
     for v in percent_vaccinated:
-      for m in reduce_masking:
-        for d in reduce_distancing:
+     for m in reduce_masking:
+      for d in reduce_distancing:
+          for nb_wk in [50,100,200,400,600,800]:
             model.resetVaccinations() # reset to default state (for safety)
             prevention_reductions = {'masking': m, 'distancing': d} 
             trans_weighter.setPreventions(prevent)   #### where does Bryan apply self.preventions = preventions? *******
             trans_weighter.setPreventionReductions(prevention_reductions)
             model.infectPopulace(perc=0.001)
-            print("--------  nb workplaces to vaccinate: 100")
-            model.set_nbTopWorkplacesToVaccinate(100, 0.99)  # should set in term of number of available vaccinations
+            print("--------  nb workplaces to vaccinate: %d" % nb_wk)
+            # I should be able to set 2nd argument to 1
+            model.set_nbTopWorkplacesToVaccinate(nb_wk, v)  # should set in term of number of available vaccinations
             # make sure first index < nb schools
-            model.set_nbTopSchoolsToVaccinate(30, 0.00)  # should set in term of number of available vaccinations
-            model.vaccinatePopulace(perc=0.0)
-            quit()
+            model.set_nbTopSchoolsToVaccinate(0, 0.00)  # should set in term of number of available vaccinations
+            model.vaccinatePopulace(perc=v)  # random vaccination of populace
             model.reweight(trans_weighter, prevent, prevention_reductions)  # 2nd arg not required because of setPreventions
             # The file data will be stored in a pandas file
             model.simulate(gamma, tau, title= "red_mask=%4.2f,red_dist=%4.2f,sm=%3.2f,sd=%3.2f,wm=%3.2f,wd=%3.2f,v=%3.2f" \
                     % (m, d, s_mask, s_dist, w_mask, w_dist, v))
-            count += 1
-    return count
+    return 
 #-------------------------------------------------------------------
 
 s_mask = [0.0, 0.0]  # percentage of people wearing masks in schools
@@ -172,6 +173,7 @@ w_mask = [0.7, 0.3]  # percentage of people wearing masks in the workplace
 w_dist = [1.0, 1.0]  # percentage of people social distancing in the workplace
 
 levels = [0.0, 0.25, 0.5, 0.75, 1.0]  # different values of s_mask
+levels = [0.5]  # different reduction values of s_mask
 
 # 5 levels of vaccination, 5 levels of mask and social distancing. 25 cases.
 for level in levels:

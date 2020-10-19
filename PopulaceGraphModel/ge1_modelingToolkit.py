@@ -290,15 +290,15 @@ class PopulaceGraph:
 
     #-----------------
     def set_nbTopWorkplacesToVaccinate(self, nb, perc):
-        self.nb_top_workplaces_to_vaccinate = nb
-        self.perc_people_to_vaccinate_in_workplaces = perc
-        print("*workplaces to vaccinate: ", self.nb_top_workplaces_to_vaccinate)
-        print("*perc to vaccinate in workplaces: ", self.perc_people_to_vaccinate_in_workplaces)
+        self.nb_top_workplaces_vaccinated = nb
+        self.perc_people_vaccinated_in_workplaces = perc
+        print("*workplaces to vaccinate: ", self.nb_top_workplaces_vaccinated)
+        print("*perc to vaccinate in workplaces: ", self.perc_people_vaccinated_in_workplaces)
 
     #---------------------
     def set_nbTopSchoolsToVaccinate(self, nb, perc):
-        self.nb_top_schools_to_vaccinate = nb
-        self.perc_people_to_vaccinate_in_schools = perc
+        self.nb_top_schools_vaccinated = nb
+        self.perc_people_vaccinated_in_schools = perc
 
     #---------------------------
     def setup_workplaces(self, partition):
@@ -334,8 +334,8 @@ class PopulaceGraph:
         print("cum_sum, top 10: ", self.cum_sum_school_pop[0:10])
         self.school_population = self.cum_sum_school_pop[-1]
         print("* total school population: ", self.school_population)
-        print("* total school population to vaccinate: ", self.cum_sum_school_pop[self.nb_top_schools_to_vaccinate])
-        self.largest_schools_to_vaccinate = school_ids[1:self.nb_top_schools_to_vaccinate]
+        print("* total school population to vaccinate: ", self.cum_sum_school_pop[self.nb_top_schools_vaccinated])
+        self.largest_schools_vaccinated = school_ids[1:self.nb_top_schools_vaccinated]
         print("* school_id[0:10]: ", school_ids[0:10])
         print("--------------")
 
@@ -359,8 +359,9 @@ class PopulaceGraph:
         print("cum_sum, top 10: ", self.cum_sum_work_pop[0:10])
         self.work_population = self.cum_sum_work_pop[-1]
         print("* total work population: ", self.work_population)
-        print("* total work population to vaccinate: ", self.cum_sum_work_pop[self.nb_top_workplaces_to_vaccinate])
-        self.largest_workplaces_to_vaccinate = work_ids[1:self.nb_top_workplaces_to_vaccinate]
+        print("... nb_top_workplaces_vaccinated: ", self.nb_top_workplaces_vaccinated)  # should be integer
+        print("* total work population to vaccinate: ", self.cum_sum_work_pop[self.nb_top_workplaces_vaccinated])
+        self.largest_workplaces_vaccinated = work_ids[1:self.nb_top_workplaces_vaccinated]
         print("* work_id[0]: ", work_ids[0])
         print("--------------")
 
@@ -394,38 +395,40 @@ class PopulaceGraph:
         Vaccinate a fraction perc [0,1] of the population at random, all ages
         """
 
+        self.perc_populace_vaccinated = 0.0
+
         print("\n\n************ ENTER vaccinatePopulace ***************")
-        print("*workplaces to vaccinate: ", self.nb_top_workplaces_to_vaccinate)
-        print("*perc to vaccinate in workplaces: ", self.perc_people_to_vaccinate_in_workplaces)
+        print("*workplaces to vaccinate: ", self.nb_top_workplaces_vaccinated)
+        print("*perc to vaccinate in workplaces: ", self.perc_people_vaccinated_in_workplaces)
 
         self.initial_vaccinated = set()
 
-        workplace_populace_to_vaccinate = []
-        print("--- nb top work to vaccinate: ", self.nb_top_workplaces_to_vaccinate)
-        if self.nb_top_workplaces_to_vaccinate > 0:
+        workplace_populace_vaccinated = []
+        print("--- nb top work to vaccinate: ", self.nb_top_workplaces_vaccinated)
+        if self.nb_top_workplaces_vaccinated > 0:
             print("vaccinate workplaces by rank")
             self.rank_workplaces()
             # Vaccinate the top n workplaces
-            for i in range(1,self.nb_top_workplaces_to_vaccinate):
+            for i in range(1,self.nb_top_workplaces_vaccinated):
                people = self.workplaces[self.ordered_work_ids[i]]   # <<<<<<<
-               workplace_populace_to_vaccinate.extend(people) # people is a list  ### MUST BE WRONG
+               workplace_populace_vaccinated.extend(people) # people is a list  ### MUST BE WRONG
 
-        print("* (cumsum) total work population to vaccinate: ", self.cum_sum_work_pop[self.nb_top_workplaces_to_vaccinate])
-        print("vaccinatePopulace, nb people to vaccinate in the workplace: ", len(workplace_populace_to_vaccinate))
-        self.initial_vaccinated.update(workplace_populace_to_vaccinate)
+        print("* (cumsum) total work population to vaccinate: ", self.cum_sum_work_pop[self.nb_top_workplaces_vaccinated])
+        print("vaccinatePopulace, nb people to vaccinate in the workplace: ", len(workplace_populace_vaccinated))
+        self.initial_vaccinated.update(workplace_populace_vaccinated)
 
-        school_populace_to_vaccinate = []
-        if self.nb_top_schools_to_vaccinate > 0:
+        school_populace_vaccinated = []
+        if self.nb_top_schools_vaccinated > 0:
             self.rank_schools()
             # Vaccinate the top n schools
-            for i in range(1,self.nb_top_schools_to_vaccinate):
+            for i in range(1,self.nb_top_schools_vaccinated):
                people = self.schools[self.ordered_school_ids[i]]
-               school_populace_to_vaccinate.extend(people)  # people is a list
+               school_populace_vaccinated.extend(people)  # people is a list
 
-        print("* (cumsum) total school population to vaccinate: ", self.cum_sum_school_pop[self.nb_top_schools_to_vaccinate])
+        print("* (cumsum) total school population to vaccinate: ", self.cum_sum_school_pop[self.nb_top_schools_vaccinated])
         # WRONG
-        print("vaccinatePopulace, nb people to vaccinate in the schools: ", len(school_populace_to_vaccinate))
-        self.initial_vaccinated.update(school_populace_to_vaccinate)
+        print("vaccinatePopulace, nb people to vaccinate in the schools: ", len(school_populace_vaccinated))
+        self.initial_vaccinated.update(school_populace_vaccinated)
 
         # if vaccinate the households of the workers in the largest workplaces
         # if vaccinate the households of the children in the largest schools
@@ -442,7 +445,6 @@ class PopulaceGraph:
 
         general_populace_vaccinated = np.asarray(list(self.populace.keys()))[vaccinated_01 == 1]
         self.initial_vaccinated.update(general_populace_vaccinated)
-        self.initial_vaccinated = self.initial_vaccinated
 
         # Need to compute these
         school_populace = [1]
@@ -452,22 +454,22 @@ class PopulaceGraph:
         if len(self.initial_vaccinated) != 0: 
             print("nb initial vaccinated: ", len(self.initial_vaccinated))
             print("fraction of general population vaccinated: ", len(self.initial_vaccinated) / self.population)
-        print("nb schools vaccinated: ", self.nb_top_schools_to_vaccinate)
+        print("nb schools vaccinated: ", self.nb_top_schools_vaccinated)
 
         print()
 
         # ERROR: nb of people in workplace to vaccinate MUST BE LESS than workplace population
-        print("nb worplaces vaccinated: ", self.nb_top_workplaces_to_vaccinate)
-        print("nb people in workplace to vaccinate: ", len(workplace_populace_to_vaccinate))
-        print("fraction of workplace populace vaccinated: ", len(workplace_populace_to_vaccinate) / self.work_population)
-        print("total workplace populace vaccinated: ", len(workplace_populace_to_vaccinate))
+        print("nb worplaces vaccinated: ", self.nb_top_workplaces_vaccinated)
+        print("nb people in workplace to vaccinate: ", len(workplace_populace_vaccinated))
+        print("fraction of workplace populace vaccinated: ", len(workplace_populace_vaccinated) / self.work_population)
+        print("total workplace populace vaccinated: ", len(workplace_populace_vaccinated))
         print("total workplace population: ", self.work_population)
 
         print()
   
-        print("fraction of school populace vaccinated: ", len(school_populace_to_vaccinate) / self.school_population)
+        print("fraction of school populace vaccinated: ", len(school_populace_vaccinated) / self.school_population)
         print("total school population: ", self.school_population)
-        print("total school populace vaccinated: ", len(school_populace_to_vaccinate))
+        print("total school populace vaccinated: ", len(school_populace_vaccinated))
     #----------------
     def printEnvironments(self):
         keys = list(self.environments.keys())
@@ -492,11 +494,11 @@ class PopulaceGraph:
         # Vaccination is modeled by setting a person's status to recovered
         self.initial_vaccinated = []
         self.initial_infected   = []
+        self.nb_top_workplaces_vaccinated = 0
+        self.nb_top_schools_vaccinated = 0
+        self.perc_people_vaccinated_in_workplaces = 0.0
         self.perc_populace_vaccinated = 0.0
-        self.nb_top_workplaces_to_vaccinate = 0
-        self.nb_top_schools_to_vaccinate = 0
-        self.perc_people_to_vaccinate_in_workplaces = 0.0
-        self.perc_people_to_vaccinate_in_schools = 0.0
+        self.perc_people_vaccinated_in_schools = 0.0
         self.perc_workplace_vaccinated = 0.0  # perc vaccinated in the workplace
         self.perc_school_vaccinated = 0.0  # perc vaccinated in the schools
         self.work_population = 1
@@ -507,7 +509,7 @@ class PopulaceGraph:
         self.rank_schools()
     #-------------------------------
     def __init__(self, partition, timestamp, graph = None, populace = None, 
-                 attributes = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False):
+                 attributes = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False, save_output=False):
         """        
         :param partition: Partitioner
         needed to build schools and workplaces into partitioned environments         
@@ -535,10 +537,12 @@ class PopulaceGraph:
         self.sims = []
         self.contactMatrix = None
         self.total_weight = 0
-        self.record = Record()
         self.total_edges = 0
         self.total_weight = 0
         self.environments_added = 0
+        self.save_output = save_output
+
+        self.record = Record(self.save_output)
 
         #self.edge_envs = {}  # keep track of the environment associated with each edge
 
@@ -1282,10 +1286,10 @@ class PopulaceGraph:
         # not used, but stored as an instance variable self.preventions
         start = time.time()
         # Bryan had the arguments reversed. 
-        print("initial_recovered= ", self.initial_vaccinated)
         simResult = simAlg(self.graph, tau, gamma, initial_recovereds=self.initial_vaccinated, initial_infecteds=self.initial_infected, transmission_weight='transmission_weight', return_full_data=full_data)
         #simResult = simAlg(self.graph, tau, gamma, initial_recovereds=self.initial_vaccinated, rho=0.001, transmission_weight='transmission_weight', return_full_data=full_data)
         stop = time.time()
+
         self.record.print("simulation completed in {} seconds".format(stop - start))
 
         graph = self.graph
@@ -1298,25 +1302,29 @@ class PopulaceGraph:
 
         for tix in range(0, int(last_time)+2, 2):
             txx[tix] = sr.get_statuses(time=tix)
-        #txx['last'] = sr.get_statuses(time=sr.t()[-1])
 
         self.record.print("handle simulation output: {} seconds".format(time.time() - start2))
 
-        #for k in tlast.keys():
-            #print("key: ", k)
-
-        """
-        for i in range(0,len_tlast):
-            try:
-                a = tlast[i]
-            except:
-                print("tlast index does not exist, i= ", i)   ### WHY NOT!!!
-                quit()
-        """
-
         # Next: calculate final S,I,R for the different age groups. 
 
-        start3 = time.time()
+        #start3 = time.time()
+        #self.record.print("time to change 'S','I','R' to 0,1,2 for faster processing: %f sec" % (time.time()-start3))
+
+        self.saveResults(simResult)
+
+    #-------------------------------------------
+    def saveResults(self, simResult):
+        """
+        :param filename: string
+        File to save results to
+        :param data_dict: dictionary
+        Save SIR traces, title, [gamma, tau], preventions
+        # save simulation results and metadata to filename
+        """
+
+        print("saveResults, save_output: ", self.save_output)
+        if not self.save_output: return
+        print("saveResults, cannot reach this point")
 
         ages_d = {}
         for k in txx.keys():
@@ -1332,21 +1340,10 @@ class PopulaceGraph:
                 print("bracket: ", bracket, ",  counts[S,I,R]: ", bracket, counts['S'], counts['I'], counts['R'])
             """
             
-        self.record.print("time to change 'S','I','R' to 0,1,2 for faster processing: %f sec" % (time.time()-start3))
-
-        # Now, count the number of S, I, R in each age bracket. 
-
-        #doesn't work returning full results
-        #time_to_immunity = simResult[0][-1]
-        #final_uninfected = simResult[1][-1]
-        #final_recovered = simResult[3][-1]
-        #percent_uninfected = final_uninfected / (final_uninfected + final_recovered)
-        #self.record.last_runs_percent_uninfected = percent_uninfected
-        #self.record.print("The infection quit spreading after {} days, and {} of people were never infected".format(time_to_immunity,percent_uninfected))
-
         # Do all this in Record class?  (GE)
         data = {}
         u = Utils()
+        sr = simResult
         SIR_results = {'S':sr.S(), 'I':sr.I(), 'R':sr.R(), 't':sr.t()}
         SIR_results = u.interpolate_SIR(SIR_results)
         data['sim_results'] = SIR_results
@@ -1358,6 +1355,7 @@ class PopulaceGraph:
         data['perc_populace_vaccinated'] = self.perc_populace_vaccinated
         data['ages_SIR'] = ages_d # ages_d[time][k] ==> S,I,R counts for age bracket k
 
+        # Not used
         self.sims.append([simResult, title, [gamma, tau], preventions])
 
         dirname = "./ge_simResults/{}".format(self.stamp)
@@ -1366,32 +1364,12 @@ class PopulaceGraph:
         except:
             # accept an existing directory. Not a satisfying solution
             pass
-        
-        x = datetime.now().strftime("%Y-%m-%d,%I.%Mpm")
-        filename = "%s, gamma=%s, tau=%s, %s" % (title, gamma, tau, x)
-        self.saveResults("/".join([dirname,filename]), data)
 
-    #-------------------------------------------
-    def saveResults(self, filename, data_dict):
-        """
-        :param filename: string
-        File to save results to
-        :param data_dict: dictionary
-        Save SIR traces, title, [gamma, tau], preventions
-        # save simulation results and metadata to filename
-        """
- 
+        x = datetime.now().strftime("%Y-%m-%d,%I-%M-%S")
+        filename = "%s, gamma=%s, tau=%s, %s" % (title, gamma, tau, x)
+
         with open(filename, "wb") as pickle_file:
             pickle.dump(data_dict, pickle_file)
-
-        """
-        # reload pickle data
-        fd = open(filename, "rb")
-        d = pickle.load(fd)
-        SIR = d['sim_results']
-        print("SIR['t']= ", SIR['t'])
-        quit()
-        """
 
     #-------------------------------------------
     def returnContactMatrix(self, environment):
@@ -1562,13 +1540,18 @@ class PopulaceGraph:
 
 #----------------------------------------------------------------------
 class Record:
-    def __init__(self):
+    def __init__(self, save_output):
         self.log = ""
         self.comments = ""
         self.stamp = datetime.now().strftime("%m_%d_%H_%M_%S")
         self.graph_stats = {}
         self.last_runs_percent_uninfected = 1
-        mkdir("./simResults/{}".format(self.stamp))
+        self.save_output = save_output
+
+        print("Record, save_output: ", save_output)
+        if save_output:
+            print("Record, mkdir, should not happen")
+            mkdir("./simResults/{}".format(self.stamp))
 
     def print(self, string):
         print(string)
@@ -1593,6 +1576,7 @@ class Record:
         self.print(str(graphStats))
 
     def dump(self):
+        if not self.save_output: return
         log_txt = open("./simResults/{}/log.txt".format(self.stamp), "w+")
         log_txt.write(self.log)
         if self.comments != "":
