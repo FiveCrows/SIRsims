@@ -289,25 +289,89 @@ class PopulaceGraph:
             self.environments[index] = (houseObject)
 
     #-----------------
+    def set_nbTopWorkplacesToVaccinate(self, nb, perc):
+        self.nb_top_workplaces_to_vaccinate = nb
+        self.perc_people_to_vaccinate_in_workplaces = perc
+        print("*workplaces to vaccinate: ", self.nb_top_workplaces_to_vaccinate)
+        print("*perc to vaccinate in workplaces: ", self.perc_people_to_vaccinate_in_workplaces)
+
+    #---------------------
+    def set_nbTopSchoolsToVaccinate(self, nb, perc):
+        self.nb_top_schools_to_vaccinate = nb
+        self.perc_people_to_vaccinate_in_schools = perc
+
+    #---------------------------
     def setup_workplaces(self, partition):
-        workplaces = self.pops_by_category["work_id"]
+        # list of numbers
+        self.workplaces = self.pops_by_category["work_id"]
+
         with open("../ContactMatrices/Leon/ContactMatrixWorkplaces.pkl", 'rb') as file:
             work_matrices = pickle.load(file)
 
-        for index in workplaces:
+        for index in self.workplaces:
             if index == None: continue
-            workplace = PartitionedEnvironment(index, workplaces[index], "workplace", 
+            workplace = PartitionedEnvironment(index, self.workplaces[index], "workplace", 
                                                self.populace, work_matrices[index], partition)
             self.environments[index] = (workplace)
 
-    #-----------------
+    #----------------------------------
+    def rank_schools(self):
+        # produces list of pairs (school is, list of people is)
+        # replace the list of people ids by its length
+        ordered_schools = sorted(self.schools.items(), key=lambda x: len(x[1]), reverse=True)
+        ordered_schools = map(lambda x: [x[0], len(x[1])], ordered_schools)
+        ordered_schools = list(ordered_schools)
+
+        school_ids = [o[0] for o in ordered_schools[1:]]
+        school_pop = [o[1] for o in ordered_schools[1:]]
+        self.ordered_school_ids = [o[0] for o in ordered_schools[:]]
+        self.ordered_school_pop = [o[1] for o in ordered_schools[:]]
+        print("school_pop: ", self.ordered_school_pop[0:10])
+
+        # Cumulative sum of school lengths
+        # Sum from 1 since 0th index is a school with 200,000 students. Can't be right. 
+        self.cum_sum_school_pop = np.cumsum(school_pop[1:])
+        print("cum_sum, top 10: ", self.cum_sum_school_pop[0:10])
+        self.school_population = self.cum_sum_school_pop[-1]
+        print("* total school population: ", self.school_population)
+        print("* total school population to vaccinate: ", self.cum_sum_school_pop[self.nb_top_schools_to_vaccinate])
+        self.largest_schools_to_vaccinate = school_ids[1:self.nb_top_schools_to_vaccinate]
+        print("* school_id[0:10]: ", school_ids[0:10])
+        print("--------------")
+
+    #----------------------------------
+    def rank_workplaces(self):
+        # produces list of pairs (workplace is, list of people is)
+        # replace the list of people ids by its length
+        ordered_workplaces = sorted(self.workplaces.items(), key=lambda x: len(x[1]), reverse=True)
+        ordered_workplaces = map(lambda x: [x[0], len(x[1])], ordered_workplaces)
+        ordered_workplaces = list(ordered_workplaces)
+
+        work_ids = [o[0] for o in ordered_workplaces[0:]]
+        work_pop = [o[1] for o in ordered_workplaces[0:]]
+        self.ordered_work_ids = [o[0] for o in ordered_workplaces]
+        self.ordered_work_pop = [o[1] for o in ordered_workplaces]
+        print("work_pop: ", self.ordered_work_pop[0:10])
+
+        # Cumulative sum of business lengths
+        # Sum from 1 since 0th index is a workplace with 120,000+ people. Can't be right. 
+        self.cum_sum_work_pop = np.cumsum(work_pop[1:])  # remove the first work which are the people with no workplace
+        print("cum_sum, top 10: ", self.cum_sum_work_pop[0:10])
+        self.work_population = self.cum_sum_work_pop[-1]
+        print("* total work population: ", self.work_population)
+        print("* total work population to vaccinate: ", self.cum_sum_work_pop[self.nb_top_workplaces_to_vaccinate])
+        self.largest_workplaces_to_vaccinate = work_ids[1:self.nb_top_workplaces_to_vaccinate]
+        print("* work_id[0]: ", work_ids[0])
+        print("--------------")
+
+    #--------------------------------------------
     def setup_schools(self, partition):
-        schools = self.pops_by_category["school_id"]
+        self.schools = self.pops_by_category["school_id"]
         with open("../ContactMatrices/Leon/ContactMatrixSchools.pkl", 'rb') as file:
             school_matrices = pickle.load(file)
-        for index in schools:
+        for index in self.schools:
             if index == None: continue
-            school = PartitionedEnvironment(index, schools[index], "school", self.populace, 
+            school = PartitionedEnvironment(index, self.schools[index], "school", self.populace, 
                                             school_matrices[index], partition )
             self.environments[index] = (school)
            
@@ -330,10 +394,80 @@ class PopulaceGraph:
         Vaccinate a fraction perc [0,1] of the population at random, all ages
         """
 
-        self.percent_populace_vaccinated = perc
-        vaccinated_01 = bernoulli.rvs(perc, size=self.population)
-        self.initial_vaccinated = np.asarray(list(self.populace.keys()))[vaccinated_01 == 1]
-        print("nb initial vaccinated: ", self.initial_vaccinated.shape[0])
+        print("\n\n************ ENTER vaccinatePopulace ***************")
+        print("*workplaces to vaccinate: ", self.nb_top_workplaces_to_vaccinate)
+        print("*perc to vaccinate in workplaces: ", self.perc_people_to_vaccinate_in_workplaces)
+
+        self.initial_vaccinated = set()
+
+        workplace_populace_to_vaccinate = []
+        print("--- nb top work to vaccinate: ", self.nb_top_workplaces_to_vaccinate)
+        if self.nb_top_workplaces_to_vaccinate > 0:
+            print("vaccinate workplaces by rank")
+            self.rank_workplaces()
+            # Vaccinate the top n workplaces
+            for i in range(1,self.nb_top_workplaces_to_vaccinate):
+               people = self.workplaces[self.ordered_work_ids[i]]   # <<<<<<<
+               workplace_populace_to_vaccinate.extend(people) # people is a list  ### MUST BE WRONG
+
+        print("* (cumsum) total work population to vaccinate: ", self.cum_sum_work_pop[self.nb_top_workplaces_to_vaccinate])
+        print("vaccinatePopulace, nb people to vaccinate in the workplace: ", len(workplace_populace_to_vaccinate))
+        self.initial_vaccinated.update(workplace_populace_to_vaccinate)
+
+        school_populace_to_vaccinate = []
+        if self.nb_top_schools_to_vaccinate > 0:
+            self.rank_schools()
+            # Vaccinate the top n schools
+            for i in range(1,self.nb_top_schools_to_vaccinate):
+               people = self.schools[self.ordered_school_ids[i]]
+               school_populace_to_vaccinate.extend(people)  # people is a list
+
+        print("* (cumsum) total school population to vaccinate: ", self.cum_sum_school_pop[self.nb_top_schools_to_vaccinate])
+        # WRONG
+        print("vaccinatePopulace, nb people to vaccinate in the schools: ", len(school_populace_to_vaccinate))
+        self.initial_vaccinated.update(school_populace_to_vaccinate)
+
+        # if vaccinate the households of the workers in the largest workplaces
+        # if vaccinate the households of the children in the largest schools
+
+        if perc > 0.0001 and perc < 0.9999:
+            self.perc_populace_vaccinated = perc
+            vaccinated_01 = bernoulli.rvs(perc, size=self.population)
+        elif perc > 0.9999:
+            self.perc_populace_vaccinated = 1.0
+            vaccinated_01 = np.ones(self.population)
+        elif perc < 0.0001:
+            self.perc_populace_vaccinated = 0.0
+            vaccinated_01 = np.zeros(self.population)
+
+        general_populace_vaccinated = np.asarray(list(self.populace.keys()))[vaccinated_01 == 1]
+        self.initial_vaccinated.update(general_populace_vaccinated)
+        self.initial_vaccinated = self.initial_vaccinated
+
+        # Need to compute these
+        school_populace = [1]
+
+        print("nb initial populace: ", self.population)
+        #print("initial vaccinated: ", self.initial_vaccinated)
+        if len(self.initial_vaccinated) != 0: 
+            print("nb initial vaccinated: ", len(self.initial_vaccinated))
+            print("fraction of general population vaccinated: ", len(self.initial_vaccinated) / self.population)
+        print("nb schools vaccinated: ", self.nb_top_schools_to_vaccinate)
+
+        print()
+
+        # ERROR: nb of people in workplace to vaccinate MUST BE LESS than workplace population
+        print("nb worplaces vaccinated: ", self.nb_top_workplaces_to_vaccinate)
+        print("nb people in workplace to vaccinate: ", len(workplace_populace_to_vaccinate))
+        print("fraction of workplace populace vaccinated: ", len(workplace_populace_to_vaccinate) / self.work_population)
+        print("total workplace populace vaccinated: ", len(workplace_populace_to_vaccinate))
+        print("total workplace population: ", self.work_population)
+
+        print()
+  
+        print("fraction of school populace vaccinated: ", len(school_populace_to_vaccinate) / self.school_population)
+        print("total school population: ", self.school_population)
+        print("total school populace vaccinated: ", len(school_populace_to_vaccinate))
     #----------------
     def printEnvironments(self):
         keys = list(self.environments.keys())
@@ -352,6 +486,25 @@ class PopulaceGraph:
             print(self.environments[keys[k]].preventions)  # None (or a list?
             print(self.environments[keys[k]].type)  # list of one element [12]. Meaning? 
 
+    #-------------------------------
+    def resetVaccinations(self):
+        # By default nobody in the population is recovered. 
+        # Vaccination is modeled by setting a person's status to recovered
+        self.initial_vaccinated = []
+        self.initial_infected   = []
+        self.perc_populace_vaccinated = 0.0
+        self.nb_top_workplaces_to_vaccinate = 0
+        self.nb_top_schools_to_vaccinate = 0
+        self.perc_people_to_vaccinate_in_workplaces = 0.0
+        self.perc_people_to_vaccinate_in_schools = 0.0
+        self.perc_workplace_vaccinated = 0.0  # perc vaccinated in the workplace
+        self.perc_school_vaccinated = 0.0  # perc vaccinated in the schools
+        self.work_population = 1
+        self.school_population = 1
+        self.set_nbTopWorkplacesToVaccinate(0, 0.)
+        self.set_nbTopSchoolsToVaccinate(0, 0.)
+        self.rank_workplaces()
+        self.rank_schools()
     #-------------------------------
     def __init__(self, partition, timestamp, graph = None, populace = None, 
                  attributes = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False):
@@ -386,12 +539,8 @@ class PopulaceGraph:
         self.total_edges = 0
         self.total_weight = 0
         self.environments_added = 0
+
         #self.edge_envs = {}  # keep track of the environment associated with each edge
-        # By default nobody in the population is recovered. 
-        # Vaccination is modeled by setting a person's status to recovered
-        self.initial_vaccinated = None
-        self.initial_infected   = None
-        self.percent_populace_vaccinated = None
 
         # What is this for? 
         if partition != None:
@@ -477,6 +626,9 @@ class PopulaceGraph:
         self.setup_households()
         self.setup_workplaces(partition)
         self.setup_schools(partition)
+
+        # Must be called last
+        self.resetVaccinations()
 
     #-------------------------------
     def zeroWeights(self, env):
@@ -1130,6 +1282,7 @@ class PopulaceGraph:
         # not used, but stored as an instance variable self.preventions
         start = time.time()
         # Bryan had the arguments reversed. 
+        print("initial_recovered= ", self.initial_vaccinated)
         simResult = simAlg(self.graph, tau, gamma, initial_recovereds=self.initial_vaccinated, initial_infecteds=self.initial_infected, transmission_weight='transmission_weight', return_full_data=full_data)
         #simResult = simAlg(self.graph, tau, gamma, initial_recovereds=self.initial_vaccinated, rho=0.001, transmission_weight='transmission_weight', return_full_data=full_data)
         stop = time.time()
@@ -1180,7 +1333,6 @@ class PopulaceGraph:
             """
             
         self.record.print("time to change 'S','I','R' to 0,1,2 for faster processing: %f sec" % (time.time()-start3))
-        #print("gordon"); quit()
 
         # Now, count the number of S, I, R in each age bracket. 
 
@@ -1203,7 +1355,7 @@ class PopulaceGraph:
         data['params'] = {'gamma':gamma, 'tau':tau}
         data['preventions'] = self.preventions
         data['prevention_reductions'] = self.prevention_reductions
-        data['perc_populace_vaccinated'] = self.percent_populace_vaccinated
+        data['perc_populace_vaccinated'] = self.perc_populace_vaccinated
         data['ages_SIR'] = ages_d # ages_d[time][k] ==> S,I,R counts for age bracket k
 
         self.sims.append([simResult, title, [gamma, tau], preventions])
