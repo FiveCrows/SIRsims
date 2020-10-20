@@ -324,52 +324,47 @@ class PopulaceGraph:
 
         self.ordered_school_ids = [o[0] for o in ordered_schools[:]]
         self.ordered_school_pop = [o[1] for o in ordered_schools[:]]
+        print("school_pop: ", self.ordered_school_pop[0:10])
+        print("school_ids: ", self.ordered_school_ids[0:10])
 
         # Cumulative sum of school lengths
         # Sum from 1 since 0th index is a school with 200,000 students. Can't be right. 
         self.cum_sum_school_pop = np.cumsum(self.ordered_school_pop[1:])
+        print("cum_sum, top 10: ", self.cum_sum_school_pop[0:10])
         self.school_population = self.cum_sum_school_pop[-1]
         self.nb_schools = len(self.cum_sum_school_pop)
-        self.largest_schools_vaccinated = self.ordered_school_ids[1:self.nb_top_schools_vaccinated]
-        
-        print("******* ENTER rank_schools *********")
-        print("school_pop: ", self.ordered_school_pop[0:10])
-        print("school_ids: ", self.ordered_school_ids[0:10])
-        print("cum_sum, top 10: ", self.cum_sum_school_pop[0:10])
         print("rank_schools: self.nb_schools= ", self.nb_schools)
         print("* total school population: ", self.school_population)
         print("* total school population to vaccinate: ", self.cum_sum_school_pop[self.nb_top_schools_vaccinated])
+        self.largest_schools_vaccinated = self.ordered_school_ids[1:self.nb_top_schools_vaccinated]
         print("* school_id[0:10]: ", self.ordered_school_ids[0:10])
-        print("******* EXIT rank_schools *********")
+        print("--------------")
 
     #----------------------------------
     def rank_workplaces(self):
         # produces list of pairs (workplace is, list of people is)
         # replace the list of people ids by its length
-
         ordered_workplaces = sorted(self.workplaces.items(), key=lambda x: len(x[1]), reverse=True)
         ordered_workplaces = map(lambda x: [x[0], len(x[1])], ordered_workplaces)
         ordered_workplaces = list(ordered_workplaces)
 
         self.ordered_work_ids = [o[0] for o in ordered_workplaces]
         self.ordered_work_pop = [o[1] for o in ordered_workplaces]
+        print("work_pop: ", self.ordered_work_pop[0:10])
 
         # Cumulative sum of business lengths
         # Sum from 1 since 0th index is a workplace with 120,000+ people. Can't be right. 
         self.cum_sum_work_pop = np.cumsum(self.ordered_work_pop[1:])  # remove the first work which are the people with no workplace
+        print("cum_sum, top 10: ", self.cum_sum_work_pop[0:10])
         self.work_population = self.cum_sum_work_pop[-1]
         self.nb_workplaces = len(self.cum_sum_work_pop)
-        self.largest_workplaces_vaccinated = self.ordered_work_ids[1:self.nb_top_workplaces_vaccinated]
-
-        print("******* ENTER rank_workplaces  *********")
-        print("work_pop: ", self.ordered_work_pop[0:10])
-        print("cum_sum, top 10: ", self.cum_sum_work_pop[0:10])
         print("rank_workplaces: self.nb_workplaces= ", self.nb_workplaces)
         print("* total work population: ", self.work_population)
         print("... nb_top_workplaces_vaccinated: ", self.nb_top_workplaces_vaccinated)  # should be integer
         print("* total work population to vaccinate: ", self.cum_sum_work_pop[self.nb_top_workplaces_vaccinated])
+        self.largest_workplaces_vaccinated = self.ordered_work_ids[1:self.nb_top_workplaces_vaccinated]
         print("* work_id[0]: ", self.ordered_work_ids[0])
-        print("******* EXIT rank_workplaces *********")
+        print("--------------")
 
     #--------------------------------------------
     def setup_schools(self, partition):
@@ -396,25 +391,33 @@ class PopulaceGraph:
     #----------------
     def vaccinatePopulace(self, perc):
         # vaccinate a fraction perc 
-
         """
         :param perc
         Vaccinate a fraction perc [0,1] of the population at random, all ages
         """
+
         self.perc_populace_vaccinated = 0.0
 
         print("\n\n************ ENTER vaccinatePopulace ***************")
+        print("*workplaces to vaccinate: ", self.nb_top_workplaces_vaccinated)
+        print("*perc to vaccinate in workplaces: ", self.perc_people_vaccinated_in_workplaces)
+        print("top of vaccinatePopulace: nb workplaces: ", self.nb_workplaces)
 
         self.initial_vaccinated = set()
 
         workplace_populace_vaccinated = []
+        print("--- nb top work to vaccinate: ", self.nb_top_workplaces_vaccinated)
         if self.nb_top_workplaces_vaccinated > 0:
+            print("vaccinate workplaces by rank")
             self.rank_workplaces()
+            print("after rank_workplaces, nb workplaces: ", self.nb_workplaces)
             # Vaccinate the top n workplaces
-            for i in range(1,self.nb_top_workplaces_vaccinated+1):
+            for i in range(1,self.nb_top_workplaces_vaccinated):
                people = self.workplaces[self.ordered_work_ids[i]]   # <<<<<<<
                workplace_populace_vaccinated.extend(people) # people is a list  ### MUST BE WRONG
 
+        print("* (cumsum) total work population to vaccinate: ", self.cum_sum_work_pop[self.nb_top_workplaces_vaccinated])
+        print("vaccinatePopulace, nb people to vaccinate in the workplace: ", len(workplace_populace_vaccinated))
         self.initial_vaccinated.update(workplace_populace_vaccinated)
 
         school_populace_vaccinated = []
@@ -422,10 +425,13 @@ class PopulaceGraph:
         if True:
             self.rank_schools()
             # Vaccinate the top n schools
-            for i in range(1,self.nb_top_schools_vaccinated+1):
+            for i in range(1,self.nb_top_schools_vaccinated):
                people = self.schools[self.ordered_school_ids[i]]
                school_populace_vaccinated.extend(people)  # people is a list
 
+        print("* (cumsum) total school population to vaccinate: ", self.cum_sum_school_pop[self.nb_top_schools_vaccinated])
+        # WRONG
+        print("vaccinatePopulace, nb people to vaccinate in the schools: ", len(school_populace_vaccinated))
         self.initial_vaccinated.update(school_populace_vaccinated)
 
         # if vaccinate the households of the workers in the largest workplaces
@@ -448,29 +454,12 @@ class PopulaceGraph:
         self.school_population_vaccinated    = len(school_populace_vaccinated)
         self.initial_vaccinated_population    = len(self.initial_vaccinated)
 
-        self.perc_workplace_vaccinated = self.nb_top_workplaces_vaccinated / self.nb_workplaces
-        self.perc_school_vaccinated = self.nb_top_schools_vaccinated / self.nb_schools
-        self.perc_people_vaccinated_in_workplaces = self.nb_top_schools_vaccinated / self.nb_schools
-
-        print("after rank_workplaces, nb workplaces: ", self.nb_workplaces)
-        print("* (cumsum) total work population to vaccinate: ", self.cum_sum_work_pop[self.nb_top_workplaces_vaccinated])
-        print("vaccinatePopulace, nb people to vaccinate in the workplace: ", len(workplace_populace_vaccinated))
-
-        print("* (cumsum) total school population to vaccinate: ", self.cum_sum_school_pop[self.nb_top_schools_vaccinated])
-        # WRONG
-        print("vaccinatePopulace, nb people to vaccinate in the schools: ", len(school_populace_vaccinated))
-
-        print("*workplaces to vaccinate: ", self.nb_top_workplaces_vaccinated)
-        print("*perc to vaccinate in workplaces: ", self.perc_people_vaccinated_in_workplaces)
-        print("top of vaccinatePopulace: nb workplaces: ", self.nb_workplaces)
 
         print("Total initial population: ", self.population)
         #print("initial vaccinated: ", self.initial_vaccinated)
-
         if len(self.initial_vaccinated) != 0: 
             print("nb initial vaccinated: ", len(self.initial_vaccinated))
             print("fraction of general population vaccinated: ", len(self.initial_vaccinated) / self.population)
-
         print("nb schools vaccinated: ", self.nb_top_schools_vaccinated)
 
         print()
@@ -489,14 +478,15 @@ class PopulaceGraph:
     
         print("self.nb_workplaces= ", self.nb_workplaces)
         print("self.nb_top_workplaces_vaccinated= ", self.nb_top_workplaces_vaccinated)
+        self.perc_workplace_vaccinated = self.nb_top_workplaces_vaccinated / self.nb_workplaces
+        self.perc_school_vaccinated = self.nb_top_schools_vaccinated / self.nb_schools
+        self.perc_people_vaccinated_in_workplaces = self.nb_top_schools_vaccinated / self.nb_schools
 
         print("Inside Vaccinate Populace")
-
         vacc = self.createVaccinationDict()
         for k,v in vacc.items():
             print("vacc[%s]: "%k, v)
 
-        print("\n\n************ EXIT vaccinatePopulace ***************")
                     
     #----------------
     def printEnvironments(self):

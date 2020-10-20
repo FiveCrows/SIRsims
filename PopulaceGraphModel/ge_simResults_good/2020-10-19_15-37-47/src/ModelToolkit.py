@@ -9,12 +9,9 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 import math
-from scipy.interpolate import interp1d
-from scipy.stats import bernoulli
 
 
 
-#----------------------------------------------------------------------
 class Partitioner:
     """
     Objects of this class can be used to split a list of people into disjoint sets
@@ -34,7 +31,7 @@ class Partitioner:
 
         self.enumerator = enumerator
         self.attribute = attribute
-        self.names = labels
+        self.labels = labels
         self.attribute_values = dict.fromkeys(set(enumerator.values()))
         self.num_sets = (len(np.unique(list(enumerator.values()))))
 
@@ -44,7 +41,6 @@ class Partitioner:
         An list of indexes for the peaple to partition
         :param populace:
         A dict associating people to a list of their attributes is required for applying the enumerator
-
         :return: dict
 
         """
@@ -56,18 +52,15 @@ class Partitioner:
             partitioned_members[group].append(person)
         return partitioned_members
 
-#----------------------------------------------------------------------
 #was a thought, but I never used it
 class memberedPartition:
     def __init__(self, members, populace, enumerator, attribute, names = None):
         super.__init__()
         self.partitioned_members = super.partitionGroup(members, populace)
 
-#----------------------------------------------------------------------
 class Environment:
     """
     Objects to the carry details of every home, workplace, and school
-    Each environment is an individual school, workplace, or home 
     """
     def __init__(self, index, members, type, preventions = None):
         """
@@ -80,7 +73,6 @@ class Environment:
         :param preventions: dict
         keys should be 'household', 'school', or 'workplace'. Each should map to another dict,
         with keys for 'masking', and 'distancing', which should map to an int in range[0:1] that represents
-            #environment.drawSelfDistance(self.env_edges[environment.index])  # Is this needed?
         the prevelance of the prevention strategy in the environment
         """
 
@@ -91,54 +83,23 @@ class Environment:
         self.population = len(members)
        # self.distancing = distancing
 
-    def drawSelfDistance(self):
-        '''
-        In each environment, I want to choose a fraction of edges that are social distancing
-        and for which there will be a reduction due to social distancing. 
-        How to do that? 
-
-        :param type: list of edge pairs [(v1,v2),(v3,v4),...] of environment index
-        List of edges in the graph of environment with index env_index
-        :return: void
-        '''
-
-        # I should collect all the edges of the environment, and assign 1 or zero regarding whether there 
-        # is social distancing. 
-
-        num_edges = len(self.edges)
-
-        if self.preventions == None:
-            num_social = 0
-        else:
-            num_social = int(num_edges * self.preventions["distancing"])
-
-        distancing_status = [1] * num_social + [0] * (num_edges - num_social)
-        random.shuffle(distancing_status)
-        # class Environment
-        self.distancing_status = dict(zip(self.edges, distancing_status))
-
     def drawMasks(self):
         '''
         creates a dict linking each member of the environment with a mask
-        :return: void
+        :param p: the proportion of people with masks
+        :return:
         '''
 
         # assign masks
-        #print("environment?: ", type(self))
-        #print("drawMasks: self.preventions= ", self.preventions)
         if self.preventions == None:
             num_masks = 0
         else:
             num_masks = int(self.population * self.preventions["masking"])
-
-        #if (num_masks > 0): print("num_masks= ", num_masks)
         mask_status = [1] * num_masks + [0] * (self.population - num_masks)
         random.shuffle(mask_status)
-        # class Environment
         self.mask_status = dict(zip(self.members, mask_status))
-        #print("mask status: ", self.mask_status)
 
-#----------------------------------------------------------------------
+
 class PartitionedEnvironment(Environment):
     """
     being partitioned, it also holds a contact matrix and a partitioner
@@ -192,7 +153,6 @@ class PartitionedEnvironment(Environment):
             print("{}population: {}".type)
 
 
-#----------------------------------------------------------------------
 class TransmissionWeighter:
     """
     a transmission weighter object carries all parameters and functions that involve calculating weight for edges in the graph
@@ -206,9 +166,9 @@ class TransmissionWeighter:
         must map prevention names, currently either 'masking' or 'distancing' to scalars
         """
 
+        self.global_weight = 1
         self.prevention_reductions = prevention_reductions
-        self.env_scalars           = env_type_scalars
-        self.global_weight         = 1
+        self.env_scalars = env_type_scalars
 
         #self.loc_masking = loc_masking
         #self.age_scalars = age_scalars
@@ -216,361 +176,43 @@ class TransmissionWeighter:
     def setEnvScalars(self, env_scalars):
         self.env_scalars = env_scalars
 
-    def setPreventions(self, preventions):
-        print("setPreventions: ", preventions)
-        self.preventions = preventions
-
     def setPreventionReductions(self, prevention_reductions):
         self.prevention_reductions = prevention_reductions
-        print("setPreventionReductions: ", prevention_reductions)
 
     def getWeight(self, personA, personB, environment):
-        start_time = time.time()
         """
-        In class TransmissionWeighter
         Uses the environments type and preventions to deternmine weight
         :param personA: int
-        currently unused
+        a persons index, which should be a member of the environment
         :param personB: int
-        currently unused
         :param environment: environment
          the shared environment of two nodes for the weight
         :return:
         """
-
-        """
-        This function is called for a single person 
-        self.env_scalars = default_env_scalars   = {"school": 0.3, "workplace": 0.3, "household": 1}
-        1. If no preventions, weight = w_global * 0.3 (global_weight = 1. When is it not 1?)
-        2. If there are preventions, there is randomness. Let r1 and r2 be two random numbers
-            p1 = 
-        """
-
-        #print(personA, personB)  # 30 29
-        #print(environment.distancing_status)
-        #wv = environment.distancing_status[(personA, personB)]
-
-        weight = self.global_weight * self.env_scalars[environment.type]
-
-        """
-        ISSUE: enviroment.distancing_status is per edge within an environment. However, it does not exist
-        before the graph is created
-        """
-
+        weight = self.global_weight*self.env_scalars[environment.type]
+        #including masks
         if environment.preventions != None:
-            # I like this: a mask_status per person. We also need mask_reduction per person
             n_masks = (environment.mask_status[personA] + environment.mask_status[personB])
-            #if (n_masks > 0): print("n_masks > 0")
-            # self.prevnetion_reductions becomes a string!!! HOW!!!
             # If two people do not wear masks, the weight is not affected
             weight = weight*(1.-self.prevention_reductions["masking"])**n_masks
+            #distancing weight reduction of form (1-(1-c)*p)
+            # just to be linear, and so that as p ranges from zero to one, weight drops from original to
+            # c * weight
+            #weight = weight*(1-(1-self.prevention_reductions["distancing"]) * environment.preventions["distancing"])
             # Fixed by Gordon
-            distance_status = environment.distancing_status[(personA, personB)]
-            #print("distancing reduction= ", distance_status, self.prevention_reductions["distancing"], environment.type)
-            weight = weight * (1. - self.prevention_reductions["distancing"]*distance_status)
-            #print("weight= ", weight)
+            weight = weight*(1-self.prevention_reductions["distancing"])
 
         return weight
 
 
-#-----------------------------------------------------
 class PopulaceGraph:
     """
-    A list of people, environments, and functions need to track a weighted graph 
-        to represent contacts between members of the populace
+    A list of people, environments, and functions need to track a weighted graph to represent contacts between members of the populace
     """
-
-    #-----------------
-    def setup_households(self):
-        households = self.pops_by_category["sp_hh_id"]
-
-        for index in households:
-            houseObject              = Environment(index, households[index], "household", 0)
-            self.environments[index] = (houseObject)
-
-    #-----------------
-    def set_nbTopWorkplacesToVaccinate(self, nb, perc):
-        self.nb_top_workplaces_vaccinated = nb
-        self.perc_people_vaccinated_in_workplaces = perc
-        print("*workplaces to vaccinate: ", self.nb_top_workplaces_vaccinated)
-        print("*perc to vaccinate in workplaces: ", self.perc_people_vaccinated_in_workplaces)
-
-    #---------------------
-    def set_nbTopSchoolsToVaccinate(self, nb, perc):
-        self.nb_top_schools_vaccinated = nb
-        self.perc_people_vaccinated_in_schools = perc
-
-    #---------------------------
-    def setup_workplaces(self, partition):
-        # list of numbers
-        self.workplaces = self.pops_by_category["work_id"]
-
-        with open("../ContactMatrices/Leon/ContactMatrixWorkplaces.pkl", 'rb') as file:
-            work_matrices = pickle.load(file)
-
-        for index in self.workplaces:
-            if index == None: continue
-            workplace = PartitionedEnvironment(index, self.workplaces[index], "workplace", 
-                                               self.populace, work_matrices[index], partition)
-            self.environments[index] = (workplace)
-
-    #----------------------------------
-    def rank_schools(self):
-        # produces list of pairs (school is, list of people is)
-        # replace the list of people ids by its length
-        ordered_schools = sorted(self.schools.items(), key=lambda x: len(x[1]), reverse=True)
-        ordered_schools = map(lambda x: [x[0], len(x[1])], ordered_schools)
-        ordered_schools = list(ordered_schools)
-
-        self.ordered_school_ids = [o[0] for o in ordered_schools[:]]
-        self.ordered_school_pop = [o[1] for o in ordered_schools[:]]
-
-        # Cumulative sum of school lengths
-        # Sum from 1 since 0th index is a school with 200,000 students. Can't be right. 
-        self.cum_sum_school_pop = np.cumsum(self.ordered_school_pop[1:])
-        self.school_population = self.cum_sum_school_pop[-1]
-        self.nb_schools = len(self.cum_sum_school_pop)
-        self.largest_schools_vaccinated = self.ordered_school_ids[1:self.nb_top_schools_vaccinated]
-        
-        print("******* ENTER rank_schools *********")
-        print("school_pop: ", self.ordered_school_pop[0:10])
-        print("school_ids: ", self.ordered_school_ids[0:10])
-        print("cum_sum, top 10: ", self.cum_sum_school_pop[0:10])
-        print("rank_schools: self.nb_schools= ", self.nb_schools)
-        print("* total school population: ", self.school_population)
-        print("* total school population to vaccinate: ", self.cum_sum_school_pop[self.nb_top_schools_vaccinated])
-        print("* school_id[0:10]: ", self.ordered_school_ids[0:10])
-        print("******* EXIT rank_schools *********")
-
-    #----------------------------------
-    def rank_workplaces(self):
-        # produces list of pairs (workplace is, list of people is)
-        # replace the list of people ids by its length
-
-        ordered_workplaces = sorted(self.workplaces.items(), key=lambda x: len(x[1]), reverse=True)
-        ordered_workplaces = map(lambda x: [x[0], len(x[1])], ordered_workplaces)
-        ordered_workplaces = list(ordered_workplaces)
-
-        self.ordered_work_ids = [o[0] for o in ordered_workplaces]
-        self.ordered_work_pop = [o[1] for o in ordered_workplaces]
-
-        # Cumulative sum of business lengths
-        # Sum from 1 since 0th index is a workplace with 120,000+ people. Can't be right. 
-        self.cum_sum_work_pop = np.cumsum(self.ordered_work_pop[1:])  # remove the first work which are the people with no workplace
-        self.work_population = self.cum_sum_work_pop[-1]
-        self.nb_workplaces = len(self.cum_sum_work_pop)
-        self.largest_workplaces_vaccinated = self.ordered_work_ids[1:self.nb_top_workplaces_vaccinated]
-
-        print("******* ENTER rank_workplaces  *********")
-        print("work_pop: ", self.ordered_work_pop[0:10])
-        print("cum_sum, top 10: ", self.cum_sum_work_pop[0:10])
-        print("rank_workplaces: self.nb_workplaces= ", self.nb_workplaces)
-        print("* total work population: ", self.work_population)
-        print("... nb_top_workplaces_vaccinated: ", self.nb_top_workplaces_vaccinated)  # should be integer
-        print("* total work population to vaccinate: ", self.cum_sum_work_pop[self.nb_top_workplaces_vaccinated])
-        print("* work_id[0]: ", self.ordered_work_ids[0])
-        print("******* EXIT rank_workplaces *********")
-
-    #--------------------------------------------
-    def setup_schools(self, partition):
-        self.schools = self.pops_by_category["school_id"]
-        with open("../ContactMatrices/Leon/ContactMatrixSchools.pkl", 'rb') as file:
-            school_matrices = pickle.load(file)
-        for index in self.schools:
-            if index == None: continue
-            school = PartitionedEnvironment(index, self.schools[index], "school", self.populace, 
-                                            school_matrices[index], partition )
-            self.environments[index] = (school)
-           
-    #-----------------
-    def infectPopulace(self, perc):
-        # vaccinate a fraction perc 
-        """
-        :param perc
-        infect a fraction perc [0,1] of the population at random, all ages
-        """
-
-        infected_01 = bernoulli.rvs(perc, size=self.population)
-        self.initial_infected = np.asarray(list(self.populace.keys()))[infected_01 == 1]
-        print("nb initial infected: ", self.initial_infected.shape[0])
-    #----------------
-    def vaccinatePopulace(self, perc):
-        # vaccinate a fraction perc 
-
-        """
-        :param perc
-        Vaccinate a fraction perc [0,1] of the population at random, all ages
-        """
-        self.perc_populace_vaccinated = 0.0
-
-        print("\n\n************ ENTER vaccinatePopulace ***************")
-
-        self.initial_vaccinated = set()
-
-        workplace_populace_vaccinated = []
-        if self.nb_top_workplaces_vaccinated > 0:
-            self.rank_workplaces()
-            # Vaccinate the top n workplaces
-            for i in range(1,self.nb_top_workplaces_vaccinated+1):
-               people = self.workplaces[self.ordered_work_ids[i]]   # <<<<<<<
-               workplace_populace_vaccinated.extend(people) # people is a list  ### MUST BE WRONG
-
-        self.initial_vaccinated.update(workplace_populace_vaccinated)
-
-        school_populace_vaccinated = []
-        #if self.nb_top_schools_vaccinated > 0:
-        if True:
-            self.rank_schools()
-            # Vaccinate the top n schools
-            for i in range(1,self.nb_top_schools_vaccinated+1):
-               people = self.schools[self.ordered_school_ids[i]]
-               school_populace_vaccinated.extend(people)  # people is a list
-
-        self.initial_vaccinated.update(school_populace_vaccinated)
-
-        # if vaccinate the households of the workers in the largest workplaces
-        # if vaccinate the households of the children in the largest schools
-
-        if perc > 0.0001 and perc < 0.9999:
-            self.perc_populace_vaccinated = perc
-            vaccinated_01 = bernoulli.rvs(perc, size=self.population)
-        elif perc > 0.99:
-            self.perc_populace_vaccinated = 1.0
-            vaccinated_01 = np.ones(self.population)
-        elif perc < 0.01:
-            self.perc_populace_vaccinated = 0.0
-            vaccinated_01 = np.zeros(self.population)
-
-        general_populace_vaccinated = np.asarray(list(self.populace.keys()))[vaccinated_01 == 1]
-        self.initial_vaccinated.update(general_populace_vaccinated)
-
-        self.workplace_population_vaccinated = len(workplace_populace_vaccinated)
-        self.school_population_vaccinated    = len(school_populace_vaccinated)
-        self.initial_vaccinated_population    = len(self.initial_vaccinated)
-
-        self.perc_workplace_vaccinated = self.nb_top_workplaces_vaccinated / self.nb_workplaces
-        self.perc_school_vaccinated = self.nb_top_schools_vaccinated / self.nb_schools
-        self.perc_people_vaccinated_in_workplaces = self.nb_top_schools_vaccinated / self.nb_schools
-
-        print("after rank_workplaces, nb workplaces: ", self.nb_workplaces)
-        print("* (cumsum) total work population to vaccinate: ", self.cum_sum_work_pop[self.nb_top_workplaces_vaccinated])
-        print("vaccinatePopulace, nb people to vaccinate in the workplace: ", len(workplace_populace_vaccinated))
-
-        print("* (cumsum) total school population to vaccinate: ", self.cum_sum_school_pop[self.nb_top_schools_vaccinated])
-        # WRONG
-        print("vaccinatePopulace, nb people to vaccinate in the schools: ", len(school_populace_vaccinated))
-
-        print("*workplaces to vaccinate: ", self.nb_top_workplaces_vaccinated)
-        print("*perc to vaccinate in workplaces: ", self.perc_people_vaccinated_in_workplaces)
-        print("top of vaccinatePopulace: nb workplaces: ", self.nb_workplaces)
-
-        print("Total initial population: ", self.population)
-        #print("initial vaccinated: ", self.initial_vaccinated)
-
-        if len(self.initial_vaccinated) != 0: 
-            print("nb initial vaccinated: ", len(self.initial_vaccinated))
-            print("fraction of general population vaccinated: ", len(self.initial_vaccinated) / self.population)
-
-        print("nb schools vaccinated: ", self.nb_top_schools_vaccinated)
-
-        print()
-
-        # ERROR: nb of people in workplace to vaccinate MUST BE LESS than workplace population
-        print("nb people in workplace to vaccinate: ", len(workplace_populace_vaccinated))
-        print("fraction of workplace populace vaccinated: ", len(workplace_populace_vaccinated) / self.work_population)
-        print("total workplace populace vaccinated: ", self.workplace_population_vaccinated)
-        print("total workplace population: ", self.work_population)
-
-        print()
-  
-        print("fraction of school populace vaccinated: ", len(school_populace_vaccinated) / self.school_population)
-        print("total school population: ", self.school_population)
-        print("total school populace vaccinated: ", self.school_population_vaccinated)
-    
-        print("self.nb_workplaces= ", self.nb_workplaces)
-        print("self.nb_top_workplaces_vaccinated= ", self.nb_top_workplaces_vaccinated)
-
-        print("Inside Vaccinate Populace")
-
-        vacc = self.createVaccinationDict()
-        for k,v in vacc.items():
-            print("vacc[%s]: "%k, v)
-
-        print("\n\n************ EXIT vaccinatePopulace ***************")
-                    
-    #----------------
-    def printEnvironments(self):
-        keys = list(self.environments.keys())
-        envs = set()
-        for k in keys:
-            envs.add(self.environments[k].type)
-
-        # Environment type can be "household", "workplace", "school"
-        #print("envs= ", envs)
-        # attributers of environments[keys[1]]: "index', 'members', 'population', 'preventions', 'type'"
-        #print(dir(self.environments[keys[1]]))
-        for k in range(25000,25200):
-            print("-----------------")
-            print(self.environments[keys[k]].members)  # list of one element [12]. Meaning? 
-            print(self.environments[keys[k]].population)  # 1  (nb of members)
-            print(self.environments[keys[k]].preventions)  # None (or a list?
-            print(self.environments[keys[k]].type)  # list of one element [12]. Meaning? 
-
-    #-------------------------------
-    def resetVaccinated_Infected(self):
-        # By default nobody in the population is recovered. 
-        # Vaccination is modeled by setting a person's status to recovered
-
-        # Reset to not vaccinate anybody anywhere 
-        self.set_nbTopWorkplacesToVaccinate(0, 0.)
-        self.set_nbTopSchoolsToVaccinate(0, 0.)
-
-        # Rank locations. Must be called after setting nb places to vaccinate
-        print("** resetVaccinated_Infected")
-        self.rank_workplaces()
-        self.rank_schools()
-
-        self.initial_vaccinated = []
-        self.initial_infected   = []
-        self.nb_top_workplaces_vaccinated = 0
-        self.nb_top_schools_vaccinated = 0
-        self.perc_people_vaccinated_in_workplaces = 0.0
-        self.perc_populace_vaccinated = 0.0
-        self.perc_people_vaccinated_in_schools = 0.0
-        self.perc_workplace_vaccinated = 0.0  # perc vaccinated in the workplace
-        self.perc_school_vaccinated = 0.0  # perc vaccinated in the schools
-        self.work_population = 1
-        self.school_population = 1
-        self.workplace_population_vaccinated = 0,
-        self.school_population_vaccinated = 0,
-        self.initial_vaccinated_population = len(self.initial_vaccinated),
-    #-------------------------------
-    def createVaccinationDict(self):
-        vacc_dict = {
-            'nb_top_workplaces_vaccinated': self.nb_top_workplaces_vaccinated,
-            'nb_top_schools_vaccinated': self.nb_top_schools_vaccinated,
-            'perc_people_vaccinated_in_workplaces': self.perc_people_vaccinated_in_workplaces,
-            'perc_populace_vaccinated': self.perc_populace_vaccinated,
-            'perc_people_vaccinated_in_schools': self.perc_people_vaccinated_in_schools,
-            'perc_workplace_vaccinated': self.perc_workplace_vaccinated,    # perc vaccinated in the workplace
-            'perc_school_vaccinated': self.perc_school_vaccinated, # perc vaccinated in the schools
-            'work_population': self.work_population,
-            'school_population': self.school_population,
-            'nb_schools': self.nb_schools,
-            'nb_workplaces': self.nb_workplaces,
-            'workplace_population_vaccinated': self.workplace_population_vaccinated,
-            'school_population_vaccinated': self.school_population_vaccinated,
-            'initial_vaccinated_population': self.initial_vaccinated_population,
-        }
-        return vacc_dict
-    #-------------------------------
-    def __init__(self, partition, timestamp, graph = None, populace = None, 
-                 attributes = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False, save_output=False):
+    def __init__(self, partition, graph = None, populace = None, attributes = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False):
         """        
         :param partition: Partitioner
         needed to build schools and workplaces into partitioned environments         
-        :param timestamp
-        Time stamp that corresponds to a collection of simulations
         :param graph: nx.Graph 
          a weighted graph to represent contact and hence chances of infection between people
         :param populace: dict
@@ -582,31 +224,16 @@ class PopulaceGraph:
         will filter 90% of people from the object to speed debugging
         """
 
-        # Graphs are not yet set up in the constructor
-
-        # Timestamp call only once per partitioning
-        self.stamp = timestamp
-        #self.stamp = datetime.now().strftime("%m_%d_%H_%M_%S")
-
         self.isBuilt = False
         #self.record = Record()
         self.sims = []
         self.contactMatrix = None
         self.total_weight = 0
+        self.record = Record()
         self.total_edges = 0
         self.total_weight = 0
         self.environments_added = 0
-        self.save_output = save_output
-
-        self.record = Record(self.save_output)
-
-        #self.edge_envs = {}  # keep track of the environment associated with each edge
-
-        # What is this for? 
-        if partition != None:
-            self.hasPartition = True
-        else:
-            self.hasPartition = False
+        self.initial_recovered = None
 
         if graph == None:
             self.graph = nx.Graph()
@@ -617,8 +244,8 @@ class PopulaceGraph:
             with open("people_list_serialized.pkl", 'rb') as file:
                 x = pickle.load(file)
 
-        # return represented by dict of dicts
-        # renames = {"sp_hh_id": "household", "work_id": "work", "school_id": "school"} maybe later...
+            # return represented by dict of dicts
+        #renames = {"sp_hh_id": "household", "work_id": "work", "school_id": "school"} maybe later...
 
         if slim == True:
             print("WARNING! slim = True, 90% of people are filtered out")
@@ -630,122 +257,74 @@ class PopulaceGraph:
             self.populace = ({key: (vars(x[key])) for key in x})  # .transpose()
 
         self.population = len(self.populace)
-        keys = list(self.populace.keys())
 
-        # print(self.populace[keys[1]])
-        # {'sp_id': 164082714, 'sp_hh_id': 58565423, 'age': 64, 'sex': 0, 'race': 1, 'relate': 0, 
-        #   'school_id': None, 'work_id': 505089288, 'comorbidities': {'Hypertension': False, 
-        #   'Obesity': False, 'Lung disease': False, 'Diabetes': False, 'Heart disease': False, 
-        #   'MaskUsage': False, 'Other': False}}
-
+        if True:
         # for sorting people into categories
         # takes a dict of dicts to rep resent populace and returns a list of dicts of lists to represent groups of people with the same
         # attributes
 
-        # pops_by_category: for each category, a dictionary
-        # attributes:  ['sp_hh_id', 'work_id', 'school_id', 'race', 'age']
+            pops_by_category = {category: {} for category in attributes}
+            #pops_by_category{'populace'} = []
+            for person in self.populace:
+                for category in attributes:
+                    try:
+                        pops_by_category[category][self.populace[person][category]].append(person)
+                    except:
+                        pops_by_category[category][self.populace[person][category]] = [person]
+            self.pops_by_category = pops_by_category
+        else:
+            self.pops_by_category = pops_by_category
 
-        #print("attributes: ", attributes)
-        pops_by_category = {category: {} for category in attributes}
+        #list households:
 
-        for person in self.populace:
-            for category in attributes:
-                try:
-                    # Append to list of persons
-                    # I am not sure of the meaning of self.populace[person][category]: it is a key
-                    pops_by_category[category][self.populace[person][category]].append(person)
-                except:
-                    # Initialize dictionary value to a list
-                    pops_by_category[category][self.populace[person][category]] = [person]
-
-        #print(list(pops_by_category["age"].keys())); 
-        #print(list(pops_by_category["race"].keys())); 
-        #print(list(pops_by_category["school_id"].keys())); quit()
-
-        pops_by_category["age_groups"] = {}
-        #print("keys: ", pops_by_category["age"])
-        #print("keys: ", list(pops_by_category["age"]))
-
-
-        for bracket in range(0,20):
-            #print(bracket)
-            pops_by_category["age_groups"][bracket] = []
-            for i in range(0,5):
-                try:   # easier than conditionals. I divided all ages into groups of 5
-                    pops_by_category["age_groups"][bracket].extend(pops_by_category["age"][5*bracket+i])
-                except:
-                    break
-            #print("bracket: %d, size: %d" % (bracket, len(pops_by_category["age_groups"][bracket])))
-
-        self.pops_by_category = pops_by_category
-        #print("pops_by_category['race']", pops_by_category['race'])  # just a list of numbers
+        #load contact_matrices and build environments
+        with open("../ContactMatrices/Leon/ContactMatrixSchools.pkl", 'rb') as file:
+            schoolCM = pickle.load(file)
 
         # env_name_alternate = {"household": "sp_hh_id", "work": "work_id", "school": "school_id"} outdated
         #adding households to environment list
+        households = self.pops_by_category["sp_hh_id"]
         self.environments = {}
-        self.setup_households()
-        self.setup_workplaces(partition)
-        self.setup_schools(partition)
+        for index in households:
+            houseObject = Environment(index, households[index], "household", 0)
+            self.environments[index] = (houseObject)
 
-        # Must be called last
-        self.resetVaccinated_Infected()
+        #adding workplaces to environment list
+        workplaces = self.pops_by_category["work_id"]
+        with open("../ContactMatrices/Leon/ContactMatrixWorkplaces.pkl", 'rb') as file:
+            work_matrices = pickle.load(file)
 
-    #-------------------------------
-    def zeroWeights(self, env):
-        # GE: How to turn off a school without reconstructing the school graph? 
-        # NOT USED
-        # Run through the edges and set the weight to zero
-        start_time = time.time()
-        G = self.graph
-        for e in G.edges():
-            environment = self.environments[self.graph.adj[e[0]][e[1]]['environment']]
-            print("env, envi= ", env, environment.type)
-            if env == environment.type:
-                self.graph.adj[e[0]][e[1]]['transmission_weight'] = 0
-        print("zeroWeights[%s]: %f sec" % (env, time.time() - start_time))
-    #---------------------------------
-    def printWeights(self):
-        G = self.graph
-        for e in G.edges():
-            w = G[e[0]][e[1]]['transmission_weight']
-            env = self.environments[G[e[0]][e[1]]['environment']]
-            print("weight(e): ", e, " => ", w, env.type)
-    #---------------------------------
-    def envEdges(self):
-        # Added by Gordon Erlebacher, class PopulaceGraph
-        # Construct a dictionary for each environment, of its edges. This will be used
-        # to assign edge properties per environment. 
-        env_edges= {}
-        for ix in self.environments:
-            env_edges[ix] = []   # list of edges
+        if partition != None:
+            self.hasPartition = True
+            for index in workplaces:
+                if index != None:
+                    workplace = PartitionedEnvironment(index, workplaces[index], "workplace", self.populace, work_matrices[index], partition)
+                    self.environments[index] = (workplace)
+            schools = self.pops_by_category["school_id"]
+            with open("../ContactMatrices/Leon/ContactMatrixSchools.pkl", 'rb') as file:
+                school_matrices = pickle.load(file)
+            for index in schools:
+                if index != None:
+                    school = PartitionedEnvironment(index, schools[index], "school", self.populace, school_matrices[index], partition )
+                    self.environments[index] = (school)
 
-        for edge in self.graph.edges():
-            #get environment
-            env = self.environments[self.graph.adj[edge[0]][edge[1]]['environment']]
-            # env is an environment object
-            env_edges[env.index].append((edge[0], edge[1]))  ### ERROR
 
-        # attach edge list to the environment
-        for ix in self.environments:
-            env = self.environments[ix]
-            env.edges = env_edges[ix]
 
-    #------------------------------------
-    def build(self, weighter, preventions, prevention_reductions, env_degrees, alg = None):
+
+    def build(self, weighter, preventions, env_degrees, alg = None):
         """
         constructs a graph for the objects populace
         this model is built to use 
-        :param weighter: TransmissionWeighter
+        :param weighter: TransmissionWeighter object
         will be used to determine the graphs weights
         :param preventions: dict
-        :param env_degrees:
-        :param alg:
+        should associate each environment type to another dict, which associates each prevention to a prevalence
+        :param env_degrees: dict
+         a dict of degrees for each environment type. Can be None
+        :param alg: function
+         the algorithm to use for choosing edges
         :return:
         """
-
-        # GE: Do not call getWeight in addEdge. Instead, once the graph is created, loop through 
-        # all environments and call getWeight for each edge found.
-
         start_time = time.time()
         #None is default so old scripts can still run. self not defined in signature
         if alg == None:
@@ -753,105 +332,47 @@ class PopulaceGraph:
 
         self.trans_weighter = weighter
         self.preventions = preventions
-        self.prevention_reductions = prevention_reductions
         self.environment_degrees = env_degrees
-
-        # For Debugging and record keeping
         #self.record.print('\n')
         #self.record.print("building populace into graphs with the {} clustering algorithm".format(clusteringAlg.__name__))
         #start = time.time()
-
-        # Create empty graph
         self.graph = nx.Graph()
-
-        #self.printEnvironments()  # for debugging and understanding
-
-
-        # loop through all schools, workplaces, households (3 environments)
-        # Keeping prevents for each environment separately, allows different schools to have 
-        # different preventions
-        #for env in self.environments:
-            #print("env= ", env) # integers
         for index in self.environments:
-            #print("indexx= ", index)
-            env = self.environments[index] # environment
-            #print("env= ", env)
-            env.is_built = False  # Added by GE
-            self.addEnvironment(env, alg)
-            env.isBuilt = True  # Added by GE
-            # GE: WHY ARE THESE LINES NO LONGER REQUIRED?
-            #env.preventions = preventions[env.type]  # how are preventions used in the model? 
-            #self.constructGraphFromCM(env, alg)
-
-        # Graphs are done
-
+            #assign preventions and masks
+            environment = self.environments[index]
+            self.addEnvironment(environment, alg)
         self.isBuilt = True
         finish_time = time.time()
         print("build took {} seconds to finish".format(finish_time-start_time))
 
-        # we are in class PopulaceGraph
-        # Create edge list for each environment keyed by the environment index
-        # It would be better if each environment had a set of edges
-        
-        # Attach list of edges to each environment
-        self.envEdges()
-
-        # Add all missing nodes. These will have no edges. 
-        self.graph.add_nodes_from(self.populace.keys()-self.graph.nodes())
-
-        #for index in self.environments:
-            #env = self.environments[index]
-            #env.drawSelfDistance()  # graph must already exist
-
-        self.reweight(self.trans_weighter, self.preventions, self.prevention_reductions) 
-
-    #----------------------------------
-    def reweight(self, weighter, preventions, prevention_reductions, alg = None):
+    def reweight(self, weighter, preventions):
         """
-        In class PopulaceGraph
-        Recomputes the weights on each edge using with, presumably new, arguments
+        Rechooses the weights on each edge with, presumably, a distinct weighter or preventions
+        :param weighter: TransmissionWeighter object
+        will be used to determine the graphs weights
+        :param preventions: dict
+        should associate each environment type to another dict, which associates each prevention to a prevalence
 
-        :param weighter:
-        :param preventions:
-        :param env_degrees:
-        :param alg:
-        :return:
+        :return: None
         """
-        start_time          = time.time()
+        start_time = time.time()
         self.trans_weighter = weighter
-        self.preventions    = preventions
-        self.prevention_reductions = prevention_reductions
-
-        #print("ENTER REWEIGHT")
-        #print("reweight: self.prevention_redutions= ", self.prevention_reductions)
-        #print("reweight: self.preventions= ", self.preventions)
+        self.preventions = preventions
 
         #update new prevention strategies on each environment
         for index in self.environments:
             environment = self.environments[index]
-            # GE: WHY IS THIS NOT USED in ModelToolkit.py?
-            environment.preventions = self.preventions[environment.type]
-            environment.prevention_reductions = self.prevention_reductions
-            #print("before drawMasks, preventions: ", self.preventions)
-            #print("before drawMasks, env.preventions: ", environment.preventions)
             environment.drawMasks()
-            environment.drawSelfDistance()
-        #print("AFTER FOR LOOP"); 
 
         #pick and replace weights for each environment
-        # There is no easy way to collect the edges for a given environment unless one does 
-        # a pass on the graph once it has been created. I will do that. 
-
-        for e0, e1 in self.graph.edges():
+        for edge in self.graph.edges():
             #get environment
-            environment = self.environments[self.graph.adj[e0][e1]['environment']]
-            new_weight = weighter.getWeight(e0, e1, environment)
-            self.graph.adj[e0][e1]['transmission_weight'] = new_weight
+            environment = self.environments[self.graph.adj[edge[0]][edge[1]]['environment']]
+            new_weight = weighter.getWeight(edge[0], edge[1], environment)
+            self.graph.adj[edge[0]][edge[1]]['transmission_weight'] = new_weight
         finish_time = time.time()
         print("graph has been reweighted in {} seconds".format(finish_time-start_time))
 
-    #------------------------------------------[
-    #-------------------
     def addEdge(self, nodeA, nodeB, environment, weight_scalar = 1):
         '''
         fThis helper function  not only makes it easier to track
@@ -867,28 +388,29 @@ class PopulaceGraph:
         may be used if one wants to scale the edgesweight bigger/smaller than the trasmission_weighter would regurarly predict
 
         '''
-        # GE Remove temporarily to simplify the code. Call once the graph is built
-        #weight = self.trans_weighter.getWeight(nodeA, nodeB, environment)*weight_scalar
-        weight = weight_scalar
+        weight = self.trans_weighter.getWeight(nodeA, nodeB, environment)*weight_scalar
         self.total_weight += weight
         self.total_edges += 1
         self.graph.add_edge(nodeA, nodeB, transmission_weight = weight, environment = environment.index)
-        #print("nodes: ", nodeA, nodeB)
-        #self.edge_envs[(nodeA, nodeB)] = environment
 
     #merge environments, written for plotting and exploration
-    #-------------------
-    def returnMultiEnvironment(self, env_indexes, partition):
+    def returnMultiEnvironment(self, env_indexes, partitioner = None):
+        """
+        :param env_indexes: environments to combine
+        :param partitioner:  to partition the  new combo environment, optional
+        :return:
+        """
+
+        if partitioner == None:
+            partitioner = self.environments[env_indexes[0]]
         members = []
         for index in env_indexes:
             members.extend(self.environments[index].members)
-        return PartitionedEnvironment(None, members, 'multiEnvironment', self.populace, None, partition)
+        return PartitionedEnvironment(None, members, 'multiEnvironment', self.populace, None, partitioner)
 
-    #-------------------
     def clusterDense(self, environment, subgroup = None, weight_scalar = 1):
         """
         This function will add every edge possible for the group. Thats n*(n-1)/2 edges
-
         :param environment: Environment
         The environment to add edges to
         :param subgroup: list
@@ -915,35 +437,8 @@ class PopulaceGraph:
                 self.addEdge(members[i], members[j], environment, weight_scalar)
 
 
-    #-------------------
-    def constructGraphFromCM(self, environment, alg):
-        """
-        This function iterates over the models list of environments and networks them one by one
-        by calling clusterDense. Every edge in everyhousehold will be added to the model. However,
-        the edges for the other, partitioned environments, alg, which must a function, must
-        be able to determine how to build the network, and along with the environment, the alg will also be passed a value
-        which specify what avg node degree it should produce
-
-        :param environment: Environment
-        the environment that needs to be added
-        :param alg: function
-        The algorithm to be used for networking the PartitionedEnvironments
-        :return:
-        """
-
-        if environment.type == 'household':
-            self.clusterDense(environment)
-        else:
-            # the graph is computed according to contact matrix of environment
-            # self.clusterPartitionedStrogatz(environment, self.environment_degrees[environment.type])
-            alg(environment, self.environment_degrees[environment.type])
-
-    #---------------------
     def addEnvironment(self, environment, alg):
         """
-        THE DESCRIPTION DOES NOT SEEM RIGHT. THERE IS NO ITERATION
-
-        Class PopulaceGraph
         This function iterates over the models list of environment and networks them one by one
         by calling clusterDense, every edge in every household will be added to the model. However,
         the edges for the other, partitioned environments, alg, which must a function, must
@@ -964,21 +459,24 @@ class PopulaceGraph:
             # self.clusterPartitionedStrogatz(environment, self.environment_degrees[environment.type])
             preventions = self.preventions[environment.type]
             environment.preventions = preventions
-            environment.prevention_reductions = self.prevention_reductions # not sure it is needed
             environment.drawMasks()
             alg(environment, self.environment_degrees[environment.type])
 
 
-    #-------------------
-    def clusterStrogatz(self, environment,  num_edges, weight_scalar = 1, subgroup = None, rewire_p = 0.2):
+    def clusterStrogatz(self, environment,  num_edges, weight_scalar = 1, subgroup = None, rewire_p = 0.1):
         """
-         clusterStrogatz
+         clusterStrogatz creates a strogatz net in the given environment
 
-         :param environment:  environment which needs to be added
-         :param num_edges:
-         :param weight_scalar:
-         :param subgroup:
+         :param environment: Environment object,
+        where to add edges
+         :param num_edges: int
+         the number of edges to add to the environment
+         :param weight_scalar: int
+          optional in case a larger or smaller weight is desired than transmission_weighter returns by default
+         :param subgroup: list
+         optional in case only edges for select members of the environment are wanted
          :param rewire_p:
+         the portion of edges to be included into the net by random
          :return:
         """
 
@@ -1012,8 +510,21 @@ class PopulaceGraph:
         for edge in edgeList: self.addEdge(edge[0], edge[1], environment)
 
 
-    #-------------------
     def clusterBipartite(self, environment, members_A, members_B, edge_count, weight_scalar = 1, p_random = 0.2):
+        """
+        cluster bipartite is for linking edges between two disjoint sets of people in the given environment
+        :param environment: environment Object
+        :param members_A: list
+        a list of people
+        :param members_B: list
+        another list of people
+        :param edge_count: int
+        the number of edges to add to the environment
+        :param weight_scalar: int
+        :param p_random: int
+        the rate at which random edges need to be added
+        :return:
+        """
         #reorder groups by size
         A = min(members_A, members_B, key = len)
         if A == members_A:
@@ -1051,7 +562,6 @@ class PopulaceGraph:
 
 
     #for clusterRandGraph
-    #-------------------
     def genRandEdgeList(self, setA, setB, n_edges):
         if n_edges == 0:
             return []
@@ -1077,7 +587,6 @@ class PopulaceGraph:
         list = edge_dict.keys()
         return list
 
-    #-------------------
     def clusterRandGraph(self, environment, avg_degree):
         print("**** Enter clusterRandGraph, created by G. Erlebacher")
         # Create graph according to makeGraph, developed by G. Erlebacher (in Julia)
@@ -1119,12 +628,21 @@ class PopulaceGraph:
                 edge_list = self.genRandEdgeList(p_sets[i], p_sets[j], n_edges)
                 for edge in edge_list: self.addEdge(edge[0],edge[1],environment)
 
+        #default_weight = total_contact/totalEdges
 
-    #-------------------
     def clusterPartitionedStrogatz(self, environment, avg_degree = None):
+        """
+        mainly this function is created to be passed as an argument.
+        will call
+        :param environment: environment object
+        the environment to network
+        :param avg_degree: int
+        optional, the default, None, will imply the avg_degree by the contact matrices
+        :return:
+        """
+
         self.clusterWithMatrix( environment, avg_degree, 'strogatz')
 
-    #-------------------
     def clusterPartitionedRandom(self, environment, avg_degree = None):
         '''
         This calls upon clusterWithMatrix, with topology set as 'random'
@@ -1136,7 +654,6 @@ class PopulaceGraph:
         '''
         self.clusterWithMatrix(environment, avg_degree, 'random')
 
-    #-------------------
     def clusterWithMatrix(self, environment, avg_degree, topology):
         """
         cluster With Matrix takes a partitioned environment, and reciprocates its contact matrix so it
@@ -1156,9 +673,10 @@ class PopulaceGraph:
         p_sets = environment.partition
         CM = environment.returnReciprocatedCM()
 
+
         assert isinstance(environment, PartitionedEnvironment), "must be a partitioned environment"
         #a list of the number of people in each partition set
-        p_n = [len(p_sets[i]) for i in p_sets]
+        p_n      = [len(p_sets[i]) for i in p_sets]
         num_sets = len(p_sets)
         #get total contact, keeping in mind the contact matrix elements are divided by num people in group
         total_contact = 0
@@ -1206,9 +724,19 @@ class PopulaceGraph:
                     else:
                         self.clusterBipartite(environment, p_sets[i], p_sets[j], num_edges,weight_scalar=1)
 
-    #-------------------
-    #written for the clusterMatrixGuidedPreferentialAttachment function
+
     def addEdgeWithAttachmentTracking(self, nodeA, nodeB, attachments, environment):
+        """
+        not finished yet.
+        #written for the clusterMatrixGuidedPreferentialAttachment function
+
+        :param nodeA:
+        :param nodeB:
+        :param attachments:
+        :param environment:
+        :return:
+        """
+
         self.add_edge(nodeA, nodeB, environment)
         groupA = environment.id_to_partition[nodeA]
         groupB = environment.id_to_partition[nodeB]
@@ -1266,7 +794,6 @@ class PopulaceGraph:
         partition_dist = [sum(vecM[:i] for i in range(num_partitions))] / sum(vecM)
         # partition_dist projects the edge_partition to  [0,1], such that the space between elements is in proportion to
         # the elements contact
-
         for i in range(remaining_edges):
             # this selects a partition element using partition_dist
             # then, from vec back to row/col
@@ -1308,140 +835,24 @@ class PopulaceGraph:
                 # try:
                 # attachments[""]
 
-    #-----------------------------------------
-    def SIRperBracket(self, tlast): 
-        # Collect the S,I,R at the last time: tlast
-        #print("tlast.R= ", list(tlast.keys())); 
-        # Replace 'S', 'I', 'R' by [0,1,2]
-
-        ag = self.pops_by_category["age_groups"]
-
-        brackets = {}
-        count = 0
-        for bracket in ag.keys():
-            s = i = r = 0
-            nodes = ag[bracket]
-            b = brackets[bracket] = []
-            for n in nodes:
-                b.append(tlast[n])
-            count += len(brackets[bracket])
-            
-        ages_d = {}
-        for bracket in ag.keys():
-            blist = brackets[bracket]
-            ages_d[bracket] = {'S':0, 'I':0, 'R':0}  # nb S, I, R
-            for s in blist:
-                ages_d[bracket][s] += 1
-        #print("inside SIRperBracket")
-        #print("  keys(ages_d): ", list(ages_d.keys()))
-        return ages_d
-   
-    #-----------------------------------------
-    def simulate(self, gamma, tau, simAlg = EoN.fast_SIR, title = None, full_data = True, preventions=None, prevention_reductions=None):
-        # :param: preventions 
-        # not used, but stored as an instance variable self.preventions
+    def simulate(self, gamma, tau, simAlg = EoN.fast_SIR, title = None, full_data = True):
+        # in class PopulaceGraph
         start = time.time()
-        # Bryan had the arguments reversed. 
-        simResult = simAlg(self.graph, tau, gamma, initial_recovereds=self.initial_vaccinated, initial_infecteds=self.initial_infected, transmission_weight='transmission_weight', return_full_data=full_data)
-        #simResult = simAlg(self.graph, tau, gamma, initial_recovereds=self.initial_vaccinated, rho=0.001, transmission_weight='transmission_weight', return_full_data=full_data)
+        # self.initial_recovered, default is None, otherwise a list of recovered people
+        # if rho is used, some of the recovered might be infected, but the overlap would be very small.
+        simResult = simAlg(self.graph, tau, gamma, self.initial_recovered, rho=0.001, transmission_weight='transmission_weight', return_full_data=full_data)
         stop = time.time()
-
         self.record.print("simulation completed in {} seconds".format(stop - start))
 
+        #doesn't work returning full results
+        #time_to_immunity = simResult[0][-1]
+        #final_uninfected = simResult[1][-1]
+        #final_recovered = simResult[3][-1]
+        #percent_uninfected = final_uninfected / (final_uninfected + final_recovered)
+        #self.record.last_runs_percent_uninfected = percent_uninfected
+        #self.record.print("The infection quit spreading after {} days, and {} of people were never infected".format(time_to_immunity,percent_uninfected))
+        self.sims.append([simResult, title])
 
-        start2 = time.time()
-
-
-        self.record.print("handle simulation output: {} seconds".format(time.time() - start2))
-
-        # Next: calculate final S,I,R for the different age groups. 
-
-        #start3 = time.time()
-        #self.record.print("time to change 'S','I','R' to 0,1,2 for faster processing: %f sec" % (time.time()-start3))
-
-        self.saveResults(simResult, title, tau, gamma, preventions, prevention_reductions)
-
-    #-------------------------------------------
-    def saveResults(self, simResult, title, tau, gamma, preventions, prevention_reductions):
-        """
-        :param filename: string
-        File to save results to
-        :param data_dict: dictionary
-        Save SIR traces, title, [gamma, tau], preventions
-        # save simulation results and metadata to filename
-        """
-
-        print("enter saveResults")
-        if not self.save_output: return
-
-        print("saveResults: prepare for saving")
-        last_time = simResult.t()[-1]
-        txx = {}
-
-        for tix in range(0, int(last_time)+2, 2):
-            txx[tix] = simResult.get_statuses(time=tix)
-
-        ages_d = {}
-        for k in txx.keys():
-            #print("*** k= ", k, ",   len txx[k]= ", len(txx[k])) # list of first 10 statuses
-            ages_d[k] = self.SIRperBracket(txx[k])
-            #print("  return from SIRperBracket: ages_d[k]= ", ages_d[k])
-
-            """
-            for bracket in ages_d[k].keys():  # bracket is either integer or string. How to change? 
-                #print("bracket: ", bracket)
-                #print("   keys: ", list(ages_d[k].keys()))
-                counts = ages_d[k][bracket]
-                print("bracket: ", bracket, ",  counts[S,I,R]: ", bracket, counts['S'], counts['I'], counts['R'])
-            """
-
-        vacc_dict = self.createVaccinationDict()
-            
-        # Do all this in Record class?  (GE)
-        data_dict = {}
-        u = Utils()
-        sr = simResult
-        SIR_results = {'S':sr.S(), 'I':sr.I(), 'R':sr.R(), 't':sr.t()}
-        SIR_results = u.interpolate_SIR(SIR_results)
-        data_dict['sim_results'] = SIR_results
-        #print("SIR_results: ", SIR_results['t']) # floats as they should be
-        data_dict['title'] = title
-        data_dict['params_dict'] = {'gamma':gamma, 'tau':tau}
-        data_dict['preventions'] = self.preventions
-        data_dict['prevention_reductions'] = self.prevention_reductions
-        data_dict['prevention_reductions'] = self.prevention_reductions
-        data_dict['perc_populace_vaccinated'] = self.perc_populace_vaccinated
-        data_dict['ages_SIR'] = ages_d # ages_d[time][k] ==> S,I,R counts for age bracket k
-        data_dict['vaccination_dict'] = vacc_dict
-
-        graph = self.graph
-
-        graph_dict = {}
-        graph_dict['nb_nodes'] = nx.number_of_nodes(graph)
-
-        data_dict['graph'] = graph_dict
-
-        print("nb nodes in graph: ", nx.number_of_nodes(graph))
-
-        #self.sims.append([simResult, title, [gamma, tau], preventions])
-
-        dirname = "./ge_simResults/{}/".format(self.stamp)
-        try:
-            mkdir(dirname)
-        except:
-            # accept an existing directory. Not a satisfying solution
-            pass
-
-        x = datetime.now().strftime("%Y-%m-%d,%I-%M-%S")
-        filename = "%s, gamma=%s, tau=%s, %s" % (title, gamma, tau, x)
-
-        print("save data in dirname: ", dirname)
-        print("save data in: ", filename)
-        # Not independent of OS
-        with open(dirname+filename, "wb") as pickle_file:
-            pickle.dump(data_dict, pickle_file)
-
-    #-------------------------------------------
     def returnContactMatrix(self, environment):
         graph = self.graph.subgraph(environment.members)
         partition = environment.partitioner
@@ -1460,7 +871,6 @@ class PopulaceGraph:
         return contact_matrix 
 
 
-    #----------------------------------------------------
     def plotContactMatrix(self, p_env):
         '''
         This function plots the contact matrix for a partitioned environment
@@ -1472,9 +882,8 @@ class PopulaceGraph:
         contact_matrix = self.returnContactMatrix(p_env)
         plt.imshow(contact_matrix)
         plt.title("Contact Matrix for members of {} # {}".format(p_env.type, p_env.index))
-        try:
-            labels = p_env.partitioner.labels
-        except:
+        labels = p_env.partitioner.labels
+        if labels == None:
             labels = ["{}-{}".format(5 * i, (5 * (i + 1))-1) for i in range(15)]
         axisticks= list(range(15))
         plt.xticks(axisticks, labels, rotation= 'vertical')
@@ -1484,7 +893,6 @@ class PopulaceGraph:
         plt.show()
 
 
-    #----------------------------------------------------
     def plotNodeDegreeHistogram(self, environment = None, layout = 'bars', ax = None, normalized = True):
         """
         creates a histogram which displays the frequency of degrees for all nodes in the specified environment.
@@ -1521,7 +929,6 @@ class PopulaceGraph:
         plt.savefig("./simResults/{}/".format(self.record.stamp))
 
 
-    #----------------------------------------------------
     def plotSIR(self, memberSelection = None):
         """
         For members of the entire graph, will generate three charts in one plot, representing the frequency of S,I, and R, for all nodes in each simulation
@@ -1607,21 +1014,14 @@ class PopulaceGraph:
         self.graph = nx.Graph()
         self.total_weight = 0
         self.total_edges = 0
-
-#----------------------------------------------------------------------
 class Record:
-    def __init__(self, save_output):
+    def __init__(self):
         self.log = ""
         self.comments = ""
         self.stamp = datetime.now().strftime("%m_%d_%H_%M_%S")
         self.graph_stats = {}
         self.last_runs_percent_uninfected = 1
-        self.save_output = save_output
-
-        print("Record, save_output: ", save_output)
-        if save_output:
-            print("Record, mkdir, should not happen")
-            mkdir("./simResults/{}".format(self.stamp))
+        mkdir("./simResults/{}".format(self.stamp))
 
     def print(self, string):
         print(string)
@@ -1646,7 +1046,6 @@ class Record:
         self.print(str(graphStats))
 
     def dump(self):
-        if not self.save_output: return
         log_txt = open("./simResults/{}/log.txt".format(self.stamp), "w+")
         log_txt.write(self.log)
         if self.comments != "":
@@ -1705,7 +1104,6 @@ class Gordon:
                 ddict = {}
                 Nij = int(N[i] * cmm[i,j])
                 print("i,j= ", i, j, ",    Nij= ", Nij)
-                if i == j: Nij = Nij // 2
     
                 if Nij == 0:
                     continue 
@@ -1764,30 +1162,3 @@ class Gordon:
         print("size of edge_list: ", len(edge_list))
         return edge_list
     #------------------------------------------------------------------
-
-class Utils:
-    def __init__(self):
-        pass
-
-    def interpolate_SIR(self, SIR):
-        S = SIR['S']
-        I = SIR['I']
-        R = SIR['R']
-        t = SIR['t']
-        # interpolate on daily intervals.
-        new_t = np.linspace(0., int(t[-1]), int(t[-1])+1)
-        func = interp1d(t, S)
-        Snew = func(new_t)
-        func = interp1d(t, I)
-        Inew = func(new_t)
-        func = interp1d(t, R)
-        Rnew = func(new_t)
-        #print("t= ", new_t)
-        #print("S= ", Snew)
-        #print("I= ", Inew)
-        #print("R= ", Rnew)
-        SIR['t'] = new_t
-        SIR['S'] = Snew
-        SIR['I'] = Inew
-        SIR['R'] = Rnew
-        return SIR

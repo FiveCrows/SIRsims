@@ -155,10 +155,9 @@ def vaccination_study(s_mask, s_dist, w_mask, w_dist):
        #for nb_wk in [10, 25, 50,100,200,400,600,800]:
        #for nb_wk in [10, 25, 50, 100]:
        #for nb_wk in [1000]:
-       #for nb_wk in [0, 10, 25, 50, 100, 1000, 5000, 10000, 15000]:
-       for nb_wk in [0]:
-        #for nb_sch in [0]:
-        for nb_sch in [0, 5, 10, 20, 40, 60]:
+       for nb_wk in [10, 25, 50, 100, 1000, 5000, 10000, 15000]:
+        # 2 workplaces added manually
+        for nb_sch in [0]:
          #for v_pop_perc in [0., 0.25, 0.5, 0.75, 0.99]
          for v_pop_perc in [0.0]:
             model.resetVaccinated_Infected() # reset to default state (for safety)
