@@ -1,0 +1,1103 @@
+﻿OBJECTID,ZIP,OBJECTID_1,DEPCODE,COUNTYNAME,FieldMatch,POName,Places,OBJECTID_12,ZIPX,c_places,Cases_1,LabelY,SHAPE_Length,SHAPE_Area
+1,00041,44,6,Broward,Broward-00041,NONE,Area is in the South Florida Water Conservation Area 3A,,,,0,0,1.9222966857026,0.18660137417111
+2,00042,49,5,Brevard,Brevard-00042,NONE,Area is part of a federally protected nature area,,,,0,0,1.65454026545666,0.0411793250801657
+3,00045,55,42,Marion,Marion-00045,NONE,Area is part of the Wakulla National Forest ,,,,0,0,0.714285319432836,0.0252023544657197
+4,00053,58,50,Palm Beach,Palm Beach-00053,NONE,Area is part of the Loxahatchee National Wildlife Refuge,,,,0,0,2.55079104276273,0.165590057166195
+5,00087,60,31,Indian River,Indian River-00067,NONE,Area is part of the Stick Marsh-- St. Johns Water Management Area,,,,0,0,0.822791099641849,0.0231651908531284
+6,00097,64,44,Monroe,Monroe-00097,NONE,Area is part of the Everglades National Park,,,,0,0,6.43116442655009,0.124287367835689
+7,00098,66,44,Monroe,Monroe-00098,NONE,Area is part of the Everglades National Park,,,,0,0,9.08575156432259,0.0814496728419865
+8,32003,67,10,Clay,Clay-32003,Fleming Island,"Orange Park, Fleming Island, Lakeside",171,Clay-32003,"Fleming Island, Green Cove Springs, Middleburg, Orange Park",751,751,0.312121020593865,0.00557993904314077
+9,32008,71,15,Dixie,Dixie-32008,Branford,Branford,295,Dixie-32008,,0,0,0.357111731903635,0.00183233297278292
+10,32008,72,21,Gilchrist,Gilchrist-32008,Branford,"Hollingsworth Bluff, Sandy Point",375,Gilchrist-32008,Branford,<5,-2,0.676627693105556,0.00840385375969368
+11,32008,73,34,Lafayette,Lafayette-32008,Branford,"Brandford, Grady, Midway",506,Lafayette-32008,Branford,10,10,0.891320969010142,0.0165090437554029
+12,32008,74,61,Suwannee,Suwannee-32008,Branford,"Branford, Grady",1048,Suwannee-32008,Branford,142,142,0.777787900339825,0.00982965855466418
+13,32009,78,45,Nassau,Nassau-32009,Bryceville,"Jacksonville, Bryceville, Mattox",683,Nassau-32009,Bryceville,73,73,0.821591219978321,0.0218172896457596
+14,32011,80,45,Nassau,Nassau-32011,Callahan,"Callahan, Hilliard, Jacksonville, Nassau Village-Ratliff",684,Nassau-32011,Callahan,429,429,1.46705327259243,0.0386437494579149
+15,32013,81,34,Lafayette,Lafayette-32013,Day,"Day, Townsend, Dell, Dowling Park",507,Lafayette-32013,,0,0,0.455994611718496,0.00875829310021241
+16,32024,85,12,Columbia,Columbia-32024,Lake City,"Lake City, Bass, Columbia",202,Columbia-32024,Lake City,733,733,1.17943513950254,0.0295292247258073
+17,32024,86,61,Suwannee,Suwannee-32024,Lake City,"Lake City, Wellborn",1049,Suwannee-32024,Lake City,7,7,0.652265019906982,0.00609846900576076
+18,32025,89,12,Columbia,Columbia-32025,Lake City,"Lake City, Watertown",203,Columbia-32025,Lake City,2307,2307,1.17186134399479,0.0267394114455393
+19,32033,92,55,St. Johns,St. Johns-32033,Elkton,Elkton,1008,St. Johns-32033,Elkton,90,90,0.628467930164744,0.0187234956820062
+20,32034,95,45,Nassau,Nassau-32034,Fernandina Beach,"Fernandina Beach, Jacksonville, Yulee",685,Nassau-32034,"Amelia City, Fernandina, Fernandina Beach",857,857,1.06224041126909,0.0201398914893391
+21,32038,97,12,Columbia,Columbia-32038,Fort White,Fort White,204,Columbia-32038,Fort White,208,208,0.954634629228156,0.0252173128513757
+22,32040,101,2,Baker,Baker-32040,Glen Saint Mary,Glen St. Mary,23,Baker-32040,Glen Saint Mary,310,310,1.65619575141245,0.033379180835867
+23,32043,106,10,Clay,Clay-32043,Green Cove Springs,"Green Cove Springs, Penney Farms, Asbury Lake, Fleming Island, Middleburg",172,Clay-32043,Green Cove Springs,1059,1059,1.1347148191856,0.0508571789817149
+24,32043,107,54,Putnam,Putnam-32043,Green Cove Springs,West Tocoi,940,Putnam-32043,,0,0,0.51437483096122,0.00151152073561127
+25,32044,109,1,Alachua,Alachua-32044,Hampton,Louise,1,Alachua-32044,,0,0,0.197708734135283,0.000311392139104981
+26,32044,110,4,Bradford,Bradford-32044,Hampton,Hampton,41,Bradford-32044,Hampton,36,36,0.567488232108288,0.00560723660950815
+27,32046,112,45,Nassau,Nassau-32046,Hilliard,Hilliard,686,Nassau-32046,Hilliard,364,364,1.68648492003759,0.0495374099967159
+28,32052,114,24,Hamilton,Hamilton-32052,Jasper,"Jasper, Marion, Hillcoast, Adams",387,Hamilton-32052,Jasper,621,621,2.16867631168104,0.0858775323336868
+29,32053,118,24,Hamilton,Hamilton-32053,Jennings,Jennings,388,Hamilton-32053,Jennings,163,163,0.926754388769111,0.0268089503885039
+30,32054,121,4,Bradford,Bradford-32054,Lake Butler,Worthington Springs,42,Bradford-32054,Lake Butler,5,5,0.476128238236009,0.00266361705805634
+31,32054,123,63,Union,Union-32054,Lake Butler,"Lake Butler, Worthington Springs",1062,Union-32054,Lake Butler,797,797,1.12036462139421,0.0500974781365412
+32,32055,126,12,Columbia,Columbia-32055,Lake City,"Lake City, Five Points, Watertown",205,Columbia-32055,Lake City,866,866,2.00836056149087,0.0958658663045545
+33,32058,130,4,Bradford,Bradford-32058,Lawtey,Lawtey,43,Bradford-32058,Lawtey,165,165,0.642498534698898,0.0149336100252395
+34,32058,131,10,Clay,Clay-32058,Lawtey,Lawtey,173,Clay-32058,,0,0,0.328965530207217,0.000438823918167605
+35,32058,132,63,Union,Union-32058,Lawtey,Lawtey,1063,Union-32058,,<5,-2,0.149375473508251,0.000655235082708029
+36,32059,134,40,Madison,Madison-32059,Lee,Lee,603,Madison-32059,Lee,97,97,1.11621947940338,0.028662554495225
+37,32060,139,61,Suwannee,Suwannee-32060,Live Oak,Live Oak,1050,Suwannee-32060,"Dowling Park, Live Oak",1965,1965,2.30160089672432,0.0959783577136757
+38,32061,140,12,Columbia,Columbia-32061,Lulu,Lulu,206,Columbia-32061,Lulu,12,12,0.452216037385807,0.00313972260621585
+39,32062,142,61,Suwannee,Suwannee-32062,Mc Alpin,Mc Alpin,1051,Suwannee-32062,Mcalpin,86,86,1.09417908908738,0.0174545974975369
+40,32063,144,2,Baker,Baker-32063,Macclenny,Macclenny,24,Baker-32063,Macclenny,698,698,0.815968259613767,0.0184876288798336
+41,32064,149,61,Suwannee,Suwannee-32064,Live Oak,Live Oak,1052,Suwannee-32064,"Dowling Park, Live Oak",524,524,0.326305890694155,0.00210460784213958
+42,32065,150,10,Clay,Clay-32065,Orange Park,"Jacksonville, Lakeside, Oakleaf Plantation",174,Clay-32065,"Middleburg, Orange Park",1064,1064,0.484732548932943,0.00514774860949919
+43,32066,153,34,Lafayette,Lafayette-32066,Mayo,"Mayo, Day",508,Lafayette-32066,Mayo,1259,1259,1.90896503235793,0.107288626652373
+44,32068,157,10,Clay,Clay-32068,Middleburg,"Asbury Lake, Fleming Island, Lakeside, Middleburg, Oakleaf Plantation",175,Clay-32068,Middleburg,1335,1335,1.14730893666588,0.0270607746878529
+45,32071,161,61,Suwannee,Suwannee-32071,O Brien,Branford,1053,Suwannee-32071,O Brien,121,121,1.13111677795504,0.0221076436763587
+46,32073,162,10,Clay,Clay-32073,Orange Park,"Orange Park, Jacksonville, Bellair-Meadowbrook Terrace, Fleming Island, Lakeside, Oakleaf Plantation",176,Clay-32073,Orange Park,1321,1321,0.411450447701979,0.00470976887097814
+47,32080,164,18,Flagler,Flagler-32080,Saint Augustine,Marineland,356,Flagler-32080,,0,0,0.0222543165695871,1.32549613845446e-05
+48,32080,165,55,St. Johns,St. Johns-32080,Saint Augustine,"St. Augustine, St. Augustine Beach, Marineland, Butler Beach, Crescent Beach",1009,St. Johns-32080,Saint Augustine,387,387,0.567322676380502,0.00464418106533274
+49,32081,166,16,Duval,Duval-32081,Ponte Vedra,"Jacksonville, Nocatee",300,Duval-32081,Ponte Vedra,12,12,0.215484205893214,0.000813544877890414
+50,32081,167,55,St. Johns,St. Johns-32081,Ponte Vedra,"Jacksonville, Nocatee",1010,St. Johns-32081,"Ponte Vedra, Ponte Vedra Beach, Town Of Nocatee",427,427,0.452239267019604,0.00724441094837433
+51,32082,169,55,St. Johns,St. Johns-32082,Ponte Vedra Beach,"Jacksonville Beach, Nocatee, Palm Valley, Sawgrass",1011,St. Johns-32082,"Ponte Vedra, Ponte Vedra Beach",797,797,0.791399611686696,0.0111735891380563
+52,32083,172,63,Union,Union-32083,Raiford,Raiford,1064,Union-32083,Raiford,125,125,0.534403916512475,0.00971250291666954
+53,32084,173,55,St. Johns,St. Johns-32084,Saint Augustine,"St. Augustine, Villano Beach, World Golf Village",1012,St. Johns-32084,"Saint Augustine, Saint Augustine Beach",956,956,0.603923445057642,0.0101505265438948
+54,32086,175,55,St. Johns,St. Johns-32086,Saint Augustine,"St. Augustine, Palm Coast, St. Augustine Shores, St. Augustine South",1013,St. Johns-32086,"Saint Augusaintine Beach, Saint Augustine",852,852,0.679496526948365,0.0170831984803085
+55,32087,177,2,Baker,Baker-32087,Sanderson,Sanderson,25,Baker-32087,Sanderson,725,725,1.62253323788143,0.0901489077686309
+56,32091,181,4,Bradford,Bradford-32091,Starke,"Hampton, Starke",44,Bradford-32091,"Kingsley Lake, Starke",956,956,1.29145415740667,0.0300015853851593
+57,32091,182,10,Clay,Clay-32091,Starke,Middleburg,177,Clay-32091,,0,0,0.840275764954371,0.0177722331490362
+58,32092,186,55,St. Johns,St. Johns-32092,Saint Augustine,World Golf Village,1014,St. Johns-32092,Saint Augustine,878,878,1.15702888097564,0.038683022311734
+59,32094,187,12,Columbia,Columbia-32094,Wellborn,Wellborn,207,Columbia-32094,,0,0,0.399173997127088,0.00111281366338093
+60,32094,188,61,Suwannee,Suwannee-32094,Wellborn,Wellborn,1054,Suwannee-32094,Wellborn,92,92,1.13478491246601,0.0135598938371481
+61,32095,189,55,St. Johns,St. Johns-32095,Saint Augustine,"St. Augustine, Nocatee, World Golf Village",1015,St. Johns-32095,Saint Augustine,323,323,0.671843360806432,0.0170556464124002
+62,32096,190,12,Columbia,Columbia-32096,White Springs,White Springs,208,Columbia-32096,White Springs,8,8,1.15117957348815,0.00941162967393704
+63,32096,191,24,Hamilton,Hamilton-32096,White Springs,White Springs,389,Hamilton-32096,White Springs,105,105,1.0123829853424,0.0135561631683181
+64,32096,192,61,Suwannee,Suwannee-32096,White Springs,White Springs,1055,Suwannee-32096,,0,0,0.357435616000202,0.000749979856144832
+65,32097,195,45,Nassau,Nassau-32097,Yulee,"Jacksonville, Yulee",687,Nassau-32097,"Wildlight, Yulee",488,488,1.42136656248847,0.0309419445352864
+66,32102,196,35,Lake,Lake-32102,Astor,Astor,509,Lake-32102,Astor,43,43,0.689784889190074,0.0101845038761766
+67,32102,198,64,Volusia,Volusia-32102,Astor,Astor,1066,Volusia-32102,,0,0,0.608318209208931,0.00160808536818202
+68,32110,199,18,Flagler,Flagler-32110,Bunnell,"Bunnell, Palm Coast",357,Flagler-32110,Bunnell,193,193,1.56190579554626,0.0709187684473162
+69,32112,205,54,Putnam,Putnam-32112,Crescent City,"Crescent City, Pomona Park, Welaka",941,Putnam-32112,"Crescent City, Welaka",443,443,1.54901800912413,0.0251515478467356
+70,32113,208,42,Marion,Marion-32113,Citra,McIntosh,630,Marion-32113,Citra,202,202,1.25043971425918,0.0158434206511853
+71,32114,210,64,Volusia,Volusia-32114,Daytona Beach,"Daytona Beach, South Daytona, Holly Hill",1067,Volusia-32114,Daytona Beach,945,945,0.277777703338133,0.00415043668873981
+72,32117,211,64,Volusia,Volusia-32117,Daytona Beach,"Daytona Beach, Ormond Beach, Holly Hill",1068,Volusia-32117,"Daytona Beach, Holly Hill",1117,1117,0.277387039443441,0.00294925419566986
+73,32118,212,64,Volusia,Volusia-32118,Daytona Beach,"Daytona Beach, Ormond Beach, Port Orange, Daytona Beach Shores",1069,Volusia-32118,"Daytona Beach, Daytona Beach Shores",260,260,0.329823787047651,0.00149302965266035
+74,32119,213,64,Volusia,Volusia-32119,Daytona Beach,"Daytona Beach, South Daytona, Port Orange",1070,Volusia-32119,"Daytona Beach, South Daytona",412,412,0.336805571674551,0.00221573390879013
+75,32124,214,64,Volusia,Volusia-32124,Daytona Beach,Daytona Beach,1071,Volusia-32124,Daytona Beach,505,505,0.932262448745838,0.0192890163229694
+76,32127,215,64,Volusia,Volusia-32127,Port Orange,"Ponce Inlet, South Daytona, Port Orange, Daytona Beach Shores",1072,Volusia-32127,"Ponce Inlet, Port Orange, Wilbur By The Sea",438,438,0.364132574080698,0.00442315022171032
+77,32128,216,64,Volusia,Volusia-32128,Port Orange,"Daytona Beach, Port Orange, New Smyrna Beach, Glencoe, Samsula-Spruce Creek",1073,Volusia-32128,Port Orange,362,362,0.392208055318836,0.00446953752373505
+78,32129,217,64,Volusia,Volusia-32129,Port Orange,"Daytona Beach, South Daytona, Port Orange",1074,Volusia-32129,Port Orange,311,311,0.257442173021174,0.00170330925865471
+79,32130,218,64,Volusia,Volusia-32130,De Leon Springs,"Bunnell, De Leon Springs",1075,Volusia-32130,De Leon Springs,174,174,0.682552249339383,0.0118044547163095
+80,32131,220,54,Putnam,Putnam-32131,East Palatka,"Palatka, East Palatka",942,Putnam-32131,East Palatka,135,135,0.585676230659408,0.0110930038929675
+81,32131,221,55,St. Johns,St. Johns-32131,East Palatka,Flagler Estates,1016,St. Johns-32131,,0,0,0.283251052453558,0.00060052106903909
+82,32132,222,64,Volusia,Volusia-32132,Edgewater,"Edgewater, New Smyrna Beach, Glencoe",1076,Volusia-32132,Edgewater,101,101,0.302885137230495,0.00198086433718942
+83,32134,224,42,Marion,Marion-32134,Fort Mc Coy,Fort Mc Coy,631,Marion-32134,"Fort Mccoy, Palatka, Salt Springs",81,81,1.77841982353876,0.0871854728318029
+84,32134,225,54,Putnam,Putnam-32134,Fort Mc Coy,Fort Mc Coy,943,Putnam-32134,,0,0,0.595998469363801,0.00131159649273911
+85,32136,227,18,Flagler,Flagler-32136,Flagler Beach,"Flagler Beach, Beverly Beach, Palm Coast",358,Flagler-32136,"Beverly Beach, Flagler Beach",160,160,0.398469226796547,0.00426029100579575
+86,32136,228,64,Volusia,Volusia-32136,Flagler Beach,Flagler Beach,1077,Volusia-32136,,0,0,0.220272353637299,0.000938699703002614
+87,32137,229,18,Flagler,Flagler-32137,Palm Coast,"Flagler Beach, Bunnell, Marineland, Palm Coast",359,Flagler-32137,Palm Coast,777,777,1.08885026950976,0.0282199272806584
+88,32139,231,54,Putnam,Putnam-32139,Georgetown,Georgetown,944,Putnam-32139,Georgetown,24,24,0.522931533973283,0.00615378090032644
+89,32140,234,54,Putnam,Putnam-32140,Florahome,Florahome,945,Putnam-32140,Florahome,27,27,0.455255659162422,0.00853706738934413
+90,32141,236,64,Volusia,Volusia-32141,Edgewater,"Edgewater, Oak Hill",1078,Volusia-32141,Edgewater,212,212,1.06490161524912,0.0138955369305825
+91,32145,239,55,St. Johns,St. Johns-32145,Hastings,"Hastings, Palm Coast, Flagler Estates",1017,St. Johns-32145,Hastings,120,120,0.826439083817459,0.0218250496653891
+92,32148,241,54,Putnam,Putnam-32148,Interlachen,Interlachen,946,Putnam-32148,Interlachen,149,149,1.14999440744561,0.0337640168762029
+93,32159,242,35,Lake,Lake-32159,Lady Lake,"Fruitland Park, Lady Lake, The Villages",510,Lake-32159,"Lady Lake, The Villages",384,384,0.480972981852199,0.00708423662637083
+94,32159,244,60,Sumter,Sumter-32159,Lady Lake,The Villages,1038,Sumter-32159,"Lady Lake, The Villages",14,14,0.231914232774703,0.00096421104760018
+95,32162,246,42,Marion,Marion-32162,The Villages,The Villages,632,Marion-32162,The Villages,40,40,0.180285674947568,0.000866628391124734
+96,32162,247,60,Sumter,Sumter-32162,The Villages,"Wildwood, The Villages",1039,Sumter-32162,"Lady Lake, The Villages",482,482,0.554030542102663,0.00501109843928366
+97,32163,248,35,Lake,Lake-32163,The Villages,"Fruitland Park, The Villages",511,Lake-32163,The Villages,12,12,0.0837472801033605,0.000352804673631883
+98,32163,249,60,Sumter,Sumter-32163,The Villages,"Wildwood, The Villages",1040,Sumter-32163,The Villages,328,328,0.29431499533486,0.00220852777575407
+99,32164,250,18,Flagler,Flagler-32164,Palm Coast,"Bunnell, Palm Coast",360,Flagler-32164,Palm Coast,895,895,0.52103689905756,0.00825115507770467
+100,32168,251,64,Volusia,Volusia-32168,New Smyrna Beach,"Edgewater, Ponce Inlet, Port Orange, New Smyrna Beach, Glencoe, Samsula-Spruce Creek",1079,Volusia-32168,"New Smyrna, New Smyrna Beach",449,449,1.42835715528471,0.0323201706574109
+101,32169,252,64,Volusia,Volusia-32169,New Smyrna Beach,"Oak Hill, New Smyrna Beach",1080,Volusia-32169,"New Smyrna, New Smyrna Beach",204,204,0.87611613241153,0.00435924654476012
+102,32174,253,18,Flagler,Flagler-32174,Ormond Beach,"Bunnell, Ormond Beach",361,Flagler-32174,Ormond Beach,<5,-2,0.560506387202592,0.010323884128918
+103,32174,254,64,Volusia,Volusia-32174,Ormond Beach,"Bunnell, Daytona Beach, Ormond Beach, Holly Hill",1081,Volusia-32174,Ormond Beach,962,962,1.08297800502318,0.0221596396748055
+104,32176,255,64,Volusia,Volusia-32176,Ormond Beach,"Flagler Beach, Ormond Beach, Ormond-by-the-Sea",1082,Volusia-32176,Ormond Beach,191,191,0.335759024706677,0.00142695789554389
+105,32177,258,54,Putnam,Putnam-32177,Palatka,"Welaka, Palatka, East Palatka",947,Putnam-32177,Palatka,1098,1098,1.88112001808059,0.0612536089850994
+106,32179,260,42,Marion,Marion-32179,Ocklawaha,Ocklawaha,633,Marion-32179,"Ocklawaha, Oklawaha",143,143,1.15482545546413,0.0218438789368551
+107,32180,264,64,Volusia,Volusia-32180,Pierson,"Pierson, Astor, Seville",1083,Volusia-32180,Pierson,191,191,1.32409200850583,0.0382779711976069
+108,32181,265,54,Putnam,Putnam-32181,Pomona Park,"Pomona Park, Welaka",948,Putnam-32181,Pomona Park,81,81,0.514256049399553,0.00785734982221949
+109,32187,267,54,Putnam,Putnam-32187,San Mateo,Bunnell,949,Putnam-32187,San Mateo,45,45,0.539637815444391,0.00557580185029493
+110,32189,268,54,Putnam,Putnam-32189,Satsuma,Satsuma,950,Putnam-32189,Satsuma,108,108,0.69807397417926,0.00790031631339514
+111,32190,272,64,Volusia,Volusia-32190,Seville,Seville,1084,Volusia-32190,Seville,55,55,0.776903552599451,0.0134763576013159
+112,32193,273,54,Putnam,Putnam-32193,Welaka,Welaka,951,Putnam-32193,Welaka,32,32,0.133863832213559,0.000509751914589756
+113,32195,274,35,Lake,Lake-32195,Weirsdale,Lady Lake,512,Lake-32195,,0,0,0.266551493374086,0.000810522896960614
+114,32195,275,42,Marion,Marion-32195,Weirsdale,Lady Lake,634,Marion-32195,Weirsdale,76,76,0.419841291212322,0.00469164513215566
+115,32202,276,16,Duval,Duval-32202,Jacksonville,Jacksonville,301,Duval-32202,Jacksonville,1340,1340,0.176958845106011,0.000706362977239983
+116,32204,277,16,Duval,Duval-32204,Jacksonville,Jacksonville,302,Duval-32204,Jacksonville,492,492,0.174183337041693,0.00109377362455983
+117,32205,278,16,Duval,Duval-32205,Jacksonville,Jacksonville,303,Duval-32205,Jacksonville,829,829,0.240488602065384,0.00183269203960977
+118,32206,279,16,Duval,Duval-32206,Jacksonville,Jacksonville,304,Duval-32206,Jacksonville,621,621,0.222134052455036,0.00190592309735997
+119,32207,280,16,Duval,Duval-32207,Jacksonville,Jacksonville,305,Duval-32207,Jacksonville,1224,1224,0.275403169908579,0.00396989879322001
+120,32208,281,16,Duval,Duval-32208,Jacksonville,Jacksonville,306,Duval-32208,Jacksonville,2034,2034,0.309669765561277,0.00315491608111998
+121,32209,282,16,Duval,Duval-32209,Jacksonville,Jacksonville,307,Duval-32209,Jacksonville,1398,1398,0.292576486435366,0.00237578263034002
+122,32210,283,16,Duval,Duval-32210,Jacksonville,Jacksonville,308,Duval-32210,Jacksonville,2187,2187,0.55290596369146,0.00669372118562496
+123,32211,284,16,Duval,Duval-32211,Jacksonville,Jacksonville,309,Duval-32211,Jacksonville,1047,1047,0.246111218203654,0.00223142546877483
+124,32212,286,16,Duval,Duval-32212,Jacksonville,Jacksonville,310,Duval-32212,"Jacksonville, Jacksonville Naval Air Station",367,367,0.278747278058824,0.00186811218262783
+125,32214,287,16,Duval,Duval-32214,Jacksonville,Jacksonville,311,Duval-32214,"Jacksonville, Jacksonville Naval Hospital",20,20,0.0809388498230311,0.000207914894880033
+126,32216,288,16,Duval,Duval-32216,Jacksonville,Jacksonville,312,Duval-32216,Jacksonville,1736,1736,0.254043573372264,0.00314913277373037
+127,32217,289,16,Duval,Duval-32217,Jacksonville,Jacksonville,313,Duval-32217,Jacksonville,689,689,0.210149445896208,0.002205685895174
+128,32218,290,16,Duval,Duval-32218,Jacksonville,"Jacksonville, Nassau Village-Ratliff",314,Duval-32218,Jacksonville,2367,2367,0.936732439918616,0.0243410662968726
+129,32219,292,16,Duval,Duval-32219,Jacksonville,"Jacksonville, Nassau Village-Ratliff",315,Duval-32219,"Dinsmore, Jacksonville",544,544,0.764280792927743,0.0160612657668268
+130,32220,294,16,Duval,Duval-32220,Jacksonville,"Baldwin, Jacksonville",316,Duval-32220,Jacksonville,299,299,0.704655599335291,0.0112935471068337
+131,32221,297,16,Duval,Duval-32221,Jacksonville,Jacksonville,317,Duval-32221,Jacksonville,1007,1007,0.649720670628458,0.0111252579885945
+132,32222,299,16,Duval,Duval-32222,Jacksonville,Jacksonville,318,Duval-32222,Jacksonville,410,410,0.270165067700514,0.00291395916065502
+133,32223,301,16,Duval,Duval-32223,Jacksonville,"Orange Park, Jacksonville, Fleming Island",319,Duval-32223,Jacksonville,606,606,0.290462642386101,0.00508969910245578
+134,32224,303,16,Duval,Duval-32224,Jacksonville,"Neptune Beach, Jacksonville",320,Duval-32224,Jacksonville,1081,1081,0.459189205402588,0.00410856280707727
+135,32225,305,16,Duval,Duval-32225,Jacksonville,"Atlantic Beach, Jacksonville",321,Duval-32225,Jacksonville,1631,1631,0.401444406145059,0.00752296094434074
+136,32226,306,16,Duval,Duval-32226,Jacksonville,Jacksonville,322,Duval-32226,Jacksonville,521,521,1.14720181055308,0.0264504959789032
+137,32227,308,16,Duval,Duval-32227,Jacksonville,Jacksonville,323,Duval-32227,"Jacksonville, Mayport, Mayport Naval Housing",46,46,0.143395003773574,0.000676418868880191
+138,32233,309,16,Duval,Duval-32233,Atlantic Beach,"Atlantic Beach, Neptune Beach, Jacksonville",324,Duval-32233,"Atlantic Beach, Jacksonville, Mayport",630,630,0.296555082083553,0.00277355500148995
+139,32234,310,2,Baker,Baker-32234,Jacksonville,Jacksonville,26,Baker-32234,,0,0,0.296893939524056,0.0010323095529306
+140,32234,312,10,Clay,Clay-32234,Jacksonville,Jacksonville,178,Clay-32234,Jacksonville,<5,-2,0.719314633154384,0.010989254051029
+141,32234,313,16,Duval,Duval-32234,Jacksonville,"Baldwin, Jacksonville",325,Duval-32234,"Baldwin, Jacksonville, Maxville",144,144,0.776870283831964,0.0169606152225247
+142,32234,314,45,Nassau,Nassau-32234,Jacksonville,Jacksonville,688,Nassau-32234,"Bryceville, Jacksonville",<5,-2,0.328528090416205,0.00191118811043592
+143,32244,316,16,Duval,Duval-32244,Jacksonville,Jacksonville,326,Duval-32244,Jacksonville,1819,1819,0.454523714445668,0.00612804003671789
+144,32246,317,16,Duval,Duval-32246,Jacksonville,Jacksonville,327,Duval-32246,Jacksonville,1746,1746,0.348804867513594,0.00471407771182986
+145,32250,318,16,Duval,Duval-32250,Jacksonville Beach,"Jacksonville Beach, Neptune Beach, Jacksonville",328,Duval-32250,"Jacksonville, Jacksonville Beach",1130,1130,0.307241449304887,0.00260226621324469
+146,32254,320,16,Duval,Duval-32254,Jacksonville,Jacksonville,329,Duval-32254,Jacksonville,552,552,0.283942418522975,0.00293982697151514
+147,32256,321,16,Duval,Duval-32256,Jacksonville,Jacksonville,330,Duval-32256,Jacksonville,1520,1520,0.555023346558085,0.0157753996592875
+148,32257,323,16,Duval,Duval-32257,Jacksonville,Jacksonville,331,Duval-32257,Jacksonville,1135,1135,0.294807640794324,0.0040670689060303
+149,32258,324,16,Duval,Duval-32258,Jacksonville,"Jacksonville, Fruit Cove",332,Duval-32258,Jacksonville,866,866,0.364906023531825,0.00451027733513935
+150,32259,328,55,St. Johns,St. Johns-32259,Saint Johns,"Jacksonville, Fleming Island, Fruit Cove, Nocatee",1018,St. Johns-32259,"Fruit Cove, Jacksonville, Julington Creek, Saint Augustine, Saint Johns, Switzerland",1137,1137,0.658227717907698,0.0158874331807789
+151,32266,329,16,Duval,Duval-32266,Neptune Beach,"Atlantic Beach, Jacksonville Beach, Neptune Beach",333,Duval-32266,"Jacksonville, Jacksonville Beach, Neptune Beach",257,257,0.116681877465861,0.00063812953714492
+152,32277,330,16,Duval,Duval-32277,Jacksonville,Jacksonville,334,Duval-32277,Jacksonville,921,921,0.293175547756695,0.002832965159335
+153,32301,331,37,Leon,Leon-32301,Tallahassee,Tallahassee,575,Leon-32301,Tallahassee,1182,1182,0.344330784836757,0.00273052985597012
+154,32303,333,37,Leon,Leon-32303,Tallahassee,"Midway, Tallahassee",576,Leon-32303,Tallahassee,1519,1519,0.740267175361443,0.00976420069357442
+155,32304,335,37,Leon,Leon-32304,Tallahassee,"Midway, Tallahassee",577,Leon-32304,Tallahassee,3249,3249,0.485116149025556,0.00380278488483796
+156,32305,336,37,Leon,Leon-32305,Tallahassee,"Tallahassee, Woodville",578,Leon-32305,Tallahassee,652,652,1.06403093049507,0.0226085790788876
+157,32306,338,37,Leon,Leon-32306,Tallahassee,"Florida State University, Florida A&M University",579,Leon-32306,"Florida State Univ Admin, Florida State University, Tallahassee",666,666,0.0406223556394518,6.31593512899265e-05
+158,32308,340,37,Leon,Leon-32308,Tallahassee,Tallahassee,580,Leon-32308,"Centerville, Tallahassee",867,867,0.328219792325454,0.00348464076189486
+159,32309,342,33,Jefferson,Jefferson-32309,Tallahassee,Tallahassee,502,Jefferson-32309,,0,0,0.480621655071627,0.00028630745836341
+160,32309,343,37,Leon,Leon-32309,Tallahassee,Tallahassee,581,Leon-32309,"Centerville, Miccosukee, Tallahassee",692,692,1.0082716035416,0.0312610681003546
+161,32310,345,37,Leon,Leon-32310,Tallahassee,Tallahassee,582,Leon-32310,Tallahassee,723,723,1.31818745460829,0.0412323027185747
+162,32311,349,37,Leon,Leon-32311,Tallahassee,Tallahassee,583,Leon-32311,Tallahassee,568,568,0.952148325783037,0.0189630718184532
+163,32312,353,37,Leon,Leon-32312,Tallahassee,Tallahassee,584,Leon-32312,Tallahassee,815,815,1.16766908563838,0.0258903213273405
+164,32317,355,37,Leon,Leon-32317,Tallahassee,Tallahassee,585,Leon-32317,"Centerville, Tallahassee",386,386,0.537464383164541,0.0105317380571424
+165,32320,356,19,Franklin,Franklin-32320,Apalachicola,Apalachicola,362,Franklin-32320,Apalachicola,176,176,1.32697157740592,0.0163727213628152
+166,32321,361,39,Liberty,Liberty-32321,Bristol,"Bristol, Lake Mystic, Sumatra",600,Liberty-32321,Bristol,454,454,2.31760145237395,0.0890130915115222
+167,32322,362,19,Franklin,Franklin-32322,Carrabelle,Carrabelle,363,Franklin-32322,Carrabelle,425,425,1.5817153436761,0.0404245581622305
+168,32324,366,20,Gadsden,Gadsden-32324,Chattahoochee,"Gretna, Chattahoochee",369,Gadsden-32324,Chattahoochee,549,549,0.74808569767435,0.0161284856983968
+169,32327,369,37,Leon,Leon-32327,Crawfordville,Woodville,586,Leon-32327,,<5,-2,0.472276103213252,0.000286459848388118
+170,32327,370,65,Wakulla,Wakulla-32327,Crawfordville,"St. Marks, Crawfordville, Woodville",1096,Wakulla-32327,"Crawfordville, Wakulla Springs",1181,1181,3.47147676183566,0.085638630379662
+171,32328,371,19,Franklin,Franklin-32328,Eastpoint,"Eastpoint, St. George Island",365,Franklin-32328,"Eastpoint, Saint George Island",129,129,3.98605701949994,0.0653021259305477
+172,32331,376,33,Jefferson,Jefferson-32331,Greenville,Greenville,503,Jefferson-32331,,<5,-2,0.714787401103879,0.0130823857641299
+173,32331,377,40,Madison,Madison-32331,Greenville,Greenville,604,Madison-32331,Greenville,159,159,1.88577426396101,0.0634521071015657
+174,32331,378,62,Taylor,Taylor-32331,Greenville,Greenville,1056,Taylor-32331,Greenville,<5,-2,0.907925063465485,0.0176131982522103
+175,32332,379,20,Gadsden,Gadsden-32332,Gretna,Gretna,370,Gadsden-32332,Gretna,139,139,0.191454430351522,0.000821674756855177
+176,32333,381,20,Gadsden,Gadsden-32333,Havana,"Havana, Midway",371,Gadsden-32333,Havana,570,570,1.02302169210159,0.0259595600301125
+177,32334,386,39,Liberty,Liberty-32334,Hosford,Hosford,601,Liberty-32334,Hosford,71,71,2.35091939530952,0.115562472264163
+178,32336,388,33,Jefferson,Jefferson-32336,Lamont,Lamont,504,Jefferson-32336,Lamont,42,42,2.05796422544811,0.0554781361935895
+179,32336,389,40,Madison,Madison-32336,Lamont,Lamont,605,Madison-32336,,9,9,0.579375526644878,0.00709509764041136
+180,32336,390,62,Taylor,Taylor-32336,Lamont,Lamont,1057,Taylor-32336,Lamont,<5,-2,1.14638909695778,0.00989804760381649
+181,32340,394,40,Madison,Madison-32340,Madison,"Lee, Madison",606,Madison-32340,Madison,733,733,1.92750348966232,0.0636644261748344
+182,32343,396,20,Gadsden,Gadsden-32343,Midway,Midway,372,Gadsden-32343,Midway,225,225,0.411332045588544,0.00259857541616148
+183,32344,399,33,Jefferson,Jefferson-32344,Monticello,"Monticello, Aucilla, Lloyd, Wacissa, Waukeenah",505,Jefferson-32344,Monticello,586,586,2.03886985401266,0.0799155690305036
+184,32346,403,19,Franklin,Franklin-32346,Panacea,Panacea,366,Franklin-32346,,0,0,1.06948520562507,0.00613589462245484
+185,32346,404,65,Wakulla,Wakulla-32346,Panacea,Panacea,1097,Wakulla-32346,"Alligator Point, Panacea",40,40,1.5820598781523,0.00441717350480542
+186,32347,408,62,Taylor,Taylor-32347,Perry,Perry,1058,Taylor-32347,Perry,294,294,3.16809255521917,0.108665455730204
+187,32348,410,62,Taylor,Taylor-32348,Perry,Perry,1059,Taylor-32348,Perry,1071,1071,2.51650288113483,0.0986705177531292
+188,32350,413,40,Madison,Madison-32350,Pinetta,Pinetta,607,Madison-32350,Pinetta,25,25,0.607304743352994,0.0111374400142131
+189,32351,414,20,Gadsden,Gadsden-32351,Quincy,"Gretna, Quincy, Greensboro, Midway",373,Gadsden-32351,Quincy,1197,1197,1.82095479461073,0.0584535996819251
+190,32352,419,20,Gadsden,Gadsden-32352,Quincy,"Gretna, Quincy",374,Gadsden-32352,"Mount Pleasant, Quincy",266,266,0.858563547112334,0.0247246018337678
+191,32355,420,65,Wakulla,Wakulla-32355,Saint Marks,St. Marks,1098,Wakulla-32355,Saint Marks,10,10,0.072815666994519,0.000247289768324974
+192,32356,422,62,Taylor,Taylor-32356,Salem,Salem,1060,Taylor-32356,Salem,<5,-2,0.484244173747488,0.00908580360590578
+193,32358,423,19,Franklin,Franklin-32358,Sopchoppy,Sopchoppy,367,Franklin-32358,,0,0,0.496542244501093,0.00305994106584352
+194,32358,426,65,Wakulla,Wakulla-32358,Sopchoppy,Sopchoppy,1099,Wakulla-32358,Sopchoppy,45,45,1.57903429892466,0.059262144592044
+195,32359,427,15,Dixie,Dixie-32359,Steinhatchee,Steinhatchee,296,Dixie-32359,Steinhatchee,8,8,2.00003588741361,0.0232049040889256
+196,32359,429,62,Taylor,Taylor-32359,Steinhatchee,Steinhatchee,1061,Taylor-32359,"Jena, Steinhatchee",52,52,0.596879957814658,0.010162946741449
+197,32360,430,39,Liberty,Liberty-32360,Telogia,Telogia,602,Liberty-32360,Telogia,<5,-2,0.0222676594474756,3.2809411130047e-05
+198,32399,431,37,Leon,Leon-32399,Tallahassee,Tallahassee,587,Leon-32399,Tallahassee,82,82,0.0232389406035147,1.74677957200601e-05
+199,32401,432,3,Bay,Bay-32401,Panama City,"Panama City, Parker, Springfield, Cedar Grove",27,Bay-32401,"Panama City, Panama City Beach",774,774,0.466215601474533,0.00275954203916474
+200,32403,433,3,Bay,Bay-32403,Panama City,Tyndall AFB,28,Bay-32403,"Panama City, Tyndall Air Force Base",26,26,2.13383131518175,0.0149884041398427
+201,32404,434,3,Bay,Bay-32404,Panama City,"Panama City, Parker, Springfield, Callaway, Lynn Haven, Tyndall AFB",29,Bay-32404,"Callaway, Panama City, Parker",1515,1515,1.85399642910014,0.0502792216674949
+202,32405,437,3,Bay,Bay-32405,Panama City,"Panama City, Springfield, Lynn Haven, Cedar Grove, Pretty Bayou",30,Bay-32405,Panama City,1233,1233,0.604679030142292,0.00453326558378035
+203,32407,438,3,Bay,Bay-32407,Panama City Beach,"Panama City Beach, Upper Grand Lagoon",31,Bay-32407,"Panama City, Panama City Beach",392,392,0.71410192227304,0.00507875171865988
+204,32408,439,3,Bay,Bay-32408,Panama City,"Panama City Beach, Lower Grand Lagoon, Upper Grand Lagoon",32,Bay-32408,"Panama City, Panama City Beach",509,509,0.568048863699366,0.00288846003001522
+205,32409,440,3,Bay,Bay-32409,Panama City,Lynn Haven,33,Bay-32409,"Panama City, Southport",299,299,1.41007833979555,0.0382672406493679
+206,32413,442,3,Bay,Bay-32413,Panama City Beach,"Panama City Beach, Laguna Beach",34,Bay-32413,"Alys Beach, Inlet Beach, Panama City, Panama City Beach, Rosemary Beach, Seacrest, Watersound, West Panama City Beach",396,396,0.857298303538647,0.0226720307895147
+207,32420,447,32,Jackson,Jackson-32420,Alford,Alford,490,Jackson-32420,Alford,92,92,0.705977323126314,0.0139047475152142
+208,32420,448,67,Washington,Washington-32420,Alford,Alford,1112,Washington-32420,,<5,-2,0.129949717603156,0.000599203578479586
+209,32421,450,7,Calhoun,Calhoun-32421,Altha,Altha,133,Calhoun-32421,Altha,144,144,1.56683047502456,0.0376246876264123
+210,32423,453,32,Jackson,Jackson-32423,Bascom,"Malone, Bascom",491,Jackson-32423,Bascom,32,32,0.953302177743718,0.0173374047880957
+211,32424,454,7,Calhoun,Calhoun-32424,Blountstown,Blountstown,134,Calhoun-32424,Blountstown,482,482,1.48231825289349,0.0379023065338629
+212,32425,458,30,Holmes,Holmes-32425,Bonifay,"Caryville, Esto, Noma, Bonifay",476,Holmes-32425,"Bonifay, Caryville",681,681,1.20637647256516,0.0579533231300089
+213,32425,460,67,Washington,Washington-32425,Bonifay,"Caryville, Bonifay",1113,Washington-32425,Bonifay,7,7,0.813918682981301,0.00954547850895672
+214,32426,462,32,Jackson,Jackson-32426,Campbellton,"Campbellton, Jacob City",492,Jackson-32426,Campbellton,31,31,0.608221228284827,0.0113140396204511
+215,32427,465,67,Washington,Washington-32427,Caryville,"Caryville, Westville",1114,Washington-32427,Caryville,57,57,0.801515459654656,0.0129435066213346
+216,32428,468,32,Jackson,Jackson-32428,Chipley,Chipley,493,Jackson-32428,,<5,-2,0.312964998977749,0.000640664384974056
+217,32428,469,67,Washington,Washington-32428,Chipley,"Chipley, Wausau",1115,Washington-32428,"Chipley, Sunny Hills",980,980,1.71294105693927,0.0706562670904956
+218,32430,470,7,Calhoun,Calhoun-32430,Clarksville,Clarksville,135,Calhoun-32430,Clarksville,49,49,0.976438849393948,0.0178889249713597
+219,32431,471,32,Jackson,Jackson-32431,Cottondale,"Cottondale, Alford, Jacob City",494,Jackson-32431,Cottondale,223,223,1.01576152759648,0.0213729765153407
+220,32431,472,67,Washington,Washington-32431,Cottondale,Cottondale,1116,Washington-32431,Cottondale,<5,-2,0.380380806188827,0.00426577380180165
+221,32433,476,66,Walton,Walton-32433,Defuniak Springs,"Paxton, DeFuniak Springs",1100,Walton-32433,Defuniak Springs,477,477,2.11813045907559,0.0663964765390066
+222,32435,479,66,Walton,Walton-32435,Defuniak Springs,"DeFuniak Springs, Freeport",1101,Walton-32435,Defuniak Springs,227,227,1.74264394106782,0.0671163785908261
+223,32437,480,3,Bay,Bay-32437,Ebro,Ebro,35,Bay-32437,Ebro,<5,-2,0.458796614494783,0.00361308331995585
+224,32437,482,67,Washington,Washington-32437,Ebro,Ebro,1117,Washington-32437,Ebro,20,20,0.496677071652469,0.0042748099093374
+225,32438,483,3,Bay,Bay-32438,Fountain,Fountain,36,Bay-32438,Fountain,71,71,0.502357982373389,0.012016732998702
+226,32438,484,7,Calhoun,Calhoun-32438,Fountain,Fountain,136,Calhoun-32438,,0,0,0.314722359917594,0.00233049494914957
+227,32438,486,67,Washington,Washington-32438,Fountain,Fountain,1118,Washington-32438,,0,0,0.201106004722392,0.000481664060881488
+228,32439,487,66,Walton,Walton-32439,Freeport,Freeport,1102,Walton-32439,Freeport,294,294,1.56629817004475,0.0381994744130019
+229,32440,489,30,Holmes,Holmes-32440,Graceville,Graceville,477,Holmes-32440,Graceville,<5,-2,0.620497766053129,0.00704634183878382
+230,32440,490,32,Jackson,Jackson-32440,Graceville,"Campbellton, Graceville",495,Jackson-32440,Graceville,890,890,0.794632972087481,0.0187699048797367
+231,32442,492,7,Calhoun,Calhoun-32442,Grand Ridge,Grand Ridge,137,Calhoun-32442,,0,0,0.271553406016761,0.00253783264147459
+232,32442,494,32,Jackson,Jackson-32442,Grand Ridge,"Sneads, Grand Ridge",496,Jackson-32442,Grand Ridge,101,101,1.17212262618164,0.0215709695241686
+233,32443,496,32,Jackson,Jackson-32443,Greenwood,Greenwood,497,Jackson-32443,Greenwood,128,128,0.785635892318658,0.0141721775994056
+234,32444,497,3,Bay,Bay-32444,Lynn Haven,"Panama City, Lynn Haven",37,Bay-32444,Lynn Haven,990,990,0.494733659105604,0.00275242231367578
+235,32445,499,32,Jackson,Jackson-32445,Malone,Malone,498,Jackson-32445,Malone,263,263,0.35800889414313,0.00471396793459259
+236,32446,500,32,Jackson,Jackson-32446,Marianna,"Greenwood, Marianna, Jacob City",499,Jackson-32446,Marianna,611,611,1.68601559872435,0.0418944016111851
+237,32448,502,32,Jackson,Jackson-32448,Marianna,"Cottondale, Marianna",500,Jackson-32448,Marianna,356,356,1.38854018392361,0.0473316452032472
+238,32449,504,7,Calhoun,Calhoun-32449,Wewahitchka,Wewahitchka,138,Calhoun-32449,"Kinard, Wewahitchka",20,20,0.81623984337505,0.0240569022333886
+239,32455,506,30,Holmes,Holmes-32455,Ponce De Leon,"Ponce de Leon, Westville",478,Holmes-32455,"Ponce De Leon, Red Bay",73,73,0.99911618893059,0.0178107438698919
+240,32455,507,66,Walton,Walton-32455,Ponce De Leon,Ponce de Leon,1103,Walton-32455,Ponce De Leon,5,5,1.92783898615353,0.0339088397676966
+241,32456,509,3,Bay,Bay-32456,Port Saint Joe,Mexico Beach,38,Bay-32456,,0,0,0.279485464412878,0.000809283034229683
+242,32456,511,23,Gulf,Gulf-32456,Port Saint Joe,"Mexico Beach, Port St. Joe",385,Gulf-32456,"Mexico Beach, Port Saint Joe",347,347,2.29614250392043,0.0515764102480394
+243,32459,513,66,Walton,Walton-32459,Santa Rosa Beach,Miramar Beach,1104,Walton-32459,"Point Washington, Santa Rosa Beach",730,730,1.26283824856249,0.0170668541908552
+244,32460,516,32,Jackson,Jackson-32460,Sneads,"Sneads, Chattahoochee",501,Jackson-32460,Sneads,300,300,1.10377829605929,0.0199538445126756
+245,32461,518,66,Walton,Walton-32461,Inlet Beach,Inlet Beach,1105,Walton-32461,"Inlet Beach, Rosemary Beach, Seacrest, Watersound",70,70,0.254009174102237,0.00162765582059181
+246,32462,519,3,Bay,Bay-32462,Vernon,Vernon,39,Bay-32462,Vernon,<5,-2,0.368658634193067,0.000344000604665523
+247,32462,520,66,Walton,Walton-32462,Vernon,Vernon,1106,Walton-32462,Vernon,<5,-2,0.803303988805262,0.00573108720821371
+248,32462,521,67,Washington,Washington-32462,Vernon,Vernon,1119,Washington-32462,Vernon,118,118,1.76481111693534,0.0438473317524568
+249,32464,522,30,Holmes,Holmes-32464,Westville,"Caryville, Ponce de Leon, Westville",479,Holmes-32464,Westville,96,96,1.46438362681616,0.0366105104227589
+250,32464,523,66,Walton,Walton-32464,Westville,Westville,1107,Walton-32464,Westville,<5,-2,0.615473780641217,0.00582821608416947
+251,32465,527,19,Franklin,Franklin-32465,Wewahitchka,Wewahitchka,368,Franklin-32465,,0,0,0.502544296743604,0.00270241297973102
+252,32465,528,23,Gulf,Gulf-32465,Wewahitchka,Wewahitchka,386,Gulf-32465,"Wewahitchka, White City",567,567,1.83189091397821,0.0863275768278453
+253,32466,530,3,Bay,Bay-32466,Youngstown,Youngstown,40,Bay-32466,"Bayou George, Youngstown",157,157,1.36143286473989,0.0290120804558669
+254,32466,531,7,Calhoun,Calhoun-32466,Youngstown,Youngstown,139,Calhoun-32466,,0,0,0.676881301542405,0.0172565036092896
+255,32466,532,67,Washington,Washington-32466,Youngstown,Youngstown,1120,Washington-32466,,0,0,0.37492486331841,0.0034027597632717
+256,32501,533,17,Escambia,Escambia-32501,Pensacola,"Pensacola, Brent, Goulding, West Pensacola",336,Escambia-32501,Pensacola,789,789,0.168993088202949,0.000894078701645119
+257,32502,534,17,Escambia,Escambia-32502,Pensacola,"Pensacola, Warrington",337,Escambia-32502,Pensacola,244,244,0.22377639728696,0.00060778478505507
+258,32503,535,17,Escambia,Escambia-32503,Pensacola,"Pensacola, Brent, Ensley, Ferry Pass, Goulding",338,Escambia-32503,Pensacola,1155,1155,0.33726192686422,0.00316872350091927
+259,32504,536,17,Escambia,Escambia-32504,Pensacola,"Pensacola, Brent, Ensley, Ferry Pass",339,Escambia-32504,Pensacola,934,934,0.257638259292462,0.00264749132948537
+260,32505,537,17,Escambia,Escambia-32505,Pensacola,"Pensacola, Bellview, Brent, Ensley, Goulding, Myrtle Grove, Warrington, West Pensacola",340,Escambia-32505,Pensacola,1137,1137,0.340322867420949,0.0033331858075853
+261,32506,538,17,Escambia,Escambia-32506,Pensacola,"Bellview, Myrtle Grove, Warrington, West Pensacola",341,Escambia-32506,Pensacola,985,985,0.568401184338886,0.00803001709395493
+262,32507,540,17,Escambia,Escambia-32507,Pensacola,"Pensacola, Myrtle Grove, Warrington, West Pensacola",342,Escambia-32507,"Pensacola, Perdido Key",663,663,1.34188091479925,0.00644450841361462
+263,32508,541,17,Escambia,Escambia-32508,Pensacola,Warrington,343,Escambia-32508,Pensacola,40,40,0.253394061165198,0.00230499077078486
+264,32509,542,17,Escambia,Escambia-32509,Pensacola,Bellview,344,Escambia-32509,Pensacola,<5,-2,0.0657344066513099,0.000276220615045185
+265,32511,543,17,Escambia,Escambia-32511,Pensacola,"Myrtle Grove, West Pensacola",345,Escambia-32511,Pensacola,25,25,0.045203013221384,5.83443340348309e-05
+266,32512,544,17,Escambia,Escambia-32512,Pensacola,Myrtle Grove,346,Escambia-32512,"Pensacola, Pensacola Naval Hospital",65,65,0.0149616585615538,1.31608893749765e-05
+267,32514,545,17,Escambia,Escambia-32514,Pensacola,"Pensacola, Ensley, Ferry Pass, Gonzalez",347,Escambia-32514,Pensacola,1759,1759,0.337669951307171,0.00485574888158886
+268,32526,548,17,Escambia,Escambia-32526,Pensacola,"Bellview, Brent, Ensley, Myrtle Grove, West Pensacola",348,Escambia-32526,"Bellview, Pensacola",1310,1310,0.891683406632577,0.0143874296157152
+269,32531,550,46,Okaloosa,Okaloosa-32531,Baker,Baker,689,Okaloosa-32531,Baker,129,129,1.16115259359027,0.0492887987069737
+270,32531,551,57,Santa Rosa,Santa Rosa-32531,Baker,Munson,954,Santa Rosa-32531,Baker,<5,-2,0.683807673675887,0.00577081565069215
+271,32533,553,17,Escambia,Escambia-32533,Cantonment,"Ensley, Gonzalez, Molino",349,Escambia-32533,Cantonment,974,974,0.785206052544983,0.0195893004168335
+272,32534,555,17,Escambia,Escambia-32534,Pensacola,"Brent, Ensley, Gonzalez",350,Escambia-32534,Pensacola,555,555,0.284921856571947,0.00241105553517556
+273,32535,557,17,Escambia,Escambia-32535,Century,Century,351,Escambia-32535,Century,936,936,0.99194130832669,0.0181396835016364
+274,32536,559,46,Okaloosa,Okaloosa-32536,Crestview,Crestview,690,Okaloosa-32536,Crestview,537,537,0.640378250814963,0.0109221396007394
+275,32539,560,46,Okaloosa,Okaloosa-32539,Crestview,Crestview,691,Okaloosa-32539,Crestview,746,746,0.875238434685087,0.0283085715155551
+276,32539,561,66,Walton,Walton-32539,Crestview,Crestview,1108,Walton-32539,Crestview,<5,-2,0.50711909056918,0.00314143019024502
+277,32541,562,46,Okaloosa,Okaloosa-32541,Destin,"Destin, Miramar Beach",692,Okaloosa-32541,Destin,763,763,0.478529983960791,0.00266094440371702
+278,32542,564,46,Okaloosa,Okaloosa-32542,Eglin Afb,"Valparaiso, Eglin AFB, Lake Lorraine",693,Okaloosa-32542,"Duke Field Air Force Station, Eglin, Eglin Air Force Base",89,89,1.85444583803806,0.0813106770374548
+279,32542,565,57,Santa Rosa,Santa Rosa-32542,Navarre,"Muddy Ford, Holley, Navarre",955,Santa Rosa-32542,,0,0,1.14979479694678,0.0262791006640739
+280,32544,567,46,Okaloosa,Okaloosa-32544,Hurlburt Field,Hurlburt Field,694,Okaloosa-32544,Hurlburt Field,13,13,0.24712597104126,0.00084817993651966
+281,32547,568,46,Okaloosa,Okaloosa-32547,Fort Walton Beach,"Fort Walton Beach, Ocean City, Wright",695,Okaloosa-32547,Fort Walton Beach,1279,1279,0.402239994080404,0.0055810771378205
+282,32548,569,46,Okaloosa,Okaloosa-32548,Fort Walton Beach,"Cinco Bayou, Fort Walton Beach, Mary Esther, Ocean City, Wright",696,Okaloosa-32548,"Cinco Bayou, Fort Walton Beach",778,778,0.98352169224105,0.00334548126759665
+283,32550,572,66,Walton,Walton-32550,Miramar Beach,Miramar Beach,1109,Walton-32550,"Destin, Miramar Beach",242,242,0.300150168488759,0.00168372161593779
+284,32561,573,17,Escambia,Escambia-32561,Gulf Breeze,"Gulf Breeze, Navarre Beach, Oriole Beach, Woodlawn Beach",352,Escambia-32561,"Gulf Breeze, Pensacola, Pensacola Beach",8,8,0.858370358254202,0.00183303106949394
+285,32561,574,57,Santa Rosa,Santa Rosa-32561,Gulf Breeze,"Gulf Breeze, Midway, Oriole Beach",956,Santa Rosa-32561,"Gulf Breeze, Pensacola Beach",218,218,0.280692371789989,0.000761687208119463
+286,32563,575,57,Santa Rosa,Santa Rosa-32563,Gulf Breeze,"Gulf Breeze, Midway, Navarre, Oriole Beach, Tiger Point, Woodlawn Beach",957,Santa Rosa-32563,Gulf Breeze,685,685,0.60271330731742,0.00450655331317994
+287,32564,576,46,Okaloosa,Okaloosa-32564,Holt,Harold,697,Okaloosa-32564,Holt,47,47,0.771086661446053,0.0126425194639944
+288,32564,577,57,Santa Rosa,Santa Rosa-32564,Holt,"Harold, Munson, Springhill",958,Santa Rosa-32564,,0,0,0.855941499707971,0.0146088243549282
+289,32565,580,57,Santa Rosa,Santa Rosa-32565,Jay,"Jay, Allentown, Berrydale, Brownsdale, Chumuckla, Cobbtown, Dixonville, Fidelis, Mount Carmel, Pine Level, Whitfield",959,Santa Rosa-32565,Jay,167,167,1.59262216197665,0.0558252300574335
+290,32566,582,57,Santa Rosa,Santa Rosa-32566,Navarre,"Holley, Midway, Navarre",960,Santa Rosa-32566,"Gulf Breeze, Navarre",851,851,1.0052706524163,0.00825662560129945
+291,32567,584,46,Okaloosa,Okaloosa-32567,Laurel Hill,Laurel Hill,698,Okaloosa-32567,Laurel Hill,61,61,1.01303483919116,0.0220357979238151
+292,32567,585,66,Walton,Walton-32567,Laurel Hill,Paxton,1110,Walton-32567,Laurel Hill,<5,-2,0.635153223837594,0.0146086756078423
+293,32568,587,17,Escambia,Escambia-32568,Mc David,Chumuckla,353,Escambia-32568,"Mcdavid, Walnut Hill",93,93,1.54985993884297,0.0555515472171698
+294,32569,589,46,Okaloosa,Okaloosa-32569,Mary Esther,"Fort Walton Beach, Mary Esther",699,Okaloosa-32569,Mary Esther,321,321,0.467852072993531,0.00163775697389448
+295,32570,592,57,Santa Rosa,Santa Rosa-32570,Milton,"Milton, Allentown, Bagdad, Berrydale, Cobbtown, East Milton, Munson, Pace, Pea Ridge, Point Baker, Roeville, Springhill, Whitfield",961,Santa Rosa-32570,Milton,1120,1120,2.0407829766488,0.0750662130088755
+296,32571,594,57,Santa Rosa,Santa Rosa-32571,Milton,"Chumuckla, Ferry Pass, Mulat, Pace, Pea Ridge, Wallace",962,Santa Rosa-32571,"Milton, Pace",1218,1218,1.29934165131295,0.0286044450185729
+297,32577,596,17,Escambia,Escambia-32577,Molino,Molino,354,Escambia-32577,Molino,155,155,0.971630631064394,0.0183149003778453
+298,32578,598,46,Okaloosa,Okaloosa-32578,Niceville,"Niceville, Valparaiso",700,Okaloosa-32578,"Choctaw Beach, Niceville",817,817,0.564134731090037,0.00842611407614476
+299,32578,599,66,Walton,Walton-32578,Niceville,Niceville,1111,Walton-32578,Niceville,<5,-2,0.51907742637669,0.00532683498330739
+300,32579,600,46,Okaloosa,Okaloosa-32579,Shalimar,"Fort Walton Beach, Shalimar, Eglin AFB, Lake Lorraine, Ocean City",701,Okaloosa-32579,Shalimar,292,292,0.265750300995425,0.00143079079461511
+301,32580,601,46,Okaloosa,Okaloosa-32580,Valparaiso,"Niceville, Valparaiso, Eglin AFB",702,Okaloosa-32580,Valparaiso,71,71,0.24952513585966,0.00103527294235461
+302,32583,603,57,Santa Rosa,Santa Rosa-32583,Milton,"Milton, Avalon, Bagdad, Dickerson City, East Milton, Garcon Point, Harold, Mulat, Pea Ridge",963,Santa Rosa-32583,Milton,1459,1459,1.81572366039504,0.0303475590114329
+303,32601,604,1,Alachua,Alachua-32601,Gainesville,Gainesville,2,Alachua-32601,Gainesville,1532,1532,0.164952953789392,0.00120067730766515
+304,32603,605,1,Alachua,Alachua-32603,Gainesville,Gainesville,3,Alachua-32603,Gainesville,512,512,0.122770613347799,0.000231931972580167
+305,32605,606,1,Alachua,Alachua-32605,Gainesville,Gainesville,4,Alachua-32605,Gainesville,621,621,0.285451014493279,0.00240669692999996
+306,32606,607,1,Alachua,Alachua-32606,Gainesville,Gainesville,5,Alachua-32606,Gainesville,556,556,0.371953212096582,0.00420784579643049
+307,32607,608,1,Alachua,Alachua-32607,Gainesville,Gainesville,6,Alachua-32607,Gainesville,1157,1157,0.369845957001904,0.00307783891187463
+308,32608,609,1,Alachua,Alachua-32608,Gainesville,Gainesville,7,Alachua-32608,Gainesville,1458,1458,0.601055137127857,0.0107910638557007
+309,32609,610,1,Alachua,Alachua-32609,Gainesville,"Gainesville, Waldo, La Crosse",8,Alachua-32609,Gainesville,767,767,0.957235105960975,0.0306675522344735
+310,32610,612,1,Alachua,Alachua-32610,Gainesville,Gainesville,9,Alachua-32610,Gainesville,42,42,0.0408945723732546,4.34595357350222e-05
+311,32611,613,1,Alachua,Alachua-32611,Gainesville,Gainesville,10,Alachua-32611,"Gainesville, University Of Fl",192,192,0.122380765105896,0.000360993696139895
+312,32615,615,1,Alachua,Alachua-32615,Alachua,"Alachua, High Springs, Newberry, Worthington Springs, La Crosse",11,Alachua-32615,"Alachua, Santa Fe",435,435,1.29409924191783,0.0344436575051844
+313,32617,619,42,Marion,Marion-32617,Anthony,Anthony,635,Marion-32617,Anthony,73,73,0.625643841127313,0.00787667364342394
+314,32618,620,1,Alachua,Alachua-32618,Archer,"Archer, Newberry",12,Alachua-32618,Archer,141,141,0.765346244988913,0.0169756601518874
+315,32618,621,38,Levy,Levy-32618,Archer,"Newberry, East Bronson",589,Levy-32618,Archer,<5,-2,0.501788705472276,0.00426182747413057
+316,32619,623,21,Gilchrist,Gilchrist-32619,Bell,Bell,376,Gilchrist-32619,Bell,184,184,1.19398420991035,0.0307353916877188
+317,32621,626,38,Levy,Levy-32621,Bronson,"Bronson, Otter Creek, East Bronson, Williston Highlands",590,Levy-32621,Bronson,264,264,1.31807904874026,0.0318882344640546
+318,32622,627,1,Alachua,Alachua-32622,Brooker,La Crosse,13,Alachua-32622,,0,0,0.469213253687025,0.00199839616159902
+319,32622,628,4,Bradford,Bradford-32622,Brooker,"Brooker, Worthington Springs",45,Bradford-32622,Brooker,43,43,0.87129856404437,0.0173887045270286
+320,32625,630,38,Levy,Levy-32625,Cedar Key,Cedar Key,591,Levy-32625,Cedar Key,10,10,4.16968269781286,0.0197909587749735
+321,32626,633,38,Levy,Levy-32626,Chiefland,"Fanning Springs, Chiefland, Otter Creek, Andrews, Manatee Road",592,Levy-32626,Chiefland,291,291,2.8795103687009,0.0786870608473064
+322,32628,634,15,Dixie,Dixie-32628,Cross City,Cross City,297,Dixie-32628,Cross City,527,527,0.528729945771023,0.00676693220640086
+323,32631,635,1,Alachua,Alachua-32631,Earleton,Earleton,14,Alachua-32631,Earleton,8,8,0.425044208503044,0.00322117374477673
+324,32640,638,1,Alachua,Alachua-32640,Hawthorne,Hawthorne,15,Alachua-32640,"Cross Creek, Hawthorne",150,150,1.58025329895649,0.0405027776761165
+325,32640,640,54,Putnam,Putnam-32640,Hawthorne,Hawthorne,952,Putnam-32640,"Hawthorne, Interlachen",10,10,0.845965312717852,0.0207473333274666
+326,32641,641,1,Alachua,Alachua-32641,Gainesville,Gainesville,16,Alachua-32641,Gainesville,560,560,0.700876693302671,0.0130552725351442
+327,32643,642,1,Alachua,Alachua-32643,High Springs,"Alachua, High Springs, Newberry",17,Alachua-32643,High Springs,199,199,0.856138803206982,0.0140203582605376
+328,32643,643,12,Columbia,Columbia-32643,High Springs,High Springs,209,Columbia-32643,,<5,-2,0.68560776271573,0.00334453461239845
+329,32643,644,21,Gilchrist,Gilchrist-32643,High Springs,"Newberry, Spring Ridge",377,Gilchrist-32643,High Springs,<5,-2,0.529057712235381,0.00771229127792577
+330,32648,645,15,Dixie,Dixie-32648,Horseshoe Beach,Horseshoe Beach,298,Dixie-32648,Horseshoe Beach,12,12,1.92465609493407,0.0281247905146111
+331,32653,646,1,Alachua,Alachua-32653,Gainesville,"Alachua, Gainesville, La Crosse",18,Alachua-32653,Gainesville,292,292,0.689959798108308,0.00951843211495445
+332,32656,648,4,Bradford,Bradford-32656,Keystone Heights,Keystone Heights,46,Bradford-32656,,<5,-2,0.365898850903044,0.0012391992219054
+333,32656,649,10,Clay,Clay-32656,Keystone Heights,Keystone Heights,179,Clay-32656,Keystone Heights,289,289,1.01628070194975,0.030724275579841
+334,32666,651,1,Alachua,Alachua-32666,Melrose,Melrose,19,Alachua-32666,,0,0,0.308428757023201,0.00140465511097061
+335,32666,652,4,Bradford,Bradford-32666,Melrose,Melrose,47,Bradford-32666,Melrose,<5,-2,0.266597140560027,0.000833116623286519
+336,32666,653,10,Clay,Clay-32666,Melrose,Keystone Heights,180,Clay-32666,,0,0,0.538105716692439,0.00250866841804218
+337,32666,654,54,Putnam,Putnam-32666,Melrose,Melrose,953,Putnam-32666,Melrose,112,112,0.557193253286523,0.00799446293334256
+338,32667,655,1,Alachua,Alachua-32667,Micanopy,"Micanopy, McIntosh",20,Alachua-32667,Micanopy,61,61,1.17202090945198,0.01789844610366
+339,32667,657,42,Marion,Marion-32667,Micanopy,McIntosh,637,Marion-32667,,0,0,0.686602559373321,0.0099325979621254
+340,32668,658,38,Levy,Levy-32668,Morriston,"Morriston, Williston Highlands",593,Levy-32668,Morriston,70,70,1.14384617885947,0.028396788880688
+341,32668,659,42,Marion,Marion-32668,Morriston,Morriston,638,Marion-32668,Morriston,<5,-2,0.596495300065163,0.0051175327129707
+342,32669,660,1,Alachua,Alachua-32669,Newberry,Newberry,21,Alachua-32669,"Jonesville, Newberry, Tioga",399,399,0.804551534071924,0.0207767846540783
+343,32669,661,21,Gilchrist,Gilchrist-32669,Newberry,Newberry,378,Gilchrist-32669,,<5,-2,0.463812111903044,0.00312581936032535
+344,32669,662,38,Levy,Levy-32669,Newberry,Newberry,594,Levy-32669,,0,0,0.171014154290514,0.000323319733289029
+345,32680,663,15,Dixie,Dixie-32680,Old Town,Fanning Springs,299,Dixie-32680,Old Town,328,328,3.7518760855686,0.11206267651364
+346,32686,670,42,Marion,Marion-32686,Reddick,Reddick,639,Marion-32686,"Flemington, Reddick",124,124,1.23974836859477,0.0206947008903619
+347,32693,673,21,Gilchrist,Gilchrist-32693,Trenton,"Fanning Springs, Trenton",379,Gilchrist-32693,"Fanning Springs, Trenton",407,407,1.46084462316661,0.0358090057050174
+348,32693,674,38,Levy,Levy-32693,Trenton,"Fanning Springs, Andrews, Manatee Road",595,Levy-32693,Trenton,6,6,0.917338443840737,0.0110465942919913
+349,32694,675,1,Alachua,Alachua-32694,Waldo,Waldo,22,Alachua-32694,Waldo,42,42,0.54795529778106,0.00669226990122242
+350,32696,678,38,Levy,Levy-32696,Williston,"Williston, East Bronson, East Williston, Raleigh, Williston Highlands",596,Levy-32696,Williston,404,404,0.971849614557858,0.0277179227985728
+351,32696,679,42,Marion,Marion-32696,Williston,East Williston,640,Marion-32696,,<5,-2,0.581699765132752,0.0056469483734013
+352,32701,680,59,Seminole,Seminole-32701,Altamonte Springs,"Altamonte Springs, Longwood, Casselberry, Fern Park",992,Seminole-32701,"Altamonte Springs, Fern Park",624,624,0.173948448020379,0.00143234148969961
+353,32702,681,35,Lake,Lake-32702,Altoona,"Umatilla, Altoona, Pittman",513,Lake-32702,Altoona,39,39,0.795752432806197,0.0179477547855528
+354,32702,682,42,Marion,Marion-32702,Altoona,Altoona,641,Marion-32702,,0,0,0.43239356771134,0.00340839858835955
+355,32703,683,48,Orange,Orange-32703,Apopka,"Apopka, Ocoee, Clarcona, Forest City, Lockhart, Paradise Heights, South Apopka, Wekiwa Springs",705,Orange-32703,"Apopka, Forest City",1538,1538,0.736955459461589,0.00906270609627205
+356,32703,684,59,Seminole,Seminole-32703,Apopka,"Forest City, Lockhart, Wekiwa Springs",993,Seminole-32703,"Apopka, Sanford",9,9,0.133846699057973,0.000870293304025447
+357,32707,685,59,Seminole,Seminole-32707,Casselberry,"Altamonte Springs, Longwood, Casselberry, Winter Springs, Fern Park",994,Seminole-32707,Casselberry,794,794,0.323575548820179,0.0025554121419699
+358,32708,686,59,Seminole,Seminole-32708,Winter Springs,"Oviedo, Longwood, Casselberry, Winter Springs, Black Hammock",995,Seminole-32708,"Casselberry, Winter Springs",868,868,0.495059002968927,0.00506580755572531
+359,32709,688,48,Orange,Orange-32709,Christmas,"Bithlo, Christmas, Wedgefield",706,Orange-32709,Christmas,46,46,1.49447146350616,0.0356503868701895
+360,32712,692,48,Orange,Orange-32712,Apopka,"Apopka, Mount Plymouth, Wekiwa Springs, Zellwood",707,Orange-32712,"Apopka, Orlando",1170,1170,0.659091869982357,0.0150476960214235
+361,32713,696,64,Volusia,Volusia-32713,Debary,"DeBary, Deltona, Orange City",1085,Volusia-32713,Debary,428,428,0.433626433196601,0.00522282980744924
+362,32714,698,59,Seminole,Seminole-32714,Altamonte Springs,"Altamonte Springs, Forest City, Lockhart, Wekiwa Springs",996,Seminole-32714,Altamonte Springs,926,926,0.222399048998275,0.00213805201038864
+363,32720,699,35,Lake,Lake-32720,Deland,"Lake Kathryn, Lake Mack-Forest Hills",514,Lake-32720,Deland,<5,-2,0.897295089034789,0.00963628970553052
+364,32720,701,64,Volusia,Volusia-32720,Deland,"DeLand, Orange City, DeLand Southwest, De Leon Springs, North DeLand, West DeLand",1086,Volusia-32720,Deland,865,865,0.910812868191342,0.0151388454714105
+365,32724,702,64,Volusia,Volusia-32724,Deland,"Lake Helen, DeLand, DeLand Southwest, De Leon Springs, North DeLand",1087,Volusia-32724,Deland,999,999,1.3667896781205,0.0259917108283111
+366,32725,704,64,Volusia,Volusia-32725,Deltona,"DeBary, DeLand, Deltona, Orange City",1088,Volusia-32725,"Deltona, Enterprise",1124,1124,0.641067891888394,0.00872106180563727
+367,32726,705,35,Lake,Lake-32726,Eustis,"Tavares, Eustis, Mount Dora",515,Lake-32726,Eustis,503,503,0.482693629984621,0.00510082291562538
+368,32730,706,59,Seminole,Seminole-32730,Casselberry,"Altamonte Springs, Casselberry, Fern Park",997,Seminole-32730,"Casselberry, Fern Park, Lake Mary",133,133,0.108046387768567,0.000359476161274935
+369,32732,707,59,Seminole,Seminole-32732,Geneva,"Black Hammock, Geneva",998,Seminole-32732,Geneva,92,92,0.771656312681774,0.014865071425285
+370,32735,709,35,Lake,Lake-32735,Grand Island,Eustis,516,Lake-32735,Grand Island,92,92,0.335972557506619,0.00238009132904477
+371,32736,710,35,Lake,Lake-32736,Eustis,"Eustis, Mount Dora, Pine Lakes",517,Lake-32736,Eustis,170,170,1.19066921622812,0.0222860856098304
+372,32738,711,64,Volusia,Volusia-32738,Deltona,"Lake Helen, Deltona",1089,Volusia-32738,Deltona,964,964,0.562360722275892,0.00700724071698486
+373,32744,712,64,Volusia,Volusia-32744,Lake Helen,"Lake Helen, DeLand, Deltona",1090,Volusia-32744,Lake Helen,58,58,0.317816070570285,0.00328894989091482
+374,32746,715,59,Seminole,Seminole-32746,Lake Mary,"Sanford, Lake Mary, Heathrow",999,Seminole-32746,"Heathrow, Lake Mary",939,939,0.48039055611739,0.00512199750220133
+375,32750,716,59,Seminole,Seminole-32750,Longwood,"Altamonte Springs, Lake Mary, Longwood, Casselberry, Winter Springs, Wekiwa Springs",1000,Seminole-32750,"Casselberry, Lake Mary, Longwood",526,526,0.31572358349201,0.00278891531365515
+376,32751,717,48,Orange,Orange-32751,Maitland,"Altamonte Springs, Eatonville, Maitland, Casselberry, Winter Park, Fairview Shores, Fern Park",708,Orange-32751,"Eatonville, Maitland",740,740,0.241670534761163,0.00148718162144186
+377,32751,718,59,Seminole,Seminole-32751,Maitland,"Altamonte Springs, Casselberry, Winter Park, Fern Park",1001,Seminole-32751,Maitland,7,7,0.21943683436858,0.000453821100380707
+378,32754,719,5,Brevard,Brevard-32754,Mims,Mims,48,Brevard-32754,Mims,124,124,0.671827010864218,0.0206551415764754
+379,32754,721,64,Volusia,Volusia-32754,Mims,Mims,1091,Volusia-32754,Mims,<5,-2,0.782662136495905,0.0116658742245598
+380,32757,722,35,Lake,Lake-32757,Mount Dora,"Tavares, Eustis, Mount Dora",518,Lake-32757,"Mount, Mount Dora",654,654,0.739557074612186,0.00760724480129338
+381,32757,723,48,Orange,Orange-32757,Mount Dora,"Mount Dora, Tangerine, Zellwood",709,Orange-32757,Mount Dora,<5,-2,0.56680558203015,0.011716130356745
+382,32759,725,64,Volusia,Volusia-32759,Oak Hill,"Edgewater, Oak Hill",1092,Volusia-32759,Oak Hill,30,30,0.637690483598068,0.00986903078979041
+383,32763,727,64,Volusia,Volusia-32763,Orange City,"DeBary, DeLand, Deltona, Orange City",1093,Volusia-32763,Orange City,634,634,0.445619465587452,0.00570354401302064
+384,32764,729,64,Volusia,Volusia-32764,Osteen,Deltona,1094,Volusia-32764,Osteen,46,46,1.48921749628732,0.0269570426070548
+385,32765,731,59,Seminole,Seminole-32765,Oviedo,"Oviedo, Winter Springs, Black Hammock",1002,Seminole-32765,Oviedo,1457,1457,0.679104548847428,0.00984850581348099
+386,32766,733,59,Seminole,Seminole-32766,Oviedo,"Oviedo, Chuluota",1003,Seminole-32766,"Chuluota, Oviedo",292,292,0.728672791093192,0.0113151144020551
+387,32767,735,35,Lake,Lake-32767,Paisley,"Lake Kathryn, Paisley",519,Lake-32767,Paisley,37,37,0.869269962744361,0.0147493598130252
+388,32771,738,59,Seminole,Seminole-32771,Sanford,"Sanford, Lake Mary, DeBary, Heathrow, Midway",1004,Seminole-32771,Sanford,1398,1398,0.685413959988444,0.0106907301180274
+389,32773,740,59,Seminole,Seminole-32773,Sanford,"Sanford, Lake Mary, Winter Springs, Black Hammock, Midway",1005,Seminole-32773,Sanford,1029,1029,0.508970469015795,0.00849185425653119
+390,32776,741,35,Lake,Lake-32776,Sorrento,"Mount Dora, Mount Plymouth, Sorrento",520,Lake-32776,"Mount Plymouth, Sorrento",196,196,0.702150700445748,0.0108188919932215
+391,32776,742,48,Orange,Orange-32776,Sorrento,"Apopka, Mount Plymouth",710,Orange-32776,Sorrento,<5,-2,0.182048674538943,7.856800591852e-05
+392,32778,744,35,Lake,Lake-32778,Tavares,"Tavares, Astatula, Eustis, Leesburg, Mount Dora, Yalaha",521,Lake-32778,"Deer Island, Tavares",820,820,0.636997272533562,0.00987970847546612
+393,32779,746,59,Seminole,Seminole-32779,Longwood,"Altamonte Springs, Lake Mary, Longwood, Forest City, Wekiwa Springs",1006,Seminole-32779,"Longwood, Wekiva Springs",633,633,0.372395837746587,0.00491156443288926
+394,32780,747,5,Brevard,Brevard-32780,Titusville,"Titusville, Port St. John",49,Brevard-32780,Titusville,452,452,0.641720385231424,0.00958676426373152
+395,32784,749,35,Lake,Lake-32784,Umatilla,"Eustis, Umatilla, Altoona",522,Lake-32784,Umatilla,175,175,0.860512807871945,0.0109370072450037
+396,32784,750,42,Marion,Marion-32784,Umatilla,Umatilla,642,Marion-32784,,<5,-2,0.537941861564764,0.00900803240360963
+397,32789,751,48,Orange,Orange-32789,Winter Park,"Eatonville, Maitland, Orlando, Winter Park, Fairview Shores",711,Orange-32789,Winter Park,683,683,0.296316414051575,0.00232688929019751
+398,32792,753,48,Orange,Orange-32792,Winter Park,"Orlando, Casselberry, Winter Park, Goldenrod",712,Orange-32792,"Aloma, Winter Park",1068,1068,0.27309711683579,0.0014299242954346
+399,32792,754,59,Seminole,Seminole-32792,Winter Park,"Casselberry, Winter Park, Goldenrod",1007,Seminole-32792,Winter Park,34,34,0.222238235498906,0.00155921457593971
+400,32796,755,5,Brevard,Brevard-32796,Titusville,"Titusville, Mims",50,Brevard-32796,Titusville,284,284,0.692389665839197,0.0099209419479889
+401,32798,759,48,Orange,Orange-32798,Zellwood,"Apopka, Tangerine, Zellwood",713,Orange-32798,Zellwood,87,87,0.141612299259157,0.000638302842110062
+402,32801,760,48,Orange,Orange-32801,Orlando,Orlando,714,Orange-32801,Orlando,779,779,0.142198454519507,0.000560531163780157
+403,32803,761,48,Orange,Orange-32803,Orlando,"Orlando, Winter Park, Fairview Shores",715,Orange-32803,Orlando,1047,1047,0.247280612571314,0.00184835401825992
+404,32804,762,48,Orange,Orange-32804,Orlando,"Orlando, Fairview Shores",716,Orange-32804,Orlando,500,500,0.212634192766629,0.0019311745318599
+405,32805,763,48,Orange,Orange-32805,Orlando,"Orlando, Holden Heights",717,Orange-32805,Orlando,920,920,0.243928756775013,0.00196782205235029
+406,32806,764,48,Orange,Orange-32806,Orlando,"Belle Isle, Edgewood, Orlando, Conway, Holden Heights",718,Orange-32806,Orlando,806,806,0.232891424785666,0.00183328045254485
+407,32807,765,48,Orange,Orange-32807,Orlando,"Orlando, Winter Park, Azalea Park",719,Orange-32807,"Azalea Park, Orlando",1299,1299,0.262670854899781,0.00204134791861485
+408,32808,766,48,Orange,Orange-32808,Orlando,"Orlando, Fairview Shores, Lockhart, Orlovista, Pine Hills",720,Orange-32808,"Orlando, Pine Hills",1542,1542,0.262802989753833,0.00301503615510981
+409,32809,767,48,Orange,Orange-32809,Orlando,"Belle Isle, Edgewood, Orlando, Oak Ridge, Pine Castle, Sky Lake",721,Orange-32809,"Belle Isle, Edgewood, Orlando, Pine Castle",1164,1164,0.43755244799461,0.00300179275908473
+410,32810,768,48,Orange,Orange-32810,Orlando,"Altamonte Springs, Eatonville, Maitland, Orlando, Clarcona, Fairview Shores, Lockhart, Pine Hills",722,Orange-32810,"Lockhart, Orlando",897,897,0.334482768196183,0.00236798082750221
+411,32811,770,48,Orange,Orange-32811,Orlando,"Orlando, Orlovista",723,Orange-32811,"Orlando, Orlo Vista",1475,1475,0.206640493173113,0.00184193288577017
+412,32812,771,48,Orange,Orange-32812,Orlando,"Belle Isle, Orlando, Conway",724,Orange-32812,"Belle Isle, Orlando",957,957,0.313208296293887,0.00228924615209515
+413,32814,772,48,Orange,Orange-32814,Orlando,"Orlando, Winter Park",725,Orange-32814,Orlando,276,276,0.107828831833958,0.000361096986045027
+414,32815,773,5,Brevard,Brevard-32815,Orlando,Orlando,51,Brevard-32815,Orlando,<5,-2,1.42946364853206,0.0331632699774861
+415,32816,775,48,Orange,Orange-32816,Orlando,"Orlando, University",726,Orange-32816,"Alafaya, Orlando, University Of Central Fl, University Of Central Florida",435,435,0.0657084682451372,0.000212890175897313
+416,32817,777,48,Orange,Orange-32817,Orlando,"Alafaya, Goldenrod, Union Park, University",727,Orange-32817,"Orlando, Union Park",1013,1013,0.288255575278097,0.00302108045819015
+417,32818,779,48,Orange,Orange-32818,Orlando,"Ocoee, Clarcona, Orlovista, Pine Hills",728,Orange-32818,"Apopka, Hiawassee, Orlando, Pine Hills",1381,1381,0.442922031244776,0.00293279713034993
+418,32819,780,48,Orange,Orange-32819,Orlando,"Orlando, Bay Hill, Doctor Phillips, Lake Butler, Tangelo Park, Williamsburg",729,Orange-32819,"Orlando, Sand Lake",1151,1151,0.488018223661952,0.00564997773623449
+419,32820,781,48,Orange,Orange-32820,Orlando,"Bithlo, Christmas",730,Orange-32820,"Alafaya, Orlando",200,200,0.388768242233994,0.00637455743874126
+420,32821,782,48,Orange,Orange-32821,Orlando,"Bay Lake, Lake Buena Vista, Williamsburg",731,Orange-32821,"Bay Lake, Orlando",785,785,0.349343741737158,0.00320893663620109
+421,32822,784,48,Orange,Orange-32822,Orlando,"Orlando, Azalea Park, Conway",732,Orange-32822,Orlando,2118,2118,0.346997556134819,0.00324472598798497
+422,32824,785,48,Orange,Orange-32824,Orlando,"Belle Isle, Orlando, Meadow Woods, Southchase, Taft",733,Orange-32824,Orlando,2283,2283,0.553594973553597,0.0076684100336615
+423,32825,787,48,Orange,Orange-32825,Orlando,"Alafaya, Rio Pinar, Union Park, University",734,Orange-32825,"Alafaya, Orlando",1916,1916,0.478344772188995,0.00552262452495021
+424,32826,788,48,Orange,Orange-32826,Orlando,"Alafaya, University",735,Orange-32826,"Alafaya, Orlando",820,820,0.249116736079993,0.00205482125687572
+425,32827,790,48,Orange,Orange-32827,Orlando,Orlando,736,Orange-32827,Orlando,453,453,0.49704273217689,0.00696709263075307
+426,32828,792,48,Orange,Orange-32828,Orlando,"Alafaya, Bithlo, University, Wedgefield",737,Orange-32828,"Alafaya, Orlando",1718,1718,0.379507284738129,0.00517594660773465
+427,32829,793,48,Orange,Orange-32829,Orlando,"Orlando, Alafaya, Rio Pinar",738,Orange-32829,Orlando,663,663,0.376391853379393,0.00453117904680973
+428,32830,794,48,Orange,Orange-32830,Orlando,"Bay Lake, Lake Buena Vista, Horizon West",739,Orange-32830,Orlando,63,63,0.460133040900371,0.0057825762739767
+429,32831,796,48,Orange,Orange-32831,Orlando,"Orlando, Alafaya, Wedgefield",740,Orange-32831,Orlando,310,310,0.24692179003376,0.00181774131796456
+430,32832,797,48,Orange,Orange-32832,Orlando,"Orlando, Alafaya, Lake Hart, Lake Mary Jane, Wedgefield",741,Orange-32832,Orlando,853,853,0.524413929131102,0.0157655019857508
+431,32833,799,48,Orange,Orange-32833,Orlando,"Alafaya, Bithlo, Christmas, Wedgefield",742,Orange-32833,Orlando,209,209,0.636665903715757,0.0151780962244925
+432,32835,800,48,Orange,Orange-32835,Orlando,"Orlando, Gotha, Lake Butler, Orlovista",743,Orange-32835,Orlando,1459,1459,0.24277045641599,0.0027792428384852
+433,32836,801,48,Orange,Orange-32836,Orlando,"Bay Lake, Lake Buena Vista, Bay Hill, Doctor Phillips, Horizon West, Lake Butler",744,Orange-32836,Orlando,485,485,0.419175604915398,0.00402141301774998
+434,32837,802,48,Orange,Orange-32837,Orlando,"Hunters Creek, Southchase, Williamsburg",745,Orange-32837,Orlando,2042,2042,0.352477398943716,0.00511869880835993
+435,32839,804,48,Orange,Orange-32839,Orlando,"Edgewood, Orlando, Holden Heights, Oak Ridge, Pine Castle, Sky Lake",746,Orange-32839,"Edgewood, Orlando, Pine Castle",1883,1883,0.24816494753022,0.00216979835748982
+436,32901,805,5,Brevard,Brevard-32901,Melbourne,"Melbourne, Palm Bay, West Melbourne",52,Brevard-32901,Melbourne,804,804,0.356261767428809,0.00303416871583433
+437,32903,806,5,Brevard,Brevard-32903,Indialantic,"Melbourne, Indialantic, Indian Harbour Beach",53,Brevard-32903,"Indialantic, Melbourne",246,246,0.234407248409523,0.000904437546645419
+438,32904,807,5,Brevard,Brevard-32904,Melbourne,"Melbourne Village, Melbourne, Palm Bay, West Melbourne, June Park",54,Brevard-32904,"Melbourne, West Melbourne",850,850,1.05526251360294,0.0151393989036463
+439,32905,808,5,Brevard,Brevard-32905,Palm Bay,"Melbourne, Palm Bay, Malabar, West Melbourne",55,Brevard-32905,"Melbourne, Palm Bay",532,532,0.278607261129541,0.00230861108778923
+440,32907,809,5,Brevard,Brevard-32907,Palm Bay,"Palm Bay, Malabar, West Melbourne",56,Brevard-32907,"Melbourne, Palm Bay",864,864,0.446059701858973,0.00563760178274499
+441,32908,810,5,Brevard,Brevard-32908,Palm Bay,Palm Bay,57,Brevard-32908,"Melbourne, Palm Bay",263,263,0.458988246755895,0.00827510087035974
+442,32909,811,5,Brevard,Brevard-32909,Palm Bay,"Palm Bay, Malabar, Grant-Valkaria",58,Brevard-32909,"Melbourne, Palm Bay",824,824,0.625311408268758,0.01369942850468
+443,32920,813,5,Brevard,Brevard-32920,Cape Canaveral,"Cape Canaveral, Cocoa Beach",59,Brevard-32920,Cape Canaveral,128,128,0.256550239590365,0.00132751377398432
+444,32922,814,5,Brevard,Brevard-32922,Cocoa,"Rockledge, Cocoa, Cocoa West",60,Brevard-32922,Cocoa,437,437,0.22980381827346,0.00132439737232473
+445,32925,815,5,Brevard,Brevard-32925,Patrick Afb,"Patrick AFB, South Patrick Shores",61,Brevard-32925,Patrick Air Force Base,30,30,0.988697102319871,0.00760270583291082
+446,32926,816,5,Brevard,Brevard-32926,Cocoa,"Rockledge, Cocoa, Cocoa West, Port St. John, Sharpes",62,Brevard-32926,Cocoa,298,298,0.77418555706082,0.0135352231496648
+447,32927,818,5,Brevard,Brevard-32927,Cocoa,"Titusville, Port St. John, Sharpes",63,Brevard-32927,"Cocoa, Port Saint John",327,327,0.404908963434611,0.00630013102974485
+448,32931,819,5,Brevard,Brevard-32931,Cocoa Beach,"Cape Canaveral, Cocoa Beach",64,Brevard-32931,Cocoa Beach,243,243,1.25311631388129,0.00135443584302492
+449,32934,820,5,Brevard,Brevard-32934,Melbourne,"Melbourne, West Melbourne",65,Brevard-32934,Melbourne,389,389,0.407117377515851,0.00648438179948845
+450,32935,821,5,Brevard,Brevard-32935,Melbourne,"Palm Shores, Melbourne",66,Brevard-32935,Melbourne,685,685,0.317976437370529,0.00286206573006546
+451,32937,822,5,Brevard,Brevard-32937,Satellite Beach,"Satellite Beach, Melbourne, Indian Harbour Beach, Merritt Island, Patrick AFB, South Patrick Shores",67,Brevard-32937,"Indian Harbour Beach, Melbourne, Satellite Beach",415,415,0.33473689750197,0.00169616950162514
+452,32940,823,5,Brevard,Brevard-32940,Melbourne,"Palm Shores, Melbourne, Viera East, Viera West",68,Brevard-32940,"Macon, Melbourne, Palm Shores, Viera",688,688,0.389575599392238,0.00536207081959978
+453,32948,824,5,Brevard,Brevard-32948,Fellsmere,Fellsmere,69,Brevard-32948,,0,0,0.326494459381687,0.00272095397076199
+454,32948,825,31,Indian River,Indian River-32948,Fellsmere,Fellsmere,480,Indian River-32948,Fellsmere,443,443,0.715675614096012,0.0220066878791176
+455,32949,826,5,Brevard,Brevard-32949,Grant,"Malabar, Grant-Valkaria, Micco",70,Brevard-32949,Grant-valkaria,44,44,0.373415710766085,0.00393789237062538
+456,32950,827,5,Brevard,Brevard-32950,Malabar,"Palm Bay, Malabar, Grant-Valkaria",71,Brevard-32950,"Malabar, Valkaria",88,88,0.326542821462142,0.00476838762427995
+457,32951,828,5,Brevard,Brevard-32951,Melbourne Beach,"Indialantic, Melbourne Beach, Micco",72,Brevard-32951,"Melbourne, Melbourne Beach",124,124,0.852711772823926,0.00233474688876503
+458,32952,829,5,Brevard,Brevard-32952,Merritt Island,"Satellite Beach, Merritt Island",73,Brevard-32952,Merritt Island,360,360,1.33638358200435,0.0031690059457497
+459,32953,830,5,Brevard,Brevard-32953,Merritt Island,"Titusville, Merritt Island",74,Brevard-32953,Merritt Island,445,445,0.58400423317142,0.00867495749641708
+460,32955,831,5,Brevard,Brevard-32955,Rockledge,"Rockledge, Cocoa, Cocoa West, Viera East, Viera West",75,Brevard-32955,"Cocoa, Melbourne, Rockledge, Viera",688,688,0.691482933144772,0.0154343672930656
+461,32958,834,31,Indian River,Indian River-32958,Sebastian,"Sebastian, Fellsmere, Roseland, Wabasso",481,Indian River-32958,Sebastian,416,416,0.563412478666888,0.00528705288788881
+462,32960,835,31,Indian River,Indian River-32960,Vero Beach,"Vero Beach, Gifford, Vero Beach South",482,Indian River-32960,Vero Beach,950,950,0.224943787619703,0.00275644116426001
+463,32962,836,31,Indian River,Indian River-32962,Vero Beach,"Florida Ridge, Vero Beach South",483,Indian River-32962,Vero Beach,522,522,0.282159820605158,0.00294185414396591
+464,32963,838,31,Indian River,Indian River-32963,Vero Beach,"Orchid, Vero Beach, Indian River Shores, Florida Ridge, South Beach, Wabasso Beach, Windsor",484,Indian River-32963,"Indian River Shores, Orchid, Vero Beach",161,161,1.84435911858018,0.00438953331364373
+465,32963,839,56,St. Lucie,St. Lucie-32963,Vero Beach,South Beach,1019,St. Lucie-32963,,0,0,0.0390200854600457,1.2215699189598e-05
+466,32966,840,31,Indian River,Indian River-32966,Vero Beach,"Vero Beach, Fellsmere, Gifford, Vero Beach South, West Vero Corridor, Yeehaw Junction",485,Indian River-32966,Vero Beach,282,282,1.65011292771434,0.036895771751893
+467,32967,844,31,Indian River,Indian River-32967,Vero Beach,"Sebastian, Vero Beach, Fellsmere, Gifford, Wabasso, Winter Beach",486,Indian River-32967,Vero Beach,596,596,0.661856055479375,0.0119328947660294
+468,32968,845,31,Indian River,Indian River-32968,Vero Beach,"Florida Ridge, Vero Beach South",487,Indian River-32968,Vero Beach,218,218,0.73084945582743,0.0114637265439229
+469,32976,847,5,Brevard,Brevard-32976,Sebastian,"Grant-Valkaria, Micco, Roseland",76,Brevard-32976,"Barefoot Bay, Micco, Sebastian",110,110,0.446426763389087,0.00634131242661834
+470,33004,849,6,Broward,Broward-33004,Dania,"Hollywood, Dania Beach",78,Broward-33004,"Dania, Dania Beach, Fort Lauderdale",579,579,0.261400469853809,0.00165465065619995
+471,33009,850,6,Broward,Broward-33009,Hallandale,"Aventura, Pembroke Park, West Park, Hallandale Beach, Hollywood",79,Broward-33009,"Hallandale, Hallandale Beach, Hallandle Beach",1602,1602,0.194705247643658,0.00129992875880403
+472,33010,852,13,Dade,Dade-33010,Hialeah,"Hialeah, Medley, Miami Springs",211,Dade-33010,"Hialeah, Hialeah Gardens, Miami, Miami Gardens",3802,3802,0.167306440024151,0.000970892219535161
+473,33012,853,13,Dade,Dade-33012,Hialeah,"Hialeah, Hialeah Gardens",212,Dade-33012,Hialeah,6048,6048,0.149989806873344,0.00140418294418981
+474,33013,854,13,Dade,Dade-33013,Hialeah,"Hialeah, Opa-locka, West Little River, Westview",213,Dade-33013,Hialeah,2596,2596,0.15014154160133,0.000894572349309795
+475,33014,855,13,Dade,Dade-33014,Hialeah,"Miami Lakes, Miami Gardens, Hialeah, Opa-locka, Country Club",214,Dade-33014,"Hialeah, Miami Lakes",2812,2812,0.186235300850829,0.00154198470545981
+476,33015,857,13,Dade,Dade-33015,Hialeah,"Miami Lakes, Miramar, Country Club, Palm Springs North",215,Dade-33015,"Hialeah, Miami Beach, Miami Gardens, Miami Lakes",4388,4388,0.177630009464565,0.00150519953067457
+477,33016,858,13,Dade,Dade-33016,Hialeah,"Miami Lakes, Hialeah, Hialeah Gardens, Country Club",216,Dade-33016,"Hialeah, Hialeah Gardens, Miami Lakes",4247,4247,0.205503932046934,0.00115741788833513
+478,33018,860,13,Dade,Dade-33018,Hialeah,"Miami Lakes, Hialeah, Hialeah Gardens",217,Dade-33018,"Hialeah, Hialeah Gardens, Miami Lakes",4022,4022,0.456254787494159,0.00641797457177977
+479,33019,861,6,Broward,Broward-33019,Hollywood,"Hallandale Beach, Hollywood, Dania Beach",80,Broward-33019,Hollywood,423,423,0.192310879086273,0.00109171775056509
+480,33020,862,6,Broward,Broward-33020,Hollywood,"Pembroke Park, Hallandale Beach, Hollywood, Dania Beach",81,Broward-33020,Hollywood,1931,1931,0.19014134921568,0.00146972604800007
+481,33021,863,6,Broward,Broward-33021,Hollywood,"Pembroke Park, West Park, Hollywood, Dania Beach",82,Broward-33021,"Hollywood, Pembroke Park, Weston",2074,2074,0.205515843241916,0.00201957984247985
+482,33023,864,6,Broward,Broward-33023,Hollywood,"Miramar, Pembroke Park, West Park, Hollywood, Pembroke Pines",83,Broward-33023,"Hollywood, Miramar, Pembroke Park, Pembroke Pines, West Hollywood, West Park",3681,3681,0.239251650644574,0.00228779997658729
+483,33024,866,6,Broward,Broward-33024,Hollywood,"Cooper City, Hollywood, Davie, Pembroke Pines",84,Broward-33024,"Cooper City, Hollywood, Pembroke Pines",3637,3637,0.227168549006472,0.00257721818658999
+484,33025,867,6,Broward,Broward-33025,Hollywood,"Miami Gardens, Miramar, Pembroke Pines, Country Club",85,Broward-33025,"Hollywood, Miramar, Pembroke Pines",3671,3671,0.230675330485584,0.00258699668591852
+485,33026,869,6,Broward,Broward-33026,Hollywood,"Cooper City, Davie, Southwest Ranches, Pembroke Pines",86,Broward-33026,"Cooper City, Hollywood, Pembroke Pines",1075,1075,0.137470657014082,0.00116282433192486
+486,33027,870,6,Broward,Broward-33027,Hollywood,"Miramar, Pembroke Pines, Country Club",87,Broward-33027,"Hollywood, Miramar, Pembroke Pines",2475,2475,0.231712171998167,0.00327184514465308
+487,33028,872,6,Broward,Broward-33028,Pembroke Pines,"Davie, Southwest Ranches, Pembroke Pines",88,Broward-33028,"Hollywood, Pembroke Pines",1664,1664,0.174866244515494,0.00138351127247996
+488,33029,873,6,Broward,Broward-33029,Hollywood,"Miramar, Southwest Ranches, Pembroke Pines",89,Broward-33029,"Hollywood, Miramar, Pembroke Pines",1863,1863,0.313703798821703,0.00465612274491107
+489,33030,875,13,Dade,Dade-33030,Homestead,"Homestead, Florida City, Leisure City",218,Dade-33030,"Everglades National Park, Homestead, Leisure City",3374,3374,0.434600050023793,0.00540768488159429
+490,33031,876,13,Dade,Dade-33031,Homestead,Homestead,219,Dade-33031,Homestead,317,317,0.477444243125498,0.00645052257853114
+491,33032,877,13,Dade,Dade-33032,Homestead,"Goulds, Homestead Base, Leisure City, Naranja, Princeton",220,Dade-33032,"Homestead, Naranja, Princeton",3138,3138,0.417045358011726,0.00548630898430525
+492,33033,878,13,Dade,Dade-33033,Homestead,"Homestead, Islandia, Homestead Base, Leisure City, Naranja",221,Dade-33033,"Homestead, Leisure City, Naranja",4089,4089,0.462143022122967,0.00417133492979979
+493,33034,879,13,Dade,Dade-33034,Homestead,"Homestead, Florida City",222,Dade-33034,"Florida City, Homestead",1648,1648,1.27607187249437,0.0501687418591536
+494,33034,880,44,Monroe,Monroe-33034,Flamingo,Flamingo,673,Monroe-33034,,0,0,3.00274817311294,0.00651121393758531
+495,33035,881,13,Dade,Dade-33035,Homestead,"Homestead, Florida City",223,Dade-33035,Homestead,779,779,2.688652882979,0.0226736620878731
+496,33036,883,44,Monroe,Monroe-33036,Islamorada,"Islamorada, Village of Islands",674,Monroe-33036,Islamorada,59,59,0.977776773891079,0.00153532968715964
+497,33037,885,44,Monroe,Monroe-33037,Key Largo,"Islandia, Key Largo, North Key Largo, Tavernier",675,Monroe-33037,"Key Largo, Upper Key Largo",300,300,2.27856960866806,0.00855890430666684
+498,33039,886,13,Dade,Dade-33039,Homestead,Homestead Base,224,Dade-33039,Homestead,6,6,0.180416374761406,0.000786332739985327
+499,33040,887,44,Monroe,Monroe-33040,Key West,"Key West, Big Coppitt Key, Stock Island",676,Monroe-33040,"East Rockland Key, Key West, Stock Island",1197,1197,4.42686642894328,0.0068718568113146
+500,33042,888,44,Monroe,Monroe-33042,Summerland Key,Cudjoe Key,677,Monroe-33042,"Big Torch Key, Cudjoe Key, Key West, Little Torch Key, Ramrod Key, Sugarloaf, Sugarloaf Key, Summerland Key",75,75,3.92572160972339,0.00666809588930976
+501,33043,889,44,Monroe,Monroe-33043,Big Pine Key,Big Pine Key,678,Monroe-33043,Big Pine Key,42,42,2.13537561367343,0.00455487435327908
+502,33050,890,44,Monroe,Monroe-33050,Marathon,"Marathon, Key Colony Beach, Duck Key",679,Monroe-33050,"Duck Key, Key West, Marathon",243,243,1.75793064907888,0.00271608176140522
+503,33054,892,13,Dade,Dade-33054,Opa Locka,"Miami Lakes, Miami Gardens, Hialeah, Opa-locka, Golden Glades, Westview",225,Dade-33054,"Miami Gardens, Opa Locka",2135,2135,0.234092562965381,0.00224462988147487
+504,33055,894,13,Dade,Dade-33055,Opa Locka,"Miami Lakes, Miami Gardens, Miramar, Country Club",226,Dade-33055,"Carol City, Miami Gardens, Opa Locka",3319,3319,0.161868882979975,0.0014821392491247
+505,33056,896,13,Dade,Dade-33056,Miami Gardens,"Miami Gardens, Miramar",227,Dade-33056,"Carol City, Miami, Miami Gardens, Opa Locka",2362,2362,0.158122438624242,0.00147219921739902
+506,33060,897,6,Broward,Broward-33060,Pompano Beach,"Pompano Beach, Fort Lauderdale, Oakland Park",90,Broward-33060,Pompano Beach,1932,1932,0.179559163325774,0.00170826964287468
+507,33062,898,6,Broward,Broward-33062,Pompano Beach,"Deerfield Beach, Pompano Beach, Lauderdale-by-the-Sea, Lighthouse Point, Hillsboro Beach, Fort Lauderdale",91,Broward-33062,"Hillsboro Beach, Lauderdale By The Sea, Pompano Beach",545,545,0.268989649270298,0.000951430232530137
+508,33063,899,6,Broward,Broward-33063,Pompano Beach,"Coconut Creek, Coral Springs, North Lauderdale, Margate",92,Broward-33063,"Coconut Creek, Margate, Pompano Beach",2152,2152,0.228616159101198,0.00214074866864484
+509,33064,900,6,Broward,Broward-33064,Pompano Beach,"Deerfield Beach, Pompano Beach, Lighthouse Point, Hillsboro Beach",93,Broward-33064,"Deerfield Beach, Lighthouse Point, Pompano Beach",3292,3292,0.247207857708857,0.00249614506270501
+510,33065,901,6,Broward,Broward-33065,Coral Springs,"Coral Springs, Parkland",94,Broward-33065,"Coral Springs, Margate, Pompano Beach",2263,2263,0.223324496518071,0.00202680325404504
+511,33066,902,6,Broward,Broward-33066,Pompano Beach,Coconut Creek,95,Broward-33066,"Coconut Creek, Pompano Beach",512,512,0.127681764526337,0.000744368743255087
+512,33067,903,6,Broward,Broward-33067,Pompano Beach,"Coconut Creek, Coral Springs, Parkland, Watergate",96,Broward-33067,"Coral Springs, Parkland, Pompano Beach",792,792,0.23164612169559,0.00254574619065675
+513,33068,905,6,Broward,Broward-33068,Pompano Beach,"Coral Springs, North Lauderdale, Tamarac, Margate, Fort Lauderdale",97,Broward-33068,"Margate, North Lauderdale, Pompano Beach",2460,2460,0.171814528199906,0.0014090537823553
+514,33069,906,6,Broward,Broward-33069,Pompano Beach,"Coconut Creek, Deerfield Beach, North Lauderdale, Pompano Beach, Fort Lauderdale, Oakland Park",98,Broward-33069,Pompano Beach,1333,1333,0.245361192008657,0.00224689680502001
+515,33070,907,44,Monroe,Monroe-33070,Tavernier,"Islamorada, Village of Islands, Key Largo, Tavernier",680,Monroe-33070,Tavernier,159,159,0.344046844637282,0.00105941151148517
+516,33071,908,6,Broward,Broward-33071,Coral Springs,"Coral Springs, Tamarac, Margate",99,Broward-33071,"Coral Springs, Margate, Pompano Beach",1355,1355,0.191114760112789,0.00186892137905976
+517,33073,909,6,Broward,Broward-33073,Pompano Beach,"Coconut Creek, Coral Springs, Deerfield Beach, Parkland, Pompano Beach, Hillsboro Pines, Watergate",100,Broward-33073,"Coconut Creek, Coral Springs, Margate, Parkland, Pompano Beach",1483,1483,0.218033847413565,0.00203300092334271
+518,33076,911,6,Broward,Broward-33076,Pompano Beach,"Pompano Beach, Coral Springs, Parkland",101,Broward-33076,"Coral Springs, Parkland, Pompano Beach",984,984,0.221243832062057,0.00285931031110764
+519,33109,913,13,Dade,Dade-33109,Miami Beach,"Miami, Miami Beach, Fisher Island",228,Dade-33109,"Fisher Island, Miami, Miami Beach",33,33,0.0525019979387286,7.32652290450827e-05
+520,33122,914,13,Dade,Dade-33122,Miami,Doral,229,Dade-33122,"Air Mail Facility, Doral, Miami",153,153,0.316062776492978,0.00128287142235004
+521,33125,915,13,Dade,Dade-33125,Miami,"Miami, Coral Gables",230,Dade-33125,Miami,6456,6456,0.144737387809467,0.000955158133984856
+522,33126,916,13,Dade,Dade-33126,Miami,"Doral, Miami, Fountainebleau",231,Dade-33126,"Doral, Miami",4025,4025,0.335900771320762,0.00142922351161505
+523,33127,917,13,Dade,Dade-33127,Miami,Miami,232,Dade-33127,Miami,1793,1793,0.114982957281149,0.000753781979515014
+524,33128,918,13,Dade,Dade-33128,Miami,Miami,233,Dade-33128,Miami,2825,2825,0.056208671571946,0.000107767356519873
+525,33129,919,13,Dade,Dade-33129,Miami,Miami,234,Dade-33129,Miami,599,599,0.122239209200047,0.000303954314875198
+526,33130,920,13,Dade,Dade-33130,Miami,Miami,235,Dade-33130,Miami,2275,2275,0.0697400265666193,0.000246982694969974
+527,33131,921,13,Dade,Dade-33131,Miami,Miami,236,Dade-33131,Miami,843,843,0.0687875923711329,0.000107291612925112
+528,33132,922,13,Dade,Dade-33132,Miami,Miami,237,Dade-33132,Miami,913,913,0.214660856788984,0.000413428645074919
+529,33133,923,13,Dade,Dade-33133,Miami,"Miami, Coral Gables",238,Dade-33133,"Coconut Grove, Coral Gables, Miami",1728,1728,0.297361078871504,0.000987046152195058
+530,33134,924,13,Dade,Dade-33134,Miami,"West Miami, Miami, Coral Gables, Coral Terrace",239,Dade-33134,"Coconut Grove, Coral Gables, Miami",1771,1771,0.138842717906184,0.00120616788221984
+531,33135,925,13,Dade,Dade-33135,Miami,"Miami, Coral Gables",240,Dade-33135,Miami,2735,2735,0.113382078860486,0.000499547276380276
+532,33136,926,13,Dade,Dade-33136,Miami,Miami,241,Dade-33136,Miami,3010,3010,0.0799985235454294,0.000337332474205009
+533,33137,927,13,Dade,Dade-33137,Miami,Miami,242,Dade-33137,Miami,1327,1327,0.17633556333931,0.000503235951749948
+534,33138,928,13,Dade,Dade-33138,Miami,"Miami, Biscayne Park, El Portal, Miami Shores, West Little River",243,Dade-33138,"El Portal, Miami, Miami Shores",1067,1067,0.230720378586454,0.0010201263563355
+535,33139,929,13,Dade,Dade-33139,Miami Beach,"Miami, Miami Beach",244,Dade-33139,"Fisher Island, Miami, Miami Beach, Venetian Islands",1625,1625,0.367214372577768,0.00063435191121048
+536,33140,930,13,Dade,Dade-33140,Miami Beach,Miami Beach,245,Dade-33140,"Miami, Miami Beach",1271,1271,0.357714423504127,0.000761299895930144
+537,33141,931,13,Dade,Dade-33141,Miami Beach,"Surfside, Miami Beach",246,Dade-33141,"Miami, Miami Beach, North Bay Village",1472,1472,0.336365156075447,0.000543443452440393
+538,33142,932,13,Dade,Dade-33142,Miami,"Miami, Hialeah, Miami Springs, Brownsville, Gladeview",247,Dade-33142,Miami,5203,5203,0.177857605780234,0.00167448936485517
+539,33143,933,13,Dade,Dade-33143,Miami,"Coral Gables, Pinecrest, South Miami, Glenvar Heights, Kendall, Olympia Heights, Sunset",248,Dade-33143,"Coral Gables, Miami, Miami Gardens, South Miami",2366,2366,0.275163757959584,0.00191835627832527
+540,33144,934,13,Dade,Dade-33144,Miami,"West Miami, Miami, Coral Gables, Coral Terrace, Fountainebleau, Westchester",249,Dade-33144,"Coral Gables, Miami, West Miami",2120,2120,0.12806178055554,0.000712302175194969
+541,33145,935,13,Dade,Dade-33145,Miami,"Miami, Coral Gables",250,Dade-33145,"Coral, Coral Gables, Miami",1839,1839,0.127492585449552,0.000592238523474861
+542,33146,936,13,Dade,Dade-33146,Miami,"Miami, Coral Gables, South Miami",251,Dade-33146,"Coconut Grove, Coral Gables, Miami, University Of Miami",797,797,0.121796972191455,0.000760828795999938
+543,33147,937,13,Dade,Dade-33147,Miami,"Miami, Hialeah, Brownsville, Gladeview, Pinewood, West Little River, Westview",252,Dade-33147,"Doral, Miami",3510,3510,0.21409873238255,0.00169694962503474
+544,33149,938,13,Dade,Dade-33149,Key Biscayne,"Miami, Key Biscayne",253,Dade-33149,"Key Biscayne, Miami",680,680,0.456772429834676,0.00118580299828473
+545,33150,939,13,Dade,Dade-33150,Miami,"Miami, El Portal, Miami Shores, Gladeview, Pinewood, West Little River",254,Dade-33150,"El Portal, Miami, Miami Shores",1644,1644,0.137561999858345,0.000832073230109981
+546,33154,940,13,Dade,Dade-33154,Miami Beach,"Surfside, Bal Harbour, Miami Beach, North Miami",255,Dade-33154,"Bal Harbour, Bay Harbor Islands, Indian Creek Village, Miami, Miami Beach, Miami Gardens, Surfside",516,516,0.233905549654801,0.000494334902574725
+547,33155,941,13,Dade,Dade-33155,Miami,"West Miami, Coral Gables, South Miami, Coral Terrace, Glenvar Heights, Olympia Heights, Westchester",256,Dade-33155,"Miami, Miami Beach, West Miami",2789,2789,0.174749892858693,0.00183974851076491
+548,33156,942,13,Dade,Dade-33156,Miami,"Coral Gables, Pinecrest, South Miami, Palmetto Bay, Glenvar Heights, Kendall",257,Dade-33156,"Coral Gables, Cutler Ridge, Kendall, Miami, Pinecrest",1761,1761,0.58786504256581,0.0033192508276444
+549,33157,943,13,Dade,Dade-33157,Miami,"Cutler Bay, Palmetto Bay, Kendall, Palmetto Estates, Richmond Heights, South Miami Heights, West Perrine",258,Dade-33157,"Cutler Bay, Cutler Ridge, Miami, Palmetto Bay, Perrine, Pinecrest, South Miami Heights, Village Of Palmetto Bay",4407,4407,0.329033574538102,0.00352593563028959
+550,33158,944,13,Dade,Dade-33158,Miami,"Coral Gables, Pinecrest, Palmetto Bay, Kendall",259,Dade-33158,"Coral Gables, Miami, Palmetto Bay, Village Of Palmetto Bay",215,215,0.201091885842821,0.000698259594715173
+551,33160,946,13,Dade,Dade-33160,North Miami Beach,"North Miami Beach, Sunny Isles Beach, Aventura, North Miami, Golden Beach, Hallandale Beach, Ojus",260,Dade-33160,"Aventura, Cleveland, Golden Beach, Miami, North Miami Beach, Sunny Isles Beach",1588,1588,0.344393010163838,0.00134231476147049
+552,33161,947,13,Dade,Dade-33161,Miami,"North Miami Beach, Biscayne Park, North Miami, Miami Shores, Golden Glades",261,Dade-33161,"Aventura, Biscayne Park, Miami, North Miami",2694,2694,0.167304585247027,0.00130736992229961
+553,33162,948,13,Dade,Dade-33162,Miami,"North Miami Beach, North Miami, Golden Glades, Ojus",262,Dade-33162,"Miami, Miami Beach, North Miami Beach, Uleta",2249,2249,0.182729598584386,0.00128933910911463
+554,33165,949,13,Dade,Dade-33165,Miami,"Olympia Heights, Sunset, University Park, Westchester, Westwood Lakes",263,Dade-33165,Miami,4477,4477,0.178718456086848,0.00184572384906998
+555,33166,950,13,Dade,Dade-33166,Miami,"Doral, Hialeah, Hialeah Gardens, Medley, Virginia Gardens, Miami Springs",264,Dade-33166,"Doral, Medley, Miami, Miami Springs, Virginia Gardens",1929,1929,0.285796420471699,0.00229213786034018
+556,33167,951,13,Dade,Dade-33167,Miami,"Hialeah, North Miami, Opa-locka, Golden Glades, Pinewood, West Little River, Westview",265,Dade-33167,"Miami, North Miami",1099,1099,0.225846500939305,0.00114236720199004
+557,33168,952,13,Dade,Dade-33168,Miami,"North Miami, Miami Shores, Golden Glades, Pinewood",266,Dade-33168,"Miami, Miami Shores, North Miami",1341,1341,0.124217397914048,0.000815633711090134
+558,33169,954,13,Dade,Dade-33169,Miami,"North Miami Beach, Miami Gardens, Miramar, West Park, Golden Glades",267,Dade-33169,"Miami, Miami Gardens, North Miami Beach, Opa Locka",2245,2245,0.191045930644186,0.00164173084047975
+559,33170,955,13,Dade,Dade-33170,Miami,"Cutler Bay, Goulds, Princeton",268,Dade-33170,"Cutler Ridge, Goulds, Homestead, Miami",1048,1048,0.558356665228851,0.00348484995172045
+560,33172,956,13,Dade,Dade-33172,Miami,"Sweetwater, Doral, Fountainebleau, Tamiami",269,Dade-33172,"Doral, Miami, Sweetwater, West Miami",3236,3236,0.222359469336342,0.00183432224463506
+561,33173,957,13,Dade,Dade-33173,Miami,"Glenvar Heights, Kendall, Olympia Heights, Sunset, Westwood Lakes",270,Dade-33173,Miami,1655,1655,0.168551274654713,0.00136247737680003
+562,33174,958,13,Dade,Dade-33174,Miami,"Sweetwater, Fountainebleau, Tamiami, University Park, Westchester",271,Dade-33174,"Miami, South Miami, Sweetwater, West Miami",2265,2265,0.13639113475432,0.000658759957579931
+563,33175,959,13,Dade,Dade-33175,Miami,"Kendale Lakes, Kendall West, Tamiami, University Park, Westwood Lakes",272,Dade-33175,Miami,3882,3882,0.224540270208431,0.00185708583074519
+564,33176,960,13,Dade,Dade-33176,Miami,"Palmetto Bay, Kendall, Palmetto Estates, Richmond Heights, Three Lakes",273,Dade-33176,"Miami, Palmetto Bay",2809,2809,0.227856588825027,0.00286972912770027
+565,33177,961,13,Dade,Dade-33177,Miami,"Country Walk, Goulds, Palmetto Estates, Richmond Heights, Richmond West, South Miami Heights, Three Lakes, West Perrine",274,Dade-33177,"Homestead, Miami, Quail Heights",3949,3949,0.237347655699821,0.00297104876124972
+566,33178,962,13,Dade,Dade-33178,Miami,"Doral, Hialeah Gardens, Medley",275,Dade-33178,"Doral, Medley, Miami, Opa Locka",4952,4952,0.700020140494972,0.0156412523597643
+567,33179,964,13,Dade,Dade-33179,Miami,"North Miami Beach, Miami Gardens, Pembroke Park, West Park, Hallandale Beach, Ives Estates, Ojus",276,Dade-33179,"Miami, Miami Gardens, North Miami Beach",2266,2266,0.19316031666721,0.0013256882743748
+568,33180,966,13,Dade,Dade-33180,Miami,"North Miami Beach, Sunny Isles Beach, Aventura, Coral Gables, Hallandale Beach, Coral Terrace, Ojus",277,Dade-33180,"Aventura, Miami",1567,1567,0.166785453531211,0.000860060112478584
+569,33181,967,13,Dade,Dade-33181,Miami,"North Miami Beach, North Miami, Golden Glades",278,Dade-33181,"Biscayne Park, Miami, North Miami, North Miami Beach",879,879,0.21206500878513,0.000738809998624988
+570,33182,968,13,Dade,Dade-33182,Miami,"Doral, Tamiami",279,Dade-33182,"Doral, Miami, Sweetwater, West Miami",917,917,0.268577705972378,0.00223316780636552
+571,33183,969,13,Dade,Dade-33183,Miami,"Kendale Lakes, Kendall, Kendall West, Sunset, The Crossings, Westwood Lakes",280,Dade-33183,"Kendall, Miami",2283,2283,0.156604501774666,0.00139799941429506
+572,33184,970,13,Dade,Dade-33184,Miami,"Tamiami, University Park",281,Dade-33184,Miami,1556,1556,0.179883497393272,0.000619846165820037
+573,33185,971,13,Dade,Dade-33185,Miami,"Kendale Lakes, Kendall West",282,Dade-33185,"Miami, Olympia Heights",1768,1768,0.384700617908399,0.00276246226859053
+574,33186,972,13,Dade,Dade-33186,Miami,"Country Walk, Kendale Lakes, Kendall, Kendall West, Richmond Heights, Richmond West, The Crossings, The Hammocks, Three Lakes",283,Dade-33186,"Crossings, Kendall, Miami",3411,3411,0.299851707607859,0.00291657189852505
+575,33187,973,13,Dade,Dade-33187,Miami,"Country Walk, Richmond West",284,Dade-33187,Miami,1163,1163,0.553250589950048,0.00937579883153452
+576,33189,974,13,Dade,Dade-33189,Miami,"Cutler Bay, Goulds, South Miami Heights",285,Dade-33189,"Cutler Bay, Cutler Ridge, Miami",1243,1243,0.232686862487068,0.00140721335932005
+577,33190,975,13,Dade,Dade-33190,Miami,"Cutler Bay, Goulds",286,Dade-33190,"Cutler Bay, Cutler Ridge, Miami, Quail Heights",824,824,0.208087016314176,0.000816366931894559
+578,33193,976,13,Dade,Dade-33193,Miami,"Kendale Lakes, Kendall West, The Hammocks",287,Dade-33193,Miami,2831,2831,0.154820774339579,0.0012216930505994
+579,33194,977,13,Dade,Dade-33194,Miami,Tamiami,288,Dade-33194,"Miami, Sweetwater",961,961,0.23453413039536,0.00121497764960022
+580,33196,980,13,Dade,Dade-33196,Miami,"Country Walk, Kendall West, Richmond West, The Hammocks",289,Dade-33196,Miami,2870,2870,2.02286658732362,0.115114542221074
+581,33199,982,13,Dade,Dade-33199,Miami,University Park,290,Dade-33199,"Florida International Univ, Florida International University, Miami",21,21,0.0386553245142397,4.86788349700396e-05
+582,33301,983,6,Broward,Broward-33301,Fort Lauderdale,Fort Lauderdale,102,Broward-33301,"Fort Lauderdale, Hollywood, Pembroke Pines, Pompano Beach, Rock Hill, Weston",738,738,0.140406734066086,0.000608367552619672
+583,33304,984,6,Broward,Broward-33304,Fort Lauderdale,Fort Lauderdale,103,Broward-33304,"Fort Lauderdale, Oakland Park",670,670,0.157097254863559,0.000810523389940173
+584,33305,985,6,Broward,Broward-33305,Fort Lauderdale,"Wilton Manors, Fort Lauderdale, Lazy Lake",104,Broward-33305,"Fort Lauderdale, Oakland Park, Wilton Manors",415,415,0.162403145762708,0.000528030131235067
+585,33306,986,6,Broward,Broward-33306,Fort Lauderdale,"Wilton Manors, Fort Lauderdale, Oakland Park",105,Broward-33306,"Fort Lauderdale, Oakland Park, Wilton Manors",93,93,0.0729551505196086,0.00019929995130007
+586,33308,987,6,Broward,Broward-33308,Fort Lauderdale,"Pompano Beach, Lauderdale-by-the-Sea, Sea Ranch Lakes, Fort Lauderdale, Oakland Park",106,Broward-33308,"Fort Lauderdale, Laud-by-the-sea, Lauderdale By The Sea, Oakland Park, Sea Ranch Lakes",829,829,0.165338142085048,0.00114398870224028
+587,33309,988,6,Broward,Broward-33309,Fort Lauderdale,"North Lauderdale, Pompano Beach, Tamarac, Lauderdale Lakes, Fort Lauderdale, Oakland Park",107,Broward-33309,"Coral Springs, Fort Lauderdale, Hollywood, Lauderdale Lakes, North Lauderdale, Oakland Park, Pompano Beach, Tamarac",1928,1928,0.218732456677285,0.00247115653918468
+588,33311,989,6,Broward,Broward-33311,Fort Lauderdale,"Lauderdale Lakes, Wilton Manors, Lauderhill, Fort Lauderdale, Lazy Lake, Oakland Park, Plantation, Boulevard Gardens, Franklin Park, Roosevelt Gardens, Washington Park",108,Broward-33311,"Fort Lauderdale, Hallandale, Lauderdale Lakes, Lauderhill, Oakland Park, Plantation, Pompano Beach, Wilton Manors",3653,3653,0.205893838158801,0.00251786627181984
+589,33312,990,6,Broward,Broward-33312,Fort Lauderdale,"Lauderhill, Hollywood, Dania Beach, Davie, Fort Lauderdale, Plantation, Boulevard Gardens, Broadview Park, Washington Park",109,Broward-33312,"Davie, Fort Lauderdale, Lauderhill",2488,2488,0.289018550787514,0.00270515563603555
+590,33313,991,6,Broward,Broward-33313,Fort Lauderdale,"Sunrise, Lauderdale Lakes, Lauderhill, Plantation",110,Broward-33313,"City Of Sunrise, Fort Lauderdale, Lauderdale Lakes, Lauderhill, Oakland Park, Plantation, Sunrise",2698,2698,0.206036007925826,0.00139655576743485
+591,33314,992,6,Broward,Broward-33314,Fort Lauderdale,"Hollywood, Dania Beach, Davie",111,Broward-33314,"Dania Beach, Davie, Fort Lauderdale, Hollywood, Pompano Beach, Tamarac",1348,1348,0.220377930804033,0.00205816787525488
+592,33315,993,6,Broward,Broward-33315,Fort Lauderdale,"Dania Beach, Fort Lauderdale",112,Broward-33315,Fort Lauderdale,681,681,0.172749644921241,0.00130655836402992
+593,33316,994,6,Broward,Broward-33316,Fort Lauderdale,"Hollywood, Dania Beach, Fort Lauderdale",113,Broward-33316,"Dania, Fort Lauderdale, Port Everglades",1341,1341,0.213244323010145,0.00112351543997508
+594,33317,995,6,Broward,Broward-33317,Fort Lauderdale,"Sunrise, Davie, Fort Lauderdale, Plantation, Broadview Park",114,Broward-33317,"Davie, Fort Lauderdale, Plantation",1641,1641,0.219973794465201,0.00225207881561488
+595,33319,996,6,Broward,Broward-33319,Fort Lauderdale,"North Lauderdale, Sunrise, Tamarac, Lauderdale Lakes, Lauderhill, Fort Lauderdale",115,Broward-33319,"Fort Lauderdale, Lauderdale Lakes, Lauderhill, North Lauderdale, Sunrise, Tamarac",2110,2110,0.188511750140063,0.00166372052854521
+596,33321,997,6,Broward,Broward-33321,Fort Lauderdale,"Coral Springs, North Lauderdale, Sunrise, Tamarac",116,Broward-33321,"Fort Lauderdale, Lauderhill, Tamarac",1992,1992,0.200883183582389,0.00191372168277994
+597,33322,998,6,Broward,Broward-33322,Fort Lauderdale,"Sunrise, Plantation",117,Broward-33322,"Fort Lauderdale, Plantation, Sunrise",1116,1116,0.225386348346272,0.00136875124700023
+598,33323,999,6,Broward,Broward-33323,Fort Lauderdale,"Sunrise, Davie, Plantation",118,Broward-33323,"Fort Lauderdale, Plantation, Sunrise",817,817,0.26568488318812,0.00189251159633057
+599,33324,1000,6,Broward,Broward-33324,Fort Lauderdale,"Davie, Plantation",119,Broward-33324,"Davie, Fort Lauderdale, Plantation",1514,1514,0.25154132968945,0.00224255941145485
+600,33325,1001,6,Broward,Broward-33325,Fort Lauderdale,"Sunrise, Davie, Plantation",120,Broward-33325,"Davie, Fort Lauderdale, Plantation, Sunrise",1317,1317,0.220237183057429,0.00221751701493472
+601,33326,1002,6,Broward,Broward-33326,Fort Lauderdale,"Sunrise, Weston, Davie",121,Broward-33326,"Davie, Fort Lauderdale, Sunrise, Weston",1354,1354,0.201226676214656,0.00203193896325978
+602,33327,1003,6,Broward,Broward-33327,Fort Lauderdale,"Coral Springs, Sunrise, Tamarac, Weston",122,Broward-33327,"Fort Lauderdale, Weston",810,810,0.251039427626568,0.0019537514518098
+603,33328,1004,6,Broward,Broward-33328,Fort Lauderdale,"Cooper City, Davie",123,Broward-33328,"Cooper City, Davie, Fort Lauderdale",970,970,0.229093634500119,0.00214274746607027
+604,33330,1005,6,Broward,Broward-33330,Fort Lauderdale,"Cooper City, Davie, Southwest Ranches, Pembroke Pines",124,Broward-33330,"Cooper City, Davie, Fort Lauderdale, Hollywood, Lauderdale Lakes, Southwest Ranches",499,499,0.217892650542655,0.00259772783221996
+605,33331,1006,6,Broward,Broward-33331,Fort Lauderdale,"Weston, Davie, Southwest Ranches, Pembroke Pines",125,Broward-33331,"Davie, Fort Lauderdale, Southwest Ranches, Weston",936,936,0.219198250683562,0.00280344691639531
+606,33332,1007,6,Broward,Broward-33332,Fort Lauderdale,"Weston, Southwest Ranches, Pembroke Pines",126,Broward-33332,"Fort Lauderdale, Plantation, Southwest Ranches, Weston",453,453,0.383816148204582,0.00363657619238484
+607,33334,1008,6,Broward,Broward-33334,Fort Lauderdale,"Pompano Beach, Wilton Manors, Fort Lauderdale, Oakland Park",127,Broward-33334,"Fort Lauderdale, Oakland Park, Wilton Manors",1413,1413,0.176139561808947,0.00116253093697989
+608,33351,1009,6,Broward,Broward-33351,Fort Lauderdale,"Sunrise, Tamarac, Lauderhill",128,Broward-33351,"Fort Lauderdale, Lauderdale Lakes, Lauderhill, Miramar, Sunrise, Tamarac",1742,1742,0.198205155968437,0.00139143168156007
+609,33401,1012,50,Palm Beach,Palm Beach-33401,West Palm Beach,West Palm Beach,769,Palm Beach-33401,West Palm Beach,1421,1421,0.204940739398134,0.00170475874089504
+610,33403,1013,50,Palm Beach,Palm Beach-33403,West Palm Beach,"Riviera Beach, Lake Park, North Palm Beach, Palm Beach Gardens",770,Palm Beach-33403,"Lake Park, North Palm Beach, Palm Beach Gardens, Riviera Beach, West Palm Beach",407,407,0.173028835949253,0.000843723755945627
+611,33404,1014,50,Palm Beach,Palm Beach-33404,West Palm Beach,"West Palm Beach, Riviera Beach, Lake Park, North Palm Beach, Palm Beach Gardens, Palm Beach Shores",771,Palm Beach-33404,"Palm Beach Shores, Riviera Beach, Singer Island, West Palm Beach",1298,1298,0.300109229812035,0.0020654390580496
+612,33405,1015,50,Palm Beach,Palm Beach-33405,West Palm Beach,"West Palm Beach, Lake Clarke Shores, Lake Worth, Cloud Lake",772,Palm Beach-33405,West Palm Beach,981,981,0.157572485404121,0.00115215366631034
+613,33406,1016,50,Palm Beach,Palm Beach-33406,West Palm Beach,"West Palm Beach, Palm Springs, Glen Ridge, Lake Clarke Shores, Lake Worth, Cloud Lake, Acacia Villas, Gun Club Estates, Pine Air, Royal Palm Estates, Westgate",773,Palm Beach-33406,"Cloud Lake, Glen Ridge, Palm Springs, West Palm Beach",1666,1666,0.247661155884085,0.00216592837035472
+614,33407,1017,50,Palm Beach,Palm Beach-33407,West Palm Beach,"West Palm Beach, Riviera Beach, Mangonia Park",774,Palm Beach-33407,"Mangonia Park, Riviera Beach, West Palm Beach",1580,1580,0.355654394167912,0.00233507343550518
+615,33408,1018,50,Palm Beach,Palm Beach-33408,North Palm Beach,"Riviera Beach, Jupiter, Juno Beach, Lake Park, North Palm Beach, Palm Beach Gardens, Juno Ridge",775,Palm Beach-33408,"Juno Beach, North Palm Beach, West Palm Beach",414,414,0.313262262607244,0.00225404692597467
+616,33409,1019,50,Palm Beach,Palm Beach-33409,West Palm Beach,"West Palm Beach, Haverhill, Schall Circle, Westgate",776,Palm Beach-33409,"Haverhill, West Palm Beach",1374,1374,0.205198835959082,0.00153159746615496
+617,33410,1020,50,Palm Beach,Palm Beach-33410,Palm Beach Gardens,"Riviera Beach, Jupiter, Juno Beach, North Palm Beach, Palm Beach Gardens, Cabana Colony",777,Palm Beach-33410,"North Palm Beach, Palm Beach Gardens, Riviera Beach, West Palm Beach",985,985,0.362557944869491,0.00274809616868982
+618,33411,1021,50,Palm Beach,Palm Beach-33411,West Palm Beach,"Loxahatchee Groves, West Palm Beach, Royal Palm Beach, Wellington, The Acreage",778,Palm Beach-33411,"Royal Palm Beach, Wellington, West Palm Beach",1798,1798,0.496993837593934,0.01013816774892
+619,33412,1022,50,Palm Beach,Palm Beach-33412,West Palm Beach,"West Palm Beach, Palm Beach Gardens, The Acreage",779,Palm Beach-33412,"Palm Beach Gardens, Royal Palm Beach, West Palm Beach",284,284,0.624527842484367,0.0123917032806249
+620,33413,1023,50,Palm Beach,Palm Beach-33413,West Palm Beach,"Wellington, Haverhill, Greenacres, Lake Belvedere Estates, Royal Palm Estates",780,Palm Beach-33413,"Green Acres, Greenacres, West Palm Beach",695,695,0.23189154837153,0.00180204532408479
+621,33414,1024,50,Palm Beach,Palm Beach-33414,Wellington,"Royal Palm Beach, Wellington",781,Palm Beach-33414,"Royal Palm Beach, Wellington, West Palm Beach",1344,1344,0.424487363262686,0.00686379943162067
+622,33415,1025,50,Palm Beach,Palm Beach-33415,West Palm Beach,"Palm Springs, Haverhill, Greenacres, Acacia Villas, Lake Belvedere Estates, Royal Palm Estates, Westgate",782,Palm Beach-33415,"Green Acres, Greenacres, Haverhill, West Palm Beach",2447,2447,0.184799933367315,0.00169647075083005
+623,33417,1026,50,Palm Beach,Palm Beach-33417,West Palm Beach,"West Palm Beach, Haverhill, Lake Belvedere Estates, Plantation Mobile Home Park, Schall Circle, Stacey Street",783,Palm Beach-33417,"Haverhill, West Palm Beach",1145,1145,0.201656660153339,0.00163764648821972
+624,33418,1027,50,Palm Beach,Palm Beach-33418,Palm Beach Gardens,"West Palm Beach, Riviera Beach, Jupiter, Palm Beach Gardens, Jupiter Farms",784,Palm Beach-33418,"Palm Beach Gardens, Riviera Beach, West Palm Beach",813,813,0.538230032846028,0.0111298647163293
+625,33426,1028,50,Palm Beach,Palm Beach-33426,Boynton Beach,"Lantana, Boynton Beach",785,Palm Beach-33426,Boynton Beach,834,834,0.215125942080496,0.0013899863726
+626,33428,1030,50,Palm Beach,Palm Beach-33428,Boca Raton,Watergate,786,Palm Beach-33428,Boca Raton,1524,1524,0.19562296458996,0.00211528790629205
+627,33430,1031,50,Palm Beach,Palm Beach-33430,Belle Glade,"South Bay, Belle Glade",787,Palm Beach-33430,Belle Glade,1060,1060,1.58922482518626,0.0339407519543401
+628,33431,1032,50,Palm Beach,Palm Beach-33431,Boca Raton,"Boca Raton, Highland Beach",788,Palm Beach-33431,Boca Raton,925,925,0.228460985064744,0.00196930348530006
+629,33432,1034,50,Palm Beach,Palm Beach-33432,Boca Raton,Boca Raton,789,Palm Beach-33432,Boca Raton,770,770,0.1779076473503,0.00123766033696194
+630,33433,1036,50,Palm Beach,Palm Beach-33433,Boca Raton,Boca Raton,790,Palm Beach-33433,Boca Raton,1556,1556,0.209292685117347,0.00222807455511548
+631,33434,1037,50,Palm Beach,Palm Beach-33434,Boca Raton,Boca Raton,791,Palm Beach-33434,Boca Raton,499,499,0.192931590843795,0.0017111729663403
+632,33435,1038,50,Palm Beach,Palm Beach-33435,Boynton Beach,"Briny Breezes, Ocean Ridge, Delray Beach, Hypoluxo, Boynton Beach, San Castle",792,Palm Beach-33435,"Boynton Beach, Ocean Ridge",1359,1359,0.261916227722541,0.00164156668211487
+633,33436,1039,50,Palm Beach,Palm Beach-33436,Boynton Beach,"Golf, Boynton Beach",793,Palm Beach-33436,Boynton Beach,1073,1073,0.266568679094934,0.00280141645975524
+634,33437,1040,50,Palm Beach,Palm Beach-33437,Boynton Beach,Boynton Beach,794,Palm Beach-33437,Boynton Beach,705,705,0.218109251355673,0.00266019898773985
+635,33438,1041,43,Martin,Martin-33438,Canal Point,Canal Point,660,Martin-33438,,0,0,0.287558334725524,0.00200971029140028
+636,33438,1042,50,Palm Beach,Palm Beach-33438,Canal Point,"Pahokee, Canal Point",795,Palm Beach-33438,Canal Point,37,37,0.359469466821842,0.00453779099851736
+637,33440,1046,26,Hendry,Hendry-33440,Clewiston,"Clewiston, Harlem, Montura, Pioneer",395,Hendry-33440,Clewiston,1228,1228,2.1842500996988,0.135283743386489
+638,33440,1047,50,Palm Beach,Palm Beach-33440,Clewiston,Lake Harbor,796,Palm Beach-33440,Clewiston,<5,-2,1.52210985331598,0.00541210097052011
+639,33441,1048,6,Broward,Broward-33441,Deerfield Beach,"Deerfield Beach, Pompano Beach, Lighthouse Point, Hillsboro Beach, Boca Raton",129,Broward-33441,"Deerfield Beach, Pompano Beach",1269,1269,0.17511262479803,0.001155903436319
+640,33442,1050,6,Broward,Broward-33442,Deerfield Beach,"Deerfield Beach, Boca Raton",130,Broward-33442,Deerfield Beach,1071,1071,0.19675400264926,0.00182725964511717
+641,33444,1052,50,Palm Beach,Palm Beach-33444,Delray Beach,"Boca Raton, Delray Beach, Boynton Beach",797,Palm Beach-33444,Delray Beach,891,891,0.191607225810289,0.00121589568790031
+642,33445,1053,50,Palm Beach,Palm Beach-33445,Delray Beach,"Boca Raton, Delray Beach, Boynton Beach",798,Palm Beach-33445,Delray Beach,950,950,0.199578714953748,0.00188006294007987
+643,33446,1054,50,Palm Beach,Palm Beach-33446,Delray Beach,Delray Beach,799,Palm Beach-33446,"Delray Beach, West Delray Beach",654,654,0.31198022491107,0.00454634588508022
+644,33449,1055,50,Palm Beach,Palm Beach-33449,Lake Worth,Wellington,800,Palm Beach-33449,"Lake Worth, Village Of Wellington, Wellington",254,254,0.276678524106155,0.00374117162144526
+645,33455,1056,43,Martin,Martin-33455,Hobe Sound,"Jupiter Island, Hobe Sound",661,Martin-33455,"Hobe Sound, Jupiter Island",545,545,0.999467250777085,0.0158029246195468
+646,33458,1058,43,Martin,Martin-33458,Jupiter,Jupiter,662,Martin-33458,,0,0,0.170327166794004,0.000996275174614266
+647,33458,1059,50,Palm Beach,Palm Beach-33458,Jupiter,"Jupiter, Palm Beach Gardens, Limestone Creek",801,Palm Beach-33458,Jupiter,1596,1596,0.290166183732781,0.00399663876858659
+648,33460,1060,50,Palm Beach,Palm Beach-33460,Lake Worth Beach,"Lantana, West Palm Beach, Lake Clarke Shores, Lake Worth",802,Palm Beach-33460,"Lake Worth, Lake Worth Beach",1840,1840,0.173355519703393,0.00124869587440977
+649,33461,1061,50,Palm Beach,Palm Beach-33461,Lake Worth,"Lantana, Palm Springs, Atlantis, Lake Clarke Shores, Lake Worth, Greenacres, Acacia Villas, Kenwood Estates",803,Palm Beach-33461,"Lake Worth, Lake Worth Beach, Palm Springs, Village Of Palm Springs",2286,2286,0.241153025006608,0.0018232161074752
+650,33462,1062,50,Palm Beach,Palm Beach-33462,Lake Worth,"Manalapan, Lantana, Atlantis, Hypoluxo, Lake Worth, South Palm Beach, Boynton Beach, Palm Beach, San Castle, Seminole Manor",804,Palm Beach-33462,"Atlantis, Hypoluxo, Lake Worth, Lantana, Manalapan",1231,1231,0.311275857650594,0.00236049257569999
+651,33463,1063,50,Palm Beach,Palm Beach-33463,Lake Worth,"Atlantis, Greenacres, Kenwood Estates",805,Palm Beach-33463,"Green Acres, Greenacres, Lake Worth",2505,2505,0.258433870246222,0.00254954148306974
+652,33467,1064,50,Palm Beach,Palm Beach-33467,Lake Worth,"Wellington, Greenacres",806,Palm Beach-33467,"Boca Raton, Greenacres, Lake Worth, Wellington",1514,1514,0.286753116572454,0.00443450100285535
+653,33469,1065,43,Martin,Martin-33469,Jupiter,"Tequesta, Jupiter Island, Hobe Sound",663,Martin-33469,Jupiter,23,23,0.265814230241497,0.00202640017480773
+654,33469,1066,50,Palm Beach,Palm Beach-33469,Jupiter,"Tequesta, Jupiter, Jupiter Inlet Colony",807,Palm Beach-33469,"Jupiter, Jupiter Inlet, Tequesta",340,340,0.142257329155225,0.000947013723596079
+655,33470,1068,50,Palm Beach,Palm Beach-33470,Loxahatchee,"Loxahatchee Groves, Royal Palm Beach, Wellington, Palm Beach Gardens, The Acreage",808,Palm Beach-33470,"Loxahatchee, Loxahatchee Groves, Village Of Wellington, Wellington, Westlake",757,757,1.76227455658005,0.104386216257214
+656,33471,1069,22,Glades,Glades-33471,Moore Haven,"Moore Haven, Pioneer",380,Glades-33471,Moore Haven,564,564,3.00791603831202,0.121717627448154
+657,33472,1072,50,Palm Beach,Palm Beach-33472,Boynton Beach,Boynton Beach,809,Palm Beach-33472,Boynton Beach,387,387,0.376380646462749,0.00313112203350489
+658,33473,1073,50,Palm Beach,Palm Beach-33473,Boynton Beach,Boynton Beach,810,Palm Beach-33473,Boynton Beach,161,161,0.279074467228557,0.00194611870417511
+659,33476,1074,50,Palm Beach,Palm Beach-33476,Pahokee,"Pahokee, Canal Point",811,Palm Beach-33476,Pahokee,488,488,0.403102524360338,0.00470661096192543
+660,33477,1075,50,Palm Beach,Palm Beach-33477,Jupiter,"Jupiter, Juno Beach, Jupiter Inlet Colony",812,Palm Beach-33477,Jupiter,172,172,0.220056796255826,0.00170919317901015
+661,33478,1076,43,Martin,Martin-33478,Jupiter,Jupiter Farms,664,Martin-33478,,0,0,0.348664000434222,0.00539681132308655
+662,33478,1077,50,Palm Beach,Palm Beach-33478,Jupiter,"Jupiter, Palm Beach Gardens, Jupiter Farms, The Acreage",813,Palm Beach-33478,Jupiter,253,253,0.506895053456433,0.00880898463963929
+663,33480,1078,50,Palm Beach,Palm Beach-33480,Palm Beach,"Lantana, Lake Worth, South Palm Beach, Palm Beach",814,Palm Beach-33480,"Palm Beach, South Palm Beach",164,164,0.422961002534235,0.00180094449389495
+664,33483,1079,50,Palm Beach,Palm Beach-33483,Delray Beach,"Briny Breezes, Boca Raton, Delray Beach, Gulf Stream, Boynton Beach, Highland Beach",815,Palm Beach-33483,"Delray Beach, Gulf Stream",330,330,0.219201958173644,0.00102103130548973
+665,33484,1080,50,Palm Beach,Palm Beach-33484,Delray Beach,Delray Beach,816,Palm Beach-33484,"Delray Beach, Palm Springs, West Delray Beach",642,642,0.171670693196588,0.00146800661475487
+666,33486,1082,50,Palm Beach,Palm Beach-33486,Boca Raton,"Deerfield Beach, Boca Raton",817,Palm Beach-33486,Boca Raton,977,977,0.164186615789353,0.00128602151139974
+667,33487,1083,50,Palm Beach,Palm Beach-33487,Boca Raton,"Boca Raton, Delray Beach, Highland Beach",818,Palm Beach-33487,"Boca Raton, Highland Beach",539,539,0.199018265318232,0.00170853144975464
+668,33493,1084,50,Palm Beach,Palm Beach-33493,South Bay,South Bay,819,Palm Beach-33493,South Bay,550,550,0.614067991489819,0.0131317597447169
+669,33496,1085,50,Palm Beach,Palm Beach-33496,Boca Raton,Boca Raton,820,Palm Beach-33496,Boca Raton,520,520,0.228812690807169,0.00244493717983001
+670,33498,1086,50,Palm Beach,Palm Beach-33498,Boca Raton,Wellington,821,Palm Beach-33498,Boca Raton,345,345,0.262183948070881,0.00284127906130938
+671,33510,1087,29,Hillsborough,Hillsborough-33510,Brandon,"Brandon, East Lake-Orient Park, Mango, Seffner",421,Hillsborough-33510,Brandon,798,798,0.225463902327333,0.00198343121680545
+672,33511,1088,29,Hillsborough,Hillsborough-33511,Brandon,"Bloomingdale, Brandon, Riverview",422,Hillsborough-33511,Brandon,2104,2104,0.356260008222125,0.003768227919524
+673,33513,1091,60,Sumter,Sumter-33513,Bushnell,"Bushnell, Istachatta, Nobleton",1041,Sumter-33513,Bushnell,366,366,0.904360175003167,0.0264924263182778
+674,33514,1093,60,Sumter,Sumter-33514,Center Hill,"Center Hill, Wildwood",1042,Sumter-33514,Center Hill,58,58,0.514076950095415,0.00685637022211666
+675,33523,1094,27,Hernando,Hernando-33523,Dade City,"Lacoochee, Ridge Manor",399,Hernando-33523,Dade City,<5,-2,0.454362027217334,0.0019777303250216
+676,33523,1095,51,Pasco,Pasco-33523,Dade City,"Dade City, Dade City North, Lacoochee, Trilby",825,Pasco-33523,"Dade City, Ridge Manor",439,439,1.17944056552004,0.023442886172128
+677,33525,1097,51,Pasco,Pasco-33525,Dade City,"St. Leo, San Antonio, Dade City, Connerton, Dade City North, Pasadena Hills",826,Pasco-33525,Dade City,590,590,1.37228444876927,0.0282878952811219
+678,33527,1100,29,Hillsborough,Hillsborough-33527,Dover,"Brandon, Dover, Fish Hawk, Thonotosassa, Valrico",423,Hillsborough-33527,Dover,626,626,0.613830572990119,0.00714454011243515
+679,33534,1101,29,Hillsborough,Hillsborough-33534,Gibsonton,"Apollo Beach, Gibsonton, Riverview",424,Hillsborough-33534,Gibsonton,565,565,0.571576768920766,0.00343714763504531
+680,33538,1104,60,Sumter,Sumter-33538,Lake Panasoffkee,"Bushnell, Lake Panasoffkee",1043,Sumter-33538,Lake Panasoffkee,88,88,0.903262397654245,0.0190181363773507
+681,33540,1105,29,Hillsborough,Hillsborough-33540,Zephyrhills,Crystal Springs,425,Hillsborough-33540,,0,0,0.266733738988764,0.000970223748598602
+682,33540,1106,51,Pasco,Pasco-33540,Zephyrhills,"Zephyrhills, Crystal Springs, Pasadena Hills, Zephyrhills North, Zephyrhills South",827,Pasco-33540,Zephyrhills,132,132,0.596229735401022,0.00807698224329755
+683,33541,1109,51,Pasco,Pasco-33541,Zephyrhills,"Zephyrhills, Pasadena Hills, Wesley Chapel, Zephyrhills South, Zephyrhills West",828,Pasco-33541,Zephyrhills,298,298,0.470436124485668,0.00494221034306755
+684,33542,1110,51,Pasco,Pasco-33542,Zephyrhills,"Zephyrhills, Pasadena Hills, Zephyrhills North, Zephyrhills South, Zephyrhills West",829,Pasco-33542,Zephyrhills,361,361,0.262083124010433,0.00258368302844537
+685,33543,1112,51,Pasco,Pasco-33543,Wesley Chapel,"Tampa, Pasadena Hills, Wesley Chapel",830,Pasco-33543,"Wesley Chapel, Zephyrhills",617,617,0.344011054529347,0.00628549292715206
+686,33544,1114,51,Pasco,Pasco-33544,Wesley Chapel,"Tampa, Wesley Chapel",831,Pasco-33544,"Wesley Chapel, Zephyrhills",530,530,0.522402697493082,0.00688227049858828
+687,33545,1115,51,Pasco,Pasco-33545,Wesley Chapel,"Pasadena Hills, Wesley Chapel",832,Pasco-33545,"Wesley Chapel, Zephyrhills",406,406,0.406795931358109,0.00642850967084982
+688,33547,1116,29,Hillsborough,Hillsborough-33547,Lithia,"Bloomingdale, Fish Hawk, Riverview, Valrico",426,Hillsborough-33547,Lithia,515,515,1.08037457844533,0.0366629701718553
+689,33547,1118,53,Polk,Polk-33547,Lithia,Mulberry,901,Polk-33547,,0,0,0.485713315841594,0.000980915657803336
+690,33548,1119,29,Hillsborough,Hillsborough-33548,Lutz,"Cheval, Lake Magdalene, Lutz, Northdale",427,Hillsborough-33548,Lutz,154,154,0.281353597250258,0.00189532142223734
+691,33548,1120,51,Pasco,Pasco-33548,Lutz,"Land O' Lakes, Lutz",833,Pasco-33548,,0,0,0.0504614749468456,7.83764654490936e-05
+692,33549,1121,29,Hillsborough,Hillsborough-33549,Lutz,"Lake Magdalene, Land O' Lakes, Lutz, University",428,Hillsborough-33549,"Lutz, Sun City Center, Tampa",334,334,0.27531704332849,0.00264702399803365
+693,33549,1122,51,Pasco,Pasco-33549,Lutz,"Land O' Lakes, Lutz",834,Pasco-33549,Lutz,15,15,0.108927577604282,0.00058648851101446
+694,33556,1123,29,Hillsborough,Hillsborough-33556,Odessa,"Citrus Park, East Lake, Keystone, Northdale, Odessa, Trinity, Westchase",429,Hillsborough-33556,Odessa,552,552,0.446365651072581,0.00866548901200215
+695,33556,1124,51,Pasco,Pasco-33556,Odessa,"Keystone, Odessa, Trinity",835,Pasco-33556,"New Port Richey, Odessa",45,45,0.329076819097665,0.00214598553864349
+696,33558,1126,29,Hillsborough,Hillsborough-33558,Lutz,"Cheval, Citrus Park, Keystone, Lutz, Northdale, Odessa",430,Hillsborough-33558,Lutz,526,526,0.330449468749108,0.00322780285982865
+697,33558,1127,51,Pasco,Pasco-33558,Lutz,"Keystone, Land O' Lakes, Lutz, Odessa",836,Pasco-33558,Lutz,7,7,0.185693088983371,0.00155926247503185
+698,33559,1128,29,Hillsborough,Hillsborough-33559,Lutz,"Tampa, Land O' Lakes, Lutz, University, Wesley Chapel",431,Hillsborough-33559,Lutz,291,291,0.265547594134885,0.00182529351883732
+699,33559,1129,51,Pasco,Pasco-33559,Lutz,"Land O' Lakes, Lutz, Wesley Chapel",837,Pasco-33559,Lutz,8,8,0.199342641350378,0.00122119550125904
+700,33563,1130,29,Hillsborough,Hillsborough-33563,Plant City,Plant City,432,Hillsborough-33563,Plant City,1234,1234,0.363742129057406,0.00316056476885496
+701,33565,1131,29,Hillsborough,Hillsborough-33565,Plant City,"Plant City, Crystal Springs, Thonotosassa",433,Hillsborough-33565,Plant City,419,419,1.02827422106562,0.0193036942590671
+702,33566,1134,29,Hillsborough,Hillsborough-33566,Plant City,"Lakeland, Plant City, Dover",434,Hillsborough-33566,Plant City,846,846,0.634223331567749,0.0064495031028795
+703,33567,1135,29,Hillsborough,Hillsborough-33567,Plant City,"Plant City, Fish Hawk",435,Hillsborough-33567,Plant City,464,464,0.54946433985419,0.0109559137784203
+704,33569,1136,29,Hillsborough,Hillsborough-33569,Riverview,"Bloomingdale, Fish Hawk, Riverview",436,Hillsborough-33569,Riverview,563,563,0.335106513507964,0.00340785307140018
+705,33570,1137,29,Hillsborough,Hillsborough-33570,Ruskin,"Apollo Beach, Ruskin, Sun City Center",437,Hillsborough-33570,Ruskin,1152,1152,1.85977780941447,0.0117673500357738
+706,33572,1140,29,Hillsborough,Hillsborough-33572,Apollo Beach,"Apollo Beach, Gibsonton, Riverview, Ruskin",438,Hillsborough-33572,"Apollo Beach, Ruskin",453,453,0.792296727449855,0.0027688024317146
+707,33573,1141,29,Hillsborough,Hillsborough-33573,Sun City Center,"Apollo Beach, Riverview, Ruskin, Sun City Center",439,Hillsborough-33573,"Ruskin, Sun City Center",563,563,0.339824505428507,0.00438005430836997
+708,33576,1142,51,Pasco,Pasco-33576,San Antonio,"St. Leo, San Antonio, Pasadena Hills",838,Pasco-33576,"Innovation, San Antonio",82,82,0.53663920039317,0.00483804775756995
+709,33578,1143,29,Hillsborough,Hillsborough-33578,Riverview,"Apollo Beach, Bloomingdale, Brandon, Gibsonton, Palm River-Clair Mel, Progress Village, Riverview",440,Hillsborough-33578,Riverview,1511,1511,0.583493881177003,0.00472903570808
+710,33579,1144,29,Hillsborough,Hillsborough-33579,Riverview,"Apollo Beach, Balm, Fish Hawk, Riverview",441,Hillsborough-33579,Riverview,927,927,0.333059662637774,0.00512249422451009
+711,33584,1145,29,Hillsborough,Hillsborough-33584,Seffner,"Brandon, East Lake-Orient Park, Mango, Seffner, Thonotosassa",442,Hillsborough-33584,Seffner,731,731,0.483622132240066,0.00495358418047868
+712,33585,1147,60,Sumter,Sumter-33585,Sumterville,"Bushnell, Wildwood, Coleman, The Villages",1044,Sumter-33585,Sumterville,49,49,0.696069051602543,0.0108053882812943
+713,33592,1148,29,Hillsborough,Hillsborough-33592,Thonotosassa,"Tampa, Thonotosassa, Wesley Chapel",443,Hillsborough-33592,Thonotosassa,242,242,0.723210085692171,0.0120874493314157
+714,33594,1149,29,Hillsborough,Hillsborough-33594,Valrico,"Brandon, Valrico",444,Hillsborough-33594,Valrico,776,776,0.235142795074583,0.00228243040342043
+715,33596,1150,29,Hillsborough,Hillsborough-33596,Valrico,"Bloomingdale, Brandon, Fish Hawk, Riverview, Valrico",445,Hillsborough-33596,Valrico,531,531,0.318575273831335,0.00344462007614011
+716,33597,1151,27,Hernando,Hernando-33597,Webster,"Lacoochee, Ridge Manor",400,Hernando-33597,Webster,6,6,0.639148309671134,0.00894874952695065
+717,33597,1153,51,Pasco,Pasco-33597,Webster,Lacoochee,839,Pasco-33597,,<5,-2,0.511185979768616,0.00305876805418207
+718,33597,1155,60,Sumter,Sumter-33597,Webster,"Center Hill, Bushnell, Webster",1045,Sumter-33597,Webster,115,115,1.28736549577054,0.0397166539904258
+719,33598,1156,29,Hillsborough,Hillsborough-33598,Wimauma,"Apollo Beach, Balm, Riverview, Ruskin, Sun City Center, Wimauma",446,Hillsborough-33598,Wimauma,1066,1066,0.90733085099524,0.0205936303534859
+720,33598,1157,41,Manatee,Manatee-33598,Wimauma,Wimauma,608,Manatee-33598,Wimauma,<5,-2,0.53245942739736,0.00370125007757845
+721,33602,1158,29,Hillsborough,Hillsborough-33602,Tampa,Tampa,447,Hillsborough-33602,Tampa,837,837,0.177113313377062,0.000704130445989782
+722,33603,1159,29,Hillsborough,Hillsborough-33603,Tampa,"Tampa, Egypt Lake-Leto",448,Hillsborough-33603,Tampa,675,675,0.156141436515079,0.000995957544665443
+723,33604,1160,29,Hillsborough,Hillsborough-33604,Tampa,"Tampa, Egypt Lake-Leto",449,Hillsborough-33604,Tampa,1164,1164,0.247817477275776,0.00182547359021475
+724,33605,1161,29,Hillsborough,Hillsborough-33605,Tampa,Tampa,450,Hillsborough-33605,"Tampa, Ybor City",748,748,0.280738457871453,0.00241900657653464
+725,33606,1162,29,Hillsborough,Hillsborough-33606,Tampa,Tampa,451,Hillsborough-33606,"Tampa, University Of Tampa",1181,1181,0.261132429174926,0.000806936365869834
+726,33607,1163,29,Hillsborough,Hillsborough-33607,Tampa,Tampa,452,Hillsborough-33607,"Gig Harbor, Rocky Point, Tampa",1516,1516,0.564053118291303,0.00236432960138038
+727,33609,1164,29,Hillsborough,Hillsborough-33609,Tampa,Tampa,453,Hillsborough-33609,Tampa,655,655,0.255147678593839,0.00100340969023504
+728,33610,1165,29,Hillsborough,Hillsborough-33610,Tampa,"Tampa, East Lake-Orient Park, Mango, Thonotosassa",454,Hillsborough-33610,Tampa,1791,1791,0.426491943932158,0.00452544556281527
+729,33611,1166,29,Hillsborough,Hillsborough-33611,Tampa,Tampa,455,Hillsborough-33611,Tampa,877,877,0.299310457356386,0.00157386080966969
+730,33612,1167,29,Hillsborough,Hillsborough-33612,Tampa,"Tampa, Carrollwood, Lake Magdalene, University",456,Hillsborough-33612,Tampa,1753,1753,0.262741351475969,0.00244690652147523
+731,33613,1168,29,Hillsborough,Hillsborough-33613,Tampa,"Tampa, Lake Magdalene, Lutz, University",457,Hillsborough-33613,Tampa,1668,1668,0.372622244033679,0.00181776960844508
+732,33614,1169,29,Hillsborough,Hillsborough-33614,Tampa,"Tampa, Carrollwood, Egypt Lake-Leto, Town 'n' Country",458,Hillsborough-33614,Tampa,2605,2605,0.22508213785989,0.00241104209808986
+733,33615,1170,29,Hillsborough,Hillsborough-33615,Tampa,"Tampa, Citrus Park, Town 'n' Country",459,Hillsborough-33615,"Tampa, Town N Country",1790,1790,0.4015972848197,0.00244553225250488
+734,33616,1171,29,Hillsborough,Hillsborough-33616,Tampa,Tampa,460,Hillsborough-33616,Tampa,496,496,0.312049598485832,0.000936121508804995
+735,33617,1172,29,Hillsborough,Hillsborough-33617,Tampa,"Tampa, Temple Terrace, East Lake-Orient Park",461,Hillsborough-33617,"Tampa, Temple Terrace",1256,1256,0.288051024813452,0.00245455263789496
+736,33618,1173,29,Hillsborough,Hillsborough-33618,Tampa,"Tampa, Carrollwood, Egypt Lake-Leto, Lake Magdalene, Lutz, Northdale",462,Hillsborough-33618,"Carrollwood, Tampa",637,637,0.332295392086342,0.00225378526937484
+737,33619,1174,29,Hillsborough,Hillsborough-33619,Tampa,"Tampa, Brandon, East Lake-Orient Park, Palm River-Clair Mel, Progress Village",463,Hillsborough-33619,"Clair-mel City, Tampa",1514,1514,0.625626959667665,0.00784301135835525
+738,33620,1175,29,Hillsborough,Hillsborough-33620,Tampa,Tampa,464,Hillsborough-33620,"Tampa, University Of South Florida",181,181,0.0861733579104337,0.000225440489195014
+739,33621,1176,29,Hillsborough,Hillsborough-33621,Tampa,Tampa,465,Hillsborough-33621,Tampa,33,33,0.220425883852109,0.00208985935945996
+740,33624,1177,29,Hillsborough,Hillsborough-33624,Tampa,"Carrollwood, Citrus Park, Egypt Lake-Leto, Northdale",466,Hillsborough-33624,"Northdale, Tampa",1041,1041,0.295710037964096,0.00230129777487995
+741,33625,1178,29,Hillsborough,Hillsborough-33625,Tampa,"Carrollwood, Citrus Park, Keystone, Northdale, Town 'n' Country, Westchase",467,Hillsborough-33625,"Carrollwood, Gibsonton, Tampa",823,823,0.221751949805121,0.00224201134435503
+742,33626,1179,29,Hillsborough,Hillsborough-33626,Tampa,"Oldsmar, Citrus Park, East Lake, Keystone, Town 'n' Country, Westchase",468,Hillsborough-33626,"Northdale, Tampa, Westchase",610,610,0.259778359470931,0.00312580883416961
+743,33629,1181,29,Hillsborough,Hillsborough-33629,Tampa,Tampa,469,Hillsborough-33629,"Palma Ceia, Tampa",736,736,0.305987319620428,0.00112392032941014
+744,33634,1182,29,Hillsborough,Hillsborough-33634,Tampa,"Tampa, Carrollwood, Citrus Park, Egypt Lake-Leto, Town 'n' Country",470,Hillsborough-33634,"Rocky Point, Tampa",830,830,0.309062808343324,0.00206050667977985
+745,33635,1183,29,Hillsborough,Hillsborough-33635,Tampa,"Oldsmar, Citrus Park, Town 'n' Country, Westchase",471,Hillsborough-33635,Tampa,461,461,0.442570794934517,0.00161943855751555
+746,33637,1184,29,Hillsborough,Hillsborough-33637,Tampa,"Tampa, Temple Terrace, East Lake-Orient Park, Thonotosassa",472,Hillsborough-33637,"Tampa, Temple Terrace",472,472,0.260351334026328,0.00182969756188489
+747,33647,1185,29,Hillsborough,Hillsborough-33647,Tampa,"Tampa, Lutz, Pebble Creek, University, Wesley Chapel",473,Hillsborough-33647,"Tampa, Tampa Palms",1340,1340,0.532422602677127,0.00955228434592396
+748,33701,1187,52,Pinellas,Pinellas-33701,Saint Petersburg,St. Petersburg,854,Pinellas-33701,Saint Petersburg,821,821,0.206210836180338,0.000623425599134905
+749,33702,1188,52,Pinellas,Pinellas-33702,Saint Petersburg,"Pinellas Park, St. Petersburg, Lealman",855,Pinellas-33702,"Lealman, Saint Petersburg",853,853,0.853885188232228,0.00247951972781951
+750,33703,1189,52,Pinellas,Pinellas-33703,Saint Petersburg,"St. Petersburg, Lealman",856,Pinellas-33703,Saint Petersburg,541,541,0.524192336131291,0.00122342594530541
+751,33704,1190,52,Pinellas,Pinellas-33704,Saint Petersburg,St. Petersburg,857,Pinellas-33704,Saint Petersburg,318,318,0.300408722169549,0.000823336767849957
+752,33705,1191,52,Pinellas,Pinellas-33705,Saint Petersburg,St. Petersburg,858,Pinellas-33705,Saint Petersburg,1224,1224,0.422992099903759,0.00153688994332496
+753,33706,1192,52,Pinellas,Pinellas-33706,Saint Petersburg,"Madeira Beach, St. Pete Beach, South Pasadena, Treasure Island, St. Petersburg",859,Pinellas-33706,"Pass-a-grille Beach, Saint Pete Beach, Saint Petersburg, Treasure Island",302,302,0.881769496862438,0.000895113997820974
+754,33707,1193,52,Pinellas,Pinellas-33707,Saint Petersburg,"Gulfport, St. Pete Beach, South Pasadena, Treasure Island, St. Petersburg, Bear Creek",860,Pinellas-33707,"Gulfport, Pasadena, Saint Pete Beach, Saint Petersburg, South Pasadena",685,685,0.484527392623029,0.00128605394586986
+755,33708,1194,52,Pinellas,Pinellas-33708,Saint Petersburg,"Indian Shores, Madeira Beach, North Redington Beach, Redington Shores, Redington Beach, Seminole, Bay Pines",861,Pinellas-33708,"Madeira Beach, North Redington Beach, Redington Beach, Redington Shores, Saint Petersburg",280,280,0.730110784161606,0.000997496714804455
+756,33709,1195,52,Pinellas,Pinellas-33709,Saint Petersburg,"Kenneth City, Pinellas Park, St. Petersburg, Seminole, Lealman, West Lealman",862,Pinellas-33709,"Kenneth City, Saint Petersburg",806,806,0.221346282045327,0.00127416416870994
+757,33710,1196,52,Pinellas,Pinellas-33710,Saint Petersburg,"St. Petersburg, West Lealman",863,Pinellas-33710,"Largo, Saint Petersburg",792,792,0.188594850404531,0.00188537309717011
+758,33711,1198,52,Pinellas,Pinellas-33711,Saint Petersburg,"Gulfport, St. Petersburg",864,Pinellas-33711,"Gulfport, Saint Petersburg",755,755,0.48436784238692,0.00120331355894375
+759,33712,1199,52,Pinellas,Pinellas-33712,Saint Petersburg,St. Petersburg,865,Pinellas-33712,Saint Petersburg,1104,1104,0.228751491508775,0.00155044442186482
+760,33713,1200,52,Pinellas,Pinellas-33713,Saint Petersburg,"St. Petersburg, Lealman",866,Pinellas-33713,Saint Petersburg,843,843,0.165886709465958,0.0015949553273247
+761,33714,1201,52,Pinellas,Pinellas-33714,Saint Petersburg,"Pinellas Park, St. Petersburg, Lealman",867,Pinellas-33714,"Lealman, Saint Petersburg",471,471,0.136140140309825,0.000967834105424858
+762,33715,1203,52,Pinellas,Pinellas-33715,Saint Petersburg,"St. Pete Beach, St. Petersburg, Tierra Verde",868,Pinellas-33715,"Saint Petersburg, Tierra Verde",106,106,0.917349631705068,0.00103592824810416
+763,33716,1204,52,Pinellas,Pinellas-33716,Saint Petersburg,"Pinellas Park, St. Petersburg",869,Pinellas-33716,Saint Petersburg,618,618,0.33208465451535,0.00188900070135541
+764,33755,1205,52,Pinellas,Pinellas-33755,Clearwater,"Clearwater, Dunedin",870,Pinellas-33755,Clearwater,809,809,0.166528448193825,0.00123319758729506
+765,33756,1206,52,Pinellas,Pinellas-33756,Clearwater,"Belleair, Belleair Bluffs, Clearwater, Largo",871,Pinellas-33756,"Belleair, Clearwater",1265,1265,0.269222883880333,0.00178178552545997
+766,33759,1208,52,Pinellas,Pinellas-33759,Clearwater,"Clearwater, Safety Harbor",872,Pinellas-33759,Clearwater,487,487,0.347325002440556,0.0014120656255547
+767,33760,1209,52,Pinellas,Pinellas-33760,Clearwater,"Clearwater, Pinellas Park, Largo, Feather Sound, South Highpoint",873,Pinellas-33760,Clearwater,437,437,0.193040539560681,0.0013549167534199
+768,33761,1210,52,Pinellas,Pinellas-33761,Clearwater,"Clearwater, Safety Harbor, Dunedin, Palm Harbor",874,Pinellas-33761,Clearwater,321,321,0.135954471491571,0.00111006946349498
+769,33762,1211,52,Pinellas,Pinellas-33762,Clearwater,"Pinellas Park, Largo, St. Petersburg, Feather Sound",875,Pinellas-33762,Clearwater,210,210,0.383895646429149,0.00173851668686979
+770,33763,1212,52,Pinellas,Pinellas-33763,Clearwater,"Clearwater, Dunedin, Greenbriar",876,Pinellas-33763,Clearwater,330,330,0.168268043585827,0.000849745025210003
+771,33764,1213,52,Pinellas,Pinellas-33764,Clearwater,"Clearwater, Largo, South Highpoint",877,Pinellas-33764,Clearwater,534,534,0.350824805366771,0.00169081298224069
+772,33765,1214,52,Pinellas,Pinellas-33765,Clearwater,Clearwater,878,Pinellas-33765,Clearwater,506,506,0.138171176709761,0.000980829394554571
+773,33767,1215,52,Pinellas,Pinellas-33767,Clearwater Beach,"Clearwater, Dunedin",879,Pinellas-33767,"Clearwater, Clearwater Beach",179,179,0.50516441045674,0.000492120986010363
+774,33770,1216,52,Pinellas,Pinellas-33770,Largo,"Belleair, Belleair Bluffs, Largo, Harbor Bluffs, Ridgecrest",880,Pinellas-33770,"Belleair Bluffs, Largo",531,531,0.270170392301426,0.0011975475577846
+775,33771,1217,52,Pinellas,Pinellas-33771,Largo,"Pinellas Park, Largo",881,Pinellas-33771,Largo,696,696,0.226804407230251,0.00137713884467469
+776,33772,1218,52,Pinellas,Pinellas-33772,Seminole,"Seminole, Bay Pines",882,Pinellas-33772,Seminole,508,508,0.207969236698778,0.00133634917358509
+777,33773,1219,52,Pinellas,Pinellas-33773,Largo,"Pinellas Park, Largo, Bardmoor",883,Pinellas-33773,Largo,508,508,0.203289849056364,0.00154925384409519
+778,33774,1220,52,Pinellas,Pinellas-33774,Largo,"Indian Rocks Beach, Indian Shores, Largo, Seminole, Harbor Bluffs, Ridgecrest",884,Pinellas-33774,Largo,403,403,0.189767834086787,0.00120430738511521
+779,33776,1221,52,Pinellas,Pinellas-33776,Seminole,"Indian Shores, Redington Shores, Seminole",885,Pinellas-33776,"Largo, Seminole",287,287,0.181839101540879,0.00089061904800981
+780,33777,1222,52,Pinellas,Pinellas-33777,Seminole,"Pinellas Park, Seminole, Bardmoor",886,Pinellas-33777,"Largo, Seminole",509,509,0.212584350697659,0.0013895124454301
+781,33778,1223,52,Pinellas,Pinellas-33778,Largo,"Largo, Seminole, Ridgecrest",887,Pinellas-33778,"Largo, Seminole",347,347,0.164136880846787,0.000822745775489998
+782,33781,1224,52,Pinellas,Pinellas-33781,Pinellas Park,"Pinellas Park, Bardmoor, Lealman, West Lealman",888,Pinellas-33781,Pinellas Park,692,692,0.231944781622102,0.00154055198944494
+783,33782,1225,52,Pinellas,Pinellas-33782,Pinellas Park,"Pinellas Park, St. Petersburg, Bardmoor",889,Pinellas-33782,Pinellas Park,540,540,0.232136773381018,0.00139590805426998
+784,33785,1226,52,Pinellas,Pinellas-33785,Indian Rocks Beach,"Belleair Beach, Belleair Shore, Indian Rocks Beach, Indian Shores, Largo",890,Pinellas-33785,"Indian Rock Beach, Indian Rocks Beach, Indian Shores",88,88,0.306355337413726,0.000327836972490025
+785,33786,1227,52,Pinellas,Pinellas-33786,Belleair Beach,"Belleair Beach, Belleair Shore, Clearwater, Indian Rocks Beach",891,Pinellas-33786,Belleair Beach,30,30,0.151415724061246,0.000127410076999966
+786,33801,1228,53,Polk,Polk-33801,Lakeland,"Lakeland, Combee Settlement, Crystal Lake, Fussels Corner",902,Polk-33801,"Lakeland, Polk, Thorofare",908,908,0.365500152430006,0.00454300236036518
+787,33803,1229,53,Polk,Polk-33803,Lakeland,"Lakeland, Highland City",903,Polk-33803,Lakeland,642,642,0.429764214476027,0.00355209435942985
+788,33805,1230,53,Polk,Polk-33805,Lakeland,"Lakeland, Combee Settlement",904,Polk-33805,"Gibsonia, Lakeland, Syracuse",1186,1186,0.428010000609228,0.00514155334334046
+789,33809,1232,53,Polk,Polk-33809,Lakeland,"Lakeland, Polk City",905,Polk-33809,Lakeland,900,900,0.871790146850052,0.0218492943948186
+790,33810,1234,29,Hillsborough,Hillsborough-33810,Lakeland,"Lakeland, Kathleen",474,Hillsborough-33810,,0,0,0.355467504754476,0.00277538499596935
+791,33810,1235,53,Polk,Polk-33810,Lakeland,"Lakeland, Kathleen",906,Polk-33810,Lakeland,1301,1301,0.500427298552326,0.0108522898977752
+792,33811,1237,53,Polk,Polk-33811,Lakeland,"Lakeland, Plant City, Fuller Heights, Medulla, Willow Oak",907,Polk-33811,Lakeland,604,604,0.322255465228091,0.00664598429384233
+793,33812,1238,53,Polk,Polk-33812,Lakeland,"Lakeland, Highland City, Lakeland Highlands",908,Polk-33812,Lakeland,361,361,0.280830459086593,0.00288669855642513
+794,33813,1239,53,Polk,Polk-33813,Lakeland,"Lakeland, Bartow, Mulberry, Highland City, Lakeland Highlands, Medulla",909,Polk-33813,Lakeland,938,938,0.544788416482291,0.00688568929748546
+795,33815,1241,53,Polk,Polk-33815,Lakeland,"Lakeland, Plant City",910,Polk-33815,Lakeland,554,554,0.284357028643189,0.0018673091968401
+796,33823,1242,53,Polk,Polk-33823,Auburndale,"Lakeland, Lake Alfred, Winter Haven, Auburndale, Fussels Corner, Inwood, Jan Phyl Village",911,Polk-33823,Auburndale,974,974,0.605990939622692,0.0124370498816237
+797,33825,1243,25,Hardee,Hardee-33825,Avon Park,Avon Park,390,Hardee-33825,,0,0,0.251073554737395,0.0019804867338584
+798,33825,1244,28,Highlands,Highlands-33825,Avon Park,Avon Park,411,Highlands-33825,Avon Park,765,765,1.19132194623686,0.0423127230109523
+799,33825,1246,53,Polk,Polk-33825,Avon Park,Frostproof,912,Polk-33825,Avon Park,66,66,0.500842113252539,0.00141272120650306
+800,33827,1247,53,Polk,Polk-33827,Babson Park,"Frostproof, Hillcrest Heights, Babson Park",913,Polk-33827,Babson Park,64,64,0.490989030933764,0.00437914345612004
+801,33830,1248,53,Polk,Polk-33830,Bartow,"Bartow, Fort Meade, Mulberry, Eagle Lake, Winter Haven, Alturas, Highland City, Homeland",914,Polk-33830,"Bartow, Lakeland",1190,1190,1.37066426869221,0.0368543318348349
+802,33834,1249,25,Hardee,Hardee-33834,Bowling Green,"Bowling Green, Fort Green, Fort Green Springs",391,Hardee-33834,Bowling Green,435,435,0.894320760788052,0.0176204526481384
+803,33834,1252,53,Polk,Polk-33834,Bowling Green,Bowling Green,915,Polk-33834,,<5,-2,1.05453054180622,0.0109971344155285
+804,33837,1254,53,Polk,Polk-33837,Davenport,"Haines City, Davenport, Loughman, Poinciana",916,Polk-33837,Davenport,905,905,0.699420785415423,0.0154848756897412
+805,33838,1255,53,Polk,Polk-33838,Dundee,"Dundee, Lake Hamilton, Winter Haven, Waverly",917,Polk-33838,Dundee,120,120,0.328485667496215,0.00176941333103517
+806,33839,1256,53,Polk,Polk-33839,Eagle Lake,"Eagle Lake, Winter Haven, Wahneta",918,Polk-33839,Eagle Lake,125,125,0.189471964258238,0.000805167211719979
+807,33841,1259,53,Polk,Polk-33841,Fort Meade,"Bartow, Fort Meade, Alturas, Bradley Junction, Brewster",919,Polk-33841,Fort Meade,353,353,1.40122611979178,0.0461532728293235
+808,33843,1262,53,Polk,Polk-33843,Frostproof,Frostproof,920,Polk-33843,Frostproof,450,450,1.77961307322714,0.0630312351613617
+809,33844,1264,53,Polk,Polk-33844,Haines City,"Dundee, Lake Alfred, Lake Hamilton, Winter Haven, Haines City, Davenport, Grenelefe, Poinciana",921,Polk-33844,Haines City,1680,1680,1.41669385218503,0.0246337432535024
+810,33849,1267,53,Polk,Polk-33849,Kathleen,Kathleen,922,Polk-33849,Kathleen,13,13,0.329354114829773,0.00614282249184042
+811,33850,1268,53,Polk,Polk-33850,Lake Alfred,"Lake Alfred, Winter Haven, Auburndale",923,Polk-33850,Lake Alfred,274,274,0.478281827851505,0.00482597759374603
+812,33852,1272,28,Highlands,Highlands-33852,Lake Placid,Lake Placid,412,Highlands-33852,Lake Placid,441,441,1.98522259629481,0.0764948124053609
+813,33853,1273,53,Polk,Polk-33853,Lake Wales,Lake Wales,924,Polk-33853,Lake Wales,419,419,0.249331689248363,0.00220162835405015
+814,33854,1274,53,Polk,Polk-33854,Lakeshore,Lakeshore,925,Polk-33854,Lakeshore,<5,-2,0.0233827481854527,4.06370766299885e-05
+815,33855,1275,53,Polk,Polk-33855,Indian Lake Estates,Indian Lake Estates,926,Polk-33855,Indian Lake Estates,11,11,0.225509032574271,0.00243918617732545
+816,33856,1276,53,Polk,Polk-33856,Nalcrest,Nalcrest,927,Polk-33856,"Lake Wales, Nalcrest",6,6,0.0302211598314369,3.91416347249567e-05
+817,33857,1278,28,Highlands,Highlands-33857,Lorida,Lorida,413,Highlands-33857,Lorida,19,19,1.83662691192496,0.0445167158317684
+818,33859,1280,53,Polk,Polk-33859,Lake Wales,"Lake Wales, Dundee, Winter Haven, Highland Park, Alturas, Crooked Lake Park, Waverly",928,Polk-33859,Lake Wales,215,215,1.11276720205211,0.013592036837091
+819,33860,1282,53,Polk,Polk-33860,Mulberry,"Mulberry, Bradley Junction, Brewster, Fuller Heights, Lakeland Highlands, Medulla, Willow Oak",929,Polk-33860,Mulberry,758,758,0.964772911011514,0.0219265584418996
+820,33865,1284,25,Hardee,Hardee-33865,Ona,"Limestone, Ona",392,Hardee-33865,Ona,19,19,1.00352626094897,0.0400831485901059
+821,33867,1287,53,Polk,Polk-33867,River Ranch,River Ranch,930,Polk-33867,"Lake Wales, River Ranch",<5,-2,0.113917825386361,0.000650660744966424
+822,33868,1289,53,Polk,Polk-33868,Polk City,"Lakeland, Lake Alfred, Polk City, Auburndale",931,Polk-33868,Polk City,413,413,1.15624833793047,0.041441738346823
+823,33870,1291,28,Highlands,Highlands-33870,Sebring,Sebring,414,Highlands-33870,Sebring,680,680,1.11288544814079,0.0183314836180499
+824,33872,1293,28,Highlands,Highlands-33872,Sebring,Sebring,415,Highlands-33872,Sebring,280,280,0.420525489958351,0.00546429039493016
+825,33873,1294,25,Hardee,Hardee-33873,Wauchula,"Zolfo Springs, Wauchula, Fort Green Springs, Lemon Grove, Ona",393,Hardee-33873,Wauchula,898,898,1.31073928373852,0.0335415369361005
+826,33875,1297,28,Highlands,Highlands-33875,Sebring,Sebring,416,Highlands-33875,Sebring,181,181,0.709210092694366,0.0137589244279124
+827,33876,1298,28,Highlands,Highlands-33876,Sebring,Sebring,417,Highlands-33876,Sebring,80,80,0.579732738694675,0.00910116170161436
+828,33880,1299,53,Polk,Polk-33880,Winter Haven,"Bartow, Eagle Lake, Winter Haven, Auburndale, Alturas, Cypress Gardens, Inwood, Jan Phyl Village, Wahneta",932,Polk-33880,"Eloise, Wahneta, Winter Haven",1499,1499,1.00548540498404,0.0123698132267843
+829,33881,1300,53,Polk,Polk-33881,Winter Haven,"Dundee, Lake Alfred, Lake Hamilton, Winter Haven, Auburndale, Inwood",933,Polk-33881,"Florence Villa, Homeless, Winter Haven",1865,1865,0.557145762633445,0.00713923202041962
+830,33884,1301,53,Polk,Polk-33884,Winter Haven,"Lake Wales, Dundee, Winter Haven, Cypress Gardens",934,Polk-33884,"Cypress Gardens, Winter Haven",848,848,0.507705629655795,0.00664296672406437
+831,33890,1303,25,Hardee,Hardee-33890,Zolfo Springs,"Zolfo Springs, Gardner, Lemon Grove, Limestone",394,Hardee-33890,Zolfo Springs,205,205,1.25541100974316,0.057739634624207
+832,33896,1305,49,Osceola,Osceola-33896,Davenport,"Kissimmee, Campbell, Celebration, Four Corners, Loughman, Poinciana",753,Osceola-33896,"Champions Gate, Davenport",<5,-2,0.538423406341837,0.00242290052289294
+833,33896,1306,53,Polk,Polk-33896,Davenport,"Four Corners, Loughman",935,Polk-33896,"Champions Gate, Davenport",399,399,0.301557860277628,0.00178140288781262
+834,33897,1309,53,Polk,Polk-33897,Davenport,Four Corners,936,Polk-33897,Davenport,483,483,0.522070168053727,0.0073063212312628
+835,33898,1310,49,Osceola,Osceola-33898,Lake Wales,Lake Wales,754,Osceola-33898,,0,0,0.92530444336134,0.00210005901480471
+836,33898,1311,53,Polk,Polk-33898,Lake Wales,"Lake Wales, Dundee, Highland Park, Waverly",937,Polk-33898,Lake Wales,307,307,2.17266079316186,0.0527401418534194
+837,33901,1312,36,Lee,Lee-33901,Fort Myers,Fort Myers,537,Lee-33901,"F M, Fort Myers",1079,1079,0.205151253919621,0.00210691117443443
+838,33903,1314,36,Lee,Lee-33903,North Fort Myers,"Cape Coral, Lochmoor Waterway Estates, North Fort Myers, Palmona Park",538,Lee-33903,"Brooklyn, Fort Myers, North Fort Myers",433,433,0.644861310230903,0.00643587332926628
+839,33904,1315,36,Lee,Lee-33904,Cape Coral,Cape Coral,539,Lee-33904,Cape Coral,712,712,0.266641204720967,0.00395323264786485
+840,33905,1316,36,Lee,Lee-33905,Fort Myers,"Fort Myers, Buckingham, Fort Myers Shores, Lehigh Acres, North Fort Myers, Olga, Tice",540,Lee-33905,"Buckingham, Fort Myers, Tice",1428,1428,0.513441325390583,0.0102467863663501
+841,33907,1317,36,Lee,Lee-33907,Fort Myers,"Fort Myers, Cypress Lake, Page Park, Pine Manor, Villas, Whiskey Creek",541,Lee-33907,Fort Myers,908,908,0.240957207745275,0.00183496082287511
+842,33908,1318,36,Lee,Lee-33908,Fort Myers,"Fort Myers Beach, Cypress Lake, Estero, Harlem Heights, Iona, McGregor, Punta Rassa, San Carlos Park, Villas",542,Lee-33908,Fort Myers,927,927,1.52599460973785,0.0106749107855001
+843,33909,1319,36,Lee,Lee-33909,Cape Coral,"Cape Coral, Burnt Store Marina, North Fort Myers",543,Lee-33909,Cape Coral,1022,1022,0.37286076546491,0.00468027602665533
+844,33912,1320,36,Lee,Lee-33912,Fort Myers,"Fort Myers, San Carlos Park, Three Oaks, Villas",544,Lee-33912,"Cape Coral, Fort Myers, San Carlos Park, South Fort Myers",862,862,0.343946725406875,0.00532982961621492
+845,33913,1322,36,Lee,Lee-33913,Fort Myers,"Fort Myers, Estero, Gateway, Lehigh Acres, Three Oaks",545,Lee-33913,"Fort Myers, Miromar Lakes",555,555,0.891780936849789,0.0254275638874561
+846,33914,1323,36,Lee,Lee-33914,Cape Coral,"Cape Coral, Matlacha Isles-Matlacha Shores",546,Lee-33914,Cape Coral,912,912,0.746089686606514,0.00652532908349983
+847,33916,1324,36,Lee,Lee-33916,Fort Myers,Fort Myers,547,Lee-33916,Fort Myers,1343,1343,0.29261915948399,0.00279284592505032
+848,33917,1325,8,Charlotte,Charlotte-33917,North Fort Myers,North Fort Myers,140,Charlotte-33917,North Fort Myers,<5,-2,0.320137504032709,0.00132266729341032
+849,33917,1326,36,Lee,Lee-33917,North Fort Myers,"Cape Coral, North Fort Myers, Palmona Park, Suncoast Estates",548,Lee-33917,"Fort Myers, North Fort Myers",481,481,0.497674080549032,0.0124037810795095
+850,33919,1327,36,Lee,Lee-33919,Fort Myers,"Fort Myers, Cypress Lake, Iona, McGregor, Pine Manor, Villas, Whiskey Creek",549,Lee-33919,Fort Myers,643,643,0.25967949796289,0.00268794788823505
+851,33920,1330,36,Lee,Lee-33920,Alva,"Alva, Buckingham, Charleston Park, Fort Denaud, Fort Myers Shores, Lehigh Acres, North Fort Myers, Olga",550,Lee-33920,"Alva, Babcock Ranch",136,136,0.621137026171652,0.0149839254283269
+852,33921,1332,36,Lee,Lee-33921,Boca Grande,Boca Grande,551,Lee-33921,Boca Grande,12,12,1.1085211086682,0.00163459701110007
+853,33922,1333,36,Lee,Lee-33922,Bokeelia,"Bokeelia, Pine Island Center, Pineland, St. James City",552,Lee-33922,Bokeelia,61,61,1.66753927820809,0.0042312039901501
+854,33924,1334,36,Lee,Lee-33924,Captiva,"Sanibel, Captiva",553,Lee-33924,Captiva,<5,-2,0.475301982981403,0.000681488636440148
+855,33928,1336,36,Lee,Lee-33928,Estero,"Bonita Springs, Estero",554,Lee-33928,Estero,506,506,1.15207687508691,0.0165084618775281
+856,33931,1337,36,Lee,Lee-33931,Fort Myers Beach,"Fort Myers Beach, Bonita Springs, Iona",555,Lee-33931,"Bonita Springs, Fort Myers Beach",103,103,0.745392227090501,0.00153036050205032
+857,33935,1340,22,Glades,Glades-33935,Labelle,"LaBelle, Fort Denaud",381,Glades-33935,"Labelle, Moore Haven",15,15,0.754543835749053,0.0145368240304693
+858,33935,1341,26,Hendry,Hendry-33935,Labelle,"LaBelle, Alva, Fort Denaud, Port LaBelle",396,Hendry-33935,"Fort Denaud, Labelle",861,861,1.66372512219772,0.115029312555766
+859,33936,1343,26,Hendry,Hendry-33936,Lehigh Acres,Lehigh Acres,397,Hendry-33936,,0,0,0.0843828892971541,0.000255198972408579
+860,33936,1344,36,Lee,Lee-33936,Lehigh Acres,Lehigh Acres,556,Lee-33936,"Lehigh, Lehigh Acres",834,834,0.451367484657026,0.00274688591901333
+861,33944,1345,22,Glades,Glades-33944,Palmdale,Palmdale,382,Glades-33944,Palmdale,14,14,0.219004255056543,0.00142250818905969
+862,33946,1346,8,Charlotte,Charlotte-33946,Placida,Rotonda,141,Charlotte-33946,Placida,29,29,2.71110819079409,0.00913235951526679
+863,33947,1348,8,Charlotte,Charlotte-33947,Rotonda West,"Grove City, Rotonda",142,Charlotte-33947,"Cape Haze, Rotunda West",112,112,0.348975198034213,0.00291962024851034
+864,33948,1349,8,Charlotte,Charlotte-33948,Port Charlotte,Port Charlotte,143,Charlotte-33948,Port Charlotte,309,309,0.75775653551894,0.00576083020279939
+865,33950,1350,8,Charlotte,Charlotte-33950,Punta Gorda,"Punta Gorda, Charlotte Park, Cleveland, Solana",144,Charlotte-33950,Punta Gorda,331,331,0.554793718935956,0.00594217122338511
+866,33952,1351,8,Charlotte,Charlotte-33952,Port Charlotte,"Charlotte Harbor, Port Charlotte",145,Charlotte-33952,"Fort Charlotte, Port Charlotte",641,641,0.343187060372194,0.00366603778599482
+867,33953,1352,8,Charlotte,Charlotte-33953,Port Charlotte,"North Port, Port Charlotte",146,Charlotte-33953,Port Charlotte,88,88,0.375249327469344,0.00464487276427712
+868,33954,1354,8,Charlotte,Charlotte-33954,Port Charlotte,"North Port, Port Charlotte",147,Charlotte-33954,Port Charlotte,291,291,0.330492214574481,0.00214278740008614
+869,33955,1356,8,Charlotte,Charlotte-33955,Punta Gorda,"Punta Gorda, Burnt Store Marina, Charlotte Park",148,Charlotte-33955,"Port Charlotte, Punta Gorda",161,161,1.77257433217359,0.0131577533447968
+870,33955,1357,36,Lee,Lee-33955,Punta Gorda,"Cape Coral, Burnt Store Marina, North Fort Myers",557,Lee-33955,,<5,-2,0.223258498518736,0.000276957741320989
+871,33956,1358,36,Lee,Lee-33956,Saint James City,"Pine Island Center, St. James City",558,Lee-33956,Saint James City,34,34,1.31319116284178,0.00380492586719991
+872,33957,1359,36,Lee,Lee-33957,Sanibel,"Sanibel, Captiva",559,Lee-33957,Sanibel,60,60,1.33255554405299,0.00411056217002008
+873,33960,1362,22,Glades,Glades-33960,Venus,Venus,383,Glades-33960,,0,0,1.02098106807398,0.00542517210325307
+874,33960,1363,28,Highlands,Highlands-33960,Venus,Venus,418,Highlands-33960,Venus,9,9,1.39734279427078,0.047540566100695
+875,33965,1364,36,Lee,Lee-33965,Fort Myers,Estero,560,Lee-33965,"Florida Gulf Coast Univ, Fort Myers",120,120,0.071281158704631,0.000285423847295281
+876,33966,1365,36,Lee,Lee-33966,Fort Myers,"Fort Myers, Villas",561,Lee-33966,Fort Myers,488,488,0.207843566164109,0.0018338397687497
+877,33967,1366,36,Lee,Lee-33967,Fort Myers,"Estero, San Carlos Park, Three Oaks",562,Lee-33967,"Estero, Fort Myers, San Carlos Park, South Fort Myers",875,875,0.201496916775587,0.00188574215583026
+878,33971,1367,36,Lee,Lee-33971,Lehigh Acres,"Fort Myers, Buckingham, Gateway, Lehigh Acres",563,Lee-33971,"Lehigh, Lehigh Acres",1176,1176,0.384900369845902,0.00395819440775547
+879,33972,1369,36,Lee,Lee-33972,Lehigh Acres,"Alva, Lehigh Acres",564,Lee-33972,"Lehigh, Lehigh Acres",445,445,0.405781226427155,0.00603543863675359
+880,33973,1370,36,Lee,Lee-33973,Lehigh Acres,"Fort Myers, Gateway, Lehigh Acres",565,Lee-33973,"Lehigh, Lehigh Acres",487,487,0.133831104969273,0.000911121449240183
+881,33974,1372,36,Lee,Lee-33974,Lehigh Acres,Lehigh Acres,566,Lee-33974,"Fort Myers, Lehigh, Lehigh Acres",593,593,0.39700494456674,0.00545036836241798
+882,33976,1373,36,Lee,Lee-33976,Lehigh Acres,Lehigh Acres,567,Lee-33976,"Lehigh, Lehigh Acres",720,720,0.195623039047709,0.00218038042746513
+883,33980,1374,8,Charlotte,Charlotte-33980,Punta Gorda,"Charlotte Harbor, Port Charlotte",149,Charlotte-33980,"Port Charlotte, Punta Gorda",458,458,0.243625582203405,0.00273703444421989
+884,33981,1375,8,Charlotte,Charlotte-33981,Port Charlotte,"North Port, Englewood",150,Charlotte-33981,Port Charlotte,165,165,0.548620069325799,0.00708483148363971
+885,33982,1377,8,Charlotte,Charlotte-33982,Punta Gorda,"Cleveland, North Fort Myers, Solana",151,Charlotte-33982,"Babcock Ranch, Punta Gorda",169,169,1.498602611062,0.106807936397755
+886,33983,1381,8,Charlotte,Charlotte-33983,Punta Gorda,Harbour Heights,152,Charlotte-33983,"Port Charlotte, Punta Gorda",384,384,0.225766543148263,0.00277464082246294
+887,33990,1383,36,Lee,Lee-33990,Cape Coral,"Cape Coral, Lochmoor Waterway Estates",568,Lee-33990,Cape Coral,959,959,0.240434205683834,0.0025972376740601
+888,33991,1384,36,Lee,Lee-33991,Cape Coral,"Cape Coral, Matlacha Isles-Matlacha Shores",569,Lee-33991,Cape Coral,778,778,0.380490397926735,0.00357429404913515
+889,33993,1386,36,Lee,Lee-33993,Cape Coral,"Cape Coral, Burnt Store Marina, Matlacha, Matlacha Isles-Matlacha Shores",570,Lee-33993,"Cape Coral, Fort Myers, Matlacha",846,846,2.30258538652786,0.0122656732197808
+890,34102,1387,11,Collier,Collier-34102,Naples,Naples,181,Collier-34102,Naples,351,351,0.623789742984127,0.00139178608357562
+891,34103,1388,11,Collier,Collier-34103,Naples,"Naples, Pelican Bay",182,Collier-34103,Naples,261,261,0.28107690739642,0.00083458915793488
+892,34104,1389,11,Collier,Collier-34104,Naples,Naples,183,Collier-34104,Naples,1080,1080,0.247527841546745,0.00240085110534493
+893,34105,1390,11,Collier,Collier-34105,Naples,Naples,184,Collier-34105,Naples,362,362,0.22471515414852,0.00251764480202475
+894,34108,1391,11,Collier,Collier-34108,Naples,"Naples, Naples Park, Pelican Bay, Pine Ridge",185,Collier-34108,Naples,323,323,0.247886034603673,0.00195462795337968
+895,34109,1392,11,Collier,Collier-34109,Naples,"Pine Ridge, Vineyards",186,Collier-34109,Naples,754,754,0.231442242894451,0.00315632623479528
+896,34110,1393,11,Collier,Collier-34110,Naples,"Bonita Springs, Naples Park",187,Collier-34110,Naples,563,563,0.331595366048376,0.00391921177777321
+897,34110,1394,36,Lee,Lee-34110,Naples,Bonita Springs,571,Lee-34110,,0,0,0.168710517882399,0.000198651585326661
+898,34112,1395,11,Collier,Collier-34112,Naples,"Naples, Lely, Lely Resort",188,Collier-34112,Naples,942,942,0.533878199977776,0.00408840199734967
+899,34113,1396,11,Collier,Collier-34113,Naples,"Naples, Lely, Lely Resort, Naples Manor, Verona Walk",189,Collier-34113,Naples,954,954,1.73730735160852,0.00818491031547481
+900,34114,1397,11,Collier,Collier-34114,Naples,"Everglades, Marco Island, Lely Resort, Verona Walk",190,Collier-34114,Naples,535,535,6.19891507642322,0.0537657271192497
+901,34116,1398,11,Collier,Collier-34116,Naples,Golden Gate,191,Collier-34116,Naples,1953,1953,0.191301756786189,0.00228395637799558
+902,34117,1399,11,Collier,Collier-34117,Naples,Golden Gate,192,Collier-34117,Naples,586,586,1.38218837826266,0.0592965051832051
+903,34119,1400,11,Collier,Collier-34119,Naples,"Bonita Springs, Island Walk, Vineyards",193,Collier-34119,Naples,834,834,0.331432259467462,0.00541292588146583
+904,34119,1401,36,Lee,Lee-34119,Naples,Bonita Springs,572,Lee-34119,,<5,-2,0.097599674803993,0.000115442795927235
+905,34120,1402,11,Collier,Collier-34120,Naples,"Bonita Springs, Immokalee, Orangetree",194,Collier-34120,Naples,1408,1408,0.820816176001534,0.033211116526259
+906,34134,1404,11,Collier,Collier-34134,Bonita Springs,Bonita Springs,195,Collier-34134,Bonita Springs,<5,-2,0.181724222249098,0.000383701817235689
+907,34134,1405,36,Lee,Lee-34134,Bonita Springs,"Bonita Springs, Estero",573,Lee-34134,"Bonita Beach, Bonita Springs, Estero",219,219,0.973237226266555,0.00308126613914073
+908,34135,1407,36,Lee,Lee-34135,Bonita Springs,"Bonita Springs, Estero",574,Lee-34135,"Bonita Springs, Estero",1204,1204,0.606453527539081,0.00874559010882996
+909,34138,1408,11,Collier,Collier-34138,Chokoloskee,Chokoloskee,196,Collier-34138,Chokoloskee,<5,-2,0.0488444737276844,5.67048450499688e-05
+910,34139,1409,11,Collier,Collier-34139,Everglades City,Everglades,197,Collier-34139,Everglades City,<5,-2,0.217294608616305,0.00103349371576954
+911,34140,1410,11,Collier,Collier-34140,Goodland,"Marco Island, Goodland",198,Collier-34140,Goodland,7,7,0.063580128783373,3.83421477249593e-05
+912,34141,1412,11,Collier,Collier-34141,Ochopee,"Everglades, Plantation Island",199,Collier-34141,Ochopee,31,31,2.46772243818018,0.174053589544809
+913,34142,1416,11,Collier,Collier-34142,Immokalee,Immokalee,200,Collier-34142,"Ave Maria, Immokalee",2399,2399,2.09777058700495,0.113931720592841
+914,34142,1417,26,Hendry,Hendry-34142,Immokalee,Immokalee,398,Hendry-34142,,0,0,1.03111291914093,0.0285230007982824
+915,34145,1419,11,Collier,Collier-34145,Marco Island,Marco Island,201,Collier-34145,Marco Island,241,241,2.04997462445416,0.00458166496302545
+916,34201,1420,41,Manatee,Manatee-34201,Bradenton,Bradenton,609,Manatee-34201,"Bradenton, University Park",68,68,0.162004588190762,0.000850256362759988
+917,34202,1421,41,Manatee,Manatee-34202,Bradenton,Bradenton,610,Manatee-34202,"Bradenton, Lakewood Ranch",565,565,0.406588012487784,0.00541449028679485
+918,34203,1423,41,Manatee,Manatee-34203,Bradenton,"Bayshore Gardens, Samoset, South Bradenton, West Samoset",611,Manatee-34203,"Braden River, Bradenton",1407,1407,0.423206583105227,0.00383563647514488
+919,34205,1424,41,Manatee,Manatee-34205,Bradenton,"Bradenton, South Bradenton, West Bradenton, West Samoset",612,Manatee-34205,"Bradenton, West Bradenton",1183,1183,0.175874658834087,0.00174070402236532
+920,34207,1425,41,Manatee,Manatee-34207,Bradenton,"Bayshore Gardens, South Bradenton, Whitfield",613,Manatee-34207,"Bayshore Gardens, Bradenton",1190,1190,0.202976401884271,0.0014810644205548
+921,34208,1426,41,Manatee,Manatee-34208,Bradenton,"Bradenton, Ellenton, Samoset, South Bradenton, West Samoset",614,Manatee-34208,"Bradenton, Metter, Samoset",2035,2035,0.341244445493551,0.00463608700761031
+922,34209,1427,41,Manatee,Manatee-34209,Bradenton,"Bradenton, Cortez, West Bradenton",615,Manatee-34209,"Bradenton, Palma Sola",870,870,0.573253249925945,0.00341768823981024
+923,34210,1428,41,Manatee,Manatee-34210,Bradenton,"Bradenton, Bayshore Gardens, Cortez, South Bradenton",616,Manatee-34210,Bradenton,480,480,0.486403308496392,0.00204055887081535
+924,34211,1429,41,Manatee,Manatee-34211,Bradenton,Bradenton,617,Manatee-34211,"Bradenton, Lakewood Ranch",339,339,0.486560975713192,0.00879203613461468
+925,34212,1430,41,Manatee,Manatee-34212,Bradenton,Bradenton,618,Manatee-34212,Bradenton,572,572,0.508639502807941,0.00558559416894043
+926,34215,1431,41,Manatee,Manatee-34215,Cortez,"Bradenton Beach, Holmes Beach, Cortez",619,Manatee-34215,Cortez,7,7,0.131605303398891,0.000136707657399943
+927,34216,1432,41,Manatee,Manatee-34216,Anna Maria,Anna Maria,620,Manatee-34216,Anna Maria,8,8,0.196575437984326,0.000187627309899712
+928,34217,1433,41,Manatee,Manatee-34217,Bradenton Beach,"Anna Maria, Bradenton Beach, Holmes Beach",621,Manatee-34217,"Bradenton Beach, Holmes Beach",56,56,0.49811232229356,0.000551769453279878
+929,34219,1436,41,Manatee,Manatee-34219,Parrish,Wimauma,622,Manatee-34219,"Duette, Parrish",636,636,1.59764594941926,0.0537276072892897
+930,34221,1438,41,Manatee,Manatee-34221,Palmetto,"Bradenton, Palmetto, Ellenton, Memphis, West Bradenton",623,Manatee-34221,"Bradenton, Palmetto, Rubonia",1859,1859,1.90501931044566,0.0133089232407789
+931,34222,1439,41,Manatee,Manatee-34222,Ellenton,"Palmetto, Ellenton, Memphis",624,Manatee-34222,Ellenton,371,371,0.271381714737924,0.00176682737118515
+932,34223,1440,8,Charlotte,Charlotte-34223,Englewood,"North Port, Englewood, Manasota Key",153,Charlotte-34223,Englewood,<5,-2,0.425071969231923,0.000565484239124589
+933,34223,1441,58,Sarasota,Sarasota-34223,Englewood,"North Port, Englewood, Manasota Key, South Venice",964,Sarasota-34223,Englewood,157,157,0.753592337007423,0.00759396276288962
+934,34224,1442,8,Charlotte,Charlotte-34224,Englewood,"North Port, Englewood, Grove City, Manasota Key, Rotonda",154,Charlotte-34224,"Englewood, Grove City",197,197,0.55042694877716,0.00303592499446667
+935,34224,1443,58,Sarasota,Sarasota-34224,Englewood,North Port,965,Sarasota-34224,,0,0,0.302139429700017,0.00308669257933335
+936,34228,1444,41,Manatee,Manatee-34228,Longboat Key,Longboat Key,625,Manatee-34228,"Long Boat Key, Longboat Key",40,40,0.423989833014827,0.000489388270637055
+937,34228,1445,58,Sarasota,Sarasota-34228,Longboat Key,Longboat Key,966,Sarasota-34228,Longboat Key,<5,-2,0.379400338104586,0.000627302153433395
+938,34229,1446,58,Sarasota,Sarasota-34229,Osprey,"Laurel, Osprey, Vamo",967,Sarasota-34229,Osprey,118,118,0.324512936335085,0.00148253803868482
+939,34231,1447,58,Sarasota,Sarasota-34231,Sarasota,"Sarasota, Gulf Gate Estates, Ridge Wood Heights, Siesta Key, Southgate, South Gate Ridge, South Sarasota, Vamo",968,Sarasota-34231,Sarasota,693,693,0.391833658680136,0.00235593670744014
+940,34232,1448,58,Sarasota,Sarasota-34232,Sarasota,"Sarasota, Bee Ridge, Fruitville, Kensington Park, Sarasota Springs, Southgate, South Gate Ridge, The Meadows",969,Sarasota-34232,Sarasota,1029,1029,0.217632232621009,0.00266808339351974
+941,34233,1449,58,Sarasota,Sarasota-34233,Sarasota,"Bee Ridge, Gulf Gate Estates, Sarasota Springs, Southgate, South Gate Ridge",970,Sarasota-34233,"Sarasota, West Villages",410,410,0.164455138611528,0.00145452534375479
+942,34234,1450,58,Sarasota,Sarasota-34234,Sarasota,"Sarasota, Desoto Lakes, Kensington Park, North Sarasota",971,Sarasota-34234,Sarasota,948,948,0.187400971116074,0.00155249386291008
+943,34235,1451,58,Sarasota,Sarasota-34235,Sarasota,"Sarasota, Desoto Lakes, Fruitville, Kensington Park, North Sarasota, The Meadows",972,Sarasota-34235,Sarasota,465,465,0.20946646928539,0.00170865200250006
+944,34236,1452,58,Sarasota,Sarasota-34236,Sarasota,"Longboat Key, Sarasota",973,Sarasota-34236,Sarasota,331,331,0.535958309155324,0.00087749825369498
+945,34237,1453,58,Sarasota,Sarasota-34237,Sarasota,"Sarasota, Kensington Park, North Sarasota, Southgate",974,Sarasota-34237,Sarasota,879,879,0.124565147831428,0.000977494873615095
+946,34238,1454,58,Sarasota,Sarasota-34238,Sarasota,"Bee Ridge, Gulf Gate Estates, Laurel, Osprey, South Gate Ridge, Vamo",975,Sarasota-34238,Sarasota,367,367,0.295879118466296,0.00336096009927484
+947,34239,1455,58,Sarasota,Sarasota-34239,Sarasota,"Sarasota, Ridge Wood Heights, Sarasota Springs, Southgate, South Gate Ridge, South Sarasota",976,Sarasota-34239,Sarasota,603,603,0.185015976177911,0.0010461148327401
+948,34240,1456,41,Manatee,Manatee-34240,Sarasota,Sarasota,626,Manatee-34240,,0,0,0.365130785052577,0.000205588605978134
+949,34240,1457,58,Sarasota,Sarasota-34240,Sarasota,"Fruitville, Lake Sarasota",977,Sarasota-34240,Sarasota,302,302,0.697088689491386,0.0169126310087174
+950,34241,1459,58,Sarasota,Sarasota-34241,Sarasota,"Venice, Lake Sarasota",978,Sarasota-34241,Sarasota,261,261,1.18890188406908,0.034789534635941
+951,34242,1460,58,Sarasota,Sarasota-34242,Sarasota,"Sarasota, Osprey, Siesta Key, South Sarasota",979,Sarasota-34242,"Sarasota, Siesta Key",125,125,0.475737287583315,0.000906301119575053
+952,34243,1461,41,Manatee,Manatee-34243,Sarasota,"Sarasota, Bayshore Gardens, North Sarasota, Whitfield",627,Manatee-34243,Sarasota,709,709,0.410104837113487,0.00350755316673099
+953,34243,1462,58,Sarasota,Sarasota-34243,Sarasota,"Sarasota, Desoto Lakes, North Sarasota, The Meadows",980,Sarasota-34243,Sarasota,58,58,0.265377985646427,0.000848802463498117
+954,34251,1465,41,Manatee,Manatee-34251,Myakka City,Myakka City,628,Manatee-34251,Myakka City,182,182,1.35212657334849,0.0651314488643661
+955,34251,1466,58,Sarasota,Sarasota-34251,Myakka City,Myakka City,981,Sarasota-34251,,0,0,0.614035064897347,0.0005986214131254
+956,34266,1468,14,Desoto,Desoto-34266,Arcadia,"Arcadia, North Port, Gardner, Limestone, Southeast Arcadia",293,Desoto-34266,Arcadia,1528,1528,2.0268060013822,0.135333623227098
+957,34266,1472,58,Sarasota,Sarasota-34266,Arcadia,North Port,982,Sarasota-34266,,0,0,0.455409066273051,0.00640103696180163
+958,34269,1474,14,Desoto,Desoto-34269,Arcadia,North Port,294,Desoto-34269,"Arcadia, Lake Suzy",69,69,0.839885277546343,0.0152725160171398
+959,34275,1476,58,Sarasota,Sarasota-34275,Nokomis,"Venice, Laurel, Nokomis, Osprey",983,Sarasota-34275,"Nokomis, North Venice",244,244,0.891968465886884,0.00559754129604536
+960,34285,1477,58,Sarasota,Sarasota-34285,Venice,"Venice, Laurel, Nokomis, South Venice, Venice Gardens",984,Sarasota-34285,Venice,267,267,0.341701760255568,0.00217682500207444
+961,34286,1480,58,Sarasota,Sarasota-34286,North Port,North Port,985,Sarasota-34286,"North Port, Northport, Venice",459,459,0.71101231545711,0.00954036517805224
+962,34287,1482,58,Sarasota,Sarasota-34287,North Port,"North Port, Warm Mineral Springs",986,Sarasota-34287,"North Port, Venice",414,414,0.384564902241984,0.00462133225946641
+963,34288,1484,58,Sarasota,Sarasota-34288,North Port,North Port,987,Sarasota-34288,"North Port, Sarasota",226,226,0.334659399412228,0.00371087637929186
+964,34289,1485,58,Sarasota,Sarasota-34289,North Port,North Port,988,Sarasota-34289,North Port,33,33,0.147230814679931,0.000989802442759763
+965,34291,1486,58,Sarasota,Sarasota-34291,North Port,North Port,989,Sarasota-34291,"North Port, Venice",134,134,0.3337155519279,0.00504023662599524
+966,34292,1487,58,Sarasota,Sarasota-34292,Venice,"Venice, North Port, Nokomis, Plantation, Venice Gardens",990,Sarasota-34292,Venice,172,172,0.546861422470868,0.00848692059937025
+967,34293,1488,58,Sarasota,Sarasota-34293,Venice,"Venice, North Port, Plantation, South Venice, Venice Gardens, Warm Mineral Springs",991,Sarasota-34293,Venice,455,455,0.568997562874476,0.00720126296982008
+968,34420,1489,42,Marion,Marion-34420,Belleview,"Belleview, Silver Springs Shores",643,Marion-34420,Belleview,379,379,0.668878746844315,0.00665586768543067
+969,34428,1490,9,Citrus,Citrus-34428,Crystal River,"Inglis, Crystal River",155,Citrus-34428,Crystal River,215,215,1.52083302089814,0.0167065543441614
+970,34429,1492,9,Citrus,Citrus-34429,Crystal River,"Crystal River, Black Diamond, Homosassa Springs, Lecanto",156,Citrus-34429,Crystal River,237,237,4.91627469985834,0.0104455553908353
+971,34431,1494,38,Levy,Levy-34431,Dunnellon,Dunnellon,597,Levy-34431,Dunnellon,<5,-2,0.545726626577516,0.00691675817374788
+972,34431,1495,42,Marion,Marion-34431,Dunnellon,Dunnellon,644,Marion-34431,Dunnellon,187,187,0.557022803981379,0.0151312962411124
+973,34432,1498,42,Marion,Marion-34432,Dunnellon,"Dunnellon, Hernando",645,Marion-34432,Dunnellon,175,175,1.18481842634256,0.0269993468457184
+974,34433,1500,9,Citrus,Citrus-34433,Dunnellon,"Dunnellon, Citrus Springs, Pine Ridge",157,Citrus-34433,"Citrus Springs, Dunnellon",127,127,0.51280859303543,0.00849605978729494
+975,34434,1503,9,Citrus,Citrus-34434,Dunnellon,"Dunnellon, Citrus Springs, Hernando, Pine Ridge",158,Citrus-34434,"Citrus Springs, Dunnellon",197,197,0.587425733259913,0.00634651155627818
+976,34436,1505,9,Citrus,Citrus-34436,Floral City,Floral City,159,Citrus-34436,Floral City,124,124,0.824530855896642,0.0144319579131892
+977,34442,1508,9,Citrus,Citrus-34442,Hernando,"Citrus Hills, Citrus Springs, Hernando, Lecanto, Pine Ridge",160,Citrus-34442,"Citrus Hills, Hernando",212,212,0.869962820807217,0.0127918061871703
+978,34445,1511,9,Citrus,Citrus-34445,Holder,"Citrus Springs, Hernando, Pine Ridge",161,Citrus-34445,Holder,5,5,0.0346545092943262,4.53606353600595e-05
+979,34446,1512,9,Citrus,Citrus-34446,Homosassa,"Homosassa, Homosassa Springs, Lecanto, Sugarmill Woods",162,Citrus-34446,"Homosassa, Homosassa Springs",278,278,0.544550060999485,0.00736239905128284
+980,34448,1514,9,Citrus,Citrus-34448,Homosassa,"Crystal River, Homosassa, Homosassa Springs, Lecanto, Sugarmill Woods",163,Citrus-34448,Homosassa,124,124,4.44574743012019,0.018960396742854
+981,34449,1516,9,Citrus,Citrus-34449,Inglis,"Inglis, Yankeetown",164,Citrus-34449,,<5,-2,0.480450391201887,0.00199091637753116
+982,34449,1517,38,Levy,Levy-34449,Inglis,"Inglis, Yankeetown",598,Levy-34449,Inglis,32,32,3.05285206950755,0.0623135287782242
+983,34450,1519,9,Citrus,Citrus-34450,Inverness,"Inverness, Inverness Highlands South",165,Citrus-34450,Inverness,144,144,0.715435222790749,0.0111848877648428
+984,34452,1521,9,Citrus,Citrus-34452,Inverness,"Inverness, Floral City, Inverness Highlands North, Inverness Highlands South",166,Citrus-34452,Inverness,551,551,0.721287073271381,0.0196655518550984
+985,34453,1523,9,Citrus,Citrus-34453,Inverness,"Inverness, Citrus Hills, Hernando, Inverness Highlands North, Lecanto",167,Citrus-34453,Inverness,249,249,0.624669852078885,0.00570396288673787
+986,34461,1525,9,Citrus,Citrus-34461,Lecanto,"Black Diamond, Citrus Hills, Homosassa Springs, Lecanto, Pine Ridge, Sugarmill Woods",168,Citrus-34461,Lecanto,301,301,1.02647459907832,0.0111377389634795
+987,34465,1526,9,Citrus,Citrus-34465,Beverly Hills,"Beverly Hills, Black Diamond, Citrus Springs, Lecanto, Pine Ridge",169,Citrus-34465,"Beverly Hills, Pine Ridge",317,317,0.55045016357639,0.00581117757170484
+988,34470,1527,42,Marion,Marion-34470,Ocala,Ocala,646,Marion-34470,Ocala,541,541,0.447641263499867,0.00370811695420484
+989,34471,1528,42,Marion,Marion-34471,Ocala,Ocala,647,Marion-34471,Ocala,1177,1177,0.436593137359215,0.00497346909997427
+990,34472,1529,42,Marion,Marion-34472,Ocala,Silver Springs Shores,648,Marion-34472,Ocala,715,715,0.541446812918602,0.0113706369754394
+991,34473,1530,42,Marion,Marion-34473,Ocala,Ocala,649,Marion-34473,Ocala,703,703,0.553866308184688,0.00977484281640711
+992,34474,1532,42,Marion,Marion-34474,Ocala,Ocala,650,Marion-34474,Ocala,520,520,0.320136218258971,0.00505222904393561
+993,34475,1533,42,Marion,Marion-34475,Ocala,Ocala,651,Marion-34475,Ocala,749,749,0.507500293605626,0.00704140938294564
+994,34476,1534,42,Marion,Marion-34476,Ocala,Ocala,652,Marion-34476,Ocala,536,536,0.440858104417071,0.00847061292379083
+995,34479,1536,42,Marion,Marion-34479,Ocala,Ocala,653,Marion-34479,Ocala,308,308,0.524118299924525,0.00420891757124955
+996,34480,1537,42,Marion,Marion-34480,Ocala,"Ocala, Belleview",654,Marion-34480,Ocala,550,550,0.564143412881321,0.00784617500862998
+997,34481,1538,42,Marion,Marion-34481,Ocala,Ocala,655,Marion-34481,Ocala,315,315,0.676010268933256,0.0148430904852297
+998,34482,1539,42,Marion,Marion-34482,Ocala,Ocala,656,Marion-34482,Ocala,1986,1986,0.918054387910506,0.0216486689954755
+999,34484,1541,60,Sumter,Sumter-34484,Oxford,"Wildwood, The Villages",1046,Sumter-34484,Oxford,154,154,0.482236611437061,0.00693755878191401
+1000,34488,1542,42,Marion,Marion-34488,Silver Springs,Ocala,657,Marion-34488,Silver Springs,168,168,1.12613467623933,0.0239194186956455
+1001,34491,1543,42,Marion,Marion-34491,Summerfield,"Belleview, Lady Lake, The Villages",658,Marion-34491,Summerfield,445,445,0.79611188454161,0.0104990476075075
+1002,34498,1546,38,Levy,Levy-34498,Yankeetown,"Inglis, Yankeetown",599,Levy-34498,Yankeetown,7,7,0.887273855595305,0.00149536738544431
+1003,34601,1548,27,Hernando,Hernando-34601,Brooksville,"Brooksville, Floral City, Hill 'n Dale, Istachatta, Lake Lindsey, Nobleton, North Brooksville, South Brooksville, Spring Hill, Spring Lake, Sugarmill Woods, Wiscon",401,Hernando-34601,Brooksville,618,618,1.04301303922786,0.0303874322363549
+1004,34602,1550,27,Hernando,Hernando-34602,Brooksville,"Hill 'n Dale, Ridge Manor, South Brooksville, Spring Lake",402,Hernando-34602,Brooksville,129,129,0.760600546151236,0.0161836998859592
+1005,34604,1553,27,Hernando,Hernando-34604,Brooksville,"Brooksville, Brookridge, Garden Grove, Masaryktown, Shady Hills, South Brooksville, Spring Hill, Wiscon",403,Hernando-34604,"Brooksville, Spring Hill",222,222,0.471058749684961,0.0089062417032116
+1006,34606,1555,27,Hernando,Hernando-34606,Spring Hill,"Weeki Wachee, North Weeki Wachee, Spring Hill, Timber Pines",404,Hernando-34606,"Brooksville, Spring Hill, Weeki Wachee",543,543,0.298973862992102,0.00297651187676361
+1007,34607,1557,27,Hernando,Hernando-34607,Spring Hill,"Weeki Wachee, Aripeka, Bayport, Hernando Beach, North Weeki Wachee, Pine Island, Spring Hill, Weeki Wachee Gardens",405,Hernando-34607,"Brooksville, Hernando Beach, Spring Hill, Weeki Wachee",136,136,1.25065371692304,0.0067562429248486
+1008,34608,1559,27,Hernando,Hernando-34608,Spring Hill,"High Point, North Weeki Wachee, Shady Hills, Spring Hill",406,Hernando-34608,"Brooksville, Spring Hill",604,604,0.329107249065515,0.00391418200698998
+1009,34609,1560,27,Hernando,Hernando-34609,Spring Hill,"Brookridge, High Point, Spring Hill",407,Hernando-34609,"Brooksville, Spring Hill",808,808,0.332376512659741,0.00521613024484105
+1010,34610,1563,51,Pasco,Pasco-34610,Spring Hill,"Connerton, Quail Ridge, Shady Hills, Spring Hill",840,Pasco-34610,"Brooksville, Shady Hills, Spring Hill",244,244,0.669223412342269,0.0187713582957852
+1011,34613,1564,27,Hernando,Hernando-34613,Brooksville,"Weeki Wachee, Bayport, Brookridge, High Point, North Weeki Wachee, Pine Island, South Brooksville, Spring Hill, Weeki Wachee Gardens, Wiscon",408,Hernando-34613,"Brooksville, Spring Hill, Weeki Wachee",316,316,0.453298712425924,0.00779059930697523
+1012,34614,1566,27,Hernando,Hernando-34614,Brooksville,"North Weeki Wachee, South Brooksville, Sugarmill Woods",409,Hernando-34614,"Brooksville, Weeki Wachee",132,132,2.24621965081664,0.0236592589276466
+1013,34637,1567,51,Pasco,Pasco-34637,Land O Lakes,"Connerton, Land O' Lakes",841,Pasco-34637,Land O Lakes,339,339,0.283135691273657,0.00395461735890024
+1014,34638,1568,51,Pasco,Pasco-34638,Land O Lakes,"Connerton, Land O' Lakes, Moon Lake, Quail Ridge",842,Pasco-34638,Land O Lakes,639,639,0.564461274028048,0.0159605003250793
+1015,34639,1569,51,Pasco,Pasco-34639,Land O Lakes,"Connerton, Land O' Lakes, Wesley Chapel",843,Pasco-34639,Land O Lakes,537,537,0.486319144606223,0.00630166395836952
+1016,34652,1570,51,Pasco,Pasco-34652,New Port Richey,"New Port Richey, Port Richey, Beacon Square, Elfers",844,Pasco-34652,New Port Richey,525,525,0.373021305199616,0.00201025383519516
+1017,34653,1571,51,Pasco,Pasco-34653,New Port Richey,"New Port Richey, Port Richey, Elfers, Jasmine Estates, New Port Richey East",845,Pasco-34653,New Port Richey,681,681,0.238711625446063,0.00260441695944039
+1018,34654,1572,51,Pasco,Pasco-34654,New Port Richey,"Bayonet Point, Jasmine Estates, Meadow Oaks, Moon Lake, River Ridge",846,Pasco-34654,New Port Richey,479,479,0.346733656303185,0.00650976696288038
+1019,34655,1574,51,Pasco,Pasco-34655,New Port Richey,"Elfers, Holiday, Keystone, Moon Lake, Odessa, River Ridge, Trinity",847,Pasco-34655,"New Port Richey, Seven Springs, Trinity",849,849,0.545905917022356,0.00637087165192809
+1020,34661,1576,27,Hernando,Hernando-34661,Nobleton,Nobleton,410,Hernando-34661,Nobleton,<5,-2,0.0468170616607549,9.39842791819707e-05
+1021,34667,1579,51,Pasco,Pasco-34667,Hudson,"Aripeka, Bayonet Point, Heritage Pines, Hudson, Shady Hills, Spring Hill",848,Pasco-34667,"Bayonet Point, Hudson, Port Richey",672,672,0.773805393896391,0.0077881918412624
+1022,34668,1580,51,Pasco,Pasco-34668,Port Richey,"New Port Richey, Port Richey, Bayonet Point, Jasmine Estates, New Port Richey East",849,Pasco-34668,Port Richey,848,848,0.544223130254354,0.00388539272221019
+1023,34669,1581,51,Pasco,Pasco-34669,Hudson,"Bayonet Point, Hudson, Meadow Oaks, Moon Lake, Quail Ridge, Shady Hills",850,Pasco-34669,"Hudson, New Port Richey, Port Richey",272,272,0.333071745441038,0.00468662960387943
+1024,34677,1583,52,Pinellas,Pinellas-34677,Oldsmar,"Safety Harbor, Oldsmar, East Lake, Palm Harbor",892,Pinellas-34677,Oldsmar,445,445,0.342645000534422,0.00328594075495601
+1025,34681,1584,52,Pinellas,Pinellas-34681,Crystal Beach,Palm Harbor,893,Pinellas-34681,Crystal Beach,29,29,0.0972191718249077,0.000141714939425055
+1026,34683,1585,52,Pinellas,Pinellas-34683,Palm Harbor,"Tarpon Springs, Dunedin, Palm Harbor",894,Pinellas-34683,Palm Harbor,561,561,0.484473149391589,0.00271930668139503
+1027,34684,1586,52,Pinellas,Pinellas-34684,Palm Harbor,"Clearwater, Tarpon Springs, Dunedin, East Lake, Palm Harbor",895,Pinellas-34684,Palm Harbor,568,568,0.209771727078393,0.00170632003168016
+1028,34685,1588,52,Pinellas,Pinellas-34685,Palm Harbor,"Oldsmar, East Lake, Keystone, Palm Harbor",896,Pinellas-34685,Palm Harbor,332,332,0.31894570361748,0.00304149004971448
+1029,34688,1591,52,Pinellas,Pinellas-34688,Tarpon Springs,"Tarpon Springs, East Lake, Holiday, Keystone, Trinity",897,Pinellas-34688,Tarpon Springs,174,174,0.299723988450781,0.00354775630148942
+1030,34689,1593,52,Pinellas,Pinellas-34689,Tarpon Springs,"Tarpon Springs, East Lake, Holiday, Palm Harbor",898,Pinellas-34689,"Clearwater, Tarpon Springs",633,633,0.409221420320228,0.00330616464194351
+1031,34690,1594,51,Pasco,Pasco-34690,Holiday,"Beacon Square, Elfers, Holiday",851,Pasco-34690,"Holiday, Tarpon Springs",275,275,0.172759678987772,0.000873120812225797
+1032,34691,1596,51,Pasco,Pasco-34691,Holiday,"Beacon Square, Elfers, Holiday, Key Vista",852,Pasco-34691,"Holiday, Tarpon Springs",402,402,0.495864027248565,0.0022069256578647
+1033,34695,1598,52,Pinellas,Pinellas-34695,Safety Harbor,"Tampa, Clearwater, Safety Harbor, Oldsmar",899,Pinellas-34695,Safety Harbor,352,352,0.192250274010714,0.001411914860985
+1034,34698,1599,52,Pinellas,Pinellas-34698,Dunedin,"Clearwater, Dunedin, Greenbriar, Palm Harbor",900,Pinellas-34698,Dunedin,642,642,0.667493684314426,0.00279309360961472
+1035,34705,1600,35,Lake,Lake-34705,Astatula,Astatula,523,Lake-34705,Astatula,65,65,0.374825307404372,0.00557377222769421
+1036,34711,1601,35,Lake,Lake-34711,Clermont,"Groveland, Minneola, Clermont",524,Lake-34711,"Clermont, Minneola",1335,1335,1.04358725309211,0.0144557636399694
+1037,34714,1602,35,Lake,Lake-34714,Clermont,"Four Corners, Horizon West",525,Lake-34714,Clermont,478,478,1.00053371512771,0.0257272074711218
+1038,34715,1605,35,Lake,Lake-34715,Clermont,"Groveland, Minneola, Clermont, Montverde, Ferndale",526,Lake-34715,"Clermont, Minneola",519,519,0.933196482459345,0.0101724402492178
+1039,34731,1607,35,Lake,Lake-34731,Fruitland Park,"Fruitland Park, Lady Lake, Leesburg, The Villages",527,Lake-34731,Fruitland Park,196,196,0.438673078947955,0.00517558128588041
+1040,34734,1609,48,Orange,Orange-34734,Gotha,"Ocoee, Gotha, Lake Butler",747,Orange-34734,Gotha,100,100,0.133481075400306,0.000593243661425039
+1041,34736,1610,35,Lake,Lake-34736,Groveland,"Groveland, Mascotte, Wildwood, Clermont, Leesburg",528,Lake-34736,Groveland,592,592,1.91923658973463,0.0398897110538453
+1042,34737,1613,35,Lake,Lake-34737,Howey In The Hills,"Groveland, Howey-in-the-Hills, Leesburg, Yalaha",529,Lake-34737,"Groveland, Howey-in-the-hills",63,63,0.526215113998823,0.00671765412595013
+1043,34739,1615,31,Indian River,Indian River-34739,Kenansville,Kenansville,488,Indian River-34739,,0,0,0.283493702167214,0.00136283024000617
+1044,34739,1617,49,Osceola,Osceola-34739,Kenansville,Kenansville,755,Osceola-34739,Kenansville,13,13,2.4037942157752,0.126718057194984
+1045,34741,1620,49,Osceola,Osceola-34741,Kissimmee,"Kissimmee, Campbell, Hunters Creek",756,Osceola-34741,Kissimmee,2792,2792,0.314923829984176,0.00399761650113606
+1046,34743,1622,49,Osceola,Osceola-34743,Kissimmee,"Kissimmee, Buenaventura Lakes, Meadow Woods",757,Osceola-34743,"Buena Ventura Lakes, Kissimmee",1656,1656,0.178956120829738,0.00167487346399639
+1047,34744,1624,49,Osceola,Osceola-34744,Kissimmee,"Kissimmee, St. Cloud, Buenaventura Lakes, Southchase",758,Osceola-34744,"Kindred, Kissimmee",2824,2824,0.59026359950131,0.0109810457443332
+1048,34746,1626,49,Osceola,Osceola-34746,Kissimmee,"Kissimmee, Campbell, Celebration, Hunters Creek",759,Osceola-34746,Kissimmee,1831,1831,0.806140915861516,0.0155104269966855
+1049,34747,1628,49,Osceola,Osceola-34747,Kissimmee,"Celebration, Four Corners, Loughman",760,Osceola-34747,"Celebration, Kissimmee, Reunion",625,625,0.543845545344634,0.00916018846329031
+1050,34748,1630,35,Lake,Lake-34748,Leesburg,"Wildwood, Fruitland Park, Leesburg, Okahumpka, The Villages, Yalaha",530,Lake-34748,Leesburg,1100,1100,1.09582108523052,0.0142329774284282
+1051,34753,1632,35,Lake,Lake-34753,Mascotte,"Groveland, Mascotte",531,Lake-34753,Mascotte,237,237,0.228394879139705,0.000887729694900031
+1052,34756,1633,35,Lake,Lake-34756,Montverde,"Minneola, Clermont, Montverde, Ferndale",532,Lake-34756,"Bella Collina, Montverde",135,135,0.21610122325598,0.00236475021595827
+1053,34758,1635,49,Osceola,Osceola-34758,Kissimmee,"Campbell, Poinciana",761,Osceola-34758,"Kissimmee, Poinciana",1430,1430,0.471058982578616,0.00859398803752731
+1054,34759,1637,49,Osceola,Osceola-34759,Kissimmee,Poinciana,762,Osceola-34759,Kissimmee,12,12,0.865738411509322,0.00674494850398161
+1055,34759,1638,53,Polk,Polk-34759,Kissimmee,Poinciana,938,Polk-34759,"Kissimmee, Poinciana",1030,1030,0.783268763996185,0.0128412167766548
+1056,34760,1639,48,Orange,Orange-34760,Oakland,"Oakland, Winter Garden",748,Orange-34760,Oakland,23,23,0.0623668858255805,0.000145265507190028
+1057,34761,1640,48,Orange,Orange-34761,Ocoee,"Apopka, Winter Garden, Ocoee, Clarcona, Gotha, Lake Butler, Paradise Heights",749,Orange-34761,Ocoee,1527,1527,0.635225742377224,0.00397323032476016
+1058,34762,1641,35,Lake,Lake-34762,Okahumpka,"Wildwood, Leesburg, Okahumpka, Yalaha",533,Lake-34762,Okahumpka,18,18,0.47212341027013,0.00380397094067948
+1059,34769,1643,49,Osceola,Osceola-34769,Saint Cloud,St. Cloud,763,Osceola-34769,Saint Cloud,873,873,0.327112772892293,0.00241557716584989
+1060,34771,1645,49,Osceola,Osceola-34771,Saint Cloud,St. Cloud,764,Osceola-34771,Saint Cloud,539,539,1.70617064280298,0.0422655745434941
+1061,34772,1646,49,Osceola,Osceola-34772,Saint Cloud,St. Cloud,765,Osceola-34772,Saint Cloud,894,894,1.01060833616522,0.0321087480044125
+1062,34773,1650,49,Osceola,Osceola-34773,Saint Cloud,Saint Cloud,766,Osceola-34773,"Harmony, Saint Cloud",87,87,2.27497935530022,0.0863186288950191
+1063,34785,1652,60,Sumter,Sumter-34785,Wildwood,"Wildwood, Coleman, The Villages",1047,Sumter-34785,Wildwood,481,481,1.10074110819827,0.0206009699834555
+1064,34786,1653,48,Orange,Orange-34786,Windermere,"Bay Lake, Windermere, Winter Garden, Ocoee, Bay Hill, Gotha, Horizon West, Lake Butler",750,Orange-34786,Windermere,1060,1060,0.503567742747562,0.00646778473035516
+1065,34787,1654,35,Lake,Lake-34787,Winter Garden,"Clermont, Four Corners, Horizon West",534,Lake-34787,"Orlando, Winter Garden",<5,-2,0.626137653470145,0.00263374628721133
+1066,34787,1655,48,Orange,Orange-34787,Winter Garden,"Bay Lake, Oakland, Winter Garden, Ocoee, Four Corners, Horizon West, Lake Butler, Tildenville",751,Orange-34787,"Oakland, Ocoee, Winter Garden",1831,1831,0.978417926784521,0.0185153984974354
+1067,34788,1657,35,Lake,Lake-34788,Leesburg,"Tavares, Leesburg, Lisbon, Silver Lake",535,Lake-34788,Leesburg,336,336,0.611920753815539,0.0124088684697929
+1068,34797,1659,35,Lake,Lake-34797,Yalaha,"Leesburg, Yalaha",536,Lake-34797,Yalaha,32,32,0.287516743299864,0.00298266958064478
+1069,34945,1662,56,St. Lucie,St. Lucie-34945,Fort Pierce,"Fort Pierce, Port St. Lucie",1020,St. Lucie-34945,Fort Pierce,155,155,1.00381574373479,0.0503260235685172
+1070,34946,1664,56,St. Lucie,St. Lucie-34946,Fort Pierce,"Fort Pierce, St. Lucie Village, Florida Ridge, Fort Pierce North, Lakewood Park",1021,St. Lucie-34946,"Fort Pierce, Saint Lucie Village",202,202,0.369619808665084,0.00365305925257977
+1071,34947,1665,56,St. Lucie,St. Lucie-34947,Fort Pierce,"Fort Pierce, Fort Pierce North, Fort Pierce South",1022,St. Lucie-34947,Fort Pierce,562,562,0.243777123232146,0.00229718523053537
+1072,34949,1667,56,St. Lucie,St. Lucie-34949,Fort Pierce,"Fort Pierce, Hutchinson Island South, South Beach",1023,St. Lucie-34949,"Fort Pierce, Hutchinson Island",67,67,1.00661440471613,0.00227747065943461
+1073,34950,1668,56,St. Lucie,St. Lucie-34950,Fort Pierce,"Fort Pierce, Fort Pierce North",1024,St. Lucie-34950,Fort Pierce,862,862,0.187105971764216,0.00123267216648506
+1074,34951,1670,56,St. Lucie,St. Lucie-34951,Fort Pierce,"Florida Ridge, Lakewood Park",1025,St. Lucie-34951,Fort Pierce,267,267,0.378501726976262,0.00577177993586555
+1075,34952,1672,56,St. Lucie,St. Lucie-34952,Port Saint Lucie,"Port St. Lucie, Indian River Estates, River Park, White City",1026,St. Lucie-34952,"Fort Pierce, Lucedale, Port Saint Lucie",1119,1119,0.474854342855393,0.00615001844893134
+1076,34953,1674,56,St. Lucie,St. Lucie-34953,Port Saint Lucie,Port St. Lucie,1027,St. Lucie-34953,"Fort Pierce, Hispanic, Port Saint Lucie, Port St. Lucie, Saint Lucie West",1981,1981,0.383128129329612,0.00701283469830833
+1077,34956,1675,43,Martin,Martin-34956,Indiantown,"Port St. Lucie, Indiantown",665,Martin-34956,Indiantown,1003,1003,1.5062183259199,0.0557328856702918
+1078,34957,1678,43,Martin,Martin-34957,Jensen Beach,"Port St. Lucie, Stuart, Ocean Breeze Park, Jensen Beach, North River Shores, Rio",666,Martin-34957,"Jensen Beach, Ocean Breeze",358,358,0.350921164325594,0.00259651107567243
+1079,34957,1679,56,St. Lucie,St. Lucie-34957,Jensen Beach,"Port St. Lucie, Hutchinson Island South, Jensen Beach, North River Shores",1028,St. Lucie-34957,Jensen Beach,7,7,0.496343519573485,0.00141749307633792
+1080,34972,1683,47,Okeechobee,Okeechobee-34972,Okeechobee,"Okeechobee, Cypress Quarters",703,Okeechobee-34972,"Basinger, Okeechobee, Yeehaw",1038,1038,2.23318071951451,0.163426590668138
+1081,34972,1684,49,Osceola,Osceola-34972,Okeechobee,Yeehaw Junction,767,Osceola-34972,,<5,-2,0.564450379440183,0.00695399468781912
+1082,34972,1685,56,St. Lucie,St. Lucie-34972,Okeechobee,Okeechobee,1029,St. Lucie-34972,"Okeechobee, Port Saint Lucie",<5,-2,0.822358408188816,0.00743584155888252
+1083,34974,1686,22,Glades,Glades-34974,Okeechobee,Buckhead Ridge,384,Glades-34974,,0,0,2.50383793160037,0.08908775561882
+1084,34974,1688,28,Highlands,Highlands-34974,Okeechobee,Okeechobee,419,Highlands-34974,Okeechobee,<5,-2,0.463798429058146,0.00352704969015471
+1085,34974,1689,43,Martin,Martin-34974,Okeechobee,Okeechobee,667,Martin-34974,,0,0,1.2181603438777,0.0336346794263752
+1086,34974,1690,47,Okeechobee,Okeechobee-34974,Okeechobee,"Okeechobee, Buckhead Ridge, Cypress Quarters, Taylor Creek",704,Okeechobee-34974,Okeechobee,635,635,1.21300084207493,0.0472703966646816
+1087,34974,1691,50,Palm Beach,Palm Beach-34974,Okeechobee,Okeechobee,822,Palm Beach-34974,,0,0,1.39292972781411,0.0540403675498509
+1088,34981,1693,56,St. Lucie,St. Lucie-34981,Fort Pierce,"Fort Pierce, Port St. Lucie, Fort Pierce South, White City",1030,St. Lucie-34981,Fort Pierce,127,127,0.234255633947124,0.00243692545945534
+1089,34982,1694,56,St. Lucie,St. Lucie-34982,Fort Pierce,"Fort Pierce, Port St. Lucie, Fort Pierce South, Indian River Estates, White City",1031,St. Lucie-34982,Fort Pierce,846,846,0.407829136905867,0.00420046845509468
+1090,34983,1695,56,St. Lucie,St. Lucie-34983,Port Saint Lucie,"Port St. Lucie, River Park, White City",1032,St. Lucie-34983,"Fort Pierce, Port Saint Lucie, Saint Lucie West",1275,1275,0.346602406026079,0.00358614677877503
+1091,34984,1697,56,St. Lucie,St. Lucie-34984,Port Saint Lucie,Port St. Lucie,1033,St. Lucie-34984,"Fort Pierce, Port Saint Lucie, Pt St Lucie",368,368,0.329791168385238,0.00228466803225275
+1092,34986,1698,56,St. Lucie,St. Lucie-34986,Port Saint Lucie,Port St. Lucie,1034,St. Lucie-34986,"Fort Pierce, Port Saint Lucie, Saint Lucie West",562,562,0.282047158643313,0.00438887730048432
+1093,34987,1700,56,St. Lucie,St. Lucie-34987,Port Saint Lucie,Port St. Lucie,1035,St. Lucie-34987,"Fort Pierce, Port Saint Lucie",298,298,0.827949316526095,0.0224406305390199
+1094,34988,1702,56,St. Lucie,St. Lucie-34988,Port Saint Lucie,Port St. Lucie,1036,St. Lucie-34988,Port Saint Lucie,<5,-2,0.603034966325741,0.00881872498148673
+1095,34990,1703,43,Martin,Martin-34990,Palm City,"Port St. Lucie, Stuart, Palm City",668,Martin-34990,Palm City,668,668,0.676982742147224,0.022477289851468
+1096,34990,1704,56,St. Lucie,St. Lucie-34990,Palm City,"Port St. Lucie, Palm City",1037,St. Lucie-34990,Palm City,<5,-2,0.353105423203568,0.000726251049744349
+1097,34994,1705,43,Martin,Martin-34994,Stuart,"Stuart, Jensen Beach, North River Shores, Palm City, Rio",669,Martin-34994,Stuart,864,864,0.306352604883743,0.00200292106862375
+1098,34996,1707,43,Martin,Martin-34996,Stuart,"Stuart, Sewall's Point, Jensen Beach, Rio",670,Martin-34996,"Sewalls Point, Stuart",230,230,0.591972010484446,0.00253170336911996
+1099,34997,1708,43,Martin,Martin-34997,Stuart,"Stuart, Palm City, Port Salerno",671,Martin-34997,Stuart,1469,1469,0.805648314197842,0.0116005123829747
+1100,00043,9991,9991,Dade,Dade-00043,NONE,Federal Land,,,,0,0,3.39006551019466,0.131880660436668
+1101,32323,1152,19,Franklin,Franklin-32323,Lanark Village,Lanark Village,364,Franklin-32323,Lanark Village,<5,-2,0.030551808867348,2.20118349001126e-05
+1102,32815,725,64,Volusia,Volusia-32815,,,1095,Volusia-32815,,0,0,0.390858799999102,0.000639516190822103
