@@ -704,10 +704,12 @@ class PopulaceGraph:
         self.population = len(self.populace)
 
 
-    # for sorting people into a dict ofcategories. For example, so that if one wants the indexes of all people with the some school id, they could do
-    # pops_by_category['school_id'][someInt]
-    # takes a dict of dicts to rep resent populace and returns a list of dicts of lists to represent groups of people with the same
-    # attributes
+    # To sort people into a dict of categories. 
+    # For example, if one wants the indexes of all people with the some school id, they could do
+    #    pops_by_category['school_id'][someInt]
+    # takes a dict of dicts to represent populace and returns a list of dicts of 
+    #    lists to represent groups of people with the same attributes
+    #  Give an example fo person[category], and an example of category
         pops_by_category = {category: {} for category in attributes}
 
         for index in range(len(self.populace)):
@@ -718,7 +720,6 @@ class PopulaceGraph:
                 except:
                     pops_by_category[category][person[category]] = [index]
         self.pops_by_category = pops_by_category
-
 
 
         #list households:
