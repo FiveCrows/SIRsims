@@ -86,13 +86,13 @@ class TransmissionWeighter:
     def getWeight(self, personA, personB, environment):
         weight = self.global_weight*self.env_scalars[environment.type]
         #including masks
-        if environment.preventions != None:
-            if random.random() < environment.preventions["masking"]:
+        if environment.prev_efficacies != None:
+            if random.random() < environment.prev_efficacies["masking"]:
                 weight = weight * self.prevention_reductions["masking"]
-                if random.random() < environment.preventions["masking"]**2:
+                if random.random() < environment.prev_efficacies["masking"]**2:
                     weight = weight * self.prevention_reductions["masking"]
             #distancing weight reduction
-            weight = weight*(1-(1-self.prevention_reductions["distancing"]) * environment.preventions["distancing"])
+            weight = weight*(1 - (1-self.prevention_reductions["distancing"]) * environment.prev_efficacies["distancing"])
         return weight
 
 
@@ -442,7 +442,7 @@ class PopulaceGraph:
                     if i == j:
                         self.clusterStrogatz(environment, num_edges, weight_scalar =1, subgroup = p_sets[i])
                     else:
-                        self.clusterBipartite(environment, p_sets[i], p_sets[j], num_edges,weight_scalar=1)
+                        self.buildBipartiteNet(environment, p_sets[i], p_sets[j], num_edges, weight_scalar=1)
 
 
 
@@ -522,7 +522,7 @@ class PopulaceGraph:
 
             def addEdgeWithAttachmentTracking(self, nodeA, nodeB, attachments, id_to_partition, mask_p, weight):
                 w = self.trans_weighter.genMaskScalar(mask_p) * weight
-                self.graph.add_edge(nodeA, nodeB, transmission_weight=w)
+                self.graph.addEdge(nodeA, nodeB, transmission_weight=w)
                 groupA = id_to_partition[nodeA]
                 groupB = id_to_partition[nodeB]
 

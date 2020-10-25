@@ -22,6 +22,7 @@ household_preventions = {'masking':0.0, 'distancing':0}
 preventions = {'workplace': workplace_preventions, 'school': school_preventions, 'household': household_preventions}
 #these values specify how much of a reduction in weight occurs when people are masked, or distancing
 prevention_reductions = {'masking': 0.1722, 'distancing': 0.2071}# dustins values
+
 #this object holds rules and variables for choosing weights
 trans_weighter = TransmissionWeighter(default_env_scalars, prevention_reductions)
 #gamma is the recovery rate, and the inverse of expected recovery time
@@ -88,3 +89,4 @@ plt.imshow(largestWorkplace.contact_matrix)
 #add description to overleaf
 
 #plot some network-charts
+

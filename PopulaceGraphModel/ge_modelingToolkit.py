@@ -190,13 +190,13 @@ class TransmissionWeighter:
 
         weight = self.global_weight * self.env_scalars[environment.type]
         #including masks
-        if environment.preventions != None:
-            if random.random() < environment.preventions["masking"]:
+        if environment.prev_efficacies != None:
+            if random.random() < environment.prev_efficacies["masking"]:
                 weight = weight * self.prevention_reductions["masking"]
-                if random.random() < environment.preventions["masking"]**2:
+                if random.random() < environment.prev_efficacies["masking"]**2:
                     weight = weight * self.prevention_reductions["masking"]
             #distancing weight reduction
-            weight = weight*(1-(1-self.prevention_reductions["distancing"]) * environment.preventions["distancing"])
+            weight = weight*(1 - (1-self.prevention_reductions["distancing"]) * environment.prev_efficacies["distancing"])
         self.getWeight_time += time.time() - start_time
         return weight
 
@@ -290,7 +290,7 @@ class PopulaceGraph:
             print("-----------------")
             print(self.environments[keys[k]].members)  # list of one element [12]. Meaning? 
             print(self.environments[keys[k]].population)  # 1  (nb of members)
-            print(self.environments[keys[k]].preventions)  # None (or a list?
+            print(self.environments[keys[k]].prev_efficacies)  # None (or a list?
             print(self.environments[keys[k]].type)  # list of one element [12]. Meaning? 
 
     #-------------------------------
@@ -447,7 +447,7 @@ class PopulaceGraph:
         # different preventions
         for index in self.environments:
             env = self.environments[index]
-            env.preventions = preventions[env.type]  # how are preventions used in the model? 
+            env.prev_efficacies = preventions[env.type]  # how are preventions used in the model?
             self.constructGraphFromCM(env, alg)
         self.isBuilt = True
 
@@ -476,7 +476,7 @@ class PopulaceGraph:
         #update new prevention strategies on each environment
         for index in self.environments:
             environment             = self.environments[index]
-            environment.preventions = preventions[environment.type]
+            environment.prev_efficacies = preventions[environment.type]
 
         #pick and replace weights for each environment
         for edge in self.graph.edges():
@@ -885,7 +885,7 @@ class PopulaceGraph:
 
             def addEdgeWithAttachmentTracking(self, nodeA, nodeB, attachments, id_to_partition, mask_p, weight):
                 w = self.trans_weighter.genMaskScalar(mask_p) * weight
-                self.graph.add_edge(nodeA, nodeB, transmission_weight=w)
+                self.graph.addEdge(nodeA, nodeB, transmission_weight=w)
                 groupA = id_to_partition[nodeA]
                 groupB = id_to_partition[nodeB]
 

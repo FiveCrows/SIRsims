@@ -315,12 +315,12 @@ class PopulaceGraph:
                     for j in range(k):
                         if random.random() > p_random:
                             B_side = (begin_B_edges + j) % size_B
-                            self.graph.add_edge(A[i], B[B_side], transmission_weight=weight)
+                            self.graph.addEdge(A[i], B[B_side], transmission_weight=weight)
                         else:
-                            self.graph.add_edge(random.choice(A), random.choice(B))
+                            self.graph.addEdge(random.choice(A), random.choice(B))
 
                 for i in range(remainder):
-                    self.graph.add_edge(random.choice(A), random.choice(B))
+                    self.graph.addEdge(random.choice(A), random.choice(B))
 
             #don't for get to add remainder edges too
 
