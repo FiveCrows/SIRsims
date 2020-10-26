@@ -13,18 +13,20 @@ prevention_prevalences = {"household": {"masking": 0, "distancing": 0},
                           "workplace": {"masking": 0, "distancing": 0}}
 
 #initialize populaceGraph
-model = PopulaceGraph(partitioner, prevention_prevalences)
+slim = True
+model = PopulaceGraph(partitioner, prevention_prevalences, slim=slim)
 model.differentiateMasks([0.25,0.5,0.25])
 
 #construct netBuilder
 #en_type_scalars is used to scale each weight, depending on the type of environment the edge will be placed in
 env_type_scalars = {"household": 1, "school": 0.3, "workplace": 0.3}
-prevention_efficacies = {"masking": 0.7, "distancing": 0.7}
 #this dict is used to decide who is masking, and who is distancing
+prevention_efficacies = {"masking": 0.7, "distancing": 0.7}
+
 netBuilder = NetBuilder(env_type_scalars, prevention_efficacies, 0, 0)
 model.buildNetworks(netBuilder)
 model.simulate(gamma, tau, title = "cv is None")
-cv_vals = np.arange(0,1,0.1)
+cv_vals = np.arange(0,1,0.1)  # Coefficient of variation (stdev/mean)
 
 for cv in cv_vals:
     print(cv)

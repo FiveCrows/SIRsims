@@ -30,3 +30,4 @@ matches the contact matrix passed as an argument closely
 bipartiteInvestigation.py was written to make sure the bipartite algorithm was working effectively.
 It needs to be called with four integers, the n1,n2,m1,m2, which is the number of people and average degrees for bipartite members
 
+
