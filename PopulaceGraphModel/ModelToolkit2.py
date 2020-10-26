@@ -862,7 +862,7 @@ class PopulaceGraph:
                            #initial_infecteds=self.initial_infected, transmission_weight='transmission_weight',
                            #return_full_data=full_data)
 
-        simResult = simAlg(graph, tau, gamma, transmission_weight='transmission_weight',return_full_data=full_data)
+        simResult = simAlg(graph, tau, gamma, rho = 0.001, transmission_weight='transmission_weight',return_full_data=full_data)
         self.sims.append([simResult, title, [gamma, tau], preventions])
 
     def plotNodeDegreeHistogram(self, environment = None, layout = 'bars', ax = None, normalized = True):
