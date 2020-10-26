@@ -359,7 +359,6 @@ class NetBuilder:
                 else:
                     remainder +=1
 
-
         eList = self.genRandEdgeList(members_A, members_B, remainder)
         for edge in eList:
             weight = self.getWeight(edge[0], edge[1], environment)
@@ -851,6 +850,25 @@ class PopulaceGraph:
         plt.ylabel('Age Group')
         plt.show()
 
+    #----------------------
+    def returnContactMatrix(self, environment):
+        graph = self.graph.subgraph(environment.members)
+        partition = environment.partitioner
+        contact_matrix = np.zeros([partition.num_sets, partition.num_sets])
+        partition_sizes = [len(environment.partition[i]) for i in environment.partition]
+
+        for i in graph.nodes():
+            iPartition = environment.id_to_partition[i]
+            contacts = graph[i]
+            for j in contacts:
+                jPartition = environment.id_to_partition[j]
+                contact_matrix[iPartition, jPartition] += self.graph[i][j]['transmission_weight'] / partition_sizes[iPartition]
+
+
+        # plt.imshow(np.array([row / np.linalg.norm(row) for row in contact_matrix]))
+        return contact_matrix
+
+    #----------------------------------
     def simulate(self, gamma, tau, simAlg=EoN.fast_SIR, title=None, full_data=True, preventions=None):
 
         graph = nx.Graph()
