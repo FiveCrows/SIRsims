@@ -475,8 +475,7 @@ class NetBuilder:
                 print("warning: number of mask types does not match list size for reduction factors")
             #reduction factors for the type of mask person A and B wear
             redA, redB = mask_eff[environment.mask_status[personA]], mask_eff["masking"][environment.mask_status[personB]]
-            weight = weight*(1-redA)(1-redB)
-        #this assumes that two distancers don't double distance, but at least one distancer is needed to be distanced, will be 1 or 0
+            weight = weight*(1-redA)*(1-redB)        #this assumes that two distancers don't double distance, but at least one distancer is needed to be distanced, will be 1 or 0
         isDistanced = int(bool(environment.distance_status[personA]) or bool(environment.distance_status[personB]))
         #only applies when isDistanced is 1
         weight = weight*(1-self.prev_efficacies["distancing"])**isDistanced
