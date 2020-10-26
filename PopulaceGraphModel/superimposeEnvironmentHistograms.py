@@ -23,7 +23,7 @@ which_model = 'random_GE'           # GE contact graph algorithm
 #which_model = 'strogatz_AB'         # AB contact graph algorithm (makeGraph)
 
 model = PopulaceGraph( partition, slim = False)
-
+model
 if which_model == 'strogatz_AB':
     model.build(trans_weighter, preventions, env_degrees, alg = model.clusterPartitionedStrogatz)
     name = "Strogatz (Bryan)"
