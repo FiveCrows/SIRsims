@@ -485,6 +485,7 @@ class NetBuilder:
         #only applies when isDistanced is 1
         weight = weight*(1-self.prev_efficacies["distancing"])**isDistanced
         #add noise to the weight, if requested
+        print("self.cv_dict= ", self.cv_dict)
         if "weight" in self.cv_dict: weight = weight * np.random.normal(1, self.weight_cv)
         
         return weight
