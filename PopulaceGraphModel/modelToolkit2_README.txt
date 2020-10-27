@@ -1,4 +1,4 @@
-Written by Bryan Ashbill, 2020-10-26
+Written by Bryan Azbill, 2020-10-26
 
 Updates to modelToolkit2 
 
