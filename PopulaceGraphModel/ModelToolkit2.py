@@ -11,10 +11,16 @@ import numpy as np
 import math
 from scipy.interpolate import interp1d
 
-#WIP
-#def timeit(method):
-#    def timed(*args, **kw)
-#        #t_start
+
+def timeit(method):
+    def timed(*args, **kw):
+        t_start = time.time()
+        result = method(*args, **kw)
+        t_final = time.time()
+        print("{} completed in {} seconds".format((t_final-t_start)*1000))
+        return result
+
+
 
 class Partitioner:
     """
@@ -62,19 +68,19 @@ class Environment:
     Objects to the carry details for every home
     """
 
-    def __init__(self, index, members, type):
+    def __init__(self, index, members, quality):
         """
         :param index: int
         an identifier
         :param members: list
         a list of people who attend the environment
-        :param type: string
+        :param quality: string
         either 'household', 'school', or 'workplace'
         """
 
         self.index = index
         self.members = members
-        self.type = type
+        self.quality = quality
         self.population = len(members)
         self.num_mask_types = 1
         # self.distancing = distancing
@@ -94,7 +100,7 @@ class Environment:
         :return:
         """
 
-        prevalences = prevalences[self.type]
+        prevalences = prevalences[self.quality]
         #assign distancers
         num_distancers = int(self.population * prevalences["distancing"])
         distance_status = [1] * num_distancers + [0] * (self.population - num_distancers)
@@ -114,7 +120,7 @@ class Environment:
         self.mask_status = dict(zip(self.members, mask_status))
         self.distance_status = dict(zip(self.members, distance_status))
 
-
+    @timeit
     def reweight(self, netBuilder, newPreventions = None):
         """
         Rechooses the weights on each edge with, presumably, a distinct weighter or preventions
@@ -160,13 +166,13 @@ class StructuredEnvironment(Environment):
     These environments are extended with a contact matrix and partition
     """
 
-    def __init__(self, index, members, type, populace, contact_matrix, partitioner, preventions = None):
+    def __init__(self, index, members, quality, populace, contact_matrix, partitioner, preventions = None):
         """
         :param index: int
         to index the specific environment
         :param members: list
         a list of people who attend the environment
-        :param type: string
+        :param quality: string
         either 'household', 'school', or 'workplace'
         :param preventions: dict
         keys should be 'household', 'school', or 'workplace'. Each should map to another dict,
@@ -178,7 +184,7 @@ class StructuredEnvironment(Environment):
         :param partitioner: Partitioner
         for creating a partition
         """
-        super().__init__(index,members, type)
+        super().__init__(index, members, quality)
         self.partitioner = partitioner
         self.contact_matrix = contact_matrix
         self.id_to_partition = dict.fromkeys(members)
@@ -217,7 +223,7 @@ class NetBuilder:
     and Random nets for partitioned Environments.
     """
 
-    def __init__(self, env_type_scalars, prev_efficacies, weight_cv = 0, contact_cv = 0, avg_contacts = None):
+    def __init__(self, env_type_scalars, prev_efficacies, cv_dict = {}, avg_contacts = None):
         """
         :param env_type_scalars: dict
         each environment type must map to a float. is for scaling weights
@@ -231,19 +237,16 @@ class NetBuilder:
         :param avg_contacts:
         if specified, the number of edges picked for an environment will be chosen to meet avg_contacts
 
-        :param weight_cv: float
-        the coefficient of variation. If specified, weight = weight * np.random.normal(1, cv)
-        this will normally distribute weights with stddev cv*weight
-
-        :param contact_cv:
-        the coefficient of variations for dispersing the number of edges between partitions
+        :param cv_dict: dict
+        the cv dict allows the user to specify values for keys "weight", "contact", and "mask_eff",
+        which will be used as the coefficient of variation for applying noise to these parrameters,
+        noise to the weights, the number of contacts in structured environments, and the efficacy of masks
         """
 
         self.global_weight = 1
         self.prev_efficacies = prev_efficacies
         self.env_scalars = env_type_scalars
-        self.weight_cv = weight_cv
-        self.contact_cv = contact_cv
+        self.cv_dict = cv_dict
         self.avg_contacts = avg_contacts
 
     #def list
@@ -274,7 +277,7 @@ class NetBuilder:
             members = environment.members
         else:
             members = subgroup
-        type = environment.type
+        type = environment.quality
         member_count = len(members)
 
         for i in range(member_count):
@@ -388,9 +391,9 @@ class NetBuilder:
         p_sets = environment.partition
         CM = environment.returnReciprocatedCM()
 
-        #add gaussian noise to contact matrix values
-        if self.contact_cv != None:
-            CM = CM*np.random.normal(1, self.contact_cv, CM.shape)
+        #add gaussian noise to contact matrix values if specified
+        if "contact" in self.cv_dict: CM = CM*np.random.normal(1, self.cv_dict["contact"], CM.shape)
+
 
         assert isinstance(environment, StructuredEnvironment), "must be a partitioned environment"
         #a list of the number of people in each partition set
@@ -458,7 +461,7 @@ class NetBuilder:
          the shared environment of two nodes for the weight
         :return:
         """
-        weight = self.global_weight*self.env_scalars[environment.type]
+        weight = self.global_weight*self.env_scalars[environment.quality]
         mask_eff = self.prev_efficacies["masking"]
         #factor with masks and distancing
         #if there are different masks in use, a different method is required
@@ -474,14 +477,16 @@ class NetBuilder:
                 print("warning: number of mask types does not match list size for reduction factors")
             #reduction factors for the type of mask person A and B wear
             redA, redB = mask_eff[environment.mask_status[personA]], mask_eff["masking"][environment.mask_status[personB]]
+            #apply spread to mask effectiveness if requested
+            if "mask_eff" in self.cv_dict: redA,redB = redA*self.cv_dict["mask_eff"], redB*self.cv_dict["mask_eff"]
+            #calculate weight, finally
             weight = weight*(1-redA)*(1-redB)        #this assumes that two distancers don't double distance, but at least one distancer is needed to be distanced, will be 1 or 0
         isDistanced = int(bool(environment.distance_status[personA]) or bool(environment.distance_status[personB]))
         #only applies when isDistanced is 1
         weight = weight*(1-self.prev_efficacies["distancing"])**isDistanced
-        if self.weight_cv != None:
-            weight = weight * np.random.normal(1, self.weight_cv)
-        #make normal distribution
-
+        #add noise to the weight, if requested
+        if "weight" in self.cv_dict: weight = weight * np.random.normal(1, self.weight_cv)
+        
         return weight
 
 #A work in progress
@@ -894,7 +899,7 @@ class PopulaceGraph:
         if environment != None:
             people = environment.members
             graph = self.graph.subgraph(people)
-            plt.title("Degree plot for members of {} # {}".format(environment.type, environment.index))
+            plt.title("Degree plot for members of {} # {}".format(environment.quality, environment.index))
         else:
             graph = self.graph
             people = self.populace.keys()

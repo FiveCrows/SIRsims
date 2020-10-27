@@ -51,8 +51,8 @@ model.build(trans_weighter, preventions, env_degrees, alg = model_func)
 
 # SOMETHING WRONG WITH WHAT FOLLOWS
 
-env_schools     = lambda environment: model.environments[environment].type == 'school'
-env_workplaces  = lambda environment: model.environments[environment].type == 'workplace'
+env_schools     = lambda environment: model.environments[environment].quality == 'school'
+env_workplaces  = lambda environment: model.environments[environment].quality == 'workplace'
 env_pop         = lambda environment: model.environments[environment].population
 
 schools    = sorted(list(filter(env_schools,    model.environments)), key = env_pop)

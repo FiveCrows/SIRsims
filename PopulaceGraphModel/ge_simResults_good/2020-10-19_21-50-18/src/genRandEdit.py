@@ -84,7 +84,7 @@ class TransmissionWeighter:
         #self.loc_masking = loc_masking
         #self.age_scalars = age_scalars
     def getWeight(self, personA, personB, environment):
-        weight = self.global_weight*self.env_scalars[environment.type]
+        weight = self.global_weight*self.env_scalars[environment.quality]
         #including masks
         if environment.preventions != None:
             if random.random() < environment.preventions["masking"]:
@@ -218,7 +218,7 @@ class PopulaceGraph:
             members = environment.members
         else:
             members = subgroup
-        type = environment.type
+        type = environment.quality
         member_count = len(members)
         #memberWeightScalar = np.sqrt(memberCount)
         for i in range(member_count):
@@ -227,12 +227,12 @@ class PopulaceGraph:
 
 
     def addEnvironment(self, environment, alg):
-        if environment.type == 'household':
+        if environment.quality == 'household':
             self.clusterDense(environment)
         else:
             # the graph is computed according to contact matrix of environment
             # self.clusterPartitionedStrogatz(environment, self.environment_degrees[environment.type])
-            alg(environment, self.environment_degrees[environment.type])
+            alg(environment, self.environment_degrees[environment.quality])
 
 
     def clusterStrogatz(self, environment,  num_edges, weight_scalar = 1, subgroup = None, rewire_p = 0.2):
@@ -604,7 +604,7 @@ class PopulaceGraph:
         if environment != None:
             people = environment.members
             graph = self.graph.subgraph(people)
-            plt.title("Degree plot for members of {} # {}".format(environment.type, environment.index))
+            plt.title("Degree plot for members of {} # {}".format(environment.quality, environment.index))
         else:
             graph = self.graph
             people = self.populace.keys()

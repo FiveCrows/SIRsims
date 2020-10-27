@@ -188,7 +188,7 @@ class TransmissionWeighter:
             p1 = 
         """
 
-        weight = self.global_weight * self.env_scalars[environment.type]
+        weight = self.global_weight * self.env_scalars[environment.quality]
         #including masks
         if environment.preventions != None:
             if random.random() < environment.preventions["masking"]:
@@ -280,7 +280,7 @@ class PopulaceGraph:
         keys = list(self.environments.keys())
         envs = set()
         for k in keys:
-            envs.add(self.environments[k].type)
+            envs.add(self.environments[k].quality)
 
         # Environment type can be "household", "workplace", "school"
         print("envs= ", envs)
@@ -291,7 +291,7 @@ class PopulaceGraph:
             print(self.environments[keys[k]].members)  # list of one element [12]. Meaning? 
             print(self.environments[keys[k]].population)  # 1  (nb of members)
             print(self.environments[keys[k]].preventions)  # None (or a list?
-            print(self.environments[keys[k]].type)  # list of one element [12]. Meaning? 
+            print(self.environments[keys[k]].quality)  # list of one element [12]. Meaning?
 
     #-------------------------------
     def __init__(self, partition, graph = None, populace = None, 
@@ -399,8 +399,8 @@ class PopulaceGraph:
         G = self.graph
         for e in G.edges():
             environment = self.environments[self.graph.adj[e[0]][e[1]]['environment']]
-            print("env, envi= ", env, environment.type)
-            if env == environment.type:
+            print("env, envi= ", env, environment.quality)
+            if env == environment.quality:
                 self.graph.adj[e[0]][e[1]]['transmission_weight'] = 0
         print("zeroWeights[%s]: %f sec" % (env, time.time() - start_time))
     #---------------------------------
@@ -409,7 +409,7 @@ class PopulaceGraph:
         for e in G.edges():
             w = G[e[0]][e[1]]['transmission_weight']
             env = self.environments[G[e[0]][e[1]]['environment']]
-            print("weight(e): ", e, " => ", w, env.type)
+            print("weight(e): ", e, " => ", w, env.quality)
     #---------------------------------
     def build(self, weighter, preventions, env_degrees, alg = None):
         """
@@ -447,7 +447,7 @@ class PopulaceGraph:
         # different preventions
         for index in self.environments:
             env = self.environments[index]
-            env.preventions = preventions[env.type]  # how are preventions used in the model? 
+            env.preventions = preventions[env.quality]  # how are preventions used in the model?
             self.constructGraphFromCM(env, alg)
         self.isBuilt = True
 
@@ -476,7 +476,7 @@ class PopulaceGraph:
         #update new prevention strategies on each environment
         for index in self.environments:
             environment             = self.environments[index]
-            environment.preventions = preventions[environment.type]
+            environment.preventions = preventions[environment.quality]
 
         #pick and replace weights for each environment
         for edge in self.graph.edges():
@@ -543,7 +543,7 @@ class PopulaceGraph:
             members = environment.members
         else:
             members = subgroup
-        type = environment.type
+        type = environment.quality
         member_count = len(members)
         #memberWeightScalar = np.sqrt(memberCount)
         for i in range(member_count):
@@ -567,12 +567,12 @@ class PopulaceGraph:
         :return:
         """
 
-        if environment.type == 'household':
+        if environment.quality == 'household':
             self.clusterDense(environment)
         else:
             # the graph is computed according to contact matrix of environment
             # self.clusterPartitionedStrogatz(environment, self.environment_degrees[environment.type])
-            alg(environment, self.environment_degrees[environment.type])
+            alg(environment, self.environment_degrees[environment.quality])
 
 
     #-------------------
@@ -1020,7 +1020,7 @@ class PopulaceGraph:
         if environment != None:
             people = environment.members
             graph = self.graph.subgraph(people)
-            plt.title("Degree plot for members of {} # {}".format(environment.type, environment.index))
+            plt.title("Degree plot for members of {} # {}".format(environment.quality, environment.index))
         else:
             graph = self.graph
             people = self.populace.keys()

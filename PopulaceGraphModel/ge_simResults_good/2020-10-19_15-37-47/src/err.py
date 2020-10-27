@@ -6,7 +6,7 @@ Traceback (most recent call last):
   File "/Users/erlebach/covid_modeling_julia/julia_code/sir-julia/SIRsims/PopulaceGraphModel/ge1_modelingToolkit.py", line 523, in build
     self.addEnvironment(env, alg)
   File "/Users/erlebach/covid_modeling_julia/julia_code/sir-julia/SIRsims/PopulaceGraphModel/ge1_modelingToolkit.py", line 697, in addEnvironment
-    alg(environment, self.environment_degrees[environment.type])
+    alg(environment, self.environment_degrees[environment.quality])
   File "/Users/erlebach/covid_modeling_julia/julia_code/sir-julia/SIRsims/PopulaceGraphModel/ge1_modelingToolkit.py", line 853, in clusterPartitionedStrogatz
     self.clusterWithMatrix( environment, avg_degree, 'strogatz')
   File "/Users/erlebach/covid_modeling_julia/julia_code/sir-julia/SIRsims/PopulaceGraphModel/ge1_modelingToolkit.py", line 935, in clusterWithMatrix

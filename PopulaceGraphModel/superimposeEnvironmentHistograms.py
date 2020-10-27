@@ -33,8 +33,8 @@ elif which_model == 'random_GE':
 
 #schools = list(filter(lambda environment: model.environments[environment].type == 'school' and model.environments[environment].population>25,model.environments))
 #workplaces = list(filter(lambda environment: model.environments[environment].type == 'workplace' and model.environments[environment].population>25, model.environments))
-schools = sorted(list(filter(lambda environment: model.environments[environment].type == 'school', model.environments)), key = lambda environment: model.environments[environment].population)
-workplaces = sorted(list(filter(lambda environment: model.environments[environment].type == 'workplace', model.environments)), key = lambda environment: model.environments[environment].population)
+schools = sorted(list(filter(lambda environment: model.environments[environment].quality == 'school', model.environments)), key = lambda environment: model.environments[environment].population)
+workplaces = sorted(list(filter(lambda environment: model.environments[environment].quality == 'workplace', model.environments)), key = lambda environment: model.environments[environment].population)
 
 lst = schools
 for index in reversed(lst):

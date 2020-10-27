@@ -45,8 +45,8 @@ elif which_model == 'random_GE':
 # Create the network graph according to model_func
 model.build(trans_weighter, preventions, env_degrees, alg = model_func)
 
-env_schools_func    = lambda environment: model.environments[environment].type == 'school'
-env_workplaces_func = lambda environment: model.environments[environment].type == 'workplace'
+env_schools_func    = lambda environment: model.environments[environment].quality == 'school'
+env_workplaces_func = lambda environment: model.environments[environment].quality == 'workplace'
 env_pop_func        = lambda environment: model.environments[environment].population
 
 schools    = sorted(list(filter(env_schools_func,    model.environments)), key = env_pop)

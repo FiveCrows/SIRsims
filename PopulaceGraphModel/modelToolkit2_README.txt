@@ -28,8 +28,14 @@ differentiateMasks is a new function of the PopulaceGraph that allows a scripter
 the populace. That is, if mask_probs is a list, which sums to one, it can be passed as the sole argument to differentiateMasks,
 and differentiateMasks will draw a mask type for each person, depending on the probabilities of the list
 
-
-
 #en_type_scalars is used to scale each weight, depending on the type of environment the edge will be placed in
 env_type_scalars = {"household": 1, "school": 0.3, "workplace": 0.3}
 
+cv_dict is a new parameter of the NetBuilder class, which allows the user to specify noise for adding to variables.
+
+        :param cv_dict: dict
+        the cv dict allows the user to specify values for keys "weight", "contact", and "mask_eff",
+        which will be used as the coefficient of variation for applying noise to these parameters, by multiplication
+        of a gaussian draw centered around 1, and the variance being the cv
+        noise to the weights, the number of contacts in structured environments, and the efficacy of masks
+        """

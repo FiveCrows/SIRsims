@@ -250,7 +250,7 @@ class TransmissionWeighter:
         #print(environment.distancing_status)
         #wv = environment.distancing_status[(personA, personB)]
 
-        weight = self.global_weight * self.env_scalars[environment.type]
+        weight = self.global_weight * self.env_scalars[environment.quality]
 
         """
         ISSUE: enviroment.distancing_status is per edge within an environment. However, it does not exist
@@ -503,7 +503,7 @@ class PopulaceGraph:
         keys = list(self.environments.keys())
         envs = set()
         for k in keys:
-            envs.add(self.environments[k].type)
+            envs.add(self.environments[k].quality)
 
         # Environment type can be "household", "workplace", "school"
         #print("envs= ", envs)
@@ -514,7 +514,7 @@ class PopulaceGraph:
             print(self.environments[keys[k]].members)  # list of one element [12]. Meaning? 
             print(self.environments[keys[k]].population)  # 1  (nb of members)
             print(self.environments[keys[k]].preventions)  # None (or a list?
-            print(self.environments[keys[k]].type)  # list of one element [12]. Meaning? 
+            print(self.environments[keys[k]].quality)  # list of one element [12]. Meaning?
 
     #-------------------------------
     def resetVaccinated_Infected(self):
@@ -699,8 +699,8 @@ class PopulaceGraph:
         G = self.graph
         for e in G.edges():
             environment = self.environments[self.graph.adj[e[0]][e[1]]['environment']]
-            print("env, envi= ", env, environment.type)
-            if env == environment.type:
+            print("env, envi= ", env, environment.quality)
+            if env == environment.quality:
                 self.graph.adj[e[0]][e[1]]['transmission_weight'] = 0
         print("zeroWeights[%s]: %f sec" % (env, time.time() - start_time))
     #---------------------------------
@@ -709,7 +709,7 @@ class PopulaceGraph:
         for e in G.edges():
             w = G[e[0]][e[1]]['transmission_weight']
             env = self.environments[G[e[0]][e[1]]['environment']]
-            print("weight(e): ", e, " => ", w, env.type)
+            print("weight(e): ", e, " => ", w, env.quality)
     #---------------------------------
     def envEdges(self):
         # Added by Gordon Erlebacher, class PopulaceGraph
@@ -830,7 +830,7 @@ class PopulaceGraph:
         for index in self.environments:
             environment = self.environments[index]
             # GE: WHY IS THIS NOT USED in ModelToolkit.py?
-            environment.preventions = self.preventions[environment.type]
+            environment.preventions = self.preventions[environment.quality]
             environment.prevention_reductions = self.prevention_reductions
             #print("before drawMasks, preventions: ", self.preventions)
             #print("before drawMasks, env.preventions: ", environment.preventions)
@@ -907,7 +907,7 @@ class PopulaceGraph:
             members = environment.members
         else:
             members = subgroup
-        type = environment.type
+        type = environment.quality
         member_count = len(members)
         #memberWeightScalar = np.sqrt(memberCount)
         for i in range(member_count):
@@ -931,12 +931,12 @@ class PopulaceGraph:
         :return:
         """
 
-        if environment.type == 'household':
+        if environment.quality == 'household':
             self.clusterDense(environment)
         else:
             # the graph is computed according to contact matrix of environment
             # self.clusterPartitionedStrogatz(environment, self.environment_degrees[environment.type])
-            alg(environment, self.environment_degrees[environment.type])
+            alg(environment, self.environment_degrees[environment.quality])
 
     #---------------------
     def addEnvironment(self, environment, alg):
@@ -957,16 +957,16 @@ class PopulaceGraph:
         :return:
         """
 
-        if environment.type == 'household':
+        if environment.quality == 'household':
             self.clusterDense(environment)
         else:
             # the graph is computed according to contact matrix of environment
             # self.clusterPartitionedStrogatz(environment, self.environment_degrees[environment.type])
-            preventions = self.preventions[environment.type]
+            preventions = self.preventions[environment.quality]
             environment.preventions = preventions
             environment.prevention_reductions = self.prevention_reductions # not sure it is needed
             environment.drawMasks()
-            alg(environment, self.environment_degrees[environment.type])
+            alg(environment, self.environment_degrees[environment.quality])
 
 
     #-------------------
@@ -1497,7 +1497,7 @@ class PopulaceGraph:
         if environment != None:
             people = environment.members
             graph = self.graph.subgraph(people)
-            plt.title("Degree plot for members of {} # {}".format(environment.type, environment.index))
+            plt.title("Degree plot for members of {} # {}".format(environment.quality, environment.index))
         else:
             graph = self.graph
             people = self.populace.keys()
