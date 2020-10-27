@@ -11,16 +11,10 @@ import numpy as np
 import math
 from scipy.interpolate import interp1d
 
-
-def timeit(method):
-    def timed(*args, **kw):
-        t_start = time.time()
-        result = method(*args, **kw)
-        t_final = time.time()
-        print("{} completed in {} seconds".format((t_final-t_start)*1000))
-        return result
-
-
+#WIP
+#def timeit(method):
+#    def timed(*args, **kw)
+#        #t_start
 
 class Partitioner:
     """
@@ -74,7 +68,7 @@ class Environment:
         an identifier
         :param members: list
         a list of people who attend the environment
-        :param quality: string
+        :param type: string
         either 'household', 'school', or 'workplace'
         """
 
@@ -120,7 +114,7 @@ class Environment:
         self.mask_status = dict(zip(self.members, mask_status))
         self.distance_status = dict(zip(self.members, distance_status))
 
-    @timeit
+
     def reweight(self, netBuilder, newPreventions = None):
         """
         Rechooses the weights on each edge with, presumably, a distinct weighter or preventions
@@ -172,7 +166,7 @@ class StructuredEnvironment(Environment):
         to index the specific environment
         :param members: list
         a list of people who attend the environment
-        :param quality: string
+        :param type: string
         either 'household', 'school', or 'workplace'
         :param preventions: dict
         keys should be 'household', 'school', or 'workplace'. Each should map to another dict,
@@ -184,7 +178,7 @@ class StructuredEnvironment(Environment):
         :param partitioner: Partitioner
         for creating a partition
         """
-        super().__init__(index, members, quality)
+        super().__init__(index,members, quality)
         self.partitioner = partitioner
         self.contact_matrix = contact_matrix
         self.id_to_partition = dict.fromkeys(members)
@@ -223,7 +217,7 @@ class NetBuilder:
     and Random nets for partitioned Environments.
     """
 
-    def __init__(self, env_type_scalars, prev_efficacies, cv_dict = {}, avg_contacts = None):
+    def __init__(self, env_type_scalars, prev_efficacies, weight_cv = 0, contact_cv = 0, avg_contacts = None):
         """
         :param env_type_scalars: dict
         each environment type must map to a float. is for scaling weights
@@ -237,16 +231,19 @@ class NetBuilder:
         :param avg_contacts:
         if specified, the number of edges picked for an environment will be chosen to meet avg_contacts
 
-        :param cv_dict: dict
-        the cv dict allows the user to specify values for keys "weight", "contact", and "mask_eff",
-        which will be used as the coefficient of variation for applying noise to these parrameters,
-        noise to the weights, the number of contacts in structured environments, and the efficacy of masks
+        :param weight_cv: float
+        the coefficient of variation. If specified, weight = weight * np.random.normal(1, cv)
+        this will normally distribute weights with stddev cv*weight
+
+        :param contact_cv:
+        the coefficient of variations for dispersing the number of edges between partitions
         """
 
         self.global_weight = 1
         self.prev_efficacies = prev_efficacies
         self.env_scalars = env_type_scalars
-        self.cv_dict = cv_dict
+        self.weight_cv = weight_cv
+        self.contact_cv = contact_cv
         self.avg_contacts = avg_contacts
 
     #def list
@@ -362,6 +359,7 @@ class NetBuilder:
                 else:
                     remainder +=1
 
+
         eList = self.genRandEdgeList(members_A, members_B, remainder)
         for edge in eList:
             weight = self.getWeight(edge[0], edge[1], environment)
@@ -391,9 +389,9 @@ class NetBuilder:
         p_sets = environment.partition
         CM = environment.returnReciprocatedCM()
 
-        #add gaussian noise to contact matrix values if specified
-        if "contact" in self.cv_dict: CM = CM*np.random.normal(1, self.cv_dict["contact"], CM.shape)
-
+        #add gaussian noise to contact matrix values
+        if self.contact_cv != None:
+            CM = CM*np.random.normal(1, self.contact_cv, CM.shape)
 
         assert isinstance(environment, StructuredEnvironment), "must be a partitioned environment"
         #a list of the number of people in each partition set
@@ -467,7 +465,7 @@ class NetBuilder:
         #if there are different masks in use, a different method is required
 
         if environment.num_mask_types == 1:
-            n_masks = (environment.mask_status[personA] + environment.mask_status[personB])
+            n_masks = (environment.mask_status[personA] + environment.mask_status[personB])    ##### BUG: mask_status not there on environment **** GE
             #so it works with reductions as either a single value, for one mask type in the model, or multiple vals, for multiple mask types
             # n_masks is 0,1, or 2. For each mask worn, weight is scaled down by reduction
             weight = weight * (1 - mask_eff) ** n_masks
@@ -477,16 +475,14 @@ class NetBuilder:
                 print("warning: number of mask types does not match list size for reduction factors")
             #reduction factors for the type of mask person A and B wear
             redA, redB = mask_eff[environment.mask_status[personA]], mask_eff["masking"][environment.mask_status[personB]]
-            #apply spread to mask effectiveness if requested
-            if "mask_eff" in self.cv_dict: redA,redB = redA*self.cv_dict["mask_eff"], redB*self.cv_dict["mask_eff"]
-            #calculate weight, finally
             weight = weight*(1-redA)*(1-redB)        #this assumes that two distancers don't double distance, but at least one distancer is needed to be distanced, will be 1 or 0
         isDistanced = int(bool(environment.distance_status[personA]) or bool(environment.distance_status[personB]))
         #only applies when isDistanced is 1
         weight = weight*(1-self.prev_efficacies["distancing"])**isDistanced
-        #add noise to the weight, if requested
-        if "weight" in self.cv_dict: weight = weight * np.random.normal(1, self.weight_cv)
-        
+        if self.weight_cv != None:
+            weight = weight * np.random.normal(1, self.weight_cv)
+        #make normal distribution
+
         return weight
 
 #A work in progress
@@ -722,47 +718,82 @@ class PopulaceGraph:
                     pops_by_category[category][person[category]].append(index)
                 except:
                     pops_by_category[category][person[category]] = [index]
+
+        #**************************88
+        pops_by_category["age_groups"] = {}
+
+        for bracket in range(0,20):
+            pops_by_category["age_groups"][bracket] = []
+            for i in range(0,5):
+                try:   # easier than conditionals. I divided all ages into groups of 5
+                    pops_by_category["age_groups"][bracket].extend(pops_by_category["age"][5*bracket+i])
+                except:
+                    break
+
         self.pops_by_category = pops_by_category
-
-
-        #list households:
-        #load contact_matrices and build environments
-        with open("../ContactMatrices/Leon/ContactMatrixSchools.pkl", 'rb') as file:
-            schoolCM = pickle.load(file)
 
         # env_name_alternate = {"household": "sp_hh_id", "work": "work_id", "school": "school_id"} outdated
         #adding households to environment list
-        households = self.pops_by_category["sp_hh_id"]
         self.environments = {}
-        for index in households:
-            houseObject = Environment(index, households[index], "household")
-            self.environments[index] = houseObject
+        self.setup_households()
+        self.setup_workplaces(partitioner)  # Partitin not defined BUG GE
+        self.setup_schools(partitioner)
 
-        #adding workplaces to environment list
+        # pick who masks and distances, in each environment
+        for index in self.environments:
+            self.environments[index].drawPreventions(prevention_prevalences, self.populace)
+        #**************************88
+
+        self.pops_by_category = pops_by_category
+
+    #-------------------------------------------------
+    def setup_households(self):
+        households = self.pops_by_category["sp_hh_id"]
+
+        for index in households:
+            houseObject              = Environment(index, households[index], "household")
+            self.environments[index] = (houseObject)
+
+    #-----------------
+    def setup_workplaces(self, partitioner):
         workplaces = self.pops_by_category["work_id"]
         with open("../ContactMatrices/Leon/ContactMatrixWorkplaces.pkl", 'rb') as file:
             work_matrices = pickle.load(file)
 
-        if partitioner != None:
-            self.hasPartition = True
-            for index in workplaces:
-                if index != None:
-                    workplace = StructuredEnvironment(index, workplaces[index], "workplace", self.populace, work_matrices[index], partitioner)
-                    self.environments[index] = (workplace)
+        for index in workplaces:
+            if index == None: continue
+            #workplace = PartitionedEnvironment(index, workplaces[index], "workplace",   # Old code. Name change
+            workplace = StructuredEnvironment(index, workplaces[index], "workplace", 
+                                               self.populace, work_matrices[index], partitioner)
+            self.environments[index] = (workplace)
+        return
 
-            schools = self.pops_by_category["school_id"]
-            with open("../ContactMatrices/Leon/ContactMatrixSchools.pkl", 'rb') as file:
-                school_matrices = pickle.load(file)
-            for index in schools:
-                if index != None:
-                    school = StructuredEnvironment(index, schools[index], "school", self.populace, school_matrices[index], partitioner)
-                    self.environments[index] = (school)
+# New code from Bryan
+        if partitioner == None: return
+        self.hasPartition = True
 
-            # pick who masks and distances, in each environment
-            for index in self.environments:
-                self.environments[index].drawPreventions(prevention_prevalences, self.populace)
+        for index in workplaces:
+            if index != None:
+                workplace = StructuredEnvironment(index, workplaces[index], "workplace", 
+                              self.populace, work_matrices[index], partitioner)
+                self.environments[index] = (workplace)
 
+    #-----------------
+    def setup_schools(self, partitioner):
+        schools = self.pops_by_category["school_id"]
+        with open("../ContactMatrices/Leon/ContactMatrixSchools.pkl", 'rb') as file:
+            school_matrices = pickle.load(file)
 
+        if partitioner == None: return
+        self.hasPartition = True
+
+        for index in schools:
+            if index == None: continue
+            #school = PartitionedEnvironment(index, schools[index], "school", self.populace,   # Old code, name change
+            school = StructuredEnvironment(index, schools[index], "school", self.populace, 
+                                            school_matrices[index], partitioner)
+            self.environments[index] = (school)
+    #-------------------------------------------------
     def differentiateMasks(self, type_probs):
         """
         differentiateMasks picks a mask type, for each person in the population, as an int,
@@ -855,25 +886,45 @@ class PopulaceGraph:
         plt.ylabel('Age Group')
         plt.show()
 
-    #----------------------
-    def returnContactMatrix(self, environment):
-        graph = self.graph.subgraph(environment.members)
-        partition = environment.partitioner
-        contact_matrix = np.zeros([partition.num_sets, partition.num_sets])
-        partition_sizes = [len(environment.partition[i]) for i in environment.partition]
+    #-------------------------------------------------------------------
+    def SIRperBracket(self, tlast): 
+        # Collect the S,I,R at the last time: tlast
+        # print("tlast.R= ", list(tlast.keys())); 
+        # Replace 'S', 'I', 'R' by [0,1,2]
 
-        for i in graph.nodes():
-            iPartition = environment.id_to_partition[i]
-            contacts = graph[i]
-            for j in contacts:
-                jPartition = environment.id_to_partition[j]
-                contact_matrix[iPartition, jPartition] += self.graph[i][j]['transmission_weight'] / partition_sizes[iPartition]
+        ag = self.pops_by_category["age_groups"]
 
+        brackets = {}
+        count = 0
+        for bracket in ag.keys():
+            print("GE: bracket= ", bracket)
+            s = i = r = 0
+            # nodes in given age brakcet
+            nodes = ag[bracket]
+            b = brackets[bracket] = []
+            print("bracket: ", bracket)
+            print("nodes= ", nodes)
+            for n in nodes:
+                print("GE: n= ", n)
+                try:
+                    b.append(tlast[n])
+                except:
+                    print("tlast.keys: ", list(tlast.keys()))
+                    print("except, n= ", n)  # I SHOULD NOT END UP HERE
+                    quit()
+            count += len(brackets[bracket])
+            
+        ages_d = {}
+        for bracket in ag.keys():
+            blist = brackets[bracket]
+            ages_d[bracket] = {'S':0, 'I':0, 'R':0}  # nb S, I, R
+            for s in blist:
+                ages_d[bracket][s] += 1
+        #print("inside SIRperBracket")
+        #print("  keys(ages_d): ", list(ages_d.keys()))
+        return ages_d
 
-        # plt.imshow(np.array([row / np.linalg.norm(row) for row in contact_matrix]))
-        return contact_matrix
-
-    #----------------------------------
+    #-------------------------------------------------------------------
     def simulate(self, gamma, tau, simAlg=EoN.fast_SIR, title=None, full_data=True, preventions=None):
 
         graph = nx.Graph()
@@ -887,6 +938,100 @@ class PopulaceGraph:
         simResult = simAlg(graph, tau, gamma, rho = 0.001, transmission_weight='transmission_weight',return_full_data=full_data)
         self.sims.append([simResult, title, [gamma, tau], preventions])
 
+        ####
+        start2 = time.time()
+        sr = simResult
+        txx = {}
+        last_time = simResult.t()[-1]
+        print("last_time= ", last_time) # 132
+
+        for tix in range(0, int(last_time)+2, 2):
+            txx[tix] = sr.get_statuses(time=tix)
+        #txx['last'] = sr.get_statuses(time=sr.t()[-1])
+        print("Before SIRperBracket")
+        print("txx.keys()= ", list(txx.keys()))
+        key0 = list(txx.keys())[0]
+        # txx[graph node] = Dictionary: node# => 'S', 'I', or 'R'}
+        print("txx[%d]= " % key0, txx[key0])
+        print("nb keys: ", len(txx.keys())) # length: 67
+        print("txx keys: 0 through 132, increment by 2")
+
+        self.record.print("handle simulation output: {} seconds".format(time.time() - start2))
+
+        # Next: calculate final S,I,R for the different age groups. 
+
+        start3 = time.time()
+
+        ages_d = {}
+
+        for k,v in txx.items():
+            print("*** k= ", k, ",   len txx[k]= ", len(txx[k])) # list of first 10 statuses
+            ages_d[k] = self.SIRperBracket(v)
+            print("********** Remove the quit()"); quit()
+            #print("  return from SIRperBracket: ages_d[k]= ", ages_d[k])
+
+            """
+            for bracket in ages_d[k].keys():  # bracket is either integer or string. How to change? 
+                #print("bracket: ", bracket)
+                #print("   keys: ", list(ages_d[k].keys()))
+                counts = ages_d[k][bracket]
+                print("bracket: ", bracket, ",  counts[S,I,R]: ", bracket, counts['S'], counts['I'], counts['R'])
+            """
+            
+        self.record.print("time to change 'S','I','R' to 0,1,2 for faster processing: %f sec" % (time.time()-start3))
+        #-----------
+        # Create a dictionary to store all the data and save it to a file 
+        data = {}
+        u = Utils()
+        SIR_results = {'S':sr.S(), 'I':sr.I(), 'R':sr.R(), 't':sr.t()}
+        SIR_results = u.interpolate_SIR(SIR_results)
+        data['sim_results'] = SIR_results
+        #print("SIR_results: ", SIR_results['t']) # floats as they should be
+        data['title'] = title
+        data['params'] = {'gamma':gamma, 'tau':tau}
+        data['preventions'] = preventions
+        data['ages_SIR'] = ages_d # ages_d[time][k] ==> S,I,R counts for age bracket k
+
+        self.sims.append([simResult, title, [gamma, tau], preventions])
+
+        #-----------
+        x = datetime.now().strftime("%Y-%m-%d,%I.%Mpm")
+        filename = "%s, gamma=%s, tau=%s, %s" % (title, gamma, tau, x)
+        self.saveResults(filename, data)
+
+    #-------------------------------------------
+    def saveResults(self, filename, data_dict):
+        """
+        :param filename: string
+        File to save results to
+        :param data_dict: dictionary
+        Save SIR traces, title, [gamma, tau], preventions
+        # save simulation results and metadata to filename
+        """
+
+        try:
+            mkdir(dirname)
+        except:
+            # accept an existing directory. Not a satisfying solution
+            pass
+
+        dirname = "./ge_simResults/{}".format(self.stamp)
+        full_path = "/".join(dirname, filename)
+ 
+        with open(filename, "wb") as pickle_file:
+            pickle.dump(data_dict, pickle_file)
+
+        """
+        # reload pickle data
+        fd = open(filename, "rb")
+        d = pickle.load(fd)
+        SIR = d['sim_results']
+        print("SIR['t']= ", SIR['t'])
+        quit()
+        """
+
+
+    #---------------------------------------------------------------------------
     def plotNodeDegreeHistogram(self, environment = None, layout = 'bars', ax = None, normalized = True):
         """
         creates a histogram which displays the frequency of degrees for all nodes in the specified environment.
