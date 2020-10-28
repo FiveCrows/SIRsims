@@ -120,7 +120,7 @@ class Environment:
         self.mask_status = dict(zip(self.members, mask_status))
         self.distance_status = dict(zip(self.members, distance_status))
 
-    @timeit
+
     def reweight(self, netBuilder, newPreventions = None):
         """
         Rechooses the weights on each edge with, presumably, a distinct weighter or preventions
@@ -485,8 +485,7 @@ class NetBuilder:
         #only applies when isDistanced is 1
         weight = weight*(1-self.prev_efficacies["distancing"])**isDistanced
         #add noise to the weight, if requested
-        print("self.cv_dict= ", self.cv_dict)
-        if "weight" in self.cv_dict: weight = weight * np.random.normal(1, self.weight_cv)
+        if "weight" in self.cv_dict: weight = weight * np.random.normal(1, self.cv_dict["weight"])
         
         return weight
 
@@ -808,18 +807,18 @@ class PopulaceGraph:
             environment.network(netBuilder)
         self.isBuilt = True
 
-    def reweight(self, netBuilder, new_prev_prevalences = None):
+    def reweight(self, netBuilder, prevention_prevalences = None):
         """
 
         :param netBuilder: netBuilder object
         to calculate new weights
-        :param new_prev_prevalences: dict
+        :param prevention_prevalences: dict
         to change the preventions used in each environment before reweight
         """
 
         #choose new preventions if requested
         for environment in self.environments:
-            self.environments[environment].reweight(netBuilder, new_prev_prevalences)
+            self.environments[environment].reweight(netBuilder, prevention_prevalences)
     #merge environments, written for plotting and exploration
     def returnMergedEnvironments(self, env_indexes, partitioner = None):
         """

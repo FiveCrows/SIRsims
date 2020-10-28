@@ -14,7 +14,7 @@ prevention_prevalences = {"household": {"masking": 0, "distancing": 0},
                           "workplace": {"masking": 0, "distancing": 0}}
 
 #initialize populaceGraph
-slim = True
+slim = False
 model = PopulaceGraph(partitioner, prevention_prevalences, slim=slim)
 model.differentiateMasks([0.25,0.5,0.25])
 
@@ -24,31 +24,23 @@ env_type_scalars = {"household": 1, "school": 0.3, "workplace": 0.3}
 #this dict is used to decide who is masking, and who is distancing
 prevention_efficacies = {"masking": 0.7, "distancing": 0.7}
 
-netBuilder = NetBuilder(env_type_scalars, prevention_efficacies, 0, 0)
+netBuilder = NetBuilder(env_type_scalars, prevention_efficacies, {"weight": 0, "contact": 0, "mask_eff": 0})
 model.buildNetworks(netBuilder)
 model.simulate(gamma, tau, title = "cv is None")
 cv_vals = np.arange(0,1,0.1)  # Coefficient of variation (stdev/mean)
 
-for cv in cv_vals:
-    print(cv)
-    netBuilder.weight_cv = cv
-    model.reweight(netBuilder)
-    model.simulate(gamma, tau, title="weight cv = {}".format(cv))
-print(model.getPeakPrevalences())
-plt.plot(model.getPeakPrevalences())
-plt.show()
+for item in netBuilder.cv_dict.items():
 
-netBuilder.weight_cv = 0
-model.sims = []
-for cv in cv_vals:
-    print(cv)
-    netBuilder.contact_cv = cv
-    model.reweight(netBuilder)
-    model.simulate(gamma, tau, title = " contact cv = {}".format(cv))
-
-
-print(model.getPeakPrevalences())
-plt.plot(model.getPeakPrevalences())
+    for val in cv_vals:
+        netBuilder.cv_dict[item[0]] = val
+        model.reweight(netBuilder, prevention_prevalences)
+        model.simulate(gamma, tau, title="{} cv = {}".format(item[0], item[1]))
+    #return back to normal
+    netBuilder.cv_dict[item[0]] = item[1]
+    print(model.getPeakPrevalences())
+    plt.plot(model.getPeakPrevalences(),label = item[0])
+    model.reset()
+plt.legend()
 plt.show()
 
 
