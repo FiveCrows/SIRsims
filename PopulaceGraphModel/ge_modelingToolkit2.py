@@ -217,7 +217,7 @@ class NetBuilder:
     and Random nets for partitioned Environments.
     """
 
-    def __init__(self, env_type_scalars, prev_efficacies, weight_cv = 0, contact_cv = 0, avg_contacts = None):
+    def __init__(self, env_type_scalars, prev_efficacies, cv_dict = {}, avg_contacts = None):
         """
         :param env_type_scalars: dict
         each environment type must map to a float. is for scaling weights
@@ -231,19 +231,16 @@ class NetBuilder:
         :param avg_contacts:
         if specified, the number of edges picked for an environment will be chosen to meet avg_contacts
 
-        :param weight_cv: float
-        the coefficient of variation. If specified, weight = weight * np.random.normal(1, cv)
-        this will normally distribute weights with stddev cv*weight
-
-        :param contact_cv:
-        the coefficient of variations for dispersing the number of edges between partitions
+        :param cv_dict: dict
+        the cv dict allows the user to specify values for keys "weight", "contact", and "mask_eff",
+        which will be used as the coefficient of variation for applying noise to these parrameters,
+        noise to the weights, the number of contacts in structured environments, and the efficacy of masks
         """
 
         self.global_weight = 1
         self.prev_efficacies = prev_efficacies
         self.env_scalars = env_type_scalars
-        self.weight_cv = weight_cv
-        self.contact_cv = contact_cv
+        self.cv_dict = cv_dict
         self.avg_contacts = avg_contacts
 
     #def list
@@ -390,8 +387,7 @@ class NetBuilder:
         CM = environment.returnReciprocatedCM()
 
         #add gaussian noise to contact matrix values
-        if self.contact_cv != None:
-            CM = CM*np.random.normal(1, self.contact_cv, CM.shape)
+        if "contact" in self.cv_dict: CM = CM*np.random.normal(1, self.cv_dict["contact"], CM.shape)
 
         assert isinstance(environment, StructuredEnvironment), "must be a partitioned environment"
         #a list of the number of people in each partition set
@@ -465,7 +461,7 @@ class NetBuilder:
         #if there are different masks in use, a different method is required
 
         if environment.num_mask_types == 1:
-            n_masks = (environment.mask_status[personA] + environment.mask_status[personB])    ##### BUG: mask_status not there on environment **** GE
+            n_masks = (environment.mask_status[personA] + environment.mask_status[personB])
             #so it works with reductions as either a single value, for one mask type in the model, or multiple vals, for multiple mask types
             # n_masks is 0,1, or 2. For each mask worn, weight is scaled down by reduction
             weight = weight * (1 - mask_eff) ** n_masks
@@ -479,10 +475,8 @@ class NetBuilder:
         isDistanced = int(bool(environment.distance_status[personA]) or bool(environment.distance_status[personB]))
         #only applies when isDistanced is 1
         weight = weight*(1-self.prev_efficacies["distancing"])**isDistanced
-        if self.weight_cv != None:
-            weight = weight * np.random.normal(1, self.weight_cv)
-        #make normal distribution
-
+        #apply spread to mask effectiveness if requested
+        if "mask_eff" in self.cv_dict: redA,redB = redA*self.cv_dict["mask_eff"], redB*self.cv_dict["mask_eff"]
         return weight
 
 #A work in progress
@@ -949,9 +943,11 @@ class PopulaceGraph:
 
         graph = nx.Graph()
         #add the edges of each environment to a single networkx graph
+        print("total nb environments: ", len(self.environments)); 
         for environment in self.environments: 
             graph.add_weighted_edges_from(self.environments[environment].edges, weight = "transmission_weight")
         print("Before simlation: Graph: nb nodes: ", graph.number_of_nodes())
+        quit()
 
         simResult = simAlg(graph, tau, gamma, rho = 0.001, transmission_weight='transmission_weight',return_full_data=full_data)
         #self.sims.append([simResult, title, [gamma, tau], preventions])

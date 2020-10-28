@@ -878,7 +878,11 @@ class PopulaceGraph:
 
         graph = nx.Graph()
         #add the edges of each environment to a single networkx graph
-        for environment in self.environments: graph.add_weighted_edges_from(self.environments[environment].edges, weight = "transmission_weight")
+        for environment in self.environments: 
+            graph.add_weighted_edges_from(self.environments[environment].edges, weight = "transmission_weight")
+
+        print("Bryan code: after graph built, nb nodes: ", graph.get_number_nodes());
+        quit() 
         #simulate the graph
         #simResult = simAlg(graph, tau, gamma, initial_recovereds=self.initial_vaccinated,
                            #initial_infecteds=self.initial_infected, transmission_weight='transmission_weight',
