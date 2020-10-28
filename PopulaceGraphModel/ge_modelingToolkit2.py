@@ -701,6 +701,7 @@ class PopulaceGraph:
         else:
             self.populace = [(vars(rawPopulace[key])) for key in rawPopulace]  # .transpose()
         self.population = len(self.populace)
+        print("self.population: ", self.population)
 
 
     # To sort people into a dict of categories. 
@@ -721,6 +722,12 @@ class PopulaceGraph:
 
         #**************************88
         pops_by_category["age_groups"] = {}
+        # all ages 0-90, 93, 94
+        print("age.keys(): ", sorted(list(pops_by_category["age"].keys())));
+        count = 0
+        for k,v in pops_by_category["age"].items():
+            count = count + len(v)
+        print("__init__: total number of people: ", count) # same as self.population above. GOOD
 
         for bracket in range(0,20):
             pops_by_category["age_groups"][bracket] = []
@@ -728,7 +735,7 @@ class PopulaceGraph:
                 try:   # easier than conditionals. I divided all ages into groups of 5
                     pops_by_category["age_groups"][bracket].extend(pops_by_category["age"][5*bracket+i])
                 except:
-                    break
+                    continue
 
         # count total nb of nodes
         count=0
@@ -919,9 +926,9 @@ class PopulaceGraph:
                 try:
                     b.append(age_statuses[n])  # S,I,R
                 except:
+                    print("except, key: n= ", n)  # I SHOULD NOT END UP HERE
                     print("List of graph nodes with SIR statuses")
                     print("age_statuses.keys: ", list(age_statuses.keys()))
-                    print("except, key: n= ", n)  # I SHOULD NOT END UP HERE
                     quit()
 
             count += len(nodes)
