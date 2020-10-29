@@ -217,7 +217,7 @@ class NetBuilder:
     and Random nets for partitioned Environments.
     """
 
-    def __init__(self, env_type_scalars, prev_efficacies, weight_cv = 0, contact_cv = 0, avg_contacts = None):
+    def __init__(self, env_type_scalars, prev_efficacies, cv_dict = {}, avg_contacts = None):
         """
         :param env_type_scalars: dict
         each environment type must map to a float. is for scaling weights
@@ -231,19 +231,16 @@ class NetBuilder:
         :param avg_contacts:
         if specified, the number of edges picked for an environment will be chosen to meet avg_contacts
 
-        :param weight_cv: float
-        the coefficient of variation. If specified, weight = weight * np.random.normal(1, cv)
-        this will normally distribute weights with stddev cv*weight
-
-        :param contact_cv:
-        the coefficient of variations for dispersing the number of edges between partitions
+        :param cv_dict: dict
+        the cv dict allows the user to specify values for keys "weight", "contact", and "mask_eff",
+        which will be used as the coefficient of variation for applying noise to these parrameters,
+        noise to the weights, the number of contacts in structured environments, and the efficacy of masks
         """
 
         self.global_weight = 1
         self.prev_efficacies = prev_efficacies
         self.env_scalars = env_type_scalars
-        self.weight_cv = weight_cv
-        self.contact_cv = contact_cv
+        self.cv_dict = cv_dict
         self.avg_contacts = avg_contacts
 
     #def list
@@ -390,8 +387,7 @@ class NetBuilder:
         CM = environment.returnReciprocatedCM()
 
         #add gaussian noise to contact matrix values
-        if self.contact_cv != None:
-            CM = CM*np.random.normal(1, self.contact_cv, CM.shape)
+        if "contact" in self.cv_dict: CM = CM*np.random.normal(1, self.cv_dict["contact"], CM.shape)
 
         assert isinstance(environment, StructuredEnvironment), "must be a partitioned environment"
         #a list of the number of people in each partition set
@@ -465,7 +461,7 @@ class NetBuilder:
         #if there are different masks in use, a different method is required
 
         if environment.num_mask_types == 1:
-            n_masks = (environment.mask_status[personA] + environment.mask_status[personB])    ##### BUG: mask_status not there on environment **** GE
+            n_masks = (environment.mask_status[personA] + environment.mask_status[personB])
             #so it works with reductions as either a single value, for one mask type in the model, or multiple vals, for multiple mask types
             # n_masks is 0,1, or 2. For each mask worn, weight is scaled down by reduction
             weight = weight * (1 - mask_eff) ** n_masks
@@ -479,10 +475,8 @@ class NetBuilder:
         isDistanced = int(bool(environment.distance_status[personA]) or bool(environment.distance_status[personB]))
         #only applies when isDistanced is 1
         weight = weight*(1-self.prev_efficacies["distancing"])**isDistanced
-        if self.weight_cv != None:
-            weight = weight * np.random.normal(1, self.weight_cv)
-        #make normal distribution
-
+        #apply spread to mask effectiveness if requested
+        if "mask_eff" in self.cv_dict: redA,redB = redA*self.cv_dict["mask_eff"], redB*self.cv_dict["mask_eff"]
         return weight
 
 #A work in progress
@@ -701,6 +695,7 @@ class PopulaceGraph:
         else:
             self.populace = [(vars(rawPopulace[key])) for key in rawPopulace]  # .transpose()
         self.population = len(self.populace)
+        print("self.population: ", self.population)
 
 
     # To sort people into a dict of categories. 
@@ -721,6 +716,12 @@ class PopulaceGraph:
 
         #**************************88
         pops_by_category["age_groups"] = {}
+        # all ages 0-90, 93, 94
+        print("age.keys(): ", sorted(list(pops_by_category["age"].keys())));
+        count = 0
+        for k,v in pops_by_category["age"].items():
+            count = count + len(v)
+        print("__init__: total number of people: ", count) # same as self.population above. GOOD
 
         for bracket in range(0,20):
             pops_by_category["age_groups"][bracket] = []
@@ -728,7 +729,13 @@ class PopulaceGraph:
                 try:   # easier than conditionals. I divided all ages into groups of 5
                     pops_by_category["age_groups"][bracket].extend(pops_by_category["age"][5*bracket+i])
                 except:
-                    break
+                    continue
+
+        # count total nb of nodes
+        count=0
+        for bracket in range(0,20):
+            count = count + len(pops_by_category["age_groups"][bracket])
+        print("PopulaceGraph::__init__: Nb of people in all age brackets: ", count)
 
         self.pops_by_category = pops_by_category
 
@@ -887,32 +894,39 @@ class PopulaceGraph:
         plt.show()
 
     #-------------------------------------------------------------------
-    def SIRperBracket(self, tlast): 
+    #def SIRperBracket(self, tlast): 
+    def SIRperBracket(self, age_statuses): 
         # Collect the S,I,R at the last time: tlast
         # print("tlast.R= ", list(tlast.keys())); 
         # Replace 'S', 'I', 'R' by [0,1,2]
 
-        ag = self.pops_by_category["age_groups"]
+        print("len(age_statuses)= ", len(age_statuses))
+        age_groups = self.pops_by_category["age_groups"]
+        count = 0
+        for b,n in age_groups.items():
+            count += len(n)
+        print("total number of nodes in all age brackets: ", count)
 
         brackets = {}
         count = 0
-        for bracket in ag.keys():
+        for bracket, nodes in age_groups.items():
             print("GE: bracket= ", bracket)
-            s = i = r = 0
-            # nodes in given age brakcet
-            nodes = ag[bracket]
+            # nodes in given age bracket
             b = brackets[bracket] = []
-            print("bracket: ", bracket)
-            print("nodes= ", nodes)
+            print("age bracket: ", bracket)
+            print("age bracket nodes= ", nodes)
             for n in nodes:
                 print("GE: n= ", n)
                 try:
-                    b.append(tlast[n])
+                    b.append(age_statuses[n])  # S,I,R
                 except:
-                    print("tlast.keys: ", list(tlast.keys()))
-                    print("except, n= ", n)  # I SHOULD NOT END UP HERE
+                    print("except, key: n= ", n)  # I SHOULD NOT END UP HERE
+                    print("List of graph nodes with SIR statuses")
+                    print("age_statuses.keys: ", list(age_statuses.keys()))
                     quit()
-            count += len(brackets[bracket])
+
+            count += len(nodes)
+            print("count= ", count, ",  bracket= ", bracket)
             
         ages_d = {}
         for bracket in ag.keys():
@@ -929,32 +943,32 @@ class PopulaceGraph:
 
         graph = nx.Graph()
         #add the edges of each environment to a single networkx graph
-        for environment in self.environments: graph.add_weighted_edges_from(self.environments[environment].edges, weight = "transmission_weight")
-        #simulate the graph
-        #simResult = simAlg(graph, tau, gamma, initial_recovereds=self.initial_vaccinated,
-                           #initial_infecteds=self.initial_infected, transmission_weight='transmission_weight',
-                           #return_full_data=full_data)
+        print("total nb environments: ", len(self.environments)); 
+        for environment in self.environments: 
+            graph.add_weighted_edges_from(self.environments[environment].edges, weight = "transmission_weight")
+        print("Before simlation: Graph: nb nodes: ", graph.number_of_nodes())
+        quit()
 
         simResult = simAlg(graph, tau, gamma, rho = 0.001, transmission_weight='transmission_weight',return_full_data=full_data)
-        self.sims.append([simResult, title, [gamma, tau], preventions])
+        #self.sims.append([simResult, title, [gamma, tau], preventions])
 
-        ####
         start2 = time.time()
         sr = simResult
-        txx = {}
+        statuses = {}
         last_time = simResult.t()[-1]
-        print("last_time= ", last_time) # 132
+        print("last_time= ", last_time) # 132 190.8
 
         for tix in range(0, int(last_time)+2, 2):
-            txx[tix] = sr.get_statuses(time=tix)
+            # statuses[tix]: for each node of the graph, S,I,R status
+            statuses[tix] = sr.get_statuses(time=tix)
         #txx['last'] = sr.get_statuses(time=sr.t()[-1])
         print("Before SIRperBracket")
-        print("txx.keys()= ", list(txx.keys()))
-        key0 = list(txx.keys())[0]
-        # txx[graph node] = Dictionary: node# => 'S', 'I', or 'R'}
-        print("txx[%d]= " % key0, txx[key0])
-        print("nb keys: ", len(txx.keys())) # length: 67
-        print("txx keys: 0 through 132, increment by 2")
+        print("statuses.keys()= ", list(statuses.keys()))  # 0, 2, 4, ..., 190
+        key0 = list(statuses.keys())[0]
+        # statuses[graph node] = Dictionary: node# => 'S', 'I', or 'R'}
+        print("statuses[%d]= " % key0, statuses[key0])
+        print("nb keys: ", len(statuses.keys())) # length: 67
+        print("statuses keys: 0 through 132, increment by 2")
 
         self.record.print("handle simulation output: {} seconds".format(time.time() - start2))
 
@@ -964,8 +978,8 @@ class PopulaceGraph:
 
         ages_d = {}
 
-        for k,v in txx.items():
-            print("*** k= ", k, ",   len txx[k]= ", len(txx[k])) # list of first 10 statuses
+        for k,v in statuses.items():
+            print("*** k= ", k, ",   len statuses[k]= ", len(v))
             ages_d[k] = self.SIRperBracket(v)
             print("********** Remove the quit()"); quit()
             #print("  return from SIRperBracket: ages_d[k]= ", ages_d[k])

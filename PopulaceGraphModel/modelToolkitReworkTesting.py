@@ -1,5 +1,5 @@
+from ge_modelingToolkit2 import *
 #from ModelToolkit2 import *
-from ModelToolkit2 import *
 
 gamma = 0.1# The expected time to recovery will be 1/gamma (days)
 tau = 0.2#  The expected time to transmission by an ge will be 1/(weight*Tau) (days)

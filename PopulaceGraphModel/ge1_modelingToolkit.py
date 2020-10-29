@@ -462,6 +462,7 @@ class PopulaceGraph:
                     pops_by_category["age_groups"][bracket].extend(pops_by_category["age"][5*bracket+i])
                 except:
                     break
+
             #print("bracket: %d, size: %d" % (bracket, len(pops_by_category["age_groups"][bracket])))
 
         self.pops_by_category = pops_by_category
@@ -1134,11 +1135,11 @@ class PopulaceGraph:
 
         start2 = time.time()
         sr = simResult
-        txx = {}
+        statuses = {}
         last_time = simResult.t()[-1]
 
         for tix in range(0, int(last_time)+2, 2):
-            txx[tix] = sr.get_statuses(time=tix)
+            statuses[tix] = sr.get_statuses(time=tix)
         #txx['last'] = sr.get_statuses(time=sr.t()[-1])
 
         self.record.print("handle simulation output: {} seconds".format(time.time() - start2))
@@ -1160,9 +1161,9 @@ class PopulaceGraph:
         start3 = time.time()
 
         ages_d = {}
-        for k in txx.keys():
+        for k in statuses.keys():
             #print("*** k= ", k, ",   len txx[k]= ", len(txx[k])) # list of first 10 statuses
-            ages_d[k] = self.SIRperBracket(txx[k])
+            ages_d[k] = self.SIRperBracket(statuses[k])
             #print("  return from SIRperBracket: ages_d[k]= ", ages_d[k])
 
             """
