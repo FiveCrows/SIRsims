@@ -50,7 +50,7 @@ model.buildNetworks(netBuilder)
 isolates = list(nx.isolates(model.graph))
 print("There are {} people in the populace. {} of them have been included in the graph, {} of them are left isolated".format( len(model.populace), model.graph.number_of_nodes(),len(isolates)))
 plt.plot([len(n) for i, n in partition.partitionGroup(isolates, model.populace).items()])
-plt.title("Age chart of populace isolates")
+plt.title("Age bins sizes for populace isolates")
 plt.show()
 
 
