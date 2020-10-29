@@ -48,12 +48,15 @@ class Partitioner:
     def partitionGroup(self, members, populace):
         """
         :param members: list
-        An list of indexes for the peaple to partition
+        An list of indexes for the peaple to partition, if 'All' will use all members in populace
         :param populace:
         A dict associating people to a list of their attributes is required for applying the enumerator
         :return: dict
 
         """
+        if members == 'All':
+            members = [vals[0] for vals in enumerate(populace)]
+
         partitioned_members = {i: [] for i in range(self.num_sets)}
         for person in members:
             #determine the number for which group the person belongs in, depending on their attribute
@@ -68,7 +71,7 @@ class Environment:
     Objects to the carry details for every home
     """
 
-    def __init__(self, index, members, quality):
+    def __init__(self, index, members, quality, prev_prevalences = None):
         """
         :param index: int
         an identifier
@@ -86,8 +89,11 @@ class Environment:
         # self.distancing = distancing
         self.total_weight = 0
         self.edges = []
-
+        #booleans to keep track of build process
+        self.hasEdges = False
+        self.isWeighted = False
         #creates a dict linking each member of the environment with each prevention
+        #self.drawPreventions(prev_prevalences)
 
     def drawPreventions(self, prevalences, populace):
         """
@@ -96,8 +102,7 @@ class Environment:
         the prevalences for each prevention, with keys for environment type, to prevention type to prevalence
         :param populace: dict
         the populace dict is needed to know which mask everybody is using, if necessary
-
-        :return:
+        :return: None
         """
 
         prevalences = prevalences[self.quality]
@@ -448,6 +453,9 @@ class NetBuilder:
     def setPreventionReductions(self, prevention_reductions):
         self.prevention_reductions = prevention_reductions
 
+    #def weightNet(self, environment):
+        #for edge in environment.edges:
+
     def getWeight(self, personA, personB, environment):
         """
         Uses the environments type and preventions to deternmine weight
@@ -758,7 +766,7 @@ class PopulaceGraph:
                     school = StructuredEnvironment(index, schools[index], "school", self.populace, school_matrices[index], partitioner)
                     self.environments[index] = (school)
 
-            # pick who masks and distances, in each environment
+            # pick who masks and who distances, in each environment
             for index in self.environments:
                 self.environments[index].drawPreventions(prevention_prevalences, self.populace)
 
@@ -801,10 +809,15 @@ class PopulaceGraph:
         :param netBuilder: NetBuilder object
         defines how to choose edges and weights by each environment
         """
-        #None is default so old scripts can still run. self not defined in signatur
+        #None is default, so old scripts can still run. self not defined in signature
         for index in self.environments:
             environment = self.environments[index]
             environment.network(netBuilder)
+
+        self.graph = nx.Graph()
+        self.graph.add_nodes_from(list(range(len(self.populace))))
+        #add the edges of each environment to a single networkx graph
+        for environment in self.environments: self.graph.add_weighted_edges_from(self.environments[environment].edges, weight = "transmission_weight")
         self.isBuilt = True
 
     def reweight(self, netBuilder, prevention_prevalences = None):
@@ -876,15 +889,12 @@ class PopulaceGraph:
     #----------------------------------
     def simulate(self, gamma, tau, simAlg=EoN.fast_SIR, title=None, full_data=True, preventions=None):
 
-        graph = nx.Graph()
-        #add the edges of each environment to a single networkx graph
-        for environment in self.environments: graph.add_weighted_edges_from(self.environments[environment].edges, weight = "transmission_weight")
         #simulate the graph
         #simResult = simAlg(graph, tau, gamma, initial_recovereds=self.initial_vaccinated,
                            #initial_infecteds=self.initial_infected, transmission_weight='transmission_weight',
                            #return_full_data=full_data)
 
-        simResult = simAlg(graph, tau, gamma, rho = 0.001, transmission_weight='transmission_weight',return_full_data=full_data)
+        simResult = simAlg(self.graph, tau, gamma, rho = 0.001, transmission_weight='transmission_weight',return_full_data=full_data)
         self.sims.append([simResult, title, [gamma, tau], preventions])
 
     def plotNodeDegreeHistogram(self, environment = None, layout = 'bars', ax = None, normalized = True):

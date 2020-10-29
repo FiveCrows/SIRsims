@@ -39,6 +39,7 @@ for item in netBuilder.cv_dict.items():
     netBuilder.cv_dict[item[0]] = item[1]
     print(model.getPeakPrevalences())
     plt.plot(model.getPeakPrevalences(),label = item[0])
+
     model.reset()
 plt.legend()
 plt.show()

@@ -2,7 +2,7 @@
 This script is written to check who has no edges in the graph
 """
 
-from ModelToolkit import *
+from ModelToolkit2 import *
 import copy
 
 
@@ -21,7 +21,7 @@ preventions = {'workplace': workplace_preventions, 'school': school_preventions,
 #these values specify how much of a reduction in weight occurs when people are masked, or distancing
 prevention_reductions = {'masking': 0.1722, 'distancing': 0.2071}# dustins values
 #this object holds rules and variables for choosing weights
-trans_weighter = TransmissionWeighter(default_env_scalars, prevention_reductions)
+
 #gamma is the recovery rate, and the inverse of expected recovery time
 gamma = 0.1
 #tau is the transmission rate
@@ -33,11 +33,24 @@ enumerator = {i:i//5 for i in range(75)}
 enumerator.update({i:15 for i in range(75,100)})
 names = ["{}:{}".format(5 * i, 5 * (i + 1)) for i in range(15)]
 partition = Partitioner('age', enumerator, names)
+netBuilder = NetBuilder(default_env_scalars, prevention_reductions, {"weight": 0, "contact": 0, "mask_eff": 0})
 
+prevention_prevalences = {"household": {"masking": 0, "distancing": 0},
+                          "school": {"masking": 0, "distancing": 0},
+                          "workplace": {"masking": 0, "distancing": 0}}
+slim = False
+
+model = PopulaceGraph( partition, prevention_prevalences, slim = slim)
 #----------- BEGIN SIMULATIONS ------------------------------------
 
 #init, build simulate
-model = PopulaceGraph( partition, slim = False)
-model.build(trans_weighter, preventions, env_degrees)
-model.differentiateMasks([0.25,0.5,0.25])
-print(model.populace.keys()-model.graph.nodes())
+
+
+model.buildNetworks(netBuilder)
+isolates = list(nx.isolates(model.graph))
+print("There are {} people in the populace. {} of them have been included in the graph, {} of them are left isolated".format( len(model.populace), model.graph.number_of_nodes(),len(isolates)))
+plt.plot([len(n) for i, n in partition.partitionGroup(isolates, model.populace).items()])
+plt.title("Age chart of populace isolates")
+plt.show()
+
+
