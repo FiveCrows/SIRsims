@@ -685,8 +685,8 @@ class PopulaceGraph:
         self.total_weight = 0
         self.environments_added = 0
         self.initial_recovered = []
-        self.initial_vaccinated = None  # same as initial_recovered
-        self.initial_infected   = None
+        self.initial_vaccinated = [] #None  # same as initial_recovered
+        self.initial_infected   = [] #None
         self.graph = nx.Graph()
 
         if timestamp == None:
@@ -721,6 +721,7 @@ class PopulaceGraph:
         else:
             self.populace = [(vars(rawPopulace[key])) for key in rawPopulace]  # .transpose()
         self.population = len(self.populace)
+        #print("self.populace: ", self.populace); quit()
         print("self.population: ", self.population)
 
 
@@ -779,7 +780,119 @@ class PopulaceGraph:
 
         self.pops_by_category = pops_by_category
 
+        print("test printEnvironments")
+        self.printEnvironments()
+
+        # Must be called last
+        self.resetVaccinated_Infected()
+
     #-------------------------------------------------
+    def printEnvironments(self):
+        keys = list(self.environments.keys())
+        envs = set()
+        for k in keys:
+            envs.add(self.environments[k].quality)
+
+        # Environment type can be "household", "workplace", "school"
+        #print("envs= ", envs)
+        # attributers of environments[keys[1]]: "index', 'members', 'population', 'preventions', 'type'"
+        #print(dir(self.environments[keys[1]]))
+        for k in range(25000,25200):
+            print("-----------------")
+            print(self.environments[keys[k]].members)  # list of one element [12]. Meaning?
+            print(self.environments[keys[k]].population)  # 1  (nb of members)
+            print(self.environments[keys[k]].preventions)  # None (or a list?
+            print(self.environments[keys[k]].quality)  # list of one element [12]. Meaning?
+
+    #-------------------------------------------------
+    def resetVaccinated_Infected(self):
+        # By default nobody in the population is recovered. 
+        # Vaccination is modeled by setting a person's status to recovered
+
+        # Reset to not vaccinate anybody anywhere 
+        self.set_nbTopWorkplacesToVaccinate(0, 0.)
+        self.set_nbTopSchoolsToVaccinate(0, 0.)
+
+        # Rank locations. Must be called after setting nb places to vaccinate
+        print("** resetVaccinated_Infected")
+        self.rank_workplaces()
+        self.rank_schools()
+
+        self.initial_vaccinated = []
+        self.initial_infected   = []
+        self.nb_top_workplaces_vaccinated = 0
+        self.nb_top_schools_vaccinated = 0
+        self.perc_people_vaccinated_in_workplaces = 0.0
+        self.perc_populace_vaccinated = 0.0
+        self.perc_people_vaccinated_in_schools = 0.0
+        self.perc_workplace_vaccinated = 0.0  # perc vaccinated in the workplace
+        self.perc_school_vaccinated = 0.0  # perc vaccinated in the schools
+        self.work_population = 1
+        self.school_population = 1
+        self.workplace_population_vaccinated = 0,
+        self.school_population_vaccinated = 0,
+        self.initial_vaccinated_population = len(self.initial_vaccinated),
+
+    #----------------------------------------------------------
+    def createVaccinationDict(self):
+        vacc_dict = {
+            'nb_top_workplaces_vaccinated': self.nb_top_workplaces_vaccinated,
+            'nb_top_schools_vaccinated': self.nb_top_schools_vaccinated,
+            'perc_people_vaccinated_in_workplaces': self.perc_people_vaccinated_in_workplaces,
+            'perc_populace_vaccinated': self.perc_populace_vaccinated,
+            'perc_people_vaccinated_in_schools': self.perc_people_vaccinated_in_schools,
+            'perc_workplace_vaccinated': self.perc_workplace_vaccinated,    # perc vaccinated in the workplace
+            'perc_school_vaccinated': self.perc_school_vaccinated, # perc vaccinated in the schools
+            'work_population': self.work_population,
+            'school_population': self.school_population,
+            'nb_schools': self.nb_schools,
+            'nb_workplaces': self.nb_workplaces,
+            'workplace_population_vaccinated': self.workplace_population_vaccinated,
+            'school_population_vaccinated': self.school_population_vaccinated,
+            'initial_vaccinated_population': self.initial_vaccinated_population,
+        }
+        return vacc_dict
+    #-------------------------------
+    def zeroWeights(self, env):
+        # GE: How to turn off a school without reconstructing the school graph? 
+        # NOT USED
+        # Run through the edges and set the weight to zero
+        start_time = time.time()
+        G = self.graph
+        for e in G.edges():
+            environment = self.environments[self.graph.adj[e[0]][e[1]]['environment']]
+            print("env, envi= ", env, environment.quality)
+            if env == environment.quality:
+                self.graph.adj[e[0]][e[1]]['transmission_weight'] = 0
+        print("zeroWeights[%s]: %f sec" % (env, time.time() - start_time))
+    #---------------------------------
+    def printWeights(self):
+        G = self.graph
+        for e in G.edges():
+            w = G[e[0]][e[1]]['transmission_weight']
+            env = self.environments[G[e[0]][e[1]]['environment']]
+            print("weight(e): ", e, " => ", w, env.quality)
+    #---------------------------------
+    def envEdges(self):
+        # Added by Gordon Erlebacher, class PopulaceGraph
+        # Construct a dictionary for each environment, of its edges. This will be used
+        # to assign edge properties per environment. 
+        env_edges= {}
+        for ix in self.environments:
+            env_edges[ix] = []   # list of edges
+
+        for edge in self.graph.edges():
+            #get environment
+            env = self.environments[self.graph.adj[edge[0]][edge[1]]['environment']]
+            # env is an environment object
+            env_edges[env.index].append((edge[0], edge[1]))  ### ERROR
+
+        # attach edge list to the environment
+        for ix in self.environments:
+            env = self.environments[ix]
+            env.edges = env_edges[ix]
+
+    #-------------------------------
     def setup_households(self):
         households = self.pops_by_category["sp_hh_id"]
 
@@ -789,33 +902,104 @@ class PopulaceGraph:
 
     #-----------------
     def setup_workplaces(self, partitioner):
-        workplaces = self.pops_by_category["work_id"]
+        self.workplaces = self.pops_by_category["work_id"]
         with open("../ContactMatrices/Leon/ContactMatrixWorkplaces.pkl", 'rb') as file:
             work_matrices = pickle.load(file)
 
-        for index in workplaces:
+        for index in self.workplaces:
             if index == None: continue
             #workplace = PartitionedEnvironment(index, workplaces[index], "workplace",   # Old code. Name change
-            workplace = StructuredEnvironment(index, workplaces[index], "workplace", 
+            workplace = StructuredEnvironment(index, self.workplaces[index], "workplace", 
                                                self.populace, work_matrices[index], partitioner)
             self.environments[index] = (workplace)
         return
 
     #-----------------
     def setup_schools(self, partitioner):
-        schools = self.pops_by_category["school_id"]
+        self.schools = self.pops_by_category["school_id"]
         with open("../ContactMatrices/Leon/ContactMatrixSchools.pkl", 'rb') as file:
             school_matrices = pickle.load(file)
 
         if partitioner == None: return
         self.hasPartition = True
 
-        for index in schools:
+        for index in self.schools:
             if index == None: continue
             #school = PartitionedEnvironment(index, schools[index], "school", self.populace,   # Old code, name change
-            school = StructuredEnvironment(index, schools[index], "school", self.populace, 
+            school = StructuredEnvironment(index, self.schools[index], "school", self.populace, 
                                             school_matrices[index], partitioner)
             self.environments[index] = (school)
+
+    #-----------------
+    def set_nbTopWorkplacesToVaccinate(self, nb, perc):
+        self.nb_top_workplaces_vaccinated = nb
+        self.perc_people_vaccinated_in_workplaces = perc
+        print("*workplaces to vaccinate: ", self.nb_top_workplaces_vaccinated)
+        print("*perc to vaccinate in workplaces: ", self.perc_people_vaccinated_in_workplaces)
+
+    #---------------------
+    def set_nbTopSchoolsToVaccinate(self, nb, perc):
+        self.nb_top_schools_vaccinated = nb
+        self.perc_people_vaccinated_in_schools = perc
+
+    #------------------
+    def rank_schools(self):
+        # produces list of pairs (school is, list of people is)
+        # replace the list of people ids by its length
+        ordered_schools = sorted(self.schools.items(), key=lambda x: len(x[1]), reverse=True)
+        ordered_schools = map(lambda x: [x[0], len(x[1])], ordered_schools)
+        ordered_schools = list(ordered_schools)
+
+        self.ordered_school_ids = [o[0] for o in ordered_schools[:]]
+        self.ordered_school_pop = [o[1] for o in ordered_schools[:]]
+
+        # Cumulative sum of school lengths
+        # Sum from 1 since 0th index is a school with 200,000 students. Can't be right. 
+        self.cum_sum_school_pop = np.cumsum(self.ordered_school_pop[1:])
+        self.school_population = self.cum_sum_school_pop[-1]
+        self.nb_schools = len(self.cum_sum_school_pop)
+        self.largest_schools_vaccinated = self.ordered_school_ids[1:self.nb_top_schools_vaccinated]
+        
+        print("******* ENTER rank_schools *********")
+        print("school_pop: ", self.ordered_school_pop[0:10])
+        print("school_ids: ", self.ordered_school_ids[0:10])
+        print("cum_sum, top 10: ", self.cum_sum_school_pop[0:10])
+        print("rank_schools: self.nb_schools= ", self.nb_schools)
+        print("* total school population: ", self.school_population)
+        print("* total school population to vaccinate: ", self.cum_sum_school_pop[self.nb_top_schools_vaccinated])
+        print("* school_id[0:10]: ", self.ordered_school_ids[0:10])
+        print("******* EXIT rank_schools *********")
+
+    #----------------------------------
+    def rank_workplaces(self):
+        # produces list of pairs (workplace is, list of people is)
+        # replace the list of people ids by its length
+
+        ordered_workplaces = sorted(self.workplaces.items(), key=lambda x: len(x[1]), reverse=True)
+        ordered_workplaces = map(lambda x: [x[0], len(x[1])], ordered_workplaces)
+        ordered_workplaces = list(ordered_workplaces)
+
+        self.ordered_work_ids = [o[0] for o in ordered_workplaces]
+        self.ordered_work_pop = [o[1] for o in ordered_workplaces]
+
+        # Cumulative sum of business lengths
+        # Sum from 1 since 0th index is a workplace with 120,000+ people. Can't be right. 
+        self.cum_sum_work_pop = np.cumsum(self.ordered_work_pop[1:])  # remove the first work which are the people with no workplace
+        self.work_population = self.cum_sum_work_pop[-1]
+        self.nb_workplaces = len(self.cum_sum_work_pop)
+        self.largest_workplaces_vaccinated = self.ordered_work_ids[1:self.nb_top_workplaces_vaccinated]
+
+        print("******* ENTER rank_workplaces  *********")
+        print("work_pop: ", self.ordered_work_pop[0:10])
+        print("cum_sum, top 10: ", self.cum_sum_work_pop[0:10])
+        print("rank_workplaces: self.nb_workplaces= ", self.nb_workplaces)
+        print("* total work population: ", self.work_population)
+        print("... nb_top_workplaces_vaccinated: ", self.nb_top_workplaces_vaccinated)  # should be integer
+        print("* total work population to vaccinate: ", self.cum_sum_work_pop[self.nb_top_workplaces_vaccinated])
+        print("* work_id[0]: ", self.ordered_work_ids[0])
+        print("******* EXIT rank_workplaces *********")
+
+    #--------------------------------------------
 
     #------------------
     # Called from the driver script
@@ -827,22 +1011,131 @@ class PopulaceGraph:
         """
 
         infected_01 = bernoulli.rvs(perc, size=self.population)
-        self.initial_infected = np.asarray(list(self.populace.keys()))[infected_01 == 1]
-        print("nb initial infected: ", self.initial_infected.shape[0])
+        ## ERROR: list object self.populace has no keys()
+        # how to get the keys of a list subject to conditionals. 
+        self.initial_infected = np.where(infected_01 == 1)[0]
+        #print("self.initial_infected= ", self.initial_infected); quit()
 
-    #----------------
-    # Called from the driver script
+    #-------------------------------------------------
+    # Why this more sophisticated version, with same signature as the two-line version above?
     def vaccinatePopulace(self, perc):
         # vaccinate a fraction perc 
+
         """
         :param perc
         Vaccinate a fraction perc [0,1] of the population at random, all ages
         """
+        self.perc_populace_vaccinated = 0.0
 
-        vaccinated_01 = bernoulli.rvs(perc, size=self.population)
-        #self.initial_vaccinated = np.asarray(list(self.populace.keys()))[vaccinated_01 == 1]
-        self.initial_recovered = np.asarray(list(self.populace.keys()))[vaccinated_01 == 1]
-        print("nb initial vaccinated: ", self.initial_vaccinated.shape[0])
+        print("\n\n************ ENTER vaccinatePopulace ***************")
+
+        self.initial_vaccinated = set()
+
+        workplace_populace_vaccinated = []
+        if self.nb_top_workplaces_vaccinated > 0:
+            self.rank_workplaces()
+            # Vaccinate the top n workplaces
+            for i in range(1,self.nb_top_workplaces_vaccinated+1):
+               people = self.workplaces[self.ordered_work_ids[i]]   # <<<<<<<
+               workplace_populace_vaccinated.extend(people) # people is a list  ### MUST BE WRONG
+
+        self.initial_vaccinated.update(workplace_populace_vaccinated)
+
+        school_populace_vaccinated = []
+        #if self.nb_top_schools_vaccinated > 0:
+        if True:
+            self.rank_schools()
+            # Vaccinate the top n schools
+            for i in range(1,self.nb_top_schools_vaccinated+1):
+               people = self.schools[self.ordered_school_ids[i]]
+               school_populace_vaccinated.extend(people)  # people is a list
+
+        self.initial_vaccinated.update(school_populace_vaccinated)
+
+        # if vaccinate the households of the workers in the largest workplaces
+        # if vaccinate the households of the children in the largest schools
+
+        if perc > 0.0001 and perc < 0.9999:
+            self.perc_populace_vaccinated = perc
+            vaccinated_01 = bernoulli.rvs(perc, size=self.population)
+        elif perc > 0.99:
+            self.perc_populace_vaccinated = 1.0
+            vaccinated_01 = np.ones(self.population)
+        elif perc < 0.01:
+            self.perc_populace_vaccinated = 0.0
+            vaccinated_01 = np.zeros(self.population)
+
+        # self.populace has no keys. ???? BUG?
+        #general_populace_vaccinated = np.asarray(list(self.populace.keys()))[vaccinated_01 == 1]
+        general_populace_vaccinated = np.where(vaccinated_01 == 1)[0]
+        print("general_populace_vaccinated= ", general_populace_vaccinated)
+        print("self.initial_vaccinated= ", self.initial_vaccinated) # set
+        #lll = list(general_populace_vaccinated[0])
+        #print("general_populace_vaccinated= ", lll)
+        self.initial_vaccinated.update(general_populace_vaccinated)
+
+        self.workplace_population_vaccinated  = len(workplace_populace_vaccinated)
+        self.school_population_vaccinated     = len(school_populace_vaccinated)
+        self.initial_vaccinated_population    = len(self.initial_vaccinated)
+
+        self.perc_workplace_vaccinated = self.nb_top_workplaces_vaccinated / self.nb_workplaces
+        self.perc_school_vaccinated = self.nb_top_schools_vaccinated / self.nb_schools
+        self.perc_people_vaccinated_in_workplaces = self.nb_top_schools_vaccinated / self.nb_schools
+
+        print("after rank_workplaces, nb workplaces: ", self.nb_workplaces)
+        print("* (cumsum) total work population to vaccinate: ", self.cum_sum_work_pop[self.nb_top_workplaces_vaccinated])
+        print("vaccinatePopulace, nb people to vaccinate in the workplace: ", len(workplace_populace_vaccinated))
+
+        print("* (cumsum) total school population to vaccinate: ", self.cum_sum_school_pop[self.nb_top_schools_vaccinated])
+        # WRONG
+        print("vaccinatePopulace, nb people to vaccinate in the schools: ", len(school_populace_vaccinated))
+
+        print("*workplaces to vaccinate: ", self.nb_top_workplaces_vaccinated)
+        print("*perc to vaccinate in workplaces: ", self.perc_people_vaccinated_in_workplaces)
+        print("top of vaccinatePopulace: nb workplaces: ", self.nb_workplaces)
+
+        print("Total initial population: ", self.population)
+        #print("initial vaccinated: ", self.initial_vaccinated)
+
+        if len(self.initial_vaccinated) != 0: 
+            print("nb initial vaccinated: ", len(self.initial_vaccinated))
+            print("fraction of general population vaccinated: ", len(self.initial_vaccinated) / self.population)
+
+        print("nb schools vaccinated: ", self.nb_top_schools_vaccinated)
+
+        print()
+
+        # ERROR: nb of people in workplace to vaccinate MUST BE LESS than workplace population
+        print("nb people in workplace to vaccinate: ", len(workplace_populace_vaccinated))
+        print("fraction of workplace populace vaccinated: ", len(workplace_populace_vaccinated) / self.work_population)
+        print("total workplace populace vaccinated: ", self.workplace_population_vaccinated)
+        print("total workplace population: ", self.work_population)
+
+        print()
+  
+        print("fraction of school populace vaccinated: ", len(school_populace_vaccinated) / self.school_population)
+        print("total school population: ", self.school_population)
+        print("total school populace vaccinated: ", self.school_population_vaccinated)
+    
+        print("self.nb_workplaces= ", self.nb_workplaces)
+        print("self.nb_top_workplaces_vaccinated= ", self.nb_top_workplaces_vaccinated)
+
+        print("Inside Vaccinate Populace")
+
+        vacc = self.createVaccinationDict()
+        for k,v in vacc.items():
+            print("vacc[%s]: "%k, v)
+
+        print("\n\n************ EXIT vaccinatePopulace ***************")
+                    
+    #----------------
+    def printEnvironments(self):
+        keys = list(self.environments.keys())
+        envs = set()
+        for k in keys:
+            envs.add(self.environments[k].quality)
+
+
     #-------------------------------------------------
     def differentiateMasks(self, type_probs):
         """
@@ -1004,6 +1297,8 @@ class PopulaceGraph:
         assert self.graph.number_of_edges() > 0, "nb graph edges should be positive"
 
         #simResult = simAlg(self.graph, tau, gamma, rho = 0.001, transmission_weight='transmission_weight', return_full_data=full_data)
+        print("initial_infected: ", self.initial_infected)
+        print("initial_recovered: ", self.initial_recovered)
         simResult = simAlg(self.graph, tau, gamma, initial_recovereds=self.initial_recovered, initial_infecteds=self.initial_infected, transmission_weight='transmission_weight', return_full_data=full_data)
         #self.sims.append([simResult, title, [gamma, tau], preventions])
 
@@ -1064,8 +1359,9 @@ class PopulaceGraph:
         data['ages_SIR'] = ages_d # ages_d[time][k] ==> S,I,R counts for age bracket k
 
         #-----------
-        x = datetime.now().strftime("%Y-%m-%d,%I.%Mpm")
+        x = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         filename = "%s, gamma=%s, tau=%s, %s" % (title, gamma, tau, x)
+        print("saveResults: filename: ", filename)
         self.saveResults(filename, data)
 
     #-------------------------------------------
@@ -1078,16 +1374,8 @@ class PopulaceGraph:
         # save simulation results and metadata to filename
         """
 
-        #dirname = "./ge_simResults/{}".format(self.timestamp)
-        dirname = self.basedir
-        full_path = "/".join([dirname, filename])
+        full_path = "/".join([self.basedir, filename])
 
-        try:
-            mkdir(dirname)
-        except:
-            # accept an existing directory. Not a satisfying solution
-            pass
- 
         with open(full_path, "wb") as pickle_file:
             pickle.dump(data_dict, pickle_file)
 
