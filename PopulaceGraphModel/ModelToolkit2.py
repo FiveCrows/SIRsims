@@ -483,16 +483,21 @@ class NetBuilder:
         else:
             if len(environment.num_mask_types) != len(mask_eff["masking"]):
                 print("warning: number of mask types does not match list size for reduction factors")
-            #reduction factors for the type of mask person A and B wear
+            # Reduction factors for the type of mask person A and B wear
             redA, redB = mask_eff[environment.mask_status[personA]], mask_eff["masking"][environment.mask_status[personB]]
-            #apply spread to mask effectiveness if requested
-            if "mask_eff" in self.cv_dict: redA,redB = redA*self.cv_dict["mask_eff"], redB*self.cv_dict["mask_eff"]
-            #calculate weight, finally
-            weight = weight*(1-redA)*(1-redB)        #this assumes that two distancers don't double distance, but at least one distancer is needed to be distanced, will be 1 or 0
+
+            # Apply spread to mask effectiveness if requested
+            if "mask_eff" in self.cv_dict: 
+                redA = redA*self.cv_dict["mask_eff"] 
+                redB = redB*self.cv_dict["mask_eff"]
+
+            # Calculate weight, finally
+            # Assumes that two distancers don't double distance, but at least one distancer is needed to be distanced, will be 1 or 0
+            weight = weight*(1-redA)*(1-redB)        
         isDistanced = int(bool(environment.distance_status[personA]) or bool(environment.distance_status[personB]))
-        #only applies when isDistanced is 1
+        # Only applies when isDistanced = 1
         weight = weight*(1-self.prev_efficacies["distancing"])**isDistanced
-        #add noise to the weight, if requested
+        # Add noise to the weight, if requested
         if "weight" in self.cv_dict: weight = weight * np.random.normal(1, self.cv_dict["weight"])
         
         return weight

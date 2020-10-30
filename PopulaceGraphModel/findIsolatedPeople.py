@@ -2,7 +2,8 @@
 This script is written to check who has no edges in the graph
 """
 
-from ModelToolkit2 import *
+#from ModelToolkit2 import *
+from ge_modelingToolkit2 import *
 import copy
 
 
@@ -39,6 +40,7 @@ prevention_prevalences = {"household": {"masking": 0, "distancing": 0},
                           "school": {"masking": 0, "distancing": 0},
                           "workplace": {"masking": 0, "distancing": 0}}
 slim = False
+slim = True
 
 model = PopulaceGraph( partition, prevention_prevalences, slim = slim)
 #----------- BEGIN SIMULATIONS ------------------------------------

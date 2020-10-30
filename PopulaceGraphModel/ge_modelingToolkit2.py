@@ -42,7 +42,7 @@ class Partitioner:
     def partitionGroup(self, members, populace):
         """
         :param members: list
-        An list of indexes for the peaple to partition
+        A list of indexes for the peaple to partition, if 'All' will use all members in populace
         :param populace:
         A dict associating people to a list of their attributes is required for applying the enumerator
         :return: dict
@@ -80,7 +80,9 @@ class Environment:
         # self.distancing = distancing
         self.total_weight = 0
         self.edges = []
-
+        #booleans to keep track of build process
+        self.hasEdges = False
+        self.isWeighted = False
         #creates a dict linking each member of the environment with each prevention
 
     def drawPreventions(self, prevalences, populace):
@@ -465,18 +467,30 @@ class NetBuilder:
             #so it works with reductions as either a single value, for one mask type in the model, or multiple vals, for multiple mask types
             # n_masks is 0,1, or 2. For each mask worn, weight is scaled down by reduction
             weight = weight * (1 - mask_eff) ** n_masks
-        #handle situations where the model is set up with multiple different sorts of masks in use
+
+        # handle situations where the model is set up with multiple different sorts of masks in use
         else:
             if len(environment.num_mask_types) != len(mask_eff["masking"]):
                 print("warning: number of mask types does not match list size for reduction factors")
             #reduction factors for the type of mask person A and B wear
-            redA, redB = mask_eff[environment.mask_status[personA]], mask_eff["masking"][environment.mask_status[personB]]
-            weight = weight*(1-redA)*(1-redB)        #this assumes that two distancers don't double distance, but at least one distancer is needed to be distanced, will be 1 or 0
+            redA = mask_eff[environment.mask_status[personA]]  # <<< ERROR?
+            redB = mask_eff["masking"][environment.mask_status[personB]]
+            # Next line assumes that two distancers don't double distance, but at least one distancer 
+            # is needed to be distanced, will be 1 or 0
+            weight = weight*(1-redA)*(1-redB)        
         isDistanced = int(bool(environment.distance_status[personA]) or bool(environment.distance_status[personB]))
-        #only applies when isDistanced is 1
+        # only applies when isDistanced is 1
         weight = weight*(1-self.prev_efficacies["distancing"])**isDistanced
-        #apply spread to mask effectiveness if requested
-        if "mask_eff" in self.cv_dict: redA,redB = redA*self.cv_dict["mask_eff"], redB*self.cv_dict["mask_eff"]
+        # apply spread to mask effectiveness if requested
+
+        """
+        # This was in uncommented in ModelingToolkit2.py (2020-10-29) and generaeted an error. 
+        # redA not defined. 
+        if "mask_eff" in self.cv_dict: 
+            redA = redA * self.cv_dict["mask_eff"]
+            redB = redB * self.cv_dict["mask_eff"]
+        """
+
         return weight
 
 #A work in progress
@@ -840,9 +854,22 @@ class PopulaceGraph:
         defines how to choose edges and weights by each environment
         """
         #None is default so old scripts can still run. self not defined in signatur
+        #for index in self.environments:
+            #environment = self.environments[index]
+            #environment.network(netBuilder)
+        #self.isBuilt = True
+
+        #None is default, so old scripts can still run. self not defined in signature
         for index in self.environments:
             environment = self.environments[index]
             environment.network(netBuilder)
+
+        self.graph = nx.Graph()
+        self.graph.add_nodes_from(list(range(len(self.populace))))
+        print("len(populace): ", len(self.populace))
+        print("self.population = ", self.population)
+        #add the edges of each environment to a single networkx graph
+        for environment in self.environments: self.graph.add_weighted_edges_from(self.environments[environment].edges, weight = "transmission_weight")
         self.isBuilt = True
 
     def reweight(self, netBuilder, new_prev_prevalences = None):
@@ -910,13 +937,13 @@ class PopulaceGraph:
         brackets = {}
         count = 0
         for bracket, nodes in age_groups.items():
-            print("GE: bracket= ", bracket)
+            #print("GE: bracket= ", bracket)
             # nodes in given age bracket
             b = brackets[bracket] = []
-            print("age bracket: ", bracket)
-            print("age bracket nodes= ", nodes)
+            #print("age bracket: ", bracket)
+            #print("age bracket nodes= ", nodes)
             for n in nodes:
-                print("GE: n= ", n)
+                #print("GE: n= ", n)
                 try:
                     b.append(age_statuses[n])  # S,I,R
                 except:
@@ -926,10 +953,10 @@ class PopulaceGraph:
                     quit()
 
             count += len(nodes)
-            print("count= ", count, ",  bracket= ", bracket)
+            #print("count= ", count, ",  bracket= ", bracket)
             
         ages_d = {}
-        for bracket in ag.keys():
+        for bracket in age_groups.keys():
             blist = brackets[bracket]
             ages_d[bracket] = {'S':0, 'I':0, 'R':0}  # nb S, I, R
             for s in blist:
@@ -941,16 +968,25 @@ class PopulaceGraph:
     #-------------------------------------------------------------------
     def simulate(self, gamma, tau, simAlg=EoN.fast_SIR, title=None, full_data=True, preventions=None):
 
+        # Gordon Change
+        #simResult = simAlg(self.graph, tau, gamma, initial_recovereds=self.initial_vaccinated, initial_infecteds=self.initial_infected, transmission_weight='transmission_weight', return_full_data=full_data)
+        print("tau, gamma= ", tau, gamma)
+        print("graph nodes: ", self.graph.number_of_nodes())
+        print("graph edges: ", self.graph.number_of_edges())
+        simResult = simAlg(self.graph, tau, gamma, rho = 0.001, transmission_weight='transmission_weight', return_full_data=full_data)
+        self.sims.append([simResult, title, [gamma, tau], preventions])
+
+        """
         graph = nx.Graph()
         #add the edges of each environment to a single networkx graph
         print("total nb environments: ", len(self.environments)); 
         for environment in self.environments: 
             graph.add_weighted_edges_from(self.environments[environment].edges, weight = "transmission_weight")
         print("Before simlation: Graph: nb nodes: ", graph.number_of_nodes())
-        quit()
 
         simResult = simAlg(graph, tau, gamma, rho = 0.001, transmission_weight='transmission_weight',return_full_data=full_data)
         #self.sims.append([simResult, title, [gamma, tau], preventions])
+        """
 
         start2 = time.time()
         sr = simResult
@@ -962,13 +998,13 @@ class PopulaceGraph:
             # statuses[tix]: for each node of the graph, S,I,R status
             statuses[tix] = sr.get_statuses(time=tix)
         #txx['last'] = sr.get_statuses(time=sr.t()[-1])
-        print("Before SIRperBracket")
-        print("statuses.keys()= ", list(statuses.keys()))  # 0, 2, 4, ..., 190
+        #print("Before SIRperBracket")
+        #print("statuses.keys()= ", list(statuses.keys()))  # 0, 2, 4, ..., 190
         key0 = list(statuses.keys())[0]
         # statuses[graph node] = Dictionary: node# => 'S', 'I', or 'R'}
-        print("statuses[%d]= " % key0, statuses[key0])
-        print("nb keys: ", len(statuses.keys())) # length: 67
-        print("statuses keys: 0 through 132, increment by 2")
+        #print("statuses[%d]= " % key0, statuses[key0])
+        #print("nb keys: ", len(statuses.keys())) # length: 67
+        #print("statuses keys: 0 through 132, increment by 2")
 
         self.record.print("handle simulation output: {} seconds".format(time.time() - start2))
 
@@ -981,7 +1017,7 @@ class PopulaceGraph:
         for k,v in statuses.items():
             print("*** k= ", k, ",   len statuses[k]= ", len(v))
             ages_d[k] = self.SIRperBracket(v)
-            print("********** Remove the quit()"); quit()
+            #print("********** Remove the quit()"); quit()
             #print("  return from SIRperBracket: ages_d[k]= ", ages_d[k])
 
             """
@@ -1023,14 +1059,15 @@ class PopulaceGraph:
         # save simulation results and metadata to filename
         """
 
+        self.stamp = datetime.now().strftime("%m_%d_%H_%M_%S")
+        dirname = "./ge_simResults/{}".format(self.stamp)
+        full_path = "/".join([dirname, filename])
+
         try:
             mkdir(dirname)
         except:
             # accept an existing directory. Not a satisfying solution
             pass
-
-        dirname = "./ge_simResults/{}".format(self.stamp)
-        full_path = "/".join(dirname, filename)
  
         with open(filename, "wb") as pickle_file:
             pickle.dump(data_dict, pickle_file)
