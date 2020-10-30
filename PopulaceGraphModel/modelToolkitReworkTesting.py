@@ -35,9 +35,6 @@ prevention_prevalences = {"household": {"masking": 0, "distancing": 0},
 slim = False
 slim = True
 print("Running with slim= %d" % slim)
-model = PopulaceGraph(partitioner, prevention_prevalences, slim=slim, timestamp=timestamp)
-model.resetVaccinated_Infected() # reset to default state (for safety)
-model.differentiateMasks([0.25,0.5,0.25])
 
 #construct netBuilder
 #en_type_scalars is used to scale each weight, depending on the type of environment the edge will be placed in
@@ -50,12 +47,15 @@ prevention_efficacies = {"masking": 0.7, "distancing": 0.7}
 #################################################################################
 
 if save_output:
-    dstdirname = os.path.join(".","ge_simResults", timestamp, "src")
+    dstdirname = os.path.join(".", "ge_simResults", timestamp, "src")
     os.makedirs(dstdirname)
     # Independent of OS
     os.system("cp *.py %s" % dstdirname)  # not OS independent
     #copyfile ('ge1_modelToolkit.py',os.path.join(dstdirname,'ge1_modelToolkit.py'))
 
+model = PopulaceGraph(partitioner, prevention_prevalences, slim=slim, timestamp=timestamp)
+model.resetVaccinated_Infected() # reset to default state (for safety)
+model.differentiateMasks([0.25,0.5,0.25])
 
 netBuilder = NetBuilder(env_type_scalars, prevention_efficacies, cv_dict={"weight": 0, "contact": 0, "mask_eff": 0})
 model.vaccinatePopulace(perc=0.0)
@@ -72,14 +72,12 @@ for item in netBuilder.cv_dict.items():
         model.infectPopulace(perc=0.001)
         model.vaccinatePopulace(perc=0.0)
         model.simulate(gamma, tau, title="{} cv = {}".format(item[0], item[1]))
+
     #return back to normal
     netBuilder.cv_dict[item[0]] = item[1]
     print(model.getPeakPrevalences())
     #plt.plot(model.getPeakPrevalences(),label = item[0])
 
-    #model.reset()
 plt.legend()
 plt.show()
-
-
 
