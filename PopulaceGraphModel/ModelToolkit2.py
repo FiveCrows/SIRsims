@@ -935,7 +935,6 @@ class PopulaceGraph:
         plt.ylabel("total people")
         plt.xlabel("degree")
         plt.show()
-        plt.savefig("./simResults/{}/".format(self.record.stamp))
 
 
     def plotSIR(self, memberSelection = None):
@@ -965,6 +964,7 @@ class PopulaceGraph:
                 ax[2].set_xlabel("days")
         ax[1].legend()
         plt.show()
+        plt.savefit(self.basedir+"/plotSIR.pdf")
 
     def getPeakPrevalences(self):
         return [max(sim[0].I()) for sim in self.sims]
@@ -1014,7 +1014,6 @@ class PopulaceGraph:
         plt.ylabel("Fraction of people with status {}".format(SIRstatus))
         plt.xlabel("Age groups of 5 years")
         plt.show()
-        plt.savefig("./simResults/{}/evasionChart".format(self.record.stamp))
 
     def getR0(self):
         sim = self.sims[-1]

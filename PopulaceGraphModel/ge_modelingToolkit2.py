@@ -10,11 +10,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math
 from scipy.interpolate import interp1d
+from scipy.stats import bernoulli
 
-#WIP
-#def timeit(method):
-#    def timed(*args, **kw)
-#        #t_start
 
 class Partitioner:
     """
@@ -441,6 +438,9 @@ class NetBuilder:
     def setEnvScalars(self, env_scalars):
         self.env_scalars = env_scalars
 
+    def setPreventions(self, preventions):
+        self.preventions = preventions
+
     def setPreventionReductions(self, prevention_reductions):
         self.prevention_reductions = prevention_reductions
 
@@ -662,7 +662,7 @@ class PopulaceGraph:
     A list of people, environments, and functions, for tracking a weighted graph to represent contacts between members of the populace
     """
 
-    def __init__(self, partitioner, prevention_prevalences = None, attributes = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False):
+    def __init__(self, partitioner, prevention_prevalences = None, attributes = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False, timestamp=None):
         """        
         :param partition: Partitioner
         needed to build schools and workplaces into partitioned environments
@@ -681,18 +681,30 @@ class PopulaceGraph:
         self.sims = []
         self.contactMatrix = None
         self.total_weight = 0
-        self.record = Record()
         self.total_edges = 0
         self.total_weight = 0
         self.environments_added = 0
-        self.initial_recovered = None
+        self.initial_recovered = []
+        self.initial_vaccinated = None  # same as initial_recovered
+        self.initial_infected   = None
         self.graph = nx.Graph()
+
+        if timestamp == None:
+            self.timestamp = datetime.now().strftime("%m_%d_%H_%M_%S")
+        else:
+            self.timestamp = timestamp
+
+        self.basedir = "./ge_simResults/{}".format(self.timestamp)
+        print("basedir= ", self.basedir)
+        self.record = Record(self.basedir)
 
 
         if prevention_prevalences == None:
             self.prevention_prevalences = {"household": {"masking": 0, "distancing": 0},
                                            "school": {"masking": 0, "distancing": 0},
                                            "workplace": {"masking": 0, "distancing": 0}}
+        else:
+            self.prevention_prevalences = prevention_prevalences
 
         # for loading people objects from file
         with open("people_list_serialized.pkl", 'rb') as file:
@@ -789,16 +801,6 @@ class PopulaceGraph:
             self.environments[index] = (workplace)
         return
 
-# New code from Bryan
-        if partitioner == None: return
-        self.hasPartition = True
-
-        for index in workplaces:
-            if index != None:
-                workplace = StructuredEnvironment(index, workplaces[index], "workplace", 
-                              self.populace, work_matrices[index], partitioner)
-                self.environments[index] = (workplace)
-
     #-----------------
     def setup_schools(self, partitioner):
         schools = self.pops_by_category["school_id"]
@@ -814,6 +816,33 @@ class PopulaceGraph:
             school = StructuredEnvironment(index, schools[index], "school", self.populace, 
                                             school_matrices[index], partitioner)
             self.environments[index] = (school)
+
+    #------------------
+    # Called from the driver script
+    def infectPopulace(self, perc):
+        # vaccinate a fraction perc 
+        """
+        :param perc
+        infect a fraction perc [0,1] of the population at random, all ages
+        """
+
+        infected_01 = bernoulli.rvs(perc, size=self.population)
+        self.initial_infected = np.asarray(list(self.populace.keys()))[infected_01 == 1]
+        print("nb initial infected: ", self.initial_infected.shape[0])
+
+    #----------------
+    # Called from the driver script
+    def vaccinatePopulace(self, perc):
+        # vaccinate a fraction perc 
+        """
+        :param perc
+        Vaccinate a fraction perc [0,1] of the population at random, all ages
+        """
+
+        vaccinated_01 = bernoulli.rvs(perc, size=self.population)
+        #self.initial_vaccinated = np.asarray(list(self.populace.keys()))[vaccinated_01 == 1]
+        self.initial_recovered = np.asarray(list(self.populace.keys()))[vaccinated_01 == 1]
+        print("nb initial vaccinated: ", self.initial_vaccinated.shape[0])
     #-------------------------------------------------
     def differentiateMasks(self, type_probs):
         """
@@ -845,6 +874,7 @@ class PopulaceGraph:
         str = "A PopulaceGraph Model: \n"
         #if isBuilt == False:
 
+    #--------------------------
     def buildNetworks(self, netBuilder):
         """
         builds net for each environment, then,
@@ -874,7 +904,6 @@ class PopulaceGraph:
 
     def reweight(self, netBuilder, new_prev_prevalences = None):
         """
-
         :param netBuilder: netBuilder object
         to calculate new weights
         :param new_prev_prevalences: dict
@@ -969,12 +998,14 @@ class PopulaceGraph:
     def simulate(self, gamma, tau, simAlg=EoN.fast_SIR, title=None, full_data=True, preventions=None):
 
         # Gordon Change
-        #simResult = simAlg(self.graph, tau, gamma, initial_recovereds=self.initial_vaccinated, initial_infecteds=self.initial_infected, transmission_weight='transmission_weight', return_full_data=full_data)
-        print("tau, gamma= ", tau, gamma)
-        print("graph nodes: ", self.graph.number_of_nodes())
-        print("graph edges: ", self.graph.number_of_edges())
-        simResult = simAlg(self.graph, tau, gamma, rho = 0.001, transmission_weight='transmission_weight', return_full_data=full_data)
-        self.sims.append([simResult, title, [gamma, tau], preventions])
+        #print("graph nodes: ", self.graph.number_of_nodes())
+        #print("graph edges: ", self.graph.number_of_edges())
+        assert self.graph.number_of_nodes() > 0, "nb graph nodes should be positive"
+        assert self.graph.number_of_edges() > 0, "nb graph edges should be positive"
+
+        #simResult = simAlg(self.graph, tau, gamma, rho = 0.001, transmission_weight='transmission_weight', return_full_data=full_data)
+        simResult = simAlg(self.graph, tau, gamma, initial_recovereds=self.initial_recovered, initial_infecteds=self.initial_infected, transmission_weight='transmission_weight', return_full_data=full_data)
+        #self.sims.append([simResult, title, [gamma, tau], preventions])
 
         """
         graph = nx.Graph()
@@ -997,14 +1028,8 @@ class PopulaceGraph:
         for tix in range(0, int(last_time)+2, 2):
             # statuses[tix]: for each node of the graph, S,I,R status
             statuses[tix] = sr.get_statuses(time=tix)
-        #txx['last'] = sr.get_statuses(time=sr.t()[-1])
-        #print("Before SIRperBracket")
-        #print("statuses.keys()= ", list(statuses.keys()))  # 0, 2, 4, ..., 190
         key0 = list(statuses.keys())[0]
         # statuses[graph node] = Dictionary: node# => 'S', 'I', or 'R'}
-        #print("statuses[%d]= " % key0, statuses[key0])
-        #print("nb keys: ", len(statuses.keys())) # length: 67
-        #print("statuses keys: 0 through 132, increment by 2")
 
         self.record.print("handle simulation output: {} seconds".format(time.time() - start2))
 
@@ -1015,10 +1040,7 @@ class PopulaceGraph:
         ages_d = {}
 
         for k,v in statuses.items():
-            print("*** k= ", k, ",   len statuses[k]= ", len(v))
             ages_d[k] = self.SIRperBracket(v)
-            #print("********** Remove the quit()"); quit()
-            #print("  return from SIRperBracket: ages_d[k]= ", ages_d[k])
 
             """
             for bracket in ages_d[k].keys():  # bracket is either integer or string. How to change? 
@@ -1036,13 +1058,10 @@ class PopulaceGraph:
         SIR_results = {'S':sr.S(), 'I':sr.I(), 'R':sr.R(), 't':sr.t()}
         SIR_results = u.interpolate_SIR(SIR_results)
         data['sim_results'] = SIR_results
-        #print("SIR_results: ", SIR_results['t']) # floats as they should be
         data['title'] = title
         data['params'] = {'gamma':gamma, 'tau':tau}
         data['preventions'] = preventions
         data['ages_SIR'] = ages_d # ages_d[time][k] ==> S,I,R counts for age bracket k
-
-        self.sims.append([simResult, title, [gamma, tau], preventions])
 
         #-----------
         x = datetime.now().strftime("%Y-%m-%d,%I.%Mpm")
@@ -1059,8 +1078,8 @@ class PopulaceGraph:
         # save simulation results and metadata to filename
         """
 
-        self.stamp = datetime.now().strftime("%m_%d_%H_%M_%S")
-        dirname = "./ge_simResults/{}".format(self.stamp)
+        #dirname = "./ge_simResults/{}".format(self.timestamp)
+        dirname = self.basedir
         full_path = "/".join([dirname, filename])
 
         try:
@@ -1069,7 +1088,7 @@ class PopulaceGraph:
             # accept an existing directory. Not a satisfying solution
             pass
  
-        with open(filename, "wb") as pickle_file:
+        with open(full_path, "wb") as pickle_file:
             pickle.dump(data_dict, pickle_file)
 
         """
@@ -1116,7 +1135,7 @@ class PopulaceGraph:
         plt.ylabel("total people")
         plt.xlabel("degree")
         plt.show()
-        plt.savefig("./simResults/{}/".format(self.record.stamp))
+        plt.savefig(self.basedir+"/plotNodeDegreeHistogram.pdf")
 
 
     def plotSIR(self, memberSelection = None):
@@ -1195,7 +1214,7 @@ class PopulaceGraph:
         plt.ylabel("Fraction of people with status {}".format(SIRstatus))
         plt.xlabel("Age groups of 5 years")
         plt.show()
-        plt.savefig("./simResults/{}/evasionChart".format(self.record.stamp))
+        plt.savefig(self.basedir+"/evasionChart.pdf")
 
     def getR0(self):
         sim = self.sims[-1]
@@ -1209,13 +1228,13 @@ class PopulaceGraph:
         self.total_edges = 0
 
 class Record:
-    def __init__(self):
+    def __init__(self, basedir):
         self.log = ""
         self.comments = ""
-        self.stamp = datetime.now().strftime("%m_%d_%H_%M_%S")
         self.graph_stats = {}
         self.last_runs_percent_uninfected = 1
-        mkdir("./simResults/{}".format(self.stamp))
+        self.basedir = basedir
+        mkdir(self.basedir)
 
     def print(self, string):
         print(string)
@@ -1240,10 +1259,12 @@ class Record:
         self.print(str(graphStats))
 
     def dump(self):
-        log_txt = open("./simResults/{}/log.txt".format(self.stamp), "w+")
+        #log_txt = open("./ge_simResults/{}/log.txt".format(self.timestamp), "w+")
+        log_txt = open(basedir+"/log.txt", "w+")
         log_txt.write(self.log)
         if self.comments != "":
-            comment_txt = open("./simResults/{}/comments.txt".format(self.stamp),"w+")
+            #comment_txt = open("./ge_simResults/{}/comments.txt".format(self.timestamp),"w+")
+            comment_txt = open(basedir+"/comments.txt", "w+")
             comment_txt.write(self.comments)
 
 #written by Gordon
@@ -1253,6 +1274,7 @@ class Utils:
         I = SIR['I']
         R = SIR['R']
         t = SIR['t']
+        print("len(t)= ", len(t))
         # interpolate on daily intervals.
         new_t = np.linspace(0., int(t[-1]), int(t[-1])+1)
         func = interp1d(t, S)
