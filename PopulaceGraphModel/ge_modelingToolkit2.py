@@ -386,7 +386,9 @@ class NetBuilder:
         CM = environment.returnReciprocatedCM()
 
         #add gaussian noise to contact matrix values
-        if "contact" in self.cv_dict: CM = CM*np.random.normal(1, self.cv_dict["contact"], CM.shape)
+        if "contact" in self.cv_dict: 
+            CM = CM*np.random.normal(1, self.cv_dict["contact"], CM.shape)
+            CM[np.where(CM < 0.)] = 0.
 
         assert isinstance(environment, StructuredEnvironment), "must be a partitioned environment"
         #a list of the number of people in each partition set
@@ -462,6 +464,7 @@ class NetBuilder:
         #factor with masks and distancing
         #if there are different masks in use, a different method is required
 
+        #print("GE: env mask_types: ", environment.num_mask_types)  # 1 (instead of 3)
         if environment.num_mask_types == 1:
             n_masks = (environment.mask_status[personA] + environment.mask_status[personB])
             #so it works with reductions as either a single value, for one mask type in the model, or multiple vals, for multiple mask types
@@ -470,21 +473,41 @@ class NetBuilder:
 
         # handle situations where the model is set up with multiple different sorts of masks in use
         else:
+            # This check for each person, is extremely inefficient!
             if len(environment.num_mask_types) != len(mask_eff["masking"]):
                 print("warning: number of mask types does not match list size for reduction factors")
             #reduction factors for the type of mask person A and B wear
             redA = mask_eff[environment.mask_status[personA]]  # <<< ERROR?
             redB = mask_eff["masking"][environment.mask_status[personB]]
+
+            # Apply spread to mask effectiveness if requested
+            if "mask_eff" in self.cv_dict: 
+                redA = redA*self.cv_dict["mask_eff"] 
+                redA[np.where[redA < 0.]] = 0.
+                redA[np.where[redA > 1.]] = 1.
+                redB = redB*self.cv_dict["mask_eff"]
+                redB[np.where[redB < 0.]] = 0.
+                redB[np.where[redB > 1.]] = 1.
+
             # Next line assumes that two distancers don't double distance, but at least one distancer 
             # is needed to be distanced, will be 1 or 0
             weight = weight*(1-redA)*(1-redB)        
+
         isDistanced = int(bool(environment.distance_status[personA]) or bool(environment.distance_status[personB]))
         # only applies when isDistanced is 1
         weight = weight*(1-self.prev_efficacies["distancing"])**isDistanced
+
+        # Add noise to the weight, if requested
+        if "weight" in self.cv_dict: 
+            scal = np.random.normal(1, self.cv_dict["weight"])
+            if scal < 0.: scal = 0.
+            if scal > 1.: scal = 1.
+            weight = weight * scal
+    
         # apply spread to mask effectiveness if requested
 
         """
-        # This was in uncommented in ModelingToolkit2.py (2020-10-29) and generaeted an error. 
+        # This was in uncommented in ModelingToolkit2.py (2020-10-29) and generated an error. 
         # redA not defined. 
         if "mask_eff" in self.cv_dict: 
             redA = redA * self.cv_dict["mask_eff"]
@@ -687,6 +710,8 @@ class PopulaceGraph:
         self.initial_recovered = []
         self.initial_vaccinated = [] #None  # same as initial_recovered
         self.initial_infected   = [] #None
+        self.social_distancing_reduction = None
+        self.mask_reduction = None
         self.graph = nx.Graph()
 
         if timestamp == None:
@@ -1002,7 +1027,39 @@ class PopulaceGraph:
         print("******* EXIT rank_workplaces *********")
 
     #--------------------------------------------
+    def setupMaskReduction(self, avg, cv):
+        """
+        :param avg: Float
+        Average reduction in mask efficiency. A mask efficiency reduction of zero leaves the default edge weight unchanged
+        Efficiencies are in [0,1]
+        :param cv: Float
+        Coefficient of variation = std / avg
+        Mask efficiencies (weight = (1-mask_reduction_A)*(1-mask_reduction_B) is a person-level quantity
+        Every person carries (or not) a mask that retains its characteristics throughout the simulation
+        """
 
+        std = cv * avg
+        reduction = np.random.normal(avg, std, self.population)
+        print(self.population); quit()
+        reduction[np.where(reduction < 0.)] = 0.
+        reduction[np.where(reduction > 1.)] = 1.
+        self.mask_reduction = reduction
+        return reduction
+
+    def setupSocialDistanceReduction(self, avg, cv):
+        """
+        :param avg: Average reduction in the efficacy of social distancing
+        :param cv: Coefficient of variation = std / avg
+        Social distance reduction reduction (weight = (1-mask_reduction) is a person-level quantity
+        Every person social distances (or not) and retains this property across the simulation
+        """
+
+        std = cv * avg
+        reduction = np.random.normal(avg, std, self.population)
+        reduction[np.where(reduction < 0.)] = 0.
+        reduction[np.where(reduction > 1.)] = 1.
+        self.social_distancing_reduction = reduction
+        return reduction
     #------------------
     # Called from the driver script
     def infectPopulace(self, perc):
@@ -1153,10 +1210,12 @@ class PopulaceGraph:
         #this picks a type of mask that each person uses, based on 'typeProbs'
         #test if it's a reasonable distribution
 
-        if sum(type_probs) != 1: print("invalid prob distribution, sum != 1")
+        assert int(round(sum(type_probs))) == 1, "invalid prob distribution, sum != 1"
+
         #pick masks randomly by probDistribution
         num_mask_types = len(type_probs)
         self.num_mask_types = num_mask_types
+        #print("num mask types: ", num_mask_types); quit()  # 3
 
         for person in self.populace:
             #+1 because zero needs to represent unmasked
