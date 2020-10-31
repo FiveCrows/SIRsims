@@ -36,8 +36,8 @@ enumerator.update({i:15 for i in range(75,100)})
 names = ["{}:{}".format(5 * i, 5 * (i + 1)) for i in range(15)]
 partitioner = Partitioner('age', enumerator, names)
 prevention_adoptions = {"household": {"masking": 0, "distancing": 0},
-                          "school": {"masking": 0, "distancing": 0},
-                          "workplace": {"masking": 0, "distancing": 0}}
+                          "school": {"masking": 1, "distancing": 1},
+                          "workplace": {"masking": 1, "distancing": 1}}
 
 glob_dict['enumerator'] = enumerator
 glob_dict['prevention_adoptions'] = prevention_adoptions
@@ -51,7 +51,7 @@ glob_dict['slim'] = slim
 
 #construct netBuilder
 #en_type_scalars is used to scale each weight, depending on the type of environment the edge will be placed in
-env_type_scalars = {"household": 1, "school": 0.3, "workplace": 0.3}
+env_type_scalars = {"household": 1, "school": 1.0, "workplace": 1.0}
 #this dict is used to decide who is masking, and who is distancing
 # 0.7 would represent the fraction of the population masking
 # A value of 0 means that nobody is wearing masks

@@ -1032,7 +1032,7 @@ class PopulaceGraph:
         print("******* EXIT rank_workplaces *********")
 
     #--------------------------------------------
-    def setupMaskReduction(self, avg, cv):
+    def setupMaskReduction(self, avg, cv, size):
         """
         :param avg: Float
         Average reduction in mask efficiency. A mask efficiency reduction of zero leaves the default edge weight unchanged
@@ -1061,7 +1061,7 @@ class PopulaceGraph:
         std = cv * avg
         a = avg     * ( (1-avg) / cv - 1. )
         b = (1-avg) * ( (1-avg) / cv - 1. )
-        reductions = np.random.beta(a, b, self.population)
+        reductions = np.random.beta(a, b, size.population)
         self.mask_reductions = reductions
         return reductions
 
