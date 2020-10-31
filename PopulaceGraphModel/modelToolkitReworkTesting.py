@@ -35,12 +35,12 @@ enumerator = {i:i//5 for i in range(75)}
 enumerator.update({i:15 for i in range(75,100)})
 names = ["{}:{}".format(5 * i, 5 * (i + 1)) for i in range(15)]
 partitioner = Partitioner('age', enumerator, names)
-prevention_prevalences = {"household": {"masking": 0, "distancing": 0},
+prevention_adoptions = {"household": {"masking": 0, "distancing": 0},
                           "school": {"masking": 0, "distancing": 0},
                           "workplace": {"masking": 0, "distancing": 0}}
 
 glob_dict['enumerator'] = enumerator
-glob_dict['prevention_prevalences'] = prevention_prevalences
+glob_dict['prevention_adoptions'] = prevention_adoptions
 
 #initialize populaceGraph
 slim = False
@@ -71,7 +71,7 @@ if save_output:
     os.system("cp *.py %s" % dstdirname)  # not OS independent
     #copyfile ('ge1_modelToolkit.py',os.path.join(dstdirname,'ge1_modelToolkit.py'))
 
-model = PopulaceGraph(partitioner, prevention_prevalences, slim=slim, timestamp=timestamp)
+model = PopulaceGraph(partitioner, prevention_adoptions, slim=slim, timestamp=timestamp)
 model.resetVaccinated_Infected() # reset to default state (for safety)
 mask_types = [0.25, 0.5, 0.25]  # Must sum to 1
 model.differentiateMasks(mask_types)
@@ -105,7 +105,7 @@ The graph structure is the same across all simulations, which is not quite corre
   matrices are varied. 
 In every simulation, a different set of people are infected or vaccinated (assuming that vacc_perc > 0)
 What are prevention_efficacies? 
-What are prevention_prevalences? 
+What are prevention_adoptions? 
 What are env_type_scalars?
 How are masked types used in the code? 
 """
@@ -118,10 +118,13 @@ def runGauntlet(count):
         if cv_key != 'mask_eff': continue    ### FOR TESTING
         model.resetVaccinated_Infected() # reset to default state (for safety)
         netBuilder.cv_dict[cv_key] = val
-        model.reweight(netBuilder, prevention_prevalences)
+        netBuilder.setModel(model)  # must occur before reweight
         pe = prevention_efficacies
+        # Following two lines must occur before reweight
         model.setupMaskReduction(pe['masking'], cv_dict['mask'])
         model.setupSocialDistancingReduction(pe['distancing'], cv_dict['distancing'])
+        # netBuilder has access to model, and model has access to netBuilder. Dangerous.
+        model.reweight(netBuilder, prevention_adoptions)
         glob_dict['vacc_perc'] = vacc_perc
         glob_dict['infect_perc'] = infect_perc
         glob_dict['cv_key'] = cv_key

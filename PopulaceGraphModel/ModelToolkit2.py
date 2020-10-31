@@ -71,7 +71,7 @@ class Environment:
     Objects to the carry details for every home
     """
 
-    def __init__(self, index, members, quality, prev_prevalences = None):
+    def __init__(self, index, members, quality, prev_adoptions = None):
         """
         :param index: int
         an identifier
@@ -93,25 +93,25 @@ class Environment:
         self.hasEdges = False
         self.isWeighted = False
         #creates a dict linking each member of the environment with each prevention
-        #self.drawPreventions(prev_prevalences)
+        #self.drawPreventions(prev_adoptions)
 
-    def drawPreventions(self, prevalences, populace):
+    def drawPreventions(self, adoptions, populace):
         """
         picks masks and distancing parameters
-        :param prevalences: dict
-        the prevalences for each prevention, with keys for environment type, to prevention type to prevalence
+        :param adoptions: dict
+        the adoptions for each prevention, with keys for environment type, to prevention type to adoption
         :param populace: dict
         the populace dict is needed to know which mask everybody is using, if necessary
         :return: None
         """
 
-        prevalences = prevalences[self.quality]
+        adoptions = adoptions[self.quality]
         #assign distancers
-        num_distancers = int(self.population * prevalences["distancing"])
+        num_distancers = int(self.population * adoptions["distancing"])
         distance_status = [1] * num_distancers + [0] * (self.population - num_distancers)
         random.shuffle(distance_status)
 
-        num_masks = int(self.population * prevalences["masking"])
+        num_masks = int(self.population * adoptions["masking"])
 
         mask_status = [1] * num_masks + [0] * (self.population - num_masks)
 
@@ -132,7 +132,7 @@ class Environment:
         :param weighter: TransmissionWeighter object
         will be used to determine the graphs weights
         :param preventions: dict
-        should associate each environment type to another dict, which associates each prevention to a prevalence
+        should associate each environment type to another dict, which associates each prevention to a adoption
         :return: None
         """
 
@@ -678,7 +678,7 @@ class PopulaceGraph:
     A list of people, environments, and functions, for tracking a weighted graph to represent contacts between members of the populace
     """
 
-    def __init__(self, partitioner, prevention_prevalences = None, attributes = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False):
+    def __init__(self, partitioner, prevention_adoptions = None, attributes = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False):
         """        
         :param partition: Partitioner
         needed to build schools and workplaces into partitioned environments
@@ -686,7 +686,7 @@ class PopulaceGraph:
         names for the characteristics to load for each person
         :param slim: bool
         if set to True, will filter 90% of people. Mainly for debugging
-        :param prevention_prevalences: dict
+        :param prevention_adoptions: dict
         keys should be 'household', 'school', or 'workplace'. Each should map to another dict,
         with keys for 'masking', and 'distancing', which should map to an int in range[0:1] that represents
         the prevelance of people practicing the prevention strategy in the environment
@@ -705,8 +705,8 @@ class PopulaceGraph:
         self.graph = nx.Graph()
 
 
-        if prevention_prevalences == None:
-            self.prevention_prevalences = {"household": {"masking": 0, "distancing": 0},
+        if prevention_adoptions == None:
+            self.prevention_adoptions = {"household": {"masking": 0, "distancing": 0},
                                            "school": {"masking": 0, "distancing": 0},
                                            "workplace": {"masking": 0, "distancing": 0}}
 
@@ -780,7 +780,7 @@ class PopulaceGraph:
 
             # pick who masks and who distances, in each environment
             for index in self.environments:
-                self.environments[index].drawPreventions(prevention_prevalences, self.populace)
+                self.environments[index].drawPreventions(prevention_adoptions, self.populace)
 
 
     def differentiateMasks(self, type_probs):
@@ -832,18 +832,19 @@ class PopulaceGraph:
         for environment in self.environments: self.graph.add_weighted_edges_from(self.environments[environment].edges, weight = "transmission_weight")
         self.isBuilt = True
 
-    def reweight(self, netBuilder, prevention_prevalences = None):
+    def reweight(self, netBuilder, prevention_adoptions = None):
         """
 
         :param netBuilder: netBuilder object
         to calculate new weights
-        :param prevention_prevalences: dict
+        :param prevention_adoptions: dict
         to change the preventions used in each environment before reweight
         """
 
         #choose new preventions if requested
         for environment in self.environments:
-            self.environments[environment].reweight(netBuilder, prevention_prevalences)
+            self.environments[environment].reweight(netBuilder, prevention_adoptions)
+
     #merge environments, written for plotting and exploration
     def returnMergedEnvironments(self, env_indexes, partitioner = None):
         """

@@ -114,6 +114,7 @@ class Environment:
         self.distance_status = dict(zip(self.members, distance_status))
 
 
+    # class Environment
     def reweight(self, netBuilder, newPreventions = None):
         """
         Rechooses the weights on each edge with, presumably, a distinct weighter or preventions
@@ -242,6 +243,9 @@ class NetBuilder:
         self.cv_dict = cv_dict
         self.avg_contacts = avg_contacts
 
+    def setModel(self, model):
+        self.model = model
+
     #def list
     def addEdge(self, nodeA, nodeB, environment):
         """
@@ -349,7 +353,7 @@ class NetBuilder:
 
             for j in range(k):
                 if random.random()>p_random:
-                    nodeA, nodeB =A[i], B[(begin_B_edges +j)%size_B]
+                    nodeA, nodeB = A[i], B[(begin_B_edges +j)%size_B]
                     weight = self.getWeight(nodeA, nodeB, environment)
                     environment.addEdge(nodeA,nodeB,weight)
                 else:
@@ -446,6 +450,7 @@ class NetBuilder:
     def setPreventionReductions(self, prevention_reductions):
         self.prevention_reductions = prevention_reductions
 
+    # class NetBuilder
     def getWeight(self, personA, personB, environment):
         """
         Uses the environments type and preventions to deternmine weight
@@ -1040,7 +1045,6 @@ class PopulaceGraph:
 
         std = cv * avg
         reduction = np.random.normal(avg, std, self.population)
-        print(self.population); quit()
         reduction[np.where(reduction < 0.)] = 0.
         reduction[np.where(reduction > 1.)] = 1.
         self.mask_reduction = reduction
