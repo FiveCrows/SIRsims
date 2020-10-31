@@ -10,4 +10,8 @@ Put useful code in src/
 
 To plot: 
 
+mv data/metadata.gz .
+python src/transf*anal*.py
+
+# Generate global_infections_Icurve.pdf
 python src/plot_sir.py
