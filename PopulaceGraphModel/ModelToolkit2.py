@@ -397,10 +397,12 @@ class NetBuilder:
         CM = environment.returnReciprocatedCM()
 
         #add gaussian noise to contact matrix values if specified
-        if "contact" in self.cv_dict: CM = CM*np.random.normal(1, self.cv_dict["contact"], CM.shape)
-
+        if "contact" in self.cv_dict: 
+            CM = CM*np.random.normal(1, self.cv_dict["contact"], CM.shape)
+            CM[np.where(CM < 0.)] = 0.
 
         assert isinstance(environment, StructuredEnvironment), "must be a partitioned environment"
+
         #a list of the number of people in each partition set
         p_n      = [len(p_sets[i]) for i in p_sets]
         num_sets = len(p_sets)
@@ -489,7 +491,9 @@ class NetBuilder:
             # Apply spread to mask effectiveness if requested
             if "mask_eff" in self.cv_dict: 
                 redA = redA*self.cv_dict["mask_eff"] 
+                redA[np.where[redA < 0.]) = 0.
                 redB = redB*self.cv_dict["mask_eff"]
+                redB[np.where[redB < 0.]) = 0.
 
             # Calculate weight, finally
             # Assumes that two distancers don't double distance, but at least one distancer is needed to be distanced, will be 1 or 0
@@ -497,8 +501,11 @@ class NetBuilder:
         isDistanced = int(bool(environment.distance_status[personA]) or bool(environment.distance_status[personB]))
         # Only applies when isDistanced = 1
         weight = weight*(1-self.prev_efficacies["distancing"])**isDistanced
+
         # Add noise to the weight, if requested
-        if "weight" in self.cv_dict: weight = weight * np.random.normal(1, self.cv_dict["weight"])
+        if "weight" in self.cv_dict: 
+            weight = weight * np.random.normal(1, self.cv_dict["weight"])
+            weight[np.where(weight < 0.)] = 0.
         
         return weight
 

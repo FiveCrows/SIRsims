@@ -1,0 +1,13 @@
+Study: with slim=True, look at the effect of dispersion of the effectiveness 
+effectiveness of masks, contacts, and social distancing. 
+
+Study script: modelToolkitReworkTesting.py
+
+Only plot_SIR.py works so far. 
+Note the use of collections.namedtuples to simplify the code. 
+
+Put useful code in src/
+
+To plot: 
+
+python src/plot_sir.py
