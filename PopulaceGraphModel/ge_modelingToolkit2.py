@@ -82,24 +82,24 @@ class Environment:
         self.isWeighted = False
         #creates a dict linking each member of the environment with each prevention
 
-    def drawPreventions(self, prevalences, populace):
+    def drawPreventions(self, adoptions, populace):
         """
         picks masks and distancing parameters
-        :param prevalences: dict
-        the prevalences for each prevention, with keys for environment type, to prevention type to prevalence
+        :param adoptions: dict
+        the adoptions for each prevention, with keys for environment type, to prevention type to adoption
         :param populace: dict
         the populace dict is needed to know which mask everybody is using, if necessary
 
         :return:
         """
 
-        prevalences = prevalences[self.quality]
+        adoptions = adoptions[self.quality]
         #assign distancers
-        num_distancers = int(self.population * prevalences["distancing"])
+        num_distancers = int(self.population * adoptions["distancing"])
         distance_status = [1] * num_distancers + [0] * (self.population - num_distancers)
         random.shuffle(distance_status)
 
-        num_masks = int(self.population * prevalences["masking"])
+        num_masks = int(self.population * adoptions["masking"])
 
         mask_status = [1] * num_masks + [0] * (self.population - num_masks)
 
@@ -121,7 +121,7 @@ class Environment:
         :param weighter: TransmissionWeighter object
         will be used to determine the graphs weights
         :param preventions: dict
-        should associate each environment type to another dict, which associates each prevention to a prevalence
+        should associate each environment type to another dict, which associates each prevention to a adoption
         :return: None
         """
 
@@ -690,7 +690,7 @@ class PopulaceGraph:
     A list of people, environments, and functions, for tracking a weighted graph to represent contacts between members of the populace
     """
 
-    def __init__(self, partitioner, prevention_prevalences = None, attributes = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False, timestamp=None):
+    def __init__(self, partitioner, prevention_adoptions = None, attributes = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False, timestamp=None):
         """        
         :param partition: Partitioner
         needed to build schools and workplaces into partitioned environments
@@ -698,7 +698,7 @@ class PopulaceGraph:
         names for the characteristics to load for each person
         :param slim: bool
         if set to True, will filter 90% of people. Mainly for debugging
-        :param prevention_prevalences: dict
+        :param prevention_adoptions: dict
         keys should be 'household', 'school', or 'workplace'. Each should map to another dict,
         with keys for 'masking', and 'distancing', which should map to an int in range[0:1] that represents
         the prevelance of people practicing the prevention strategy in the environment
@@ -731,12 +731,12 @@ class PopulaceGraph:
         self.prevention_reductions = None
 
 
-        if prevention_prevalences == None:
-            self.prevention_prevalences = {"household": {"masking": 0, "distancing": 0},
+        if prevention_adoptions == None:
+            self.prevention_adoptions = {"household": {"masking": 0, "distancing": 0},
                                            "school": {"masking": 0, "distancing": 0},
                                            "workplace": {"masking": 0, "distancing": 0}}
         else:
-            self.prevention_prevalences = prevention_prevalences
+            self.prevention_adoptions = prevention_adoptions
 
         # for loading people objects from file
         with open("people_list_serialized.pkl", 'rb') as file:
@@ -807,7 +807,7 @@ class PopulaceGraph:
 
         # pick who masks and distances, in each environment
         for index in self.environments:
-            self.environments[index].drawPreventions(self.prevention_prevalences, self.populace)
+            self.environments[index].drawPreventions(self.prevention_adoptions, self.populace)
         #**************************88
 
         self.pops_by_category = pops_by_category
@@ -1293,17 +1293,19 @@ class PopulaceGraph:
         for environment in self.environments: self.graph.add_weighted_edges_from(self.environments[environment].edges, weight = "transmission_weight")
         self.isBuilt = True
 
-    def reweight(self, netBuilder, new_prev_prevalences = None):
+    # class PopulaceGraph
+    def reweight(self, netBuilder, new_prev_adoptions = None):
         """
         :param netBuilder: netBuilder object
         to calculate new weights
-        :param new_prev_prevalences: dict
+        :param new_prev_adoptions: dict
         to change the preventions used in each environment before reweight
         """
 
         #choose new preventions if requested
-        for environment in self.environments:
-            self.environments[environment].reweight(netBuilder, new_prev_prevalences)
+        for env in self.environments:
+            self.environments[env].reweight(netBuilder, new_prev_adoptions)
+
     #merge environments, written for plotting and exploration
     def returnMergedEnvironments(self, env_indexes, partitioner = None):
         """
@@ -1389,16 +1391,14 @@ class PopulaceGraph:
     def simulate(self, gamma, tau, simAlg=EoN.fast_SIR, title=None, full_data=True, preventions=None, global_dict={}):
 
         # Gordon Change
-        #print("graph nodes: ", self.graph.number_of_nodes())
-        #print("graph edges: ", self.graph.number_of_edges())
         assert self.graph.number_of_nodes() > 0, "nb graph nodes should be positive"
         assert self.graph.number_of_edges() > 0, "nb graph edges should be positive"
 
         self.global_dict = global_dict
 
         #simResult = simAlg(self.graph, tau, gamma, rho = 0.001, transmission_weight='transmission_weight', return_full_data=full_data)
-        print("initial_infected: ", self.initial_infected)
-        print("initial_recovered: ", self.initial_recovered)
+        #print("initial_infected: ", self.initial_infected)
+        #print("initial_recovered: ", self.initial_recovered)
         simResult = simAlg(self.graph, tau, gamma, initial_recovereds=self.initial_recovered, initial_infecteds=self.initial_infected, transmission_weight='transmission_weight', return_full_data=full_data)
         #self.sims.append([simResult, title, [gamma, tau], preventions])
 
@@ -1457,7 +1457,7 @@ class PopulaceGraph:
         data['params'] = {'gamma':gamma, 'tau':tau}
         data['preventions'] = self.preventions
         data['prevention_reductions'] = self.prevention_reductions  # no longer needed
-        data['prevention_prevalences'] = self.prevention_prevalences
+        data['prevention_adoptions'] = self.prevention_adoptions
         data['ages_SIR'] = ages_d # ages_d[time][k] ==> S,I,R counts for age bracket k
         data['vacc_dict'] = self.createVaccinationDict()
         data['global_dict'] = self.global_dict
