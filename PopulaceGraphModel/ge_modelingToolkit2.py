@@ -1043,12 +1043,35 @@ class PopulaceGraph:
         Every person carries (or not) a mask that retains its characteristics throughout the simulation
         """
 
+        # A Beta distribution
+        """
+        mu = a/(a+b)
+        std = mu * (1-mu) / (a+b + 1)
+            = mu (1-mu) / (a/mu + 1)
+        mu (1-mu) / std = a/mu + 1
+        (1-mu) / cv - 1 = a / mu
+        a = mu (1-mu) / cv - mu
+        b = (a/mu) - a = a (1-mu) / mu = (1-mu)^2 / cv - (1-mu)
+
+        a = mu * [ (1-mu) / cv - 1 ]
+        b = (1-mu) [ (1-mu) / cv - 1 ] 
+        Therefore, a / mu = b / (1-mu)
+        """
+
         std = cv * avg
+        a = avg     * ( (1-avg) / cv - 1. )
+        b = (1-avg) * ( (1-avg) / cv - 1. )
+        reductions = np.random.beta(a, b, self.population)
+        self.mask_reductions = reductions
+        return reductions
+
+        """
         reduction = np.random.normal(avg, std, self.population)
         reduction[np.where(reduction < 0.)] = 0.
         reduction[np.where(reduction > 1.)] = 1.
         self.mask_reduction = reduction
         return reduction
+        """
 
     def setupSocialDistanceReduction(self, avg, cv):
         """
@@ -1058,12 +1081,21 @@ class PopulaceGraph:
         Every person social distances (or not) and retains this property across the simulation
         """
 
+        """
         std = cv * avg
         reduction = np.random.normal(avg, std, self.population)
         reduction[np.where(reduction < 0.)] = 0.
         reduction[np.where(reduction > 1.)] = 1.
         self.social_distancing_reduction = reduction
         return reduction
+        """
+
+        std = cv * avg
+        a = avg     * ( (1-avg) / cv - 1. )
+        b = (1-avg) * ( (1-avg) / cv - 1. )
+        reductions = np.random.beta(a, b, self.population)
+        self.social_distancing_reductions = reductions
+        return reductions
     #------------------
     # Called from the driver script
     def infectPopulace(self, perc):
