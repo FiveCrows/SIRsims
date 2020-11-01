@@ -57,10 +57,12 @@ env_type_scalars = {"household": 1, "school": 1.0, "workplace": 1.0}
 #this dict is used to decide who is masking, and who is distancing
 # 0.7 would represent the fraction of the population masking
 
+# Efficacies have the same statistics at the workplace and schools. 
+# At home there are no masks or social distancing. Equivalent to efficacy of zero.
 # A value of 0 means that masks are not effective at all
 # A value of 1 means that a mask wearer can neither infect or be infected. 
-prevention_efficacies = {"masking": 0.0, "distancing": 0.0}  # I should get real I curves. Not extinction. I do. 
-prevention_efficacies = {"masking": 0.3, "distancing": 0.3}  # I should get real I curves. Not extinction. I do. 
+prevention_efficacies = {"masking": [0.0,0.], "distancing": [0.0,0.]}  # I should get real I curves. Not extinction. I do. 
+prevention_efficacies = {"masking": [0.3,0.], "distancing": [0.3,0.]}  # I should get real I curves. Not extinction. I do. 
 
 glob_dict['env_type_scalars'] = env_type_scalars
 glob_dict['prevention_efficacies'] = prevention_efficacies
@@ -76,7 +78,7 @@ if save_output:
     os.system("cp *.py %s" % dstdirname)  # not OS independent
     #copyfile ('ge1_modelToolkit.py',os.path.join(dstdirname,'ge1_modelToolkit.py'))
 
-model = PopulaceGraph(partitioner, prevention_adoptions, slim=slim, timestamp=timestamp)
+model = PopulaceGraph(partitioner, prevention_adoptions, prevention_efficacies, slim=slim, timestamp=timestamp)
 model.resetVaccinated_Infected() # reset to default state (for safety)
 mask_types = [0.25, 0.5, 0.25]  # Must sum to 1
 model.differentiateMasks(mask_types)
@@ -87,6 +89,8 @@ glob_dict['mask_types'] = mask_types
 # Mask reduction is given by Normal(avg, cv*avg)
 #avg_dict={"distancing": 0.4, "mask_eff": 0.4, "contact": 0.0}
 # cv is the std / avg. The avg are the prevention_efficacies
+
+# IGNORE "contact" for now, since there is no defined average. 
 cv_dict={"distancing": 0.2, "contact": 0.3, "masking": 0.4}
 netBuilder = NetBuilder(env_type_scalars, prevention_efficacies, cv_dict=cv_dict)
 
@@ -129,48 +133,55 @@ def runGauntlet(count):
   # All global variables are accessible
 
   for avg_efficacy in [0., 0.25, 0.5, 0.75]:
-     # I should get real I curves. Not extinction. I do. 
-     prevention_efficacies = {"masking": avg_efficacy, "distancing": avg_efficacy} 
-     glob_dict['prevention_efficacies'] = prevention_efficacies
+     glob_dict["avg_efficiency"] = avg_efficacy
+     for std_efficacy in [0., 0.3, 0.6]:
+       glob_dict["std_efficiency"] = std_efficacy
 
-     for cv_key in netBuilder.cv_dict.keys():   
-       if cv_key != 'masking': continue    ### FOR TESTING
+     #for cv_key in netBuilder.cv_dict.keys():   
+       #if cv_key != 'masking': continue    ### FOR TESTING
 
-       for adopt in [0., 0.5, 1.]:  # masks and social distancing in schools and workplaes
-         prevention_adoptions["school"]     = {"masking": %f, "distancing": %f}
-         prevention_adoptions["workplace"]  = {"masking": %f, "distancing": %f} 
+       prevention_efficacies["masking"]    = [avg_efficacy, std_efficacy]
+       prevention_efficacies["distancing"] = [avg_efficacy, std_efficacy]
+       glob_dict['prevention_efficacies']  = prevention_efficacies
+
+       for adoption in [0., 0.5, 1.]:  # masks and social distancing in schools and workplaes
+         glob_dict["adoption"] = adoption
+         prevention_adoptions["school"]    = {"masking": adoption, "distancing": adoption}
+         prevention_adoptions["workplace"] = {"masking": adoption, "distancing": adoption} 
          glob_dict['prevention_adoptions'] = prevention_adoptions
 
-         for cv_val in cv_vals:
+         #for cv_val in cv_vals:
+         if 1:
             model.resetVaccinated_Infected() # reset to default state (for safety)
-            netBuilder.cv_dict[cv_key] = cv_val
+            #netBuilder.cv_dict[cv_key] = cv_val
             netBuilder.setModel(model)  # must occur before reweight
-            pe = prevention_efficacies
             # Following two lines must occur before reweight
             # a,b of beta distribution hardcoded to 10,10
             # If nobody is wearing masks, this should have no effect
-            model.setupMaskReduction(pe['masking'], cv_dict['masking'])
-            model.setupSocialDistanceReduction(pe['distancing'], cv_dict['distancing'])
+            pe = prevention_efficacies
+            pa = prevention_adoptions
+            model.setupMaskReduction(pe['masking'])
+            model.setupSocialDistanceReduction(pe['distancing'])
+            netBuilder.setPreventionEfficacies(pe)
+            netBuilder.setPreventionAdoptions(pa)
             # netBuilder has access to model, and model has access to netBuilder. Dangerous.
-            model.reweight(netBuilder, prevention_adoptions)
-            avg_key = cv_key
-            avg_val = avg_dict[avg_key]
+            model.reweight(netBuilder, pa)
             model.infectPopulace(perc=infect_perc)
             model.vaccinatePopulace(perc=vacc_perc)
-            title = "{} cv = {}".format(cv_key, cv_val)
+            title = "output_"
     
             # variables to store 
             glob_dict['vacc_perc'] = vacc_perc
             glob_dict['infect_perc'] = infect_perc
-            glob_dict['cv_key'] = cv_key
-            glob_dict['cv_val'] = val
-            glob_dict['avg_key'] = avg_key
-            glob_dict['avg_val'] = avg_val
+            #glob_dict['cv_key'] = cv_key
+            #glob_dict['cv_val'] = val
+            #glob_dict['avg_key'] = avg_key
+            #glob_dict['avg_val'] = avg_val
 
             model.simulate(gamma, tau, title=title, global_dict=glob_dict)
 
-    netBuilder.cv_dict[cv_key] = cv_val
-    print(model.getPeakPrevalences())
+  #netBuilder.cv_dict[cv_key] = cv_val
+  print(model.getPeakPrevalences())
 
 
 for count in range(3):

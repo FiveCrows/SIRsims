@@ -233,12 +233,12 @@ class NetBuilder:
     and Random nets for partitioned Environments.
     """
 
-    def __init__(self, env_type_scalars, prev_efficacies, cv_dict = {}, avg_contacts = None):
+    def __init__(self, env_type_scalars, prevention_efficacies, cv_dict = {}, avg_contacts = None):
         """
         :param env_type_scalars: dict
         each environment type must map to a float. is for scaling weights
 
-        :param prev_efficacies: dict
+        :param prevention_efficacies: dict
         must map prevention names, currently either 'masking' or 'distancing'. Can map to floats, but
         masking has the option of mapping to a list. In that case, the script will attempt to
         determine,  for the environment, which masks each person should wear, and  pick the appropriate
@@ -254,10 +254,10 @@ class NetBuilder:
         """
 
         self.global_weight = 1
-        self.prev_efficacies = prev_efficacies
+        self.prevention_efficacies = prevention_efficacies
         self.env_scalars = env_type_scalars
-        self.cv_dict = cv_dict
-        self.avg_contacts = avg_contacts
+        #self.cv_dict = cv_dict   #### HOW IS CV_DICT USED? GE
+        self.avg_contacts = avg_contacts   #### HOW IS avg_contacts USED? GE
 
     def setModel(self, model):
         self.model = model
@@ -419,12 +419,14 @@ class NetBuilder:
         p_sets = environment.partition
         CM = environment.returnReciprocatedCM()
 
+        """
         #add gaussian noise to contact matrix values
         if "contact" in self.cv_dict: 
             CM = CM*np.random.normal(1, self.cv_dict["contact"], CM.shape)
             CM[np.where(CM < 0.)] = 0.
+        """
 
-        assert isinstance(environment, StructuredEnvironment), "must be a partitioned environment"
+        assert isinstance(environment, StructuredEnvironment), "must be a structured environment"
         #a list of the number of people in each partition set
         p_n      = [len(p_sets[i]) for i in p_sets]
         num_sets = len(p_sets)
@@ -480,11 +482,15 @@ class NetBuilder:
     def setEnvScalars(self, env_scalars):
         self.env_scalars = env_scalars
 
-    def setPreventions(self, preventions):
-        self.preventions = preventions
+    #def setPreventions(self, preventions):
+        #self.preventions = preventions
 
-    def setPreventionReductions(self, prevention_reductions):
-        self.prevention_reductions = prevention_reductions
+    def setPreventionEfficacies(self, prevention_efficacies):
+        self.prevention_efficacies = prevention_efficacies
+
+    def setPreventionAdoptions(self, prevention_adoptions):
+        self.prevention_adoptions = prevention_adoptions
+
 
     # class NetBuilder
     def getWeight(self, personA, personB, environment):
@@ -501,16 +507,18 @@ class NetBuilder:
         :return:
         """
         weight = self.global_weight*self.env_scalars[environment.env_type]
-        mask_eff = self.prev_efficacies["masking"]
+        mask_eff = self.prevention_efficacies["masking"]
         #factor with masks and distancing
         #if there are different masks in use, a different method is required
 
         #print("GE: env mask_types: ", environment.num_mask_types)  # 1 (instead of 3)
         if environment.num_mask_types == 1:
             n_masks = (environment.mask_status[personA] + environment.mask_status[personB])
+            #print("n_masks= ", n_masks)
+            #print("mask_eff= ", mask_eff)  # avg, std
             #so it works with reductions as either a single value, for one mask type in the model, or multiple vals, for multiple mask types
             # n_masks is 0,1, or 2. For each mask worn, weight is scaled down by reduction
-            weight = weight * (1 - mask_eff) ** n_masks
+            weight = weight * (1 - mask_eff[0]) ** n_masks  #### REPLACE BY NEW WEIGHING
 
         # handle situations where the model is set up with multiple different sorts of masks in use
         else:
@@ -521,6 +529,7 @@ class NetBuilder:
             redA = mask_eff[environment.mask_status[personA]]  # <<< ERROR?
             redB = mask_eff["masking"][environment.mask_status[personB]]
 
+            """
             # Apply spread to mask effectiveness if requested
             if "mask_eff" in self.cv_dict: 
                 redA = redA*self.cv_dict["mask_eff"] 
@@ -529,6 +538,7 @@ class NetBuilder:
                 redB = redB*self.cv_dict["mask_eff"]
                 redB[np.where[redB < 0.]] = 0.
                 redB[np.where[redB > 1.]] = 1.
+            """
 
             # Next line assumes that two distancers don't double distance, but at least one distancer 
             # is needed to be distanced, will be 1 or 0
@@ -536,14 +546,18 @@ class NetBuilder:
 
         isDistanced = int(bool(environment.distance_status[personA]) or bool(environment.distance_status[personB]))
         # only applies when isDistanced is 1
-        weight = weight*(1-self.prev_efficacies["distancing"])**isDistanced
+        avg_dist = self.prevention_efficacies["distancing"][0]; # [1] is the std
+        #  REPLACE BY MORE GENERAL APPROACH
+        weight = weight*(1.-avg_dist)**isDistanced
 
+        """
         # Add noise to the weight, if requested
         if "weight" in self.cv_dict: 
             scal = np.random.normal(1, self.cv_dict["weight"])
             if scal < 0.: scal = 0.
             if scal > 1.: scal = 1.
             weight = weight * scal
+        """
     
         # apply spread to mask effectiveness if requested
 
@@ -726,10 +740,10 @@ class PopulaceGraph:
     A list of people, environments, and functions, for tracking a weighted graph to represent contacts between members of the populace
     """
 
-    def __init__(self, partitioner, prevention_adoptions = None, attributes = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False, timestamp=None):
+    def __init__(self, partitioner, prevention_adoptions=None, prevention_efficacies=None, attributes = ['sp_hh_id', 'work_id', 'school_id', 'race', 'age'], slim = False, timestamp=None):
         """        
         :param partition: Partitioner
-        needed to build schools and workplaces into partitioned environments
+        needed to build schools and workplaces into structured environments
         :param attributes:
         names for the characteristics to load for each person
         :param slim: bool
@@ -764,7 +778,7 @@ class PopulaceGraph:
         print("basedir= ", self.basedir)
         self.record = Record(self.basedir)
         self.preventions = None
-        self.prevention_reductions = None
+        self.prevention_efficacies = prevention_efficacies
 
 
         if prevention_adoptions == None:
@@ -858,7 +872,7 @@ class PopulaceGraph:
         self.resetVaccinated_Infected()
 
         # must call once in constructor
-        self.setupMaskReduction(0.5, 0.5)
+        self.setupMaskReduction(self.prevention_efficacies["masking"])
 
     #-------------------------------------------------
     def printEnvironments(self):
@@ -1095,7 +1109,7 @@ class PopulaceGraph:
         self.mask_adoption = bernoulli.rvs(perc, size=self.population)
 
     #--------------------------------------------
-    def setupMaskReduction(self, avg, cv):
+    def setupMaskReduction(self, avg_std):
         """
         :param avg: Float
         Average reduction in mask efficiency. A mask efficiency reduction of zero leaves the default edge weight unchanged
@@ -1153,7 +1167,7 @@ class PopulaceGraph:
         """
 
         #"""
-        std = cv * avg
+        avg, std = avg_std
         reduction = np.random.normal(avg, std, self.population)
         reduction[np.where(reduction < 0.)] = 0.
         reduction[np.where(reduction > 1.)] = 1.
@@ -1197,7 +1211,7 @@ class PopulaceGraph:
         return mask_weight_factor
 
     #------------------------------------
-    def setupSocialDistanceReduction(self, avg, cv):
+    def setupSocialDistanceReduction(self, avg_std):
         """
         :param avg: Average reduction in the efficacy of social distancing
         :param cv: Coefficient of variation = std / avg
@@ -1206,7 +1220,7 @@ class PopulaceGraph:
         """
 
         #"""
-        std = cv * avg
+        avg, std = avg_std
         reduction = np.random.normal(avg, std, self.population)
         reduction[np.where(reduction < 0.)] = 0.
         reduction[np.where(reduction > 1.)] = 1.
@@ -1460,8 +1474,8 @@ class PopulaceGraph:
 
     def plotContactMatrix(self, p_env):
         '''
-        This function plots the contact matrix for a partitioned environment
-        :param p_env: must be a partitioned environment
+        This function plots the contact matrix for a structured environment
+        :param p_env: must be a structured environment
         '''
 
         if p_env == None:
@@ -1601,7 +1615,7 @@ class PopulaceGraph:
         data['title'] = title
         data['params'] = {'gamma':gamma, 'tau':tau}
         data['preventions'] = self.preventions
-        data['prevention_reductions'] = self.prevention_reductions  # no longer needed
+        data['prevention_efficacies'] = self.prevention_efficacies  # no longer needed
         data['prevention_adoptions'] = self.prevention_adoptions
         data['ages_SIR'] = ages_d # ages_d[time][k] ==> S,I,R counts for age bracket k
         data['vacc_dict'] = self.createVaccinationDict()
@@ -1705,11 +1719,11 @@ class PopulaceGraph:
     def getPeakPrevalences(self):
         return [max(sim[0].I()) for sim in self.sims]
 
-    #If a partitionedEnvironment is specified, the partition of the environment is applied, otherwise, a partition must be passed
+    #If a structuredEnvironment is specified, the partition of the environment is applied, otherwise, a partition must be passed
     def plotBars(self, environment = None, SIRstatus = 'R', normalized = False):
         """
         Will show a bar chart that details the final status of each partition set in the environment, at the end of the simulation
-        :param environment: must be a partitioned environment
+        :param environment: must be a structured environment
         :param SIRstatus: should be 'S', 'I', or 'R'; is the status bars will represent
         :param normalized: whether to plot each bar as a fraction or the number of people with the given status
         #TODO finish implementing None environment as entire graph
