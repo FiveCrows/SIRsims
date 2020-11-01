@@ -147,9 +147,10 @@ class Environment:
             edge[2] = new_weight
 
 
+    # class Environment
     def addEdge(self, nodeA, nodeB, weight):
         '''
-        fThis helper function  not only makes it easier to track
+        This helper function  not only makes it easier to track
         variables like the total weight and edges for the whole graph, it can be useful for debugging
         :param nodeA: int
          Index of the node for one side of the edge
@@ -262,15 +263,25 @@ class NetBuilder:
         self.model = model
 
     #def list
+    # class NetBuilder
     def addEdge(self, nodeA, nodeB, environment):
         """
         just gets the weight and calls it into the environment
         :return:
         """
 
-        weight = self.getWeight(nodeA, nodeB, environment)
-        environment.addEdge(nodeA, nodeB, weight)
+        # the conditional ensures that (nodeA,nodeB) and (nodeB,nodeA) are
+        # not separate edges in the environment edge list. This avoid errors when
+        # maintaining lists constructed outside the Networkx library.
 
+        if nodeA < nodeB:
+            weight = self.getWeight(nodeA, nodeB, environment)
+            environment.addEdge(nodeA, nodeB, weight)
+        else:
+            weight = self.getWeight(nodeB, nodeA, environment)
+            environment.addEdge(nodeB, nodeA, weight)
+
+    # class NetBuilder
     def buildDenseNet(self, environment, subgroup=None, weight_scalar = 1):
         """
         This function will add every edge possible for the environment. Thats n*(n-1)/2 edges
@@ -295,8 +306,12 @@ class NetBuilder:
         for i in range(member_count):
             for j in range(i):
                 nodeA, nodeB = members[i], members[j]
-                weight = self.getWeight(nodeA, nodeB, environment)
-                environment.addEdge(nodeA, nodeB, weight)
+                if nodeA < nodeB:
+                    weight = self.getWeight(nodeA, nodeB, environment)
+                    environment.addEdge(nodeA, nodeB, weight)
+                else:
+                    weight = self.getWeight(nodeB, nodeA, environment)
+                    environment.addEdge(nodeB, nodeA, weight)
 
 
     def genRandEdgeList(self, setA, setB, n_edges):
@@ -936,6 +951,8 @@ class PopulaceGraph:
         # Added by Gordon Erlebacher, class PopulaceGraph
         # Construct a dictionary for each environment, of its edges. This will be used
         # to assign edge properties per environment. 
+        # NOT CALLED.
+
         env_edges= {}
         for ix in self.environments:
             env_edges[ix] = []   # list of edges
@@ -950,6 +967,22 @@ class PopulaceGraph:
         for ix in self.environments:
             env = self.environments[ix]
             env.edges = env_edges[ix]
+            count = 0
+
+            # GE: New section, for debugging
+            print("GE: envEdges: Check for symmetries. Both e0,e1 and e1,e0 should not be present")
+            for e in env.edges:
+                try: 
+                    if e[0] != e[1]:
+                        env.edges[(e[0],e[1])]
+                        env.edges[(e[1],e[0])]
+                        count += 1
+                except:
+                    pass
+            if count > 0:
+                print("should not happen, count= ", count, ",  ix= ", ix)
+
+        quit()
 
     #-------------------------------
     def setup_households(self):
@@ -1129,11 +1162,14 @@ class PopulaceGraph:
     def setupMaskWeights(self): #, num_edges):
         # self.mask_reductions: defined for every person of the graph
         # Whether a mask is worn or not are percentages set for each environment type
+
         mask_weight_factor = {} #np.ones(num_edges)
         environments = self.environments
+
         for env_id in environments:
             #print("env_id= ", env_id)
             env = environments[env_id]
+            # GE: Where is this computed? 
             edges = env.edges   # list of edges. Edge is (personA_id, personB_id, weight)
             #adoption = self.prevention_adoptions[env.env_type]["masking"]
             env.drawPreventions(self.prevention_adoptions, self.populace)
@@ -1143,6 +1179,18 @@ class PopulaceGraph:
                     * (1. - env.mask_status[pb]*self.mask_reductions[pb])
             #print("mask_weight_factor= ", mask_weight_factor)
 
+        count = 0
+        for k,v in mask_weight_factor.items():
+            e1,e2 = k
+            try:
+                mask_weight_factor[(e2,e1)]; 
+                if e1 != e2: count += 1
+            except: 
+                try: mask_weight_factor[(e2,e1)]
+                except: pass
+
+        #count = count // 2  # (i,j),(j,i) should only be counted once
+        print("nb of mask elements with symmetry: count= ", count)
         return mask_weight_factor
 
     #------------------------------------
@@ -1258,6 +1306,7 @@ class PopulaceGraph:
         self.perc_school_vaccinated = self.nb_top_schools_vaccinated / self.nb_schools
         self.perc_people_vaccinated_in_workplaces = self.nb_top_schools_vaccinated / self.nb_schools
 
+        """ Put in a function?
         print("after rank_workplaces, nb workplaces: ", self.nb_workplaces)
         print("* (cumsum) total work population to vaccinate: ", self.cum_sum_work_pop[self.nb_top_workplaces_vaccinated])
         print("vaccinatePopulace, nb people to vaccinate in the workplace: ", len(workplace_populace_vaccinated))
@@ -1303,6 +1352,8 @@ class PopulaceGraph:
             print("vacc[%s]: "%k, v)
 
         print("\n\n************ EXIT vaccinatePopulace ***************")
+        """ 
+        vacc = self.createVaccinationDict()
                     
     #----------------
     def printEnvironments(self):
@@ -1480,7 +1531,10 @@ class PopulaceGraph:
         mask_weight_factor = self.setupMaskWeights() #len(self.graph.edges()))
         #print("mask_weight_factor= ", mask_weight_factor)
         # Dictionary: key is (pa,pb): edge tuple
-        #quit()
+        # size of mask_weight dictionary (edge list with 1 or 0 for each edge)
+        print("size of mask_weight_factor: ", len(mask_weight_factor))
+        print("nb edges in graph: ", self.graph.number_of_edges())
+        quit()
 
         #simResult = simAlg(self.graph, tau, gamma, rho = 0.001, transmission_weight='transmission_weight', return_full_data=full_data)
         #print("initial_infected: ", self.initial_infected)
