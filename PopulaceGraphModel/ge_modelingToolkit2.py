@@ -82,6 +82,7 @@ class Environment:
         self.isWeighted = False
         #creates a dict linking each member of the environment with each prevention
 
+    #-----------------------------------
     def drawPreventions(self, adoptions, populace):
         # populace[0]: list of properties of one person
         #print("populace: ", populace[0]); quit()
@@ -95,38 +96,47 @@ class Environment:
         :return:
         """
 
-        #print("enter drawPreventions")
-        #print("self.env_type= ", self.env_type)
-        #print("self.env_type= ", self.env_type)
-        #print("adoptions= ", adoptions)
         myadoptions = adoptions[self.env_type]  # self.env_type: household, school, workplace
-        #assign distancers
+        #----------------
+        num_edges  = len(self.edges)
+        num_social = int(num_edges * myadoptions["distancing"])
+        #print("x num_edges= ", num_edges)
+        #print("x num_social= ", num_social)
+
+        # NOT a good approach when man businesses have only a single employee
+        # But then there are no edges in the business, so there will be no effect. 
+        distancing_adoption = [1] * num_social + [0] * (num_edges - num_social)
+        random.shuffle(distancing_adoption)
+
+        # class Environment
+        #print(type(self.edges), type(distancing_adoption))
+        #print(len(self.edges), len(distancing_adoption))
+        #print("self.edges= ", self.edges)
+        #print("distancing_adoption= ", distancing_adoption)
+        self.distancing_adoption = dict(zip(self.edges, distancing_adoption))
+
+        #----------------
+
+        #print("self.env_type= ", self.env_type)
+        #print("myadoptions= ", myadoptions)
+
+        #assign distancers per environment
         num_distancers = int(self.population * myadoptions["distancing"])
-        distance_status = [1] * num_distancers + [0] * (self.population - num_distancers)
-        random.shuffle(distance_status)
+        distancing_adoption = [1] * num_distancers + [0] * (self.population - num_distancers)
+        random.shuffle(distancing_adoption)
 
         # number of people with masks
         num_masks = int(self.population * myadoptions["masking"])
+        #print("self.population= ", self.population)
+        #print("num_masks= ", num_masks)
 
-        mask_status = [1] * num_masks + [0] * (self.population - num_masks)
-        random.shuffle(mask_status)
+        mask_adoption = [1] * num_masks + [0] * (self.population - num_masks)
+        random.shuffle(mask_adoption)
 
-        """
-        # I DO NOT KNOW THE PURPOSE OF THIS CODE
-        print("num_masks= ", num_masks); quit()
-        if num_masks != 1:
-            # originally, 1 to represent does wear mask, this is replaced by an int to represent the type of mask worn
-            assert len(mask_status) == self.population, "mask_status should be an array of size self.population"
-            for index in range(self.population):
-                if mask_status[index] == 1:
-                    mask_status[index] = populace[index]["mask_type"]
-                    #mask_status[index] = populace.members[index]["mask_type"]
-        """
 
-        # mask_status: 0 or 1 for each member within a structured environment (workplace or school)
-        self.mask_status = dict(zip(self.members, mask_status))
-        # distance_status: 0 or 1 for each member within a structured environment (workplace or school)
-        self.distance_status = dict(zip(self.members, distance_status))
+        # mask_adoption: 0 or 1 for each member within a structured environment (workplace or school)
+        self.mask_adoption = dict(zip(self.members, mask_adoption))
+        # distancing_adoption: 0 or 1 for each member within a structured environment (workplace or school)
 
 
     # class Environment
@@ -161,7 +171,9 @@ class Environment:
         '''
 
         self.total_weight += weight
-        self.edges.append([nodeA, nodeB, weight])
+        # NOT SURE how weight is used. 
+        #self.edges.append([nodeA, nodeB, weight])
+        self.edges.append((nodeA, nodeB))
 
     def network(self, netBuilder):
         netBuilder.buildDenseNet(self)
@@ -275,10 +287,12 @@ class NetBuilder:
         # maintaining lists constructed outside the Networkx library.
 
         if nodeA < nodeB:
-            weight = self.getWeight(nodeA, nodeB, environment)
+            #weight = self.getWeight(nodeA, nodeB, environment)
+            weight = 1.0  # GE, 2020-11-01
             environment.addEdge(nodeA, nodeB, weight)
         else:
-            weight = self.getWeight(nodeB, nodeA, environment)
+            #weight = self.getWeight(nodeB, nodeA, environment)
+            weight = 1. # GE, 2020-11-01
             environment.addEdge(nodeB, nodeA, weight)
 
     # class NetBuilder
@@ -307,10 +321,12 @@ class NetBuilder:
             for j in range(i):
                 nodeA, nodeB = members[i], members[j]
                 if nodeA < nodeB:
-                    weight = self.getWeight(nodeA, nodeB, environment)
+                    #weight = self.getWeight(nodeA, nodeB, environment)
+                    weight = 1.0  # GE
                     environment.addEdge(nodeA, nodeB, weight)
                 else:
-                    weight = self.getWeight(nodeB, nodeA, environment)
+                    # weight = self.getWeight(nodeB, nodeA, environment) 
+                    weight = 1.0 # GE
                     environment.addEdge(nodeB, nodeA, weight)
 
 
@@ -384,7 +400,8 @@ class NetBuilder:
             for j in range(k):
                 if random.random()>p_random:
                     nodeA, nodeB = A[i], B[(begin_B_edges +j)%size_B]
-                    weight = self.getWeight(nodeA, nodeB, environment)
+                    #weight = self.getWeight(nodeA, nodeB, environment)
+                    weight = 1.0 # GE
                     environment.addEdge(nodeA,nodeB,weight)
                 else:
                     remainder +=1
@@ -392,7 +409,8 @@ class NetBuilder:
 
         eList = self.genRandEdgeList(members_A, members_B, remainder)
         for edge in eList:
-            weight = self.getWeight(edge[0], edge[1], environment)
+            #weight = self.getWeight(edge[0], edge[1], environment)
+            weight = 1.0 # GE
             environment.addEdge(edge[0], edge[1], weight)
 
 
@@ -513,7 +531,7 @@ class NetBuilder:
 
         #print("GE: env mask_types: ", environment.num_mask_types)  # 1 (instead of 3)
         if environment.num_mask_types == 1:
-            n_masks = (environment.mask_status[personA] + environment.mask_status[personB])
+            n_masks = (environment.mask_adoption[personA] + environment.mask_adoption[personB])
             #print("n_masks= ", n_masks)
             #print("mask_eff= ", mask_eff)  # avg, std
             #so it works with reductions as either a single value, for one mask type in the model, or multiple vals, for multiple mask types
@@ -526,8 +544,8 @@ class NetBuilder:
             if len(environment.num_mask_types) != len(mask_eff["masking"]):
                 print("warning: number of mask types does not match list size for reduction factors")
             #reduction factors for the type of mask person A and B wear
-            redA = mask_eff[environment.mask_status[personA]]  # <<< ERROR?
-            redB = mask_eff["masking"][environment.mask_status[personB]]
+            redA = mask_eff[environment.mask_adoption[personA]]  # <<< ERROR?
+            redB = mask_eff["masking"][environment.mask_adoption[personB]]
 
             """
             # Apply spread to mask effectiveness if requested
@@ -544,7 +562,7 @@ class NetBuilder:
             # is needed to be distanced, will be 1 or 0
             weight = weight*(1-redA)*(1-redB)        
 
-        isDistanced = int(bool(environment.distance_status[personA]) or bool(environment.distance_status[personB]))
+        isDistanced = int(bool(environment.distancing_adoption[personA]) or bool(environment.distancing_adoption[personB]))
         # only applies when isDistanced is 1
         avg_dist = self.prevention_efficacies["distancing"][0]; # [1] is the std
         #  REPLACE BY MORE GENERAL APPROACH
@@ -858,21 +876,29 @@ class PopulaceGraph:
 
         # pick who masks and distances, in each environment
         # One has a list of people in each environment
-        for index in self.environments:
-            print("** self.prevention_adoptions: ", self.prevention_adoptions)
-            self.environments[index].drawPreventions(self.prevention_adoptions, self.populace)
+        for idx, env in self.environments.items():
+            env_type = env.env_type
+            #print("** self.prevention_adoptions: ", self.prevention_adoptions)
+            #print("env_type= ", env_type)
+            #print("idx= ", idx)
+            self.environments[idx].drawPreventions(self.prevention_adoptions, self.populace)
+            #self.env.drawPreventions(self.prevention_adoptions, self.populace)
         #**************************88
 
         self.pops_by_category = pops_by_category
 
-        print("test printEnvironments")
+        #print("test printEnvironments")
         self.printEnvironments()
 
         # Must be called last
         self.resetVaccinated_Infected()
 
         # must call once in constructor
-        self.setupMaskReduction(self.prevention_efficacies["masking"])
+        self.setupMaskingReductions(self.prevention_efficacies["masking"])
+        self.setupDistancingReductions(self.prevention_efficacies["distancing"])
+
+        self.setupMaskingReductions((.3, .3))
+        self.setupDistancingReductions((.4, .4))
 
     #-------------------------------------------------
     def printEnvironments(self):
@@ -961,6 +987,7 @@ class PopulaceGraph:
             env = self.environments[G[e[0]][e[1]]['environment']]
             print("weight(e): ", e, " => ", w, env.env_type)
     #---------------------------------
+    """
     def envEdges(self):
         # Added by Gordon Erlebacher, class PopulaceGraph
         # Construct a dictionary for each environment, of its edges. This will be used
@@ -997,6 +1024,7 @@ class PopulaceGraph:
                 print("should not happen, count= ", count, ",  ix= ", ix)
 
         quit()
+    """
 
     #-------------------------------
     def setup_households(self):
@@ -1109,7 +1137,7 @@ class PopulaceGraph:
         self.mask_adoption = bernoulli.rvs(perc, size=self.population)
 
     #--------------------------------------------
-    def setupMaskReduction(self, avg_std):
+    def setupMaskingReductions(self, avg_std):
         """
         :param avg: Float
         Average reduction in mask efficiency. A mask efficiency reduction of zero leaves the default edge weight unchanged
@@ -1120,82 +1148,62 @@ class PopulaceGraph:
         Every person carries (or not) a mask that retains its characteristics throughout the simulation
         """
 
-        # A Beta distribution
-        """
-        mu = a/(a+b)
-        std^2 = ab/(a+b)^2(a+b+1)
-        
-        mu = std = 0.5
-        std^2 = 0.25 
-        a = b 
-        0.25 = (1/4) / (2a+1) ==> 2a+1 = 1 ==> a = b= 0
-
-
-        std^2 = mu * (1-mu) / (a+b + 1)
-            = mu (1-mu) / (a/mu + 1)
-        mu (1-mu) / std = a/mu + 1
-        (1-mu) / cv - 1 = a / mu
-        a = mu (1-mu) / cv - mu
-        b = (a/mu) - a = a (1-mu) / mu = (1-mu)^2 / cv - (1-mu)
-
-        a = mu * [ (1-mu) / cv - 1 ]
-        b = (1-mu) [ (1-mu) / cv - 1 ] 
-        Therefore, a / mu = b / (1-mu)
-
-        mu=std=0.5
-        mu = .5 ==> a = b
-        .5 = std = .25 / (2a+1) ==> 2(2a+1) = 1 ==> 2a+1 = 0.5 ==> a = -.25
-        """
-
-        """ REMOVE FOR NOW
-        std = cv * avg
-        var = std * std
-        if var >= avg * (1.-avg):
-            var = 0.9*avg*(1.-avg)
-        std = np.sqrt(var)
-
-        print("cv= ", cv, ", avg= ", avg)
-        # Error. Need std^2 instead of std
-        a =     avg  * ( avg*(1.-avg) / var - 1. )
-        b = (1.-avg) * ( avg*(1.-avg) / var - 1. )
-        a = b = 10.
-        print("a, b= ", a, b)
-        reductions = np.random.beta(a, b, self.population)
-        self.mask_reductions = reductions
-        print("reductions= ", reductions)
-        return reductions
-        """
-
-        #"""
         avg, std = avg_std
         reduction = np.random.normal(avg, std, self.population)
         reduction[np.where(reduction < 0.)] = 0.
         reduction[np.where(reduction > 1.)] = 1.
         self.mask_reductions = reduction
         return reduction
-        #"""
 
     #------------------------------------
-    def setupMaskWeights(self): #, num_edges):
+    def setupDistancingReductions(self, avg_std):
+        """
+        :param avg: Average reduction in the efficacy of social distancing
+        :param cv: Coefficient of variation = std / avg
+        Social distance reduction reduction (weight = (1-mask_reduction) is a person-level quantity
+        Every person social distances (or not) and retains this property across the simulation
+        """
+
+        avg, std = avg_std
+        reduction = np.random.normal(avg, std, self.population)
+        reduction[np.where(reduction < 0.)] = 0.
+        reduction[np.where(reduction > 1.)] = 1.
+        self.distancing_reductions = reduction
+        return reduction
+
+    #-----------------------------------------
+    def setupMaskingWeights(self): #, num_edges):
         # self.mask_reductions: defined for every person of the graph
         # Whether a mask is worn or not are percentages set for each environment type
+
+        avg_std = self.prevention_efficacies["masking"]
+        self.setupMaskingReductions(avg_std)
+
+        #print("setupMaskingWeights, avg_std= ", avg_std); quit()
 
         mask_weight_factor = {} #np.ones(num_edges)
         environments = self.environments
 
-        for env_id in environments:
+        for env_id, env in environments.items():
             #print("env_id= ", env_id)
-            env = environments[env_id]
+            #env = environments[env_id]
             # GE: Where is this computed? 
             edges = env.edges   # list of edges. Edge is (personA_id, personB_id, weight)
+            env_type = env.env_type 
             #adoption = self.prevention_adoptions[env.env_type]["masking"]
             env.drawPreventions(self.prevention_adoptions, self.populace)
-            for idx, edge in enumerate(edges):
-                pa, pb, w = edge
-                mask_weight_factor[(pa,pb)] = (1. - env.mask_status[pa]*self.mask_reductions[pa]) \
-                    * (1. - env.mask_status[pb]*self.mask_reductions[pb])
-            #print("mask_weight_factor= ", mask_weight_factor)
 
+            for idx, edge in enumerate(edges):
+                pa, pb = edge
+                mask_weight_factor[(pa,pb)] = (1. - env.mask_adoption[pa]*self.mask_reductions[pa]) \
+                    * (1. - env.mask_adoption[pb]*self.mask_reductions[pb])
+            #print("mask_weight_factor= ", mask_weight_factor)
+                
+        #print("mask_weight_factor= ", mask_weight_factor)
+        #quit()
+        return mask_weight_factor
+
+        """
         count = 0
         for k,v in mask_weight_factor.items():
             e1,e2 = k
@@ -1209,41 +1217,35 @@ class PopulaceGraph:
         #count = count // 2  # (i,j),(j,i) should only be counted once
         print("nb of mask elements with symmetry: count= ", count)
         return mask_weight_factor
-
-    #------------------------------------
-    def setupSocialDistanceReduction(self, avg_std):
-        """
-        :param avg: Average reduction in the efficacy of social distancing
-        :param cv: Coefficient of variation = std / avg
-        Social distance reduction reduction (weight = (1-mask_reduction) is a person-level quantity
-        Every person social distances (or not) and retains this property across the simulation
         """
 
-        #"""
-        avg, std = avg_std
-        reduction = np.random.normal(avg, std, self.population)
-        reduction[np.where(reduction < 0.)] = 0.
-        reduction[np.where(reduction > 1.)] = 1.
-        self.social_distancing_reduction = reduction
-        return reduction
-        #"""
+    #----------------------------------------
+    def setupDistancingWeights(self): #, num_edges):
+        # self.mask_reductions: defined for every person of the graph
+        # Whether a mask is worn or not are percentages set for each environment type
 
+        avg_std = self.prevention_efficacies["distancing"]
+        self.setupDistancingReductions(avg_std)
 
-        """ REMOVE FOR NOW
-        std = cv * avg
-        var = std * std
-        if var >= avg * (1.-avg):
-            var = 0.9*avg*(1.-avg)
-        std = np.sqrt(var)
+        distance_weight_factor = {} #np.ones(num_edges)
+        environments = self.environments
 
-        a = avg     * ( (1-avg) / cv - 1. )
-        b = (1-avg) * ( (1-avg) / cv - 1. )
-        a = b = 10.
+        for env_id in environments:
+            env = environments[env_id]
+            env.drawPreventions(self.prevention_adoptions, self.populace)
 
-        reductions = np.random.beta(a, b, self.population)
-        self.social_distancing_reductions = reductions
-        return reductions
-        """
+            for ix, edge in enumerate(env.edges):
+                #print("adoption= ", env.distancing_adoption)
+                #print("distancing= ", self.distancing_reductions)  # INCORRECT. [list with indices]
+                #print("edge= ", edge)
+                reduction = env.distancing_adoption[edge]*self.distancing_reductions[ix]
+                distance_weight_factor[edge] = 1. - reduction
+
+        #for k,v in distance_weight_factor.items():
+            #print("distance_weight_factor= ", k, v)
+        #quit()
+        return distance_weight_factor
+
     #------------------
     # Called from the driver script
     def infectPopulace(self, perc):
@@ -1441,11 +1443,15 @@ class PopulaceGraph:
         print("len(populace): ", len(self.populace))
         print("self.population = ", self.population)
         #add the edges of each environment to a single networkx graph
-        for environment in self.environments: self.graph.add_weighted_edges_from(self.environments[environment].edges, weight = "transmission_weight")
+        for environment in self.environments: 
+            # GE changed the function. Do not add weights
+            self.graph.add_edges_from(self.environments[environment].edges) 
+            #self.graph.add_weighted_edges_from(self.environments[environment].edges, weight = "transmission_weight")
         self.isBuilt = True
 
     # class PopulaceGraph
     def reweight(self, netBuilder, new_prev_adoptions = None):
+        return   # Changing code from what it was. GE. 2020-11-01,3.06pm
         """
         :param netBuilder: netBuilder object
         to calculate new weights
@@ -1546,14 +1552,26 @@ class PopulaceGraph:
         assert self.graph.number_of_edges() > 0, "nb graph edges should be positive"
 
         self.global_dict = global_dict
-        print("enter setupMaskWeights, prevention_adoptions= ", self.prevention_adoptions)
-        mask_weight_factor = self.setupMaskWeights() #len(self.graph.edges()))
+        #global_dict
+        #print("enter setupMaskWeights, prevention_adoptions= ", self.prevention_adoptions)
+        mask_weight_factor       = self.setupMaskingWeights() 
+        distancing_weight_factor = self.setupDistancingWeights()
+
+        weight = {}  # keys are (e1,e2): graph edge
+        for k in distancing_weight_factor.keys():
+            weight[k] = distancing_weight_factor[k] * mask_weight_factor[k]
+            self.graph.add_edge(k[0], k[1], transmission_weight=weight[k])
+
+        # Update weights in graph
+
+        #print("len compat: ", len(mask_weight_factor), len(distancing_weight_factor))
+
         #print("mask_weight_factor= ", mask_weight_factor)
         # Dictionary: key is (pa,pb): edge tuple
         # size of mask_weight dictionary (edge list with 1 or 0 for each edge)
-        print("size of mask_weight_factor: ", len(mask_weight_factor))
+        #print("size of mask_weight_factor: ", len(mask_weight_factor))
         print("nb edges in graph: ", self.graph.number_of_edges())
-        #quit()
+        quit()
 
         #simResult = simAlg(self.graph, tau, gamma, rho = 0.001, transmission_weight='transmission_weight', return_full_data=full_data)
         #print("initial_infected: ", self.initial_infected)
@@ -1581,6 +1599,8 @@ class PopulaceGraph:
 
         for tix in range(0, int(last_time)+2, 2):
             # statuses[tix]: for each node of the graph, S,I,R status
+            print("sr= ", sr)
+            print("tix= ", tix)
             statuses[tix] = sr.get_statuses(time=tix)
         key0 = list(statuses.keys())[0]
         # statuses[graph node] = Dictionary: node# => 'S', 'I', or 'R'}

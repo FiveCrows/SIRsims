@@ -41,6 +41,11 @@ prevention_adoptions = {"household": {"masking": 0, "distancing": 0},
                           "school": {"masking": 0, "distancing": 0},
                           "workplace": {"masking": 0, "distancing": 0}}
 
+# TEMP FOR DEBUGGING
+prevention_adoptions = {"household": {"masking": 0.5, "distancing": 0.9},
+                          "school": {"masking": 0.5, "distancing": 0.9},
+                          "workplace": {"masking": 0.5, "distancing": 0.9}}
+
 glob_dict['enumerator'] = enumerator
 glob_dict['prevention_adoptions'] = prevention_adoptions
 
@@ -61,8 +66,7 @@ env_type_scalars = {"household": 1, "school": 1.0, "workplace": 1.0}
 # At home there are no masks or social distancing. Equivalent to efficacy of zero.
 # A value of 0 means that masks are not effective at all
 # A value of 1 means that a mask wearer can neither infect or be infected. 
-prevention_efficacies = {"masking": [0.0,0.], "distancing": [0.0,0.]}  # I should get real I curves. Not extinction. I do. 
-prevention_efficacies = {"masking": [0.3,0.], "distancing": [0.3,0.]}  # I should get real I curves. Not extinction. I do. 
+prevention_efficacies = {"masking": [0.3,0.3], "distancing": [0.9,0.9]}  
 
 glob_dict['env_type_scalars'] = env_type_scalars
 glob_dict['prevention_efficacies'] = prevention_efficacies
@@ -144,7 +148,9 @@ def runGauntlet(count):
        prevention_efficacies["distancing"] = [avg_efficacy, std_efficacy]
        glob_dict['prevention_efficacies']  = prevention_efficacies
 
-       for adoption in [0., 0.5, 1.]:  # masks and social distancing in schools and workplaes
+       #for adoption in [0., 0.5, 1.]:  # masks and social distancing in schools and workplaes
+       # Something wrong with msking weights
+       for adoption in [0.5, 0.5, 1.]:  # masks and social distancing in schools and workplaes
          glob_dict["adoption"] = adoption
          prevention_adoptions["school"]    = {"masking": adoption, "distancing": adoption}
          prevention_adoptions["workplace"] = {"masking": adoption, "distancing": adoption} 
@@ -160,8 +166,8 @@ def runGauntlet(count):
             # If nobody is wearing masks, this should have no effect
             pe = prevention_efficacies
             pa = prevention_adoptions
-            model.setupMaskReduction(pe['masking'])
-            model.setupSocialDistanceReduction(pe['distancing'])
+            model.setupMaskingReduction(pe['masking'])
+            model.setupDistancingReduction(pe['distancing'])
             netBuilder.setPreventionEfficacies(pe)
             netBuilder.setPreventionAdoptions(pa)
             # netBuilder has access to model, and model has access to netBuilder. Dangerous.
