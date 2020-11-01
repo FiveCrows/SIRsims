@@ -128,18 +128,12 @@ How are masked types used in the code?
 """
 
 def runGauntlet(count):
-  glob_dict['simulation_repetition'] = count
   # All global variables are accessible
 
   for avg_efficacy in [0., 0.25, 0.5, 0.75]:
-     glob_dict["avg_efficiency"] = avg_efficacy
      for std_efficacy in [0., 0.3, 0.6]:
        prevention_efficacies["masking"]    = [avg_efficacy, std_efficacy]
        prevention_efficacies["distancing"] = [avg_efficacy, std_efficacy]
-
-       # variables to store 
-       glob_dict['prevention_efficacies']  = prevention_efficacies
-       glob_dict["std_efficiency"] = std_efficacy
 
        #for adoption in [0., 0.5, 1.]:  # masks and social distancing in schools and workplaes
        # Something wrong with msking weights
@@ -147,8 +141,12 @@ def runGauntlet(count):
          prevention_adoptions["school"]    = {"masking": adoption, "distancing": adoption}
          prevention_adoptions["workplace"] = {"masking": adoption, "distancing": adoption} 
 
-         # variables to store 
-         glob_dict["adoption"] = adoption
+         # variables to store. Use loop_ to identify loop variagles
+         glob_dict['loop_sim_repeat'] = count
+         glob_dict["loop_avg_efficiency"] = avg_efficacy
+         glob_dict["loop_std_efficiency"] = std_efficacy
+         glob_dict["loop_adoption"] = adoption
+         glob_dict['prevention_efficacies']  = prevention_efficacies
          glob_dict['prevention_adoptions'] = prevention_adoptions
 
          if 1:
@@ -160,12 +158,12 @@ def runGauntlet(count):
             # If nobody is wearing masks, this should have no effect
             pe = prevention_efficacies
             pa = prevention_adoptions
-            model.setupMaskingReduction(pe['masking'])
-            model.setupDistancingReduction(pe['distancing'])
+            model.setupMaskingReductions(pe['masking'])
+            model.setupDistancingReductions(pe['distancing'])
             netBuilder.setPreventionEfficacies(pe)
             netBuilder.setPreventionAdoptions(pa)
             # netBuilder has access to model, and model has access to netBuilder. Dangerous.
-            model.reweight(netBuilder, pa)
+            #model.reweight(netBuilder, pa)
             model.infectPopulace(perc=infect_perc)
             model.vaccinatePopulace(perc=vacc_perc)
             title = "output_"
@@ -179,7 +177,7 @@ def runGauntlet(count):
   print(model.getPeakPrevalences())
 
 
-for count in range(1):
+for count in range(3):
     print("--------- SIMULATION %d ----------------" % count)
     runGauntlet(count)
 
