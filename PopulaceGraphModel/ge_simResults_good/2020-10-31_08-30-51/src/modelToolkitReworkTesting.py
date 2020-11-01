@@ -53,7 +53,7 @@ glob_dict['slim'] = slim
 #en_type_scalars is used to scale each weight, depending on the type of environment the edge will be placed in
 env_type_scalars = {"household": 1, "school": 0.3, "workplace": 0.3}
 #this dict is used to decide who is masking, and who is distancing
-prevention_efficacies = {"masking": 0.7, "distancing": 0.7}
+prevention_efficacies = {"masking": 0.2, "distancing": 0.2}
 
 glob_dict['env_type_scalars'] = env_type_scalars
 glob_dict['prevention_efficacies'] = prevention_efficacies

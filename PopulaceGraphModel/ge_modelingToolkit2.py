@@ -1133,6 +1133,7 @@ class PopulaceGraph:
         .5 = std = .25 / (2a+1) ==> 2(2a+1) = 1 ==> 2a+1 = 0.5 ==> a = -.25
         """
 
+        """ REMOVE FOR NOW
         std = cv * avg
         var = std * std
         if var >= avg * (1.-avg):
@@ -1149,14 +1150,16 @@ class PopulaceGraph:
         self.mask_reductions = reductions
         print("reductions= ", reductions)
         return reductions
-
         """
+
+        #"""
+        std = cv * avg
         reduction = np.random.normal(avg, std, self.population)
         reduction[np.where(reduction < 0.)] = 0.
         reduction[np.where(reduction > 1.)] = 1.
         self.mask_reductions = reduction
         return reduction
-        """
+        #"""
 
     #------------------------------------
     def setupMaskWeights(self): #, num_edges):
@@ -1202,16 +1205,17 @@ class PopulaceGraph:
         Every person social distances (or not) and retains this property across the simulation
         """
 
-        """
+        #"""
         std = cv * avg
         reduction = np.random.normal(avg, std, self.population)
         reduction[np.where(reduction < 0.)] = 0.
         reduction[np.where(reduction > 1.)] = 1.
         self.social_distancing_reduction = reduction
         return reduction
-        """
+        #"""
 
 
+        """ REMOVE FOR NOW
         std = cv * avg
         var = std * std
         if var >= avg * (1.-avg):
@@ -1225,6 +1229,7 @@ class PopulaceGraph:
         reductions = np.random.beta(a, b, self.population)
         self.social_distancing_reductions = reductions
         return reductions
+        """
     #------------------
     # Called from the driver script
     def infectPopulace(self, perc):
@@ -1534,7 +1539,7 @@ class PopulaceGraph:
         # size of mask_weight dictionary (edge list with 1 or 0 for each edge)
         print("size of mask_weight_factor: ", len(mask_weight_factor))
         print("nb edges in graph: ", self.graph.number_of_edges())
-        quit()
+        #quit()
 
         #simResult = simAlg(self.graph, tau, gamma, rho = 0.001, transmission_weight='transmission_weight', return_full_data=full_data)
         #print("initial_infected: ", self.initial_infected)
