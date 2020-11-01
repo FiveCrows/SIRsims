@@ -100,6 +100,7 @@ class Environment:
         #----------------
         num_edges  = len(self.edges)
         num_social = int(num_edges * myadoptions["distancing"])
+
         #print("x num_edges= ", num_edges)
         #print("x num_social= ", num_social)
 
@@ -1557,12 +1558,15 @@ class PopulaceGraph:
         mask_weight_factor       = self.setupMaskingWeights() 
         distancing_weight_factor = self.setupDistancingWeights()
 
+        #print("enter simulate: nb edges in graph: ", self.graph.number_of_edges())
+
         weight = {}  # keys are (e1,e2): graph edge
         for k in distancing_weight_factor.keys():
             weight[k] = distancing_weight_factor[k] * mask_weight_factor[k]
             self.graph.add_edge(k[0], k[1], transmission_weight=weight[k])
 
         # Update weights in graph
+        #print("updated weights: nb edges in graph: ", self.graph.number_of_edges())
 
         #print("len compat: ", len(mask_weight_factor), len(distancing_weight_factor))
 
@@ -1570,8 +1574,8 @@ class PopulaceGraph:
         # Dictionary: key is (pa,pb): edge tuple
         # size of mask_weight dictionary (edge list with 1 or 0 for each edge)
         #print("size of mask_weight_factor: ", len(mask_weight_factor))
-        print("nb edges in graph: ", self.graph.number_of_edges())
-        quit()
+        #print("nb edges in graph: ", self.graph.number_of_edges())
+        #quit()
 
         #simResult = simAlg(self.graph, tau, gamma, rho = 0.001, transmission_weight='transmission_weight', return_full_data=full_data)
         #print("initial_infected: ", self.initial_infected)
@@ -1599,8 +1603,8 @@ class PopulaceGraph:
 
         for tix in range(0, int(last_time)+2, 2):
             # statuses[tix]: for each node of the graph, S,I,R status
-            print("sr= ", sr)
-            print("tix= ", tix)
+            #print("sr= ", sr)
+            #print("tix= ", tix)
             statuses[tix] = sr.get_statuses(time=tix)
         key0 = list(statuses.keys())[0]
         # statuses[graph node] = Dictionary: node# => 'S', 'I', or 'R'}

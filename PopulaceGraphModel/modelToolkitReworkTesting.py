@@ -41,11 +41,6 @@ prevention_adoptions = {"household": {"masking": 0, "distancing": 0},
                           "school": {"masking": 0, "distancing": 0},
                           "workplace": {"masking": 0, "distancing": 0}}
 
-# TEMP FOR DEBUGGING
-prevention_adoptions = {"household": {"masking": 0.5, "distancing": 0.9},
-                          "school": {"masking": 0.5, "distancing": 0.9},
-                          "workplace": {"masking": 0.5, "distancing": 0.9}}
-
 glob_dict['enumerator'] = enumerator
 glob_dict['prevention_adoptions'] = prevention_adoptions
 
@@ -133,30 +128,29 @@ How are masked types used in the code?
 """
 
 def runGauntlet(count):
-  glob_dict['simulation_index'] = count
+  glob_dict['simulation_repetition'] = count
   # All global variables are accessible
 
   for avg_efficacy in [0., 0.25, 0.5, 0.75]:
      glob_dict["avg_efficiency"] = avg_efficacy
      for std_efficacy in [0., 0.3, 0.6]:
-       glob_dict["std_efficiency"] = std_efficacy
-
-     #for cv_key in netBuilder.cv_dict.keys():   
-       #if cv_key != 'masking': continue    ### FOR TESTING
-
        prevention_efficacies["masking"]    = [avg_efficacy, std_efficacy]
        prevention_efficacies["distancing"] = [avg_efficacy, std_efficacy]
+
+       # variables to store 
        glob_dict['prevention_efficacies']  = prevention_efficacies
+       glob_dict["std_efficiency"] = std_efficacy
 
        #for adoption in [0., 0.5, 1.]:  # masks and social distancing in schools and workplaes
        # Something wrong with msking weights
-       for adoption in [0.5, 0.5, 1.]:  # masks and social distancing in schools and workplaes
-         glob_dict["adoption"] = adoption
+       for adoption in [0.0, 0.5, 1.]:  # masks and social distancing in schools and workplaes
          prevention_adoptions["school"]    = {"masking": adoption, "distancing": adoption}
          prevention_adoptions["workplace"] = {"masking": adoption, "distancing": adoption} 
+
+         # variables to store 
+         glob_dict["adoption"] = adoption
          glob_dict['prevention_adoptions'] = prevention_adoptions
 
-         #for cv_val in cv_vals:
          if 1:
             model.resetVaccinated_Infected() # reset to default state (for safety)
             #netBuilder.cv_dict[cv_key] = cv_val
@@ -179,18 +173,13 @@ def runGauntlet(count):
             # variables to store 
             glob_dict['vacc_perc'] = vacc_perc
             glob_dict['infect_perc'] = infect_perc
-            #glob_dict['cv_key'] = cv_key
-            #glob_dict['cv_val'] = val
-            #glob_dict['avg_key'] = avg_key
-            #glob_dict['avg_val'] = avg_val
 
             model.simulate(gamma, tau, title=title, global_dict=glob_dict)
 
-  #netBuilder.cv_dict[cv_key] = cv_val
   print(model.getPeakPrevalences())
 
 
-for count in range(3):
+for count in range(1):
     print("--------- SIMULATION %d ----------------" % count)
     runGauntlet(count)
 
