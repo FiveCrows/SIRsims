@@ -111,6 +111,7 @@ class Environment:
         distance_status = [1] * num_distancers + [0] * (self.population - num_distancers)
         random.shuffle(distance_status)
 
+        # Number of people wearing masks
         num_masks = int(self.population * adoptions["masking"])
 
         mask_status = [1] * num_masks + [0] * (self.population - num_masks)
@@ -120,7 +121,7 @@ class Environment:
             # originally, 1 to represent does wear mask, this is replaced by an int to represent the type of mask worn
             for index in range(len(mask_status)):
                 if mask_status[index] == 1:
-                    mask_status[index] = self.populace.members[index]["mask_type"]
+                    mask_status[index] = populace.members[index]["mask_type"]
 
         self.mask_status = dict(zip(self.members, mask_status))
         self.distance_status = dict(zip(self.members, distance_status))

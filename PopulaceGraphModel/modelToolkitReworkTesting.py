@@ -121,8 +121,9 @@ def runGauntlet(count):
         netBuilder.setModel(model)  # must occur before reweight
         pe = prevention_efficacies
         # Following two lines must occur before reweight
-        model.setupMaskReduction(pe['masking'], cv_dict['mask'])
-        model.setupSocialDistancingReduction(pe['distancing'], cv_dict['distancing'])
+        # a,b of beta distribution hardcoded to 10,10
+        model.setupMaskReduction(pe['masking'], cv_dict['mask_eff'])
+        model.setupSocialDistanceReduction(pe['distancing'], cv_dict['distancing'])
         # netBuilder has access to model, and model has access to netBuilder. Dangerous.
         model.reweight(netBuilder, prevention_adoptions)
         glob_dict['vacc_perc'] = vacc_perc
@@ -135,7 +136,7 @@ def runGauntlet(count):
         glob_dict['avg_val'] = avg_val
         model.infectPopulace(perc=infect_perc)
         model.vaccinatePopulace(perc=vacc_perc)
-        model.simulate(gamma, tau, title="{} cv = {}".format(c_key, cv_val), global_dict=glob_dict)
+        model.simulate(gamma, tau, title="{} cv = {}".format(cv_key, cv_val), global_dict=glob_dict)
 
     netBuilder.cv_dict[cv_key] = cv_val
     print(model.getPeakPrevalences())

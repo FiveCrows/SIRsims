@@ -59,7 +59,7 @@ class Environment:
     Objects to the carry details for every home
     """
 
-    def __init__(self, index, members, quality):
+    def __init__(self, index, members, env_type):
         """
         :param index: int
         an identifier
@@ -70,8 +70,8 @@ class Environment:
         """
 
         self.index = index
-        self.members = members
-        self.quality = quality
+        self.members = members  # list of keys (integers), probably people
+        self.env_type = env_type
         self.population = len(members)
         self.num_mask_types = 1
         # self.distancing = distancing
@@ -83,6 +83,8 @@ class Environment:
         #creates a dict linking each member of the environment with each prevention
 
     def drawPreventions(self, adoptions, populace):
+        # populace[0]: list of properties of one person
+        #print("populace: ", populace[0]); quit()
         """
         picks masks and distancing parameters
         :param adoptions: dict
@@ -93,24 +95,37 @@ class Environment:
         :return:
         """
 
-        adoptions = adoptions[self.quality]
+        #print("enter drawPreventions")
+        #print("self.env_type= ", self.env_type)
+        #print("self.env_type= ", self.env_type)
+        #print("adoptions= ", adoptions)
+        myadoptions = adoptions[self.env_type]  # self.env_type: household, school, workplace
         #assign distancers
-        num_distancers = int(self.population * adoptions["distancing"])
+        num_distancers = int(self.population * myadoptions["distancing"])
         distance_status = [1] * num_distancers + [0] * (self.population - num_distancers)
         random.shuffle(distance_status)
 
-        num_masks = int(self.population * adoptions["masking"])
+        # number of people with masks
+        num_masks = int(self.population * myadoptions["masking"])
 
         mask_status = [1] * num_masks + [0] * (self.population - num_masks)
-
         random.shuffle(mask_status)
+
+        """
+        # I DO NOT KNOW THE PURPOSE OF THIS CODE
+        print("num_masks= ", num_masks); quit()
         if num_masks != 1:
             # originally, 1 to represent does wear mask, this is replaced by an int to represent the type of mask worn
-            for index in range(len(mask_status)):
+            assert len(mask_status) == self.population, "mask_status should be an array of size self.population"
+            for index in range(self.population):
                 if mask_status[index] == 1:
-                    mask_status[index] = self.populace.members[index]["mask_type"]
+                    mask_status[index] = populace[index]["mask_type"]
+                    #mask_status[index] = populace.members[index]["mask_type"]
+        """
 
+        # mask_status: 0 or 1 for each member within a structured environment (workplace or school)
         self.mask_status = dict(zip(self.members, mask_status))
+        # distance_status: 0 or 1 for each member within a structured environment (workplace or school)
         self.distance_status = dict(zip(self.members, distance_status))
 
 
@@ -160,7 +175,7 @@ class StructuredEnvironment(Environment):
     These environments are extended with a contact matrix and partition
     """
 
-    def __init__(self, index, members, quality, populace, contact_matrix, partitioner, preventions = None):
+    def __init__(self, index, members, env_type, populace, contact_matrix, partitioner, preventions = None):
         """
         :param index: int
         to index the specific environment
@@ -178,7 +193,7 @@ class StructuredEnvironment(Environment):
         :param partitioner: Partitioner
         for creating a partition
         """
-        super().__init__(index,members, quality)
+        super().__init__(index,members, env_type)
         self.partitioner = partitioner
         self.contact_matrix = contact_matrix
         self.id_to_partition = dict.fromkeys(members)
@@ -274,7 +289,7 @@ class NetBuilder:
             members = environment.members
         else:
             members = subgroup
-        #quality = environment.quality
+        #env_type = environment.env_type
         member_count = len(members)
 
         for i in range(member_count):
@@ -405,9 +420,13 @@ class NetBuilder:
         #default_weight = total_contact/totalEdges
         if avg_degree == None:
             avg_degree = total_contact/environment.population
+
+        if avg_degree ==0: return
+
         #print('by the sum of the CM, avg_degree should be : {}'.format(avg_degree ))
         #determine total edges needed for entire network. There are two connections per edge)
         total_edges = math.floor(avg_degree * environment.population/2)
+        #print("avg_degree= ", avg_degree, " env pop: ", environment.population)
 
         #for each number between two groups, don't iterate zeros
         for i in p_sets:
@@ -423,6 +442,8 @@ class NetBuilder:
                     num_edges = int(total_edges * contactFraction)
                     max_edges = p_n[i] * (p_n[i]-1)
                 else:
+                    # edges = 0, fraction = NaN
+                    #print("tot_edgess= ", total_edges, ",  contactFraction= ", contactFraction)
                     num_edges = int(total_edges*contactFraction*2)
                     max_edges = p_n[i] * p_n[j]
                 if max_edges < num_edges:
@@ -464,7 +485,7 @@ class NetBuilder:
          the shared environment of two nodes for the weight
         :return:
         """
-        weight = self.global_weight*self.env_scalars[environment.quality]
+        weight = self.global_weight*self.env_scalars[environment.env_type]
         mask_eff = self.prev_efficacies["masking"]
         #factor with masks and distancing
         #if there are different masks in use, a different method is required
@@ -711,7 +732,7 @@ class PopulaceGraph:
         self.total_weight = 0
         self.total_edges = 0
         self.total_weight = 0
-        self.environments_added = 0
+        self.environments_added = 0  # NOT USED
         self.initial_recovered = []
         self.initial_vaccinated = [] #None  # same as initial_recovered
         self.initial_infected   = [] #None
@@ -737,6 +758,7 @@ class PopulaceGraph:
                                            "workplace": {"masking": 0, "distancing": 0}}
         else:
             self.prevention_adoptions = prevention_adoptions
+        #print("populace: prevention_adoptions= ", prevention_adoptions); quit()
 
         # for loading people objects from file
         with open("people_list_serialized.pkl", 'rb') as file:
@@ -806,7 +828,9 @@ class PopulaceGraph:
         self.setup_schools(partitioner)
 
         # pick who masks and distances, in each environment
+        # One has a list of people in each environment
         for index in self.environments:
+            print("** self.prevention_adoptions: ", self.prevention_adoptions)
             self.environments[index].drawPreventions(self.prevention_adoptions, self.populace)
         #**************************88
 
@@ -818,12 +842,15 @@ class PopulaceGraph:
         # Must be called last
         self.resetVaccinated_Infected()
 
+        # must call once in constructor
+        self.setupMaskReduction(0.5, 0.5)
+
     #-------------------------------------------------
     def printEnvironments(self):
         keys = list(self.environments.keys())
         envs = set()
         for k in keys:
-            envs.add(self.environments[k].quality)
+            envs.add(self.environments[k].env_type)
 
         # Environment type can be "household", "workplace", "school"
         #print("envs= ", envs)
@@ -834,7 +861,7 @@ class PopulaceGraph:
             print(self.environments[keys[k]].members)  # list of one element [12]. Meaning?
             print(self.environments[keys[k]].population)  # 1  (nb of members)
             print(self.environments[keys[k]].preventions)  # None (or a list?
-            print(self.environments[keys[k]].quality)  # list of one element [12]. Meaning?
+            print(self.environments[keys[k]].env_type)  # list of one element [12]. Meaning?
 
     #-------------------------------------------------
     def resetVaccinated_Infected(self):
@@ -893,8 +920,8 @@ class PopulaceGraph:
         G = self.graph
         for e in G.edges():
             environment = self.environments[self.graph.adj[e[0]][e[1]]['environment']]
-            print("env, envi= ", env, environment.quality)
-            if env == environment.quality:
+            print("env, envi= ", env, environment.env_type)
+            if env == environment.env_type:
                 self.graph.adj[e[0]][e[1]]['transmission_weight'] = 0
         print("zeroWeights[%s]: %f sec" % (env, time.time() - start_time))
     #---------------------------------
@@ -903,7 +930,7 @@ class PopulaceGraph:
         for e in G.edges():
             w = G[e[0]][e[1]]['transmission_weight']
             env = self.environments[G[e[0]][e[1]]['environment']]
-            print("weight(e): ", e, " => ", w, env.quality)
+            print("weight(e): ", e, " => ", w, env.env_type)
     #---------------------------------
     def envEdges(self):
         # Added by Gordon Erlebacher, class PopulaceGraph
@@ -936,13 +963,12 @@ class PopulaceGraph:
     def setup_workplaces(self, partitioner):
         self.workplaces = self.pops_by_category["work_id"]
         with open("../ContactMatrices/Leon/ContactMatrixWorkplaces.pkl", 'rb') as file:
-            work_matrices = pickle.load(file)
+            contact_matrices = pickle.load(file)
 
         for index in self.workplaces:
             if index == None: continue
-            #workplace = PartitionedEnvironment(index, workplaces[index], "workplace",   # Old code. Name change
             workplace = StructuredEnvironment(index, self.workplaces[index], "workplace", 
-                                               self.populace, work_matrices[index], partitioner)
+                                               self.populace, contact_matrices[index], partitioner)
             self.environments[index] = (workplace)
         return
 
@@ -950,16 +976,15 @@ class PopulaceGraph:
     def setup_schools(self, partitioner):
         self.schools = self.pops_by_category["school_id"]
         with open("../ContactMatrices/Leon/ContactMatrixSchools.pkl", 'rb') as file:
-            school_matrices = pickle.load(file)
+            contact_matrices = pickle.load(file)
 
         if partitioner == None: return
         self.hasPartition = True
 
         for index in self.schools:
             if index == None: continue
-            #school = PartitionedEnvironment(index, schools[index], "school", self.populace,   # Old code, name change
             school = StructuredEnvironment(index, self.schools[index], "school", self.populace, 
-                                            school_matrices[index], partitioner)
+                                            contact_matrices[index], partitioner)
             self.environments[index] = (school)
 
     #-----------------
@@ -1032,7 +1057,12 @@ class PopulaceGraph:
         print("******* EXIT rank_workplaces *********")
 
     #--------------------------------------------
-    def setupMaskReduction(self, avg, cv, size):
+    def setupMaskAdoption(self, perc):
+        # Mask adoption should be per environment
+        self.mask_adoption = bernoulli.rvs(perc, size=self.population)
+
+    #--------------------------------------------
+    def setupMaskReduction(self, avg, cv):
         """
         :param avg: Float
         Average reduction in mask efficiency. A mask efficiency reduction of zero leaves the default edge weight unchanged
@@ -1046,7 +1076,15 @@ class PopulaceGraph:
         # A Beta distribution
         """
         mu = a/(a+b)
-        std = mu * (1-mu) / (a+b + 1)
+        std^2 = ab/(a+b)^2(a+b+1)
+        
+        mu = std = 0.5
+        std^2 = 0.25 
+        a = b 
+        0.25 = (1/4) / (2a+1) ==> 2a+1 = 1 ==> a = b= 0
+
+
+        std^2 = mu * (1-mu) / (a+b + 1)
             = mu (1-mu) / (a/mu + 1)
         mu (1-mu) / std = a/mu + 1
         (1-mu) / cv - 1 = a / mu
@@ -1056,23 +1094,58 @@ class PopulaceGraph:
         a = mu * [ (1-mu) / cv - 1 ]
         b = (1-mu) [ (1-mu) / cv - 1 ] 
         Therefore, a / mu = b / (1-mu)
+
+        mu=std=0.5
+        mu = .5 ==> a = b
+        .5 = std = .25 / (2a+1) ==> 2(2a+1) = 1 ==> 2a+1 = 0.5 ==> a = -.25
         """
 
         std = cv * avg
-        a = avg     * ( (1-avg) / cv - 1. )
-        b = (1-avg) * ( (1-avg) / cv - 1. )
-        reductions = np.random.beta(a, b, size.population)
+        var = std * std
+        if var >= avg * (1.-avg):
+            var = 0.9*avg*(1.-avg)
+        std = np.sqrt(var)
+
+        print("cv= ", cv, ", avg= ", avg)
+        # Error. Need std^2 instead of std
+        a =     avg  * ( avg*(1.-avg) / var - 1. )
+        b = (1.-avg) * ( avg*(1.-avg) / var - 1. )
+        a = b = 10.
+        print("a, b= ", a, b)
+        reductions = np.random.beta(a, b, self.population)
         self.mask_reductions = reductions
+        print("reductions= ", reductions)
         return reductions
 
         """
         reduction = np.random.normal(avg, std, self.population)
         reduction[np.where(reduction < 0.)] = 0.
         reduction[np.where(reduction > 1.)] = 1.
-        self.mask_reduction = reduction
+        self.mask_reductions = reduction
         return reduction
         """
 
+    #------------------------------------
+    def setupMaskWeights(self): #, num_edges):
+        # self.mask_reductions: defined for every person of the graph
+        # Whether a mask is worn or not are percentages set for each environment type
+        mask_weight_factor = {} #np.ones(num_edges)
+        environments = self.environments
+        for env_id in environments:
+            #print("env_id= ", env_id)
+            env = environments[env_id]
+            edges = env.edges   # list of edges. Edge is (personA_id, personB_id, weight)
+            #adoption = self.prevention_adoptions[env.env_type]["masking"]
+            env.drawPreventions(self.prevention_adoptions, self.populace)
+            for idx, edge in enumerate(edges):
+                pa, pb, w = edge
+                mask_weight_factor[(pa,pb)] = (1. - env.mask_status[pa]*self.mask_reductions[pa]) \
+                    * (1. - env.mask_status[pb]*self.mask_reductions[pb])
+            #print("mask_weight_factor= ", mask_weight_factor)
+
+        return mask_weight_factor
+
+    #------------------------------------
     def setupSocialDistanceReduction(self, avg, cv):
         """
         :param avg: Average reduction in the efficacy of social distancing
@@ -1090,9 +1163,17 @@ class PopulaceGraph:
         return reduction
         """
 
+
         std = cv * avg
+        var = std * std
+        if var >= avg * (1.-avg):
+            var = 0.9*avg*(1.-avg)
+        std = np.sqrt(var)
+
         a = avg     * ( (1-avg) / cv - 1. )
         b = (1-avg) * ( (1-avg) / cv - 1. )
+        a = b = 10.
+
         reductions = np.random.beta(a, b, self.population)
         self.social_distancing_reductions = reductions
         return reductions
@@ -1122,7 +1203,7 @@ class PopulaceGraph:
         """
         self.perc_populace_vaccinated = 0.0
 
-        print("\n\n************ ENTER vaccinatePopulace ***************")
+        #print("\n\n************ ENTER vaccinatePopulace ***************")
 
         self.initial_vaccinated = set()
 
@@ -1228,7 +1309,7 @@ class PopulaceGraph:
         keys = list(self.environments.keys())
         envs = set()
         for k in keys:
-            envs.add(self.environments[k].quality)
+            envs.add(self.environments[k].env_type)
 
 
     #-------------------------------------------------
@@ -1331,7 +1412,7 @@ class PopulaceGraph:
             p_env = self.returnMultiEnvironment()
         contact_matrix = self.returnContactMatrix(p_env)
         plt.imshow(contact_matrix)
-        plt.title("Contact Matrix for members of {} # {}".format(p_env.quality, p_env.index))
+        plt.title("Contact Matrix for members of {} # {}".format(p_env.env_type, p_env.index))
         labels = p_env.partitioner.labels
         if labels == None:
             labels = ["{}-{}".format(5 * i, (5 * (i + 1))-1) for i in range(15)]
@@ -1395,6 +1476,11 @@ class PopulaceGraph:
         assert self.graph.number_of_edges() > 0, "nb graph edges should be positive"
 
         self.global_dict = global_dict
+        print("enter setupMaskWeights, prevention_adoptions= ", self.prevention_adoptions)
+        mask_weight_factor = self.setupMaskWeights() #len(self.graph.edges()))
+        #print("mask_weight_factor= ", mask_weight_factor)
+        # Dictionary: key is (pa,pb): edge tuple
+        #quit()
 
         #simResult = simAlg(self.graph, tau, gamma, rho = 0.001, transmission_weight='transmission_weight', return_full_data=full_data)
         #print("initial_infected: ", self.initial_infected)
@@ -1505,7 +1591,7 @@ class PopulaceGraph:
         if environment != None:
             people = environment.members
             graph = self.graph.subgraph(people)
-            plt.title("Degree plot for members of {} # {}".format(environment.quality, environment.index))
+            plt.title("Degree plot for members of {} # {}".format(environment.env_type, environment.index))
         else:
             graph = self.graph
             people = self.populace.keys()
