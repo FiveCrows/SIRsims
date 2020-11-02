@@ -1102,7 +1102,8 @@ class PopulaceGraph:
         print("cum_sum, top 10: ", self.cum_sum_school_pop[0:10])
         print("rank_schools: self.nb_schools= ", self.nb_schools)
         print("* total school population: ", self.school_population)
-        print("* total school population to vaccinate: ", self.cum_sum_school_pop[self.nb_top_schools_vaccinated])
+        print("ERROR? self.nb_top_schools_vaccinated: ", self.nb_top_schools_vaccinated)
+        print("* total school population to vaccinate: ", self.cum_sum_school_pop[self.nb_top_schools_vaccinated-1])
         print("* school_id[0:10]: ", self.ordered_school_ids[0:10])
         print("******* EXIT rank_schools *********")
 
@@ -1137,7 +1138,7 @@ IndexError: index 60 is out of bounds for axis 0 with size 60
         print("rank_workplaces: self.nb_workplaces= ", self.nb_workplaces)
         print("* total work population: ", self.work_population)
         print("... nb_top_workplaces_vaccinated: ", self.nb_top_workplaces_vaccinated)  # should be integer
-        print("* total work population to vaccinate: ", self.cum_sum_work_pop[self.nb_top_workplaces_vaccinated])
+        print("* total work population to vaccinate: ", self.cum_sum_work_pop[self.nb_top_workplaces_vaccinated-1])
         print("* work_id[0]: ", self.ordered_work_ids[0])
         print("******* EXIT rank_workplaces *********")
 
