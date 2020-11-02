@@ -142,6 +142,7 @@ class Environment:
 
     # class Environment
     def reweight(self, netBuilder, newPreventions = None):
+        print("Reweight should not be called"); quit()
         """
         Rechooses the weights on each edge with, presumably, a distinct weighter or preventions
         :param weighter: TransmissionWeighter object
@@ -513,6 +514,7 @@ class NetBuilder:
 
     # class NetBuilder
     def getWeight(self, personA, personB, environment):
+        print("getWeight should not be called"); quit()
         """
         Uses the environments type and preventions to deternmine weight
         :param personA: int
@@ -592,6 +594,7 @@ class NetBuilder:
 
 #A work in progress
 class StrogatzNetBuilder(NetBuilder):
+    # NOT USED
 
     def netStrogatz(self, environment,  num_edges, weight_scalar = 1, subgroup = None, rewire_p = 0.1):
         """
@@ -1103,6 +1106,12 @@ class PopulaceGraph:
         print("* school_id[0:10]: ", self.ordered_school_ids[0:10])
         print("******* EXIT rank_schools *********")
 
+        """  
+        ERROR   <<<<< ERROR  2020-11-02 NOT YET FIXED
+            print("* total school population to vaccinate: ", self.cum_sum_school_pop[self.nb_top_schools_vaccinated])
+IndexError: index 60 is out of bounds for axis 0 with size 60
+        """
+
     #----------------------------------
     def rank_workplaces(self):
         # produces list of pairs (workplace is, list of people is)
@@ -1314,8 +1323,8 @@ class PopulaceGraph:
         # self.populace has no keys. ???? BUG?
         #general_populace_vaccinated = np.asarray(list(self.populace.keys()))[vaccinated_01 == 1]
         general_populace_vaccinated = np.where(vaccinated_01 == 1)[0]
-        print("general_populace_vaccinated= ", general_populace_vaccinated)
-        print("self.initial_vaccinated= ", self.initial_vaccinated) # set
+        #print("general_populace_vaccinated= ", general_populace_vaccinated)
+        #print("self.initial_vaccinated= ", self.initial_vaccinated) # set
         #lll = list(general_populace_vaccinated[0])
         #print("general_populace_vaccinated= ", lll)
         self.initial_vaccinated.update(general_populace_vaccinated)
@@ -1452,6 +1461,7 @@ class PopulaceGraph:
 
     # class PopulaceGraph
     def reweight(self, netBuilder, new_prev_adoptions = None):
+        print("Reweight should not be called"); quit()
         return   # Changing code from what it was. GE. 2020-11-01,3.06pm
         """
         :param netBuilder: netBuilder object
@@ -1546,7 +1556,7 @@ class PopulaceGraph:
         return ages_d
 
     #-------------------------------------------------------------------
-    def simulate(self, gamma, tau, simAlg=EoN.fast_SIR, title=None, full_data=True, preventions=None, global_dict={}):
+    def simulate(self, gamma, tau, simAlg=EoN.fast_SIR, title=None, full_data=True, global_dict={}):
 
         # Gordon Change
         assert self.graph.number_of_nodes() > 0, "nb graph nodes should be positive"

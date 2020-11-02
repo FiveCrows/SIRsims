@@ -22,13 +22,13 @@ timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
 # Run with 10% of the data: slim=True
 # Run with all the data: slim=False
-slim = True
 slim = False
+slim = True
 print("slim= ", slim)
 
 # Whether or not to save output files  <<<<<<<<<<<<<< Set to save directory
-save_output = False
 save_output = True
+save_output = False
 print("save_output= ", save_output)
 
 #These values scale the weight that goes onto edges by the environment type involved
@@ -194,5 +194,4 @@ for level in levels:
     vaccination_study(sm, sd, wm, wd)
 
 quit()
-
 
