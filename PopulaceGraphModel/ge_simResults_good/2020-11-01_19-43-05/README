@@ -1,0 +1,19 @@
+2020-11-01,8.27pm
+
+First run with slim=True. 
+3 simulations (runGauntlet 3 times) for each case. 
+tau=0.2, gamma=0.1 (the recovery should probably be 0.2) (constant values)
+
+def runGauntlet(count):
+  for avg_efficacy in [0., 0.25, 0.5, 0.75]:
+     for std_efficacy in [0., 0.3, 0.6]:
+       for adoption in [0.0, 0.5, 1.]:  # masks and social distancing in schools and workplaces
+
+Save to git
+
+------------------------------
+To run: 
+
+python analyze.py 
+python transform_analysis.py  
+python plot_all_rows_sir.py

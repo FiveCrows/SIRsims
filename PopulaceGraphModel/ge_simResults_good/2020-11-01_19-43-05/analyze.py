@@ -20,18 +20,6 @@ def readFile(filenm):
     for k in global_dict.keys():
         print("glob_dict key: ", k)
 
-    print("cv_key= ", global_dict["cv_key"])
-    print("cv_val= ", global_dict["cv_val"])
-    if global_dict["cv_key"] == "contact":
-        print("CONTACT FOUND")
-    else:
-        print("CONTACT NOT FOUND")
-    # THERE IS A BUG!!!
-    #quit()
-
-    dct['cv_key']  = global_dict['cv_key']
-    dct['cv_val']  = global_dict['cv_val']
-
     """
     dct = {'sm':sm, 'sd':sd, 'wm':wm, 'wd':wd, 'red_mask': red_mask, 'red_dist': red_dist, 'v': v}
     dct['tau'] = d['params_dict']['tau']
@@ -49,7 +37,7 @@ def readFile(filenm):
     #dct['SIR'] = d['sim_results']  # temporary
     dct['ages'] = {}
     print("preventions: ", dct["preventions"])
-    print("prevention_prevalences: ", dct["prevention_prevalences"])
+    print("prevention_adoptions: ", dct["prevention_adoptions"])
 
     for k,v in ages_SIR.items():
         ages = dct['ages']
@@ -59,7 +47,7 @@ def readFile(filenm):
 
 #--------------------------------------------
 dicts = []
-files = glob.glob("conta*") + glob.glob("mask*") + glob.glob("weigh*")
+files = glob.glob("output*[0-9]") 
 
 for filenm in files:
     print("--------------------------------")
