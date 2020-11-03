@@ -26,8 +26,8 @@ glob_dict['gamma'] = gamma
 glob_dict['tau'] = tau
 
 # Whether or not to save output files  <<<<<<<<<<<<<< Set to save directory
-save_output = True
 save_output = False
+save_output = True
 print("save_output= ", save_output)
 
 glob_dict['save_output'] = save_output
@@ -138,7 +138,9 @@ def oneVaccinationStudy(mask_adopt, dist_adopt, mask_eff, dist_eff):
        #for nb_wk in [0, 10, 25, 50, 100, 1000, 5000, 10000, 15000]:
        for nb_wk in [0]:
         #for nb_sch in [0]:
-        for nb_sch in [0, 5, 10, 20, 40, 60]:
+        #for nb_sch in [60,1,2,3,4, 5, 10, 20, 40, 60]:
+        for nb_sch in [60]:
+         print("SCRIPT: nb_sch to vaccinate: ",nb_sch)
          #for v_pop_perc in [0., 0.25, 0.5, 0.75, 0.99]
          for v_pop_perc in [0.0]:
             glob_dict["loop_nb_wk"] = nb_wk

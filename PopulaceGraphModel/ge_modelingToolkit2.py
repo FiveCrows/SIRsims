@@ -874,9 +874,9 @@ class PopulaceGraph:
         # env_name_alternate = {"household": "sp_hh_id", "work": "work_id", "school": "school_id"} outdated
         #adding households to environment list
         self.environments = {}
-        self.setup_households()
-        self.setup_workplaces(partitioner)  # Partitin not defined BUG GE
-        self.setup_schools(partitioner)
+        self.setupHouseholds()
+        self.setupWorkplaces(partitioner)  # Partitin not defined BUG GE
+        self.setupSchools(partitioner)
 
         # pick who masks and distances, in each environment
         # One has a list of people in each environment
@@ -928,13 +928,13 @@ class PopulaceGraph:
         # Vaccination is modeled by setting a person's status to recovered
 
         # Reset to not vaccinate anybody anywhere 
-        self.set_nbTopWorkplacesToVaccinate(0, 0.)
-        self.set_nbTopSchoolsToVaccinate(0, 0.)
+        self.setNbTopWorkplacesToVaccinate(0, 0.)
+        self.setNbTopSchoolsToVaccinate(0, 0.)
 
         # Rank locations. Must be called after setting nb places to vaccinate
         print("** resetVaccinated_Infected")
-        self.rank_workplaces()
-        self.rank_schools()
+        self.rankWorkplaces()
+        self.rankSchools()
 
         self.initial_vaccinated = []
         self.initial_infected   = []
@@ -1031,7 +1031,7 @@ class PopulaceGraph:
     """
 
     #-------------------------------
-    def setup_households(self):
+    def setupHouseholds(self):
         households = self.pops_by_category["sp_hh_id"]
 
         for index in households:
@@ -1039,7 +1039,7 @@ class PopulaceGraph:
             self.environments[index] = (houseObject)
 
     #-----------------
-    def setup_workplaces(self, partitioner):
+    def setupWorkplaces(self, partitioner):
         self.workplaces = self.pops_by_category["work_id"]
         with open("../ContactMatrices/Leon/ContactMatrixWorkplaces.pkl", 'rb') as file:
             contact_matrices = pickle.load(file)
@@ -1052,7 +1052,7 @@ class PopulaceGraph:
         return
 
     #-----------------
-    def setup_schools(self, partitioner):
+    def setupSchools(self, partitioner):
         self.schools = self.pops_by_category["school_id"]
         with open("../ContactMatrices/Leon/ContactMatrixSchools.pkl", 'rb') as file:
             contact_matrices = pickle.load(file)
@@ -1067,45 +1067,47 @@ class PopulaceGraph:
             self.environments[index] = (school)
 
     #-----------------
-    def set_nbTopWorkplacesToVaccinate(self, nb, perc):
+    def setNbTopWorkplacesToVaccinate(self, nb, perc):
         self.nb_top_workplaces_vaccinated = nb
         self.perc_people_vaccinated_in_workplaces = perc
         print("*workplaces to vaccinate: ", self.nb_top_workplaces_vaccinated)
         print("*perc to vaccinate in workplaces: ", self.perc_people_vaccinated_in_workplaces)
 
     #---------------------
-    def set_nbTopSchoolsToVaccinate(self, nb, perc):
+    def setNbTopSchoolsToVaccinate(self, nb, perc):
         self.nb_top_schools_vaccinated = nb
+        print("self.nb_top_schools_vaccinated: ", nb)
         self.perc_people_vaccinated_in_schools = perc
 
     #------------------
-    def rank_schools(self):
+    def rankSchools(self):
         # produces list of pairs (school is, list of people is)
         # replace the list of people ids by its length
         ordered_schools = sorted(self.schools.items(), key=lambda x: len(x[1]), reverse=True)
         ordered_schools = map(lambda x: [x[0], len(x[1])], ordered_schools)
-        ordered_schools = list(ordered_schools)
+        ordered_schools = list(ordered_schools)[1:]
 
         self.ordered_school_ids = [o[0] for o in ordered_schools[:]]
         self.ordered_school_pop = [o[1] for o in ordered_schools[:]]
+        print("self.ordered_school_pop= ", self.ordered_school_pop)
 
         # Cumulative sum of school lengths
         # Sum from 1 since 0th index is a school with 200,000 students. Can't be right. 
-        self.cum_sum_school_pop = np.cumsum(self.ordered_school_pop[1:])
+        self.cum_sum_school_pop = np.cumsum(self.ordered_school_pop)
         self.school_population = self.cum_sum_school_pop[-1]
-        self.nb_schools = len(self.cum_sum_school_pop)
-        self.largest_schools_vaccinated = self.ordered_school_ids[1:self.nb_top_schools_vaccinated]
+        self.nb_schools = len(self.cum_sum_school_pop)  
+        self.largest_schools_vaccinated = self.ordered_school_ids[0:self.nb_top_schools_vaccinated]
         
-        print("******* ENTER rank_schools *********")
-        print("school_pop: ", self.ordered_school_pop[0:10])
+        print("******* ENTER rankSchools *********")
+        print("school_pop: ", self.ordered_school_pop[0:10]) #10  largest to smallest
         print("school_ids: ", self.ordered_school_ids[0:10])
         print("cum_sum, top 10: ", self.cum_sum_school_pop[0:10])
-        print("rank_schools: self.nb_schools= ", self.nb_schools)
+        print("rankSchools: self.nb_schools= ", self.nb_schools)
         print("* total school population: ", self.school_population)
         print("ERROR? self.nb_top_schools_vaccinated: ", self.nb_top_schools_vaccinated)
         print("* total school population to vaccinate: ", self.cum_sum_school_pop[self.nb_top_schools_vaccinated-1])
         print("* school_id[0:10]: ", self.ordered_school_ids[0:10])
-        print("******* EXIT rank_schools *********")
+        print("******* EXIT rankSchools *********")
 
         """  
         ERROR   <<<<< ERROR  2020-11-02 NOT YET FIXED
@@ -1114,7 +1116,7 @@ IndexError: index 60 is out of bounds for axis 0 with size 60
         """
 
     #----------------------------------
-    def rank_workplaces(self):
+    def rankWorkplaces(self):
         # produces list of pairs (workplace is, list of people is)
         # replace the list of people ids by its length
 
@@ -1289,7 +1291,7 @@ IndexError: index 60 is out of bounds for axis 0 with size 60
 
         workplace_populace_vaccinated = []
         if self.nb_top_workplaces_vaccinated > 0:
-            self.rank_workplaces()
+            self.rankWorkplaces()
             # Vaccinate the top n workplaces
             for i in range(1,self.nb_top_workplaces_vaccinated+1):
                people = self.workplaces[self.ordered_work_ids[i]]   # <<<<<<<
@@ -1300,7 +1302,7 @@ IndexError: index 60 is out of bounds for axis 0 with size 60
         school_populace_vaccinated = []
         #if self.nb_top_schools_vaccinated > 0:
         if True:
-            self.rank_schools()
+            self.rankSchools()
             # Vaccinate the top n schools
             for i in range(1,self.nb_top_schools_vaccinated+1):
                people = self.schools[self.ordered_school_ids[i]]
@@ -1590,8 +1592,10 @@ IndexError: index 60 is out of bounds for axis 0 with size 60
 
         #simResult = simAlg(self.graph, tau, gamma, rho = 0.001, transmission_weight='transmission_weight', return_full_data=full_data)
         #print("initial_infected: ", self.initial_infected)
-        #print("initial_recovered: ", self.initial_recovered)
-        simResult = simAlg(self.graph, tau, gamma, initial_recovereds=self.initial_recovered, initial_infecteds=self.initial_infected, transmission_weight='transmission_weight', return_full_data=full_data)
+        #print("len initial_recovered: ", len(self.initial_vaccinated))
+        #return  # TEMPORARY
+
+        simResult = simAlg(self.graph, tau, gamma, initial_recovereds=self.initial_vaccinated, initial_infecteds=self.initial_infected, transmission_weight='transmission_weight', return_full_data=full_data)
         #self.sims.append([simResult, title, [gamma, tau], preventions])
 
         """
@@ -1645,7 +1649,7 @@ IndexError: index 60 is out of bounds for axis 0 with size 60
         data = {}
         u = Utils()
         SIR_results = {'S':sr.S(), 'I':sr.I(), 'R':sr.R(), 't':sr.t()}
-        SIR_results = u.interpolate_SIR(SIR_results)
+        SIR_results = u.interpolateSIR(SIR_results)
         data['SIR'] = SIR_results
         data['title'] = title
         data['params'] = {'gamma':gamma, 'tau':tau}
@@ -1858,7 +1862,7 @@ class Record:
 
 #written by Gordon
 class Utils:
-    def interpolate_SIR(self, SIR):
+    def interpolateSIR(self, SIR):
         S = SIR['S']
         I = SIR['I']
         R = SIR['R']
