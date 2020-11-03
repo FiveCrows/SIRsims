@@ -492,9 +492,9 @@ class NetBuilder:
             # Apply spread to mask effectiveness if requested
             if "mask_eff" in self.cv_dict: 
                 redA = redA*self.cv_dict["mask_eff"] 
-                redA[np.where[redA < 0.]) = 0.
+                redA[np.where[redA < 0.]) = 0
                 redB = redB*self.cv_dict["mask_eff"]
-                redB[np.where[redB < 0.]) = 0.
+                redB[np.where[redB < 0.]) = 0
 
             # Calculate weight, finally
             # Assumes that two distancers don't double distance, but at least one distancer is needed to be distanced, will be 1 or 0
@@ -710,7 +710,7 @@ class PopulaceGraph:
             self.prevention_adoptions = {"household": {"masking": 0, "distancing": 0},
                                            "school": {"masking": 0, "distancing": 0},
                                            "workplace": {"masking": 0, "distancing": 0}}
-
+        else: self.prevention_prevalences = prevention_prevalences
         # for loading people objects from file
         with open("people_list_serialized.pkl", 'rb') as file:
             rawPopulace = pickle.load(file)
@@ -1034,6 +1034,8 @@ class PopulaceGraph:
         self.graph = nx.Graph()
         self.total_weight = 0
         self.total_edges = 0
+        for environment in self.environments:
+            self.environments[environment].edges = []
 
 class Record:
     def __init__(self):

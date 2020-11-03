@@ -44,7 +44,6 @@ slim = True
 
 model = PopulaceGraph( partition, prevention_prevalences, slim = slim)
 #----------- BEGIN SIMULATIONS ------------------------------------
-
 #init, build simulate
 
 
