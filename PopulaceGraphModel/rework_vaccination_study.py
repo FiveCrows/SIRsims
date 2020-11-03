@@ -81,7 +81,7 @@ if save_output:
     #copyfile ('ge1_modelToolkit.py',os.path.join(dstdirname,'ge1_modelToolkit.py'))
 
 model = PopulaceGraph(partitioner, prevention_adoptions, prevention_efficacies, slim=slim, timestamp=timestamp)
-model.resetVaccinated_Infected() # reset to default state (for safety)
+model.resetVaccinatedInfected() # reset to default state (for safety)
 mask_types = [0.25, 0.5, 0.25]  # Must sum to 1
 model.differentiateMasks(mask_types)
 
@@ -149,7 +149,7 @@ def oneVaccinationStudy(mask_adopt, dist_adopt, mask_eff, dist_eff):
             rho = 0.001
             glob_dict["init_pop_infect"] = rho
 
-            model.resetVaccinated_Infected() # reset to default state (for safety)
+            model.resetVaccinatedInfected() # reset to default state (for safety)
             prevention_efficacies = {'masking': m, 'distancing': d} 
             model.infectPopulace(perc=rho)
             perc_vacc_work = 1.00
@@ -160,9 +160,9 @@ def oneVaccinationStudy(mask_adopt, dist_adopt, mask_eff, dist_eff):
             glob_dict["perc_vacc_work"] = perc_vacc_work
             glob_dict["perc_vacc_school"] = perc_vacc_school
 
-            model.set_nbTopWorkplacesToVaccinate(nb_wk, perc_vacc_work)  # should set in term of number of available vaccinations
+            model.setNbTopWorkplacesToVaccinate(nb_wk, perc_vacc_work)  # should set in term of number of available vaccinations
             # make sure first index < nb schools (nb schools, perc vaccinated)vaccinated)
-            model.set_nbTopSchoolsToVaccinate(nb_sch, perc_vacc_school)  # should set in term of number of available vaccinations
+            model.setNbTopSchoolsToVaccinate(nb_sch, perc_vacc_school)  # should set in term of number of available vaccinations
             model.vaccinatePopulace(perc=v_pop_perc)  # random vaccination of populace
             title= "vaccination"
             model.simulate(gamma, tau, title=title, global_dict=glob_dict)

@@ -895,7 +895,7 @@ class PopulaceGraph:
         self.printEnvironments()
 
         # Must be called last
-        self.resetVaccinated_Infected()
+        self.resetVaccinatedInfected()
 
         # must call once in constructor
         self.setupMaskingReductions(self.prevention_efficacies["masking"])
@@ -923,7 +923,7 @@ class PopulaceGraph:
             print(self.environments[keys[k]].env_type)  # list of one element [12]. Meaning?
 
     #-------------------------------------------------
-    def resetVaccinated_Infected(self):
+    def resetVaccinatedInfected(self):
         # By default nobody in the population is recovered. 
         # Vaccination is modeled by setting a person's status to recovered
 
@@ -932,7 +932,7 @@ class PopulaceGraph:
         self.setNbTopSchoolsToVaccinate(0, 0.)
 
         # Rank locations. Must be called after setting nb places to vaccinate
-        print("** resetVaccinated_Infected")
+        print("** resetVaccinatedInfected")
         self.rankWorkplaces()
         self.rankSchools()
 
