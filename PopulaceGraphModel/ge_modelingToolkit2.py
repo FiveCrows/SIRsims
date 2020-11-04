@@ -1076,8 +1076,8 @@ class PopulaceGraph:
     #---------------------
     def setNbTopSchoolsToVaccinate(self, nb, perc):
         self.nb_top_schools_vaccinated = nb
-        print("self.nb_top_schools_vaccinated: ", nb)
         self.perc_people_vaccinated_in_schools = perc
+        print("self.nb_top_schools_vaccinated: ", nb)
 
     #------------------
     def rankSchools(self):
@@ -1108,8 +1108,7 @@ class PopulaceGraph:
         if self.nb_top_schools_vaccinated == 0:
             print("* total school population to vaccinate: 0")
         else:
-            print("* total school population to vaccinate: ", self.cum_sum_school_pop[0:self.nb_top_schools_vaccinated])
-        print("******* EXIT rankSchools *********")
+            print("* total school population to vaccinate: ", self.cum_sum_school_pop[self.nb_top_schools_vaccinated-1])
 
     #----------------------------------
     def rankWorkplaces(self):
@@ -1118,7 +1117,6 @@ class PopulaceGraph:
         # replace the list of people ids by its length
 
         ordered_workplaces = sorted(self.workplaces.items(), key=lambda x: len(x[1]), reverse=True)
-        print("top workplaces: ", len(ordered_workplaces[0][1]), len(ordered_workplaces[1][1]))
         ordered_workplaces = list(map(lambda x: [x[0], len(x[1])], ordered_workplaces))[1:]
 
         self.ordered_work_ids = [o[0] for o in ordered_workplaces[:]]
@@ -1137,14 +1135,12 @@ class PopulaceGraph:
         print("rank_workplaces: self.nb_workplaces= ", self.nb_workplaces)
         print("* total work population: ", self.work_population)
         print("... nb_top_workplaces_vaccinated: ", self.nb_top_workplaces_vaccinated)  # should be integer
-        print("* total work population to vaccinate: ", self.cum_sum_work_pop[self.nb_top_workplaces_vaccinated-1])
         print("* work_id[0]: ", self.ordered_work_ids[0])
 
         if self.nb_top_workplaces_vaccinated == 0:
             print("* total workplace population to vaccinate: 0")
         else:
-            print("* total workplace population to vaccinate: ", self.cum_sum_school_pop[0:self.nb_top_workplaces_vaccinated])
-        print("******* EXIT rank_workplaces *********")
+            print("* total workplace population to vaccinate: ", self.cum_sum_work_pop[self.nb_top_workplaces_vaccinated-1])
 
     #--------------------------------------------
     def setupMaskAdoption(self, perc):
@@ -1297,9 +1293,34 @@ class PopulaceGraph:
             # Vaccinate the top n workplaces
             for i in range(1,self.nb_top_workplaces_vaccinated+1):
                people = self.workplaces[self.ordered_work_ids[i]]   # <<<<<<<
-               workplace_populace_vaccinated.extend(people) # people is a list  ### MUST BE WRONG
+               # Vaccinate the people in the workplace
+               perc_work = self.perc_people_vaccinated_in_workplaces
+               vaccinated_01 = bernoulli.rvs(perc_work, size=len(people))
+               workplace_vaccinated = np.where(vaccinated_01 == 1)[0]
+               #print("len(people): ", len(people))
+               #print("len(vaccinated_01): ", len(vaccinated_01))
+               peep = np.asarray(people)
+               try:
+                   workplace_populace_vaccinated.extend(peep[vaccinated_01 == 1]) 
+               except:
+                   print("Except:")
+                   print("perc_work= ", perc_work)
+                   print("vaccinated_01= ", vaccinated_01)
+                   print("np.where(vaccinated_01 == 1):", np.where(vaccinated_01 == 1))
+                   print("workplace_vaccinated: ", workplace_vaccinated)
+                   print("people= ", people)
+                   print("peep=np.asarray(people)= ", np.asarray(people))
+                   print("peep= ", peep)
+                   print("len(peep)= ", len(peep))
+                   ppp = peep[vaccinated_01 == 1]
+                   print("ppp= ", ppp)
+                   quit()
+
+        print("bef self.initial_vaccinated: ", len(self.initial_vaccinated))
+        print("workplace_populace_vaccinated: ", len(workplace_populace_vaccinated))
 
         self.initial_vaccinated.update(workplace_populace_vaccinated)
+        print("aft self.initial_vaccinated: ", len(self.initial_vaccinated))
 
         school_populace_vaccinated = []
         #if self.nb_top_schools_vaccinated > 0:
@@ -1308,7 +1329,10 @@ class PopulaceGraph:
             # Vaccinate the top n schools
             for i in range(1,self.nb_top_schools_vaccinated+1):
                people = self.schools[self.ordered_school_ids[i]]
-               school_populace_vaccinated.extend(people)  # people is a list
+               perc_school = self.perc_people_vaccinated_in_school
+               vaccinated_01 = bernoulli.rvs(perc_school, size=len(people))
+               school_vaccinated = np.where(vaccinated_01 == 1)[0]
+               school_populace_vaccinated.extend(np.asarray(people)[vaccinated_01 == 1]) # people is a list  ### MUST BE WRONG
 
         self.initial_vaccinated.update(school_populace_vaccinated)
 
@@ -1318,25 +1342,24 @@ class PopulaceGraph:
         if perc > 0.0001 and perc < 0.9999:
             self.perc_populace_vaccinated = perc
             vaccinated_01 = bernoulli.rvs(perc, size=self.population)
-        elif perc > 0.99:
+        elif perc >= 0.99:
             self.perc_populace_vaccinated = 1.0
             vaccinated_01 = np.ones(self.population)
         elif perc < 0.01:
             self.perc_populace_vaccinated = 0.0
             vaccinated_01 = np.zeros(self.population)
 
-        # self.populace has no keys. ???? BUG?
-        #general_populace_vaccinated = np.asarray(list(self.populace.keys()))[vaccinated_01 == 1]
+        print("bef self.initial_vaccinated: ", len(self.initial_vaccinated))
         general_populace_vaccinated = np.where(vaccinated_01 == 1)[0]
-        #print("general_populace_vaccinated= ", general_populace_vaccinated)
-        #print("self.initial_vaccinated= ", self.initial_vaccinated) # set
-        #lll = list(general_populace_vaccinated[0])
-        #print("general_populace_vaccinated= ", lll)
         self.initial_vaccinated.update(general_populace_vaccinated)
+        print("general_populace_vaccinated: ", len(general_populace_vaccinated))
+        print("aft self.initial_vaccinated: ", len(self.initial_vaccinated))
 
         self.workplace_population_vaccinated  = len(workplace_populace_vaccinated)
         self.school_population_vaccinated     = len(school_populace_vaccinated)
         self.initial_vaccinated_population    = len(self.initial_vaccinated)
+
+        print("nb vaccinated in pop, sch, wrk: %d, %d, %d\n" % (self.initial_vaccinated_population, self.school_population_vaccinated, self.workplace_population_vaccinated))
 
         self.perc_workplace_vaccinated = self.nb_top_workplaces_vaccinated / self.nb_workplaces
         self.perc_school_vaccinated = self.nb_top_schools_vaccinated / self.nb_schools
@@ -1580,25 +1603,7 @@ class PopulaceGraph:
             weight[k] = distancing_weight_factor[k] * mask_weight_factor[k]
             self.graph.add_edge(k[0], k[1], transmission_weight=weight[k])
 
-        # Update weights in graph
-        #print("updated weights: nb edges in graph: ", self.graph.number_of_edges())
-
-        #print("len compat: ", len(mask_weight_factor), len(distancing_weight_factor))
-
-        #print("mask_weight_factor= ", mask_weight_factor)
-        # Dictionary: key is (pa,pb): edge tuple
-        # size of mask_weight dictionary (edge list with 1 or 0 for each edge)
-        #print("size of mask_weight_factor: ", len(mask_weight_factor))
-        #print("nb edges in graph: ", self.graph.number_of_edges())
-        #quit()
-
-        #simResult = simAlg(self.graph, tau, gamma, rho = 0.001, transmission_weight='transmission_weight', return_full_data=full_data)
-        #print("initial_infected: ", self.initial_infected)
-        #print("len initial_recovered: ", len(self.initial_vaccinated))
-        #return  # TEMPORARY
-
         simResult = simAlg(self.graph, tau, gamma, initial_recovereds=self.initial_vaccinated, initial_infecteds=self.initial_infected, transmission_weight='transmission_weight', return_full_data=full_data)
-        #self.sims.append([simResult, title, [gamma, tau], preventions])
 
         """
         graph = nx.Graph()
@@ -1616,7 +1621,6 @@ class PopulaceGraph:
         sr = simResult
         statuses = {}
         last_time = simResult.t()[-1]
-        print("last_time= ", last_time) # 132 190.8
 
         for tix in range(0, int(last_time)+2, 2):
             # statuses[tix]: for each node of the graph, S,I,R status
@@ -1650,17 +1654,19 @@ class PopulaceGraph:
         # Create a dictionary to store all the data and save it to a file 
         data = {}
         u = Utils()
-        SIR_results = {'S':sr.S(), 'I':sr.I(), 'R':sr.R(), 't':sr.t()}
-        SIR_results = u.interpolateSIR(SIR_results)
-        data['SIR'] = SIR_results
-        data['title'] = title
+        SIR_results    = {'S':sr.S(), 'I':sr.I(), 'R':sr.R(), 't':sr.t()}
+        SIR_results    = u.interpolateSIR(SIR_results)
+        data['SIR']    = SIR_results
+        data['title']  = title
         data['params'] = {'gamma':gamma, 'tau':tau}
         data['preventions'] = self.preventions
         data['prevention_efficacies'] = self.prevention_efficacies  # no longer needed
-        data['prevention_adoptions'] = self.prevention_adoptions
-        data['ages_SIR'] = ages_d # ages_d[time][k] ==> S,I,R counts for age bracket k
-        data['vacc_dict'] = self.createVaccinationDict()
+        data['prevention_adoptions']  = self.prevention_adoptions
+        data['ages_SIR']    = ages_d # ages_d[time][k] ==> S,I,R counts for age bracket k
+        data['vacc_dict']   = self.createVaccinationDict()
         data['global_dict'] = self.global_dict
+        data['initial_nb_recovered'] = len(self.initial_vaccinated)
+        data['initial_nb_infected']  = len(self.initial_infected)
 
         x = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         filename = "%s, gamma=%s, tau=%s, %s" % (title, gamma, tau, x)
