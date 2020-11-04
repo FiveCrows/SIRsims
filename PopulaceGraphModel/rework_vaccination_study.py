@@ -19,7 +19,7 @@ timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 # Global dictionary to store parameters (different for each study)
 glob_dict = {}
 
-gamma = 0.1# The expected time to recovery will be 1/gamma (days)
+gamma = 0.2# The expected time to recovery will be 1/gamma (days)
 tau = 0.2#  The expected time to transmission by an ge will be 1/(weight*Tau) (days)
 
 glob_dict['gamma'] = gamma
@@ -135,26 +135,28 @@ def oneVaccinationStudy(mask_adopt, dist_adopt, mask_eff, dist_eff):
        #for nb_wk in [10, 25, 50,100,200,400,600,800]:
        #for nb_wk in [10, 25, 50, 100]:
        #for nb_wk in [1000]:
-       #for nb_wk in [0, 10, 25, 50, 100, 1000, 5000, 10000, 15000]:
-       for nb_wk in [0]:
-        #for nb_sch in [0]:
+       for nb_wk in [0, 2, 5, 10, 25, 50, 100, 1000, 5000, 10000, 15000]:
+       #for nb_wk in [0]:
         # Make sure that the max nb of schools is at least 5 below the number of 
         # schools, or else there could be crashes when run with slim=True
-        for nb_sch in [0,1,2,3,4, 5, 10, 20, 40, 50]:
+        #for nb_sch in [0,1,2,3,4, 5, 10, 20, 40, 50]:
+        for nb_sch in [0]:
          print("SCRIPT: nb_sch to vaccinate: ",nb_sch)
          #for v_pop_perc in [0., 0.25, 0.5, 0.75, 0.99]
          for v_pop_perc in [0.0]:
+          for perc_vacc in [0.25, 0.50, 0.75]:
             glob_dict["loop_nb_wk"] = nb_wk
             glob_dict["loop_nb_sch"] = nb_sch
             glob_dict["loop_v_pop_perc"] = v_pop_perc
+            glob_dict["loop_perc_vacc"] = perc_vacc
             rho = 0.001
             glob_dict["init_pop_infect"] = rho
 
             model.resetVaccinatedInfected() # reset to default state (for safety)
             prevention_efficacies = {'masking': m, 'distancing': d} 
             model.infectPopulace(perc=rho)
-            perc_vacc_work = 1.00
-            perc_vacc_school = 1.00
+            perc_vacc_work = perc_vacc
+            perc_vacc_school = perc_vacc
 
             glob_dict['prevention_efficacies']  = prevention_efficacies
             glob_dict['prevention_adoptions'] = prevention_adoptions
@@ -187,7 +189,7 @@ def oneSetOfVaccinationStudies():
         oneVaccinationStudy(mask_adopt, dist_adopt, mask_effic, dist_effic)
 
 #----------------------
-for sim_rep in range(1):
+for sim_rep in range(5):
     glob_dict['loop_sim_rep'] = sim_rep
     print("--------- SIMULATION %d ----------------" % sim_rep)
     oneSetOfVaccinationStudies()
