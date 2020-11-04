@@ -932,7 +932,7 @@ class PopulaceGraph:
         self.setNbTopSchoolsToVaccinate(0, 0.)
 
         # Rank locations. Must be called after setting nb places to vaccinate
-        print("** resetVaccinatedInfected")
+        #print("** resetVaccinatedInfected")
         self.rankWorkplaces()
         self.rankSchools()
 
@@ -1081,15 +1081,15 @@ class PopulaceGraph:
 
     #------------------
     def rankSchools(self):
-        # produces list of pairs (school is, list of people is)
+        # produces list of pairs (school_id, list of people ids: 0 through max_peoople )
         # replace the list of people ids by its length
         ordered_schools = sorted(self.schools.items(), key=lambda x: len(x[1]), reverse=True)
-        ordered_schools = map(lambda x: [x[0], len(x[1])], ordered_schools)
-        ordered_schools = list(ordered_schools)[1:]
+
+        # list of (school_id, school_structure), removing the 1st element, which is not a school. 
+        ordered_schools = list(map(lambda x: [x[0], len(x[1])], ordered_schools))[1:]
 
         self.ordered_school_ids = [o[0] for o in ordered_schools[:]]
         self.ordered_school_pop = [o[1] for o in ordered_schools[:]]
-        print("self.ordered_school_pop= ", self.ordered_school_pop)
 
         # Cumulative sum of school lengths
         # Sum from 1 since 0th index is a school with 200,000 students. Can't be right. 
@@ -1104,28 +1104,25 @@ class PopulaceGraph:
         print("cum_sum, top 10: ", self.cum_sum_school_pop[0:10])
         print("rankSchools: self.nb_schools= ", self.nb_schools)
         print("* total school population: ", self.school_population)
-        print("ERROR? self.nb_top_schools_vaccinated: ", self.nb_top_schools_vaccinated)
-        print("* total school population to vaccinate: ", self.cum_sum_school_pop[self.nb_top_schools_vaccinated-1])
-        print("* school_id[0:10]: ", self.ordered_school_ids[0:10])
+        print("self.nb_top_schools_vaccinated: ", self.nb_top_schools_vaccinated)
+        if self.nb_top_schools_vaccinated == 0:
+            print("* total school population to vaccinate: 0")
+        else:
+            print("* total school population to vaccinate: ", self.cum_sum_school_pop[0:self.nb_top_schools_vaccinated])
         print("******* EXIT rankSchools *********")
-
-        """  
-        ERROR   <<<<< ERROR  2020-11-02 NOT YET FIXED
-            print("* total school population to vaccinate: ", self.cum_sum_school_pop[self.nb_top_schools_vaccinated])
-IndexError: index 60 is out of bounds for axis 0 with size 60
-        """
 
     #----------------------------------
     def rankWorkplaces(self):
+
         # produces list of pairs (workplace is, list of people is)
         # replace the list of people ids by its length
 
         ordered_workplaces = sorted(self.workplaces.items(), key=lambda x: len(x[1]), reverse=True)
-        ordered_workplaces = map(lambda x: [x[0], len(x[1])], ordered_workplaces)
-        ordered_workplaces = list(ordered_workplaces)
+        print("top workplaces: ", len(ordered_workplaces[0][1]), len(ordered_workplaces[1][1]))
+        ordered_workplaces = list(map(lambda x: [x[0], len(x[1])], ordered_workplaces))[1:]
 
-        self.ordered_work_ids = [o[0] for o in ordered_workplaces]
-        self.ordered_work_pop = [o[1] for o in ordered_workplaces]
+        self.ordered_work_ids = [o[0] for o in ordered_workplaces[:]]
+        self.ordered_work_pop = [o[1] for o in ordered_workplaces[:]]
 
         # Cumulative sum of business lengths
         # Sum from 1 since 0th index is a workplace with 120,000+ people. Can't be right. 
@@ -1142,6 +1139,11 @@ IndexError: index 60 is out of bounds for axis 0 with size 60
         print("... nb_top_workplaces_vaccinated: ", self.nb_top_workplaces_vaccinated)  # should be integer
         print("* total work population to vaccinate: ", self.cum_sum_work_pop[self.nb_top_workplaces_vaccinated-1])
         print("* work_id[0]: ", self.ordered_work_ids[0])
+
+        if self.nb_top_workplaces_vaccinated == 0:
+            print("* total workplace population to vaccinate: 0")
+        else:
+            print("* total workplace population to vaccinate: ", self.cum_sum_school_pop[0:self.nb_top_workplaces_vaccinated])
         print("******* EXIT rank_workplaces *********")
 
     #--------------------------------------------

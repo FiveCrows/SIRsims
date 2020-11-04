@@ -47,8 +47,8 @@ glob_dict['enumerator'] = enumerator
 glob_dict['prevention_adoptions'] = prevention_adoptions
 
 #initialize populaceGraph
-slim = False
 slim = True
+slim = False
 print("Running with slim= %d" % slim)
 
 glob_dict['slim'] = slim
@@ -138,8 +138,9 @@ def oneVaccinationStudy(mask_adopt, dist_adopt, mask_eff, dist_eff):
        #for nb_wk in [0, 10, 25, 50, 100, 1000, 5000, 10000, 15000]:
        for nb_wk in [0]:
         #for nb_sch in [0]:
-        #for nb_sch in [60,1,2,3,4, 5, 10, 20, 40, 60]:
-        for nb_sch in [60]:
+        # Make sure that the max nb of schools is at least 5 below the number of 
+        # schools, or else there could be crashes when run with slim=True
+        for nb_sch in [0,1,2,3,4, 5, 10, 20, 40, 50]:
          print("SCRIPT: nb_sch to vaccinate: ",nb_sch)
          #for v_pop_perc in [0., 0.25, 0.5, 0.75, 0.99]
          for v_pop_perc in [0.0]:
@@ -186,7 +187,7 @@ def oneSetOfVaccinationStudies():
         oneVaccinationStudy(mask_adopt, dist_adopt, mask_effic, dist_effic)
 
 #----------------------
-for sim_rep in range(3):
+for sim_rep in range(1):
     glob_dict['loop_sim_rep'] = sim_rep
     print("--------- SIMULATION %d ----------------" % sim_rep)
     oneSetOfVaccinationStudies()
