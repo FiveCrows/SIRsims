@@ -47,7 +47,7 @@ for row_tuple in df.itertuples():
 
 dfc = df.copy()
 #print("columns: ", dfc.columns)
-dfc.drop("ages", axis=1)
+#dfc.drop("ages", axis=1)
 print("columns: ", dfc.columns)
 
 dfc['N_age'] = N_col
@@ -63,6 +63,7 @@ dfc['SIR_age'] = curves_col
 #print(dfc.N_age)
 dfc.to_pickle("transformed_metadata.gz")
 dfc.to_csv("transformed_metadata.csv")
+print(dfc.columns)
 
 #print("dfc.columns: ", dfc.columns)
 quit()

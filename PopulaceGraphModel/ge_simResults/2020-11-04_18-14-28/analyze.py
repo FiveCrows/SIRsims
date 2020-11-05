@@ -35,13 +35,16 @@ def readFile(filenm):
     print("title: ", dct["title"])
 
     #dct['SIR'] = d['sim_results']  # temporary
-    dct['ages'] = {}
     print("preventions: ", dct["preventions"])
     print("prevention_adoptions: ", dct["prevention_adoptions"])
 
+    # I think that ages is the same as SIR
+    """
+    dct['ages'] = {}
     for k,v in ages_SIR.items():
         ages = dct['ages']
         ages[k] = v
+    """
 
     return dct
 
@@ -57,6 +60,10 @@ for filenm in files:
 df = pd.DataFrame.from_dict(dicts)
 df.to_pickle("metadata.gz")
 df.to_csv("metadata.csv")
+#print("df['ages']= ", df['ages'][0])
+print("df['ages_SIR']= ", df['ages_SIR'][0])
+print("df['SIR']= ", df['SIR'][0])
+print(df.columns)
 
 print("-------------------")
 #readFile("red_mask=0.50,red_dist=0.50,sm=0.50,sd=0.50,wm=0.50,wd=0.50,v=0.99, gamma=0.2, tau=0.2, 2020-10-19,12-37-07")

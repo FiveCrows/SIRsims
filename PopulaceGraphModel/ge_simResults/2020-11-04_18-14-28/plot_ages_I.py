@@ -1,5 +1,6 @@
-# For each value of per_vacc_work (fraction of people vaccinated in the workplace at t=0,
-# plot the infection curves. 
+# Each subplot contains normalized infection curves for either
+# - different percentages of vaccination keeping 5000 top workplaces
+# - different number of workplaces assuming 75% vaccination
 
 # 
 from IPython import embed
@@ -21,26 +22,7 @@ matplotlib.rc('axes', labelsize=4)  # axis label
 matplotlib.rc('axes', titlesize=4)  # subplot title
 matplotlib.rc('figure', titlesize=10)
 
-# Return dictionary parameter/values of first row of a DataFrame
-def getParams(dfs, params):
-    row = dfs.head(1)[list(params)]
-    dct = {}
-    values = row.values[0]
-    for i,p in enumerate(params):
-        dct[p] = values[i]
-    return dct
 
-#-----------------------------------------------------
-def nbSubplots(nb_keys):
-    if   nb_keys <= 4:  size = (2,2)
-    elif nb_keys <= 6:  size = (2,3)
-    elif nb_keys <= 9:  size = (3,3)
-    elif nb_keys <= 12: size = (3,4)
-    elif nb_keys <= 20: size = (4,5)
-    elif nb_keys <= 25: size = (5,5)
-    elif nb_keys <= 36: size = (6,6)
-    else: size = (7,7)
-    return size
 #-----------------------------------------------------
 df = pd.read_pickle("transformed_metadata.gz")
 
@@ -48,6 +30,7 @@ df_glob = df.global_dict.apply(pd.Series)
 df = df.drop("global_dict", axis=1)
 #df1 = df.join(df_glob)
 dfg = pd.concat([df, df_glob], axis=1)    # Double indexing
+#print(dfg.columns); quit()
 # Rename columns
 ren = { 'loop_nb_wk' : 'nb_wk',
        "loop_nb_sch" : 'nb_sch',
@@ -55,13 +38,13 @@ ren = { 'loop_nb_wk' : 'nb_wk',
        "loop_perc_vacc" : 'perc_vacc', # fraction vaccinated at work
       }
 dfg.rename(columns=ren, inplace=True)
-print(dfg.columns); quit()
 
 # We study each of the loops
-
 # plot I curves for each case
 
-df_nbwk   = dfg.groupby("nb_wk")
+#print(dfg["ages_SIR"]); quit()
+#print(dfg["ages"]); quit()  # (the same thing)
+df_nbwk   = dfg.groupby("ages_SIR")
 df_perc_vacc   = dfg.groupby("perc_vacc")
 # doing a mean removed all columns for which a mean was not possible, 
 # such as dir curves, etc. I would like to do a mean over SIR curves for 
@@ -70,13 +53,33 @@ df_perc_vacc   = dfg.groupby("perc_vacc")
 # be computed manually since the data is stored as dictionaries of lists
 #df_perc_nbwrk = dfg.groupby(["nb_wk", "perc_vacc"]).mean()
 
+# extract all records with perc_vacc=75% and nb_wk=5000
+#df1 = df[(df['perc_vacc'] == 0.75) & (df['nb_wk'] == 5000)]
+print(df.columns)
+
+
+
+df1 = dfg[(dfg['perc_vacc'] == 0.75)]
+df1 = dfg[(dfg['perc_vacc'] == 0.75) & (dfg['nb_wk'] == 5000)]
+print(df1['perc_vacc'])
+print(df1['nb_wk'])
+
 #----------------------------------------
 #---------------------------------------
-def plotPerSubgraph_1():
-    df_perc_nbwrk = dfg.groupby(["nb_wk"])
+#def plotPerSubgraph_1():
+def plotAgesSubgraphs(df):
+    df_perc_nbwrk = df.groupby(["nb_wk"])
     keys = list(df_perc_nbwrk.groups.keys())
-    nrow, ncol = nbSubplots(len(keys))
+    nrow, ncol = u.nbSubplots(20)  # nb ages
     plt.subplots(nrow, ncol)
+
+    row = df.iloc[0]
+    #print("row= ", row); quit()
+
+    for age_key in range(20):
+        plt.subplot(nrow, ncol, age_key+1)
+
+
     
     for k, key in enumerate(df_perc_nbwrk.groups.keys()):
         dfk = df_perc_nbwrk.get_group(key)  # dataframe
@@ -119,5 +122,6 @@ def plotPerSubgraph():
     plt.tight_layout()
     plt.savefig("workplace_vacc.pdf")
 #----------------------------------------
-plotPerSubgraph()
+#plotPerSubgraph()
 #plotPerSubgraph_1()
+plotAgesSubgraphs(df1)
