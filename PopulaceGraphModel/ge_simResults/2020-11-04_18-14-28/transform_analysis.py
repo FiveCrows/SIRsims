@@ -48,13 +48,14 @@ for row_tuple in df.itertuples():
 dfc = df.copy()
 #print("columns: ", dfc.columns)
 #dfc.drop("ages", axis=1)
+dfc.drop("ages_SIR", axis=1)  # SEE IF WORKS
 print("columns: ", dfc.columns)
 
 dfc['N_age'] = N_col
 dfc['maxI_age'] = maxI_col
 # Accuracy to within two days 
 dfc['t_maxI_age'] = t_maxI_col
-dfc['SIR_age'] = curves_col
+dfc['SIR_by_age'] = curves_col
 
 
 #print(dfc.head(10))
