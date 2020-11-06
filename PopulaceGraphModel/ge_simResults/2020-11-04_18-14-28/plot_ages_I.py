@@ -44,7 +44,7 @@ dfg.rename(columns=ren, inplace=True)
 
 #print(dfg["ages_SIR"]); quit()
 #print(dfg["ages"]); quit()  # (the same thing)
-df_nbwk   = dfg.groupby("ages_SIR")
+df_nbwk   = dfg.groupby("nb_wk")
 df_perc_vacc   = dfg.groupby("perc_vacc")
 # doing a mean removed all columns for which a mean was not possible, 
 # such as dir curves, etc. I would like to do a mean over SIR curves for 
@@ -61,12 +61,14 @@ print(df.columns)
 
 df1 = dfg[(dfg['perc_vacc'] == 0.75)]
 df1 = dfg[(dfg['perc_vacc'] == 0.75) & (dfg['nb_wk'] == 5000)]
-df_perc_vacc = dfg[(dfg['nb_wk'] == 5000)]
+nb_workpl = 100
+df_perc_vacc = dfg[(dfg['nb_wk'] == nb_workpl)]
+df_nb_wk = dfg[(dfg['perc_vacc'] == 0.75)]
 print(df1['perc_vacc'])
 print(df1['nb_wk'])
 
 #----------------------------------------
-def plotAgesSubgraphs(df):
+def plotAgesSubgraphsByPercVacc(df):
     df_perc_nbwrk = df.groupby(["nb_wk"])
     keys = list(df_perc_nbwrk.groups.keys())
     nrow, ncol = u.nbSubplots(20)  # nb ages
@@ -80,7 +82,7 @@ def plotAgesSubgraphs(df):
     ages = row.SIR_by_age  # keys is age
     print(ages.keys())
     plt.suptitle("Infection curves for each age bracket\n\
-         As a function of the vaccination % in the 5000 top workplaces", fontsize=6)
+         As a function of the vaccination %% in the %d top workplaces"%nb_workpl, fontsize=6)
 
     for row in df.itertuples():
       for age_key in range(20):
@@ -96,26 +98,46 @@ def plotAgesSubgraphs(df):
         plt.legend(title="% vacc", fontsize=3)
 
     plt.tight_layout()
-    plt.savefig("gordon.pdf")
-    quit()
+    plt.savefig("plot_I_by_ages_by_perc_vacc.pdf")
 
-    
-    for k, key in enumerate(df_perc_nbwrk.groups.keys()):
-        dfk = df_perc_nbwrk.get_group(key)  # dataframe
-        dfk = dfk.sort_values(by=['perc_vacc'])
-        plt.subplot(nrow, ncol, k+1)
-        plt.suptitle("Vaccinations in the Workplace")
+#----------------------------------------------------------
+def plotAgesSubgraphsByNbWk(df):
+    df_perc_nbwrk = df.groupby(["perc_vacc"])
+    keys = list(df_perc_nbwrk.groups.keys())
+    nrow, ncol = u.nbSubplots(20)  # nb age brackets
+    plt.subplots(nrow, ncol)
 
-        for idx, r in enumerate(dfk.itertuples()):
-            sir = r.SIR
-            N = sir['I'][0] + sir['S'][0] + sir['R'][0]
-            plt.plot(sir['t'], sir['I']/N, lw=0.1, label="%d%%" % int(100*r.perc_vacc))
-            plt.ylim(0, 0.3)
-            plt.title("#wk: %d" % (r.nb_wk), size=6)
-        plt.legend(fontsize=4)
-    
+    row = df.iloc[0]
+    #print(df.columns)
+    #ages = row.ages_SIR # keys is time
+    #print(ages.keys())
+
+    df = df.sort_values(by="nb_wk")
+    ages = row.SIR_by_age  # keys is age
+    plt.suptitle("Infection curves for each age bracket\n\
+         As a function of the nb_workplaces with 75% vaccination", fontsize=6)
+
+    keep_wk = [0, 10, 100, 1000, 5000, 1000]
+
+    for row in df.itertuples():
+      for age_key in range(20): # nb age brackets
+        if row.nb_wk not in keep_wk: continue
+        plt.subplot(nrow, ncol, age_key+1)
+        sir = row.SIR_by_age[age_key]
+        N = sir['I'][0] + sir['S'][0] + sir['R'][0]
+        if N == 0: continue
+        I = sir['I'] / N
+        plt.plot(sir['t'], I, lw=0.5, label="%d" % row.nb_wk)
+        plt.ylim(0., 0.4)
+        age_min, age_max = 5*age_key, 5*(age_key+1)-1
+        plt.title("age bracket: %d-%d" % (age_min, age_max))
+        plt.legend(title="#nb_wk", fontsize=4)
+
     plt.tight_layout()
-    plt.savefig("workplace_vacc_1.pdf")
-
+    plt.savefig("plot_I_by_ages_by_perc_vacc.pdf")
+    
 #----------------------------------------
-plotAgesSubgraphs(df_perc_vacc)
+#plotAgesSubgraphsByPercVacc(df_perc_vacc)
+plotAgesSubgraphsByNbWk(df_nb_wk)
+    
+#----------------------------------------
