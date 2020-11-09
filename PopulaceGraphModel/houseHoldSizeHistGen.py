@@ -68,14 +68,14 @@ for environment in model.environments:
     if environment.env_type == 'workplace':
         w_sizes[int(np.log(environment.population))] +=1
 fig,axs = plt.subplots(3)
+
 axs[0].set_title("household size hist")
 axs[1].set_title("school size hist")
 axs[2].set_title("log-log workplace size hist")
 axs[0].bar(range(len(h_sizes)-1),h_sizes[1:])
 axs[1].bar(range(len(s_sizes)),s_sizes)
 axs[1].set_xticklabels(np.arange(0,100*(40),100))
-axs[2].bar(range(len(w_sizes)),np.log(w_sizes))
+axs[2].bar(1+np.asarray(range(len(w_sizes))),np.log(w_sizes))
+plt.tight_layout()
+plt.savefig("stats_barchart.pdf")
 plt.show()
-
-
-

@@ -71,4 +71,6 @@ plt.imshow(workplaceBaseCM)
 plt.xlabel("age bracket")
 plt.ylabel("age bracket")
 plt.tight_layout()
+
+plt.tight_layout()
 plt.show()

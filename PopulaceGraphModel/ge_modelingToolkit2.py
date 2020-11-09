@@ -1567,13 +1567,15 @@ class PopulaceGraph:
         filt  =[self.environments[env].env_type == type for env in self.environments]
         return allEnvs[filt]
 
-    def plotContactMatrix(self, partitioner, env_indices, title = "untitled", figure = None):
+    def plotContactMatrix(self, partitioner, env_indices, title = "untitled", figure = None, createPlot=False, showPlot=False):
         '''
         This function plots the contact matrix for a structured environment
         :param p_env: must be a structured environment
         '''
 
         contact_matrix = self.getContactMatrix(partitioner,env_indices)
+        if not createPlot: return contact_matrix
+
         plt.imshow(contact_matrix)
         plt.title("Contact Matrix for {}".format(title))
         labels = partitioner.labels
@@ -1584,7 +1586,11 @@ class PopulaceGraph:
         plt.yticks(axisticks, labels)
         plt.xlabel('Age Group')
         plt.ylabel('Age Group')
-        plt.show()
+
+        if showPlot:    
+            plt.show()
+
+        return contact_matrix
 
     def getContactMatrix(self, partitioner, env_indices):
         n_sets = partitioner.num_sets
