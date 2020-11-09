@@ -16,6 +16,17 @@ from scipy.stats import bernoulli
 class Partitioner:
     """
     Objects of this class can be used to split a list of people into disjoint sets
+        :param attribute: string
+        The attribute by which to partition must match one of the attributes in 'populace'
+
+        :param enumerator: dict
+        The enumerator should map each possible values for the given attribute to the index of a partition set
+
+        :param labels: list
+        A list of names for plotting with partitioned sets
+
+        :function partitionGroup
+
     """
 
     def __init__(self, attribute, enumerator, labels=None):
@@ -38,20 +49,54 @@ class Partitioner:
 
     def partitionGroup(self, members, populace):
         """
+        This function maps each partition sets to the subset of members who belong to it
+
         :param members: list
         A list of indexes for the peaple to partition, if 'All' will use all members in populace
         :param populace:
         A dict associating people to a list of their attributes is required for applying the enumerator
         :return: dict
-
         """
         partitioned_members = {i: [] for i in range(self.num_sets)}
+
         for person in members:
-            #determine the number for which group the person belongs in, depending on their attribute
+            # determine the number for which group the person belongs in, depending on their attribute
             group = self.enumerator[populace[person][self.attribute]]
-            #add person to  to dict in group
+            # add person to  to dict in group
             partitioned_members[group].append(person)
         return partitioned_members
+
+    def placeGroup(self, members, populace):
+        """
+        this function maps each member to the partition set they belong in
+        :param members: list
+        A list of indexes for the peaple to partition, if 'All' will use all members in populace
+        :param populace:
+        A dict associating people to a list of their attributes is required for applying the enumerator
+        :return: dict
+        """
+        placements = {member: self.enumerator[populace[member][self.attribute]] for member in members}
+        return placements
+
+    def placeAndPartition(self, members, populace):
+        """
+        This function maps each partition sets to the subset of members who belong to it
+
+        :param members: list
+        A list of indexes for the peaple to partition, if 'All' will use all members in populace
+        :param populace:
+        A dict associating people to a list of their attributes is required for applying the enumerator
+        :return: dict
+        """
+        partitioned_members = {i: [] for i in range(self.num_sets)}
+        placements = {}
+        for person in members:
+            # determine the number for which group the person belongs in, depending on their attribute
+            group = self.enumerator[populace[person][self.attribute]]
+            # add person to  to dict in group
+            partitioned_members[group].append(person)
+            placements[person] = group
+        return placements, partitioned_members
 
 
 class Environment:
@@ -1517,18 +1562,21 @@ class PopulaceGraph:
             members.extend(self.environments[index].members)
         return StructuredEnvironment(None, members, 'multiEnvironment', self.populace, None, partitioner)
 
-    def plotContactMatrix(self, p_env):
+    def listEnvByType(self, type):
+        allEnvs = np.array(list(self.environments.keys()))
+        filt  =[self.environments[env].env_type == type for env in self.environments]
+        return allEnvs[filt]
+
+    def plotContactMatrix(self, partitioner, env_indices, title = "untitled", figure = None):
         '''
         This function plots the contact matrix for a structured environment
         :param p_env: must be a structured environment
         '''
 
-        if p_env == None:
-            p_env = self.returnMultiEnvironment()
-        contact_matrix = self.returnContactMatrix(p_env)
+        contact_matrix = self.getContactMatrix(partitioner,env_indices)
         plt.imshow(contact_matrix)
-        plt.title("Contact Matrix for members of {} # {}".format(p_env.env_type, p_env.index))
-        labels = p_env.partitioner.labels
+        plt.title("Contact Matrix for {}".format(title))
+        labels = partitioner.labels
         if labels == None:
             labels = ["{}-{}".format(5 * i, (5 * (i + 1))-1) for i in range(15)]
         axisticks= list(range(15))
@@ -1537,6 +1585,21 @@ class PopulaceGraph:
         plt.xlabel('Age Group')
         plt.ylabel('Age Group')
         plt.show()
+
+    def getContactMatrix(self, partitioner, env_indices):
+        n_sets = partitioner.num_sets
+        cm = np.zeros([n_sets, n_sets])
+        setSizes = np.zeros(n_sets)
+        #add every
+        for index in env_indices:
+            env = self.environments[index]
+            #assigns each person to a set
+            placements, partition = partitioner.placeAndPartition(env.members, self.populace)
+            setSizes += np.array([len(partition[index]) for index in partition])
+            for edge in env.edges:
+                cm[placements[edge[0]], placements[edge[1]]] += 1
+        cm = np.nan_to_num([np.array(row)/setSizes for row in cm])
+        return cm
 
     #-------------------------------------------------------------------
     #def SIRperBracket(self, tlast): 
@@ -1699,30 +1762,29 @@ class PopulaceGraph:
 
 
     #---------------------------------------------------------------------------
-    def plotNodeDegreeHistogram(self, environment = None, layout = 'bars', ax = None, normalized = True):
+    def plotNodeDegreeHistogram(self, env_indexes, layout = 'bars', title = "untitled", ax = None, normalized = True):
         """
         creates a histogram which displays the frequency of degrees for all nodes in the specified environment.
         :param environment: The environment to plot for. if not specified, a histogram for everyone in the model will be plotted
         :param layout: if 'lines', a line plot will be generated. otherwise a barplot will be used
-        :param ax: if an pyplot axis is specified, the plot will be added to it. Otherwise, the plot will be shown
+        :param title: the title that will appear on the plot
+        #:param ax: if an pyplot axis is specified, the plot will be added to it. Otherwise, the plot will be shown
         :param normalized, when true the histogram will display the portion of total
         """
-
-        if environment != None:
-            people = environment.members
-            graph = self.graph.subgraph(people)
-            plt.title("Degree plot for members of {} # {}".format(environment.env_type, environment.index))
-        else:
-            graph = self.graph
-            people = self.populace.keys()
-
         degreeCounts = [0] * 100
-        for person in people:
-            try:
-                degree = len(graph[person])
-            except:
-                degree = 0
-            degreeCounts[degree] += 1
+        for index in env_indexes:
+            env = self.environments[index]
+            people = env.members
+            graph = self.graph.subgraph(people)
+            plt.title("Degree plot for {}".format(title))
+
+
+            for person in people:
+                try:
+                    degree = len(graph[person])
+                except:
+                    degree = 0
+                degreeCounts[degree] += 1
         while degreeCounts[-1] == 0:
             degreeCounts.pop()
         if layout == 'lines':
@@ -1733,7 +1795,6 @@ class PopulaceGraph:
         plt.xlabel("degree")
         plt.show()
         plt.savefig(self.basedir+"/plotNodeDegreeHistogram.pdf")
-
 
     def plotSIR(self, memberSelection = None):
         """
