@@ -16,17 +16,6 @@ from scipy.stats import bernoulli
 class Partitioner:
     """
     Objects of this class can be used to split a list of people into disjoint sets
-        :param attribute: string
-        The attribute by which to partition must match one of the attributes in 'populace'
-
-        :param enumerator: dict
-        The enumerator should map each possible values for the given attribute to the index of a partition set
-
-        :param labels: list
-        A list of names for plotting with partitioned sets
-
-        :function partitionGroup
-
     """
 
     def __init__(self, attribute, enumerator, labels=None):
