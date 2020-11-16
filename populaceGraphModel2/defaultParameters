@@ -1,0 +1,30 @@
+{
+  "gamma": 0.2,
+  "tau": 0.2,
+
+  "prevention_adoptions": {
+    "household": {
+      "masking": 0,
+      "distancing": 0
+    },
+    "school": {
+      "masking": 0,
+      "distancing": 0
+    },
+    "workplace": {
+      "masking": 0,
+      "distancing": 0
+    }
+  },
+
+  "env_type_scalars": {
+    "household": 1,
+    "school": 1.0,
+    "workplace": 1.0
+  },
+
+"prevention_efficacies": {
+  "masking": [0.83, 0.83],
+  "distancing": [0.79, 0.79]
+}
+}
