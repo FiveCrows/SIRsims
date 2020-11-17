@@ -3,3 +3,7 @@
 issue with modelingToolkit:
      current implementation for picking weights does not incorporate env_type_scalars
 
+11/17
+issue with modelingToolkit:
+     weight algs need to be fixed
+     setup

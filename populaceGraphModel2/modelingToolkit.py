@@ -309,8 +309,6 @@ class Workplace(StructuredEnvironment):
 class School(StructuredEnvironment):
     env_type = 'school'
 
-
-
 class NetBuilder:
     """
     This class is written to hold network building algorithms
@@ -318,7 +316,7 @@ class NetBuilder:
     and Random nets for partitioned Environments.
     """
 
-    def __init__(self, env_type_scalars, prevention_efficacies, avg_contacts = None):
+    def __init__(self, prevention_adoptions, avg_contacts = None):
         """
         :param env_type_scalars: dict
         each environment type must map to a float. is for scaling weights
@@ -390,7 +388,6 @@ class NetBuilder:
                     # weight = self.getWeight(nodeB, nodeA, environment) 
                     weight = 1.0 # GE
                     environment.addEdge(nodeB, nodeA, weight)
-
 
     def genRandEdgeList(self, setA, setB, n_edges):
         if n_edges == 0:
@@ -475,7 +472,6 @@ class NetBuilder:
             weight = 1.0 # GE
             environment.addEdge(edge[0], edge[1], weight)
 
-
     def buildStructuredNet(self, environment, avg_degree = None):
         """
         For a partitioned environment, its reciprocated contact matrix
@@ -558,19 +554,11 @@ class NetBuilder:
                 for edge in edgeList:
                     self.addEdge(edge[0], edge[1], environment)
 
-
     def setEnvScalars(self, env_scalars):
         self.env_scalars = env_scalars
 
     #def setPreventions(self, preventions):
         #self.preventions = preventions
-
-    def setPreventionEfficacies(self, prevention_efficacies):
-        self.prevention_efficacies = prevention_efficacies
-
-    def setPreventionAdoptions(self, prevention_adoptions):
-        self.prevention_adoptions = prevention_adoptions
-
 
     # class NetBuilder
     def getWeight(self, personA, personB, environment):
@@ -590,6 +578,8 @@ class NetBuilder:
         weight = self.global_weight*self.env_scalars[environment.env_type]
 
         return weight
+
+    #def weightEnvs(self, envs, ):
 
 #A work in progress
 class StrogatzNetBuilder(NetBuilder):
@@ -755,6 +745,8 @@ class StrogatzNetBuilder(NetBuilder):
                 # try:
                 # attachments[""]
 
+#class edgeWeighter:
+    #def __init(self, env_scalars, ):
 class prefAttachmentNetBuilder(NetBuilder):
     pass
 
@@ -831,11 +823,6 @@ class PopulaceGraph:
         self.resetVaccinatedInfected()
 
         # must call once in constructor
-        self.setupMaskingReductions(self.prevention_efficacies["masking"])
-        self.setupDistancingReductions(self.prevention_efficacies["distancing"])
-
-        self.setupMaskingReductions((.3, .3))
-        self.setupDistancingReductions((.4, .4))
 
     def loadPopulace(self, file):
         '''
@@ -849,7 +836,6 @@ class PopulaceGraph:
         #these are used for the vaccinate methods
         self.schools = self.pops_by_category["school_id"]
         self.workplaces = self.pops_by_category["work_id"]
-
 
 
     #-------------------------------------------------
@@ -918,6 +904,7 @@ class PopulaceGraph:
             'initial_vaccinated_population': self.initial_vaccinated_population,
         }
         return vacc_dict
+
     #-------------------------------
     def zeroWeights(self, env):
         # GE: How to turn off a school without reconstructing the school graph? 
@@ -1071,13 +1058,12 @@ class PopulaceGraph:
         :param avg: list
         the average and the std in a list
         """
-
         avg, std = avg_std
         reduction = np.random.normal(avg, std, self.population)
         reduction[np.where(reduction < 0.)] = 0.
         reduction[np.where(reduction > 1.)] = 1.
         self.mask_reductions = reduction
-        return reduction
+
 
     #------------------------------------
     def setupDistancingReductions(self, avg_std):

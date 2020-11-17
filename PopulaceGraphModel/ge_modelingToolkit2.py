@@ -16,6 +16,17 @@ from scipy.stats import bernoulli
 class Partitioner:
     """
     Objects of this class can be used to split a list of people into disjoint sets
+        :param attribute: string
+        The attribute by which to partition must match one of the attributes in 'populace'
+
+        :param enumerator: dict
+        The enumerator should map each possible values for the given attribute to the index of a partition set
+
+        :param labels: list
+        A list of names for plotting with partitioned sets
+
+        :function partitionGroup
+
     """
 
     def __init__(self, attribute, enumerator, labels=None):
@@ -1065,16 +1076,12 @@ class PopulaceGraph:
     """
 
     #-------------------------------
-    def setupEnvironments(self, partitioner):
-        #setup households
-        households = self.setupHouseholds
-        for household in households:
-            houseObject = Environment(index, households[index], "household")
-
-            self.environments[index] = houseObject
-
-
     def setupHouseholds(self):
+        households = self.pops_by_category["sp_hh_id"]
+
+        for index in households:
+            houseObject              = Environment(index, households[index], "household")
+            self.environments[index] = (houseObject)
 
     #-----------------
     def setupWorkplaces(self, partitioner):
@@ -1560,15 +1567,13 @@ class PopulaceGraph:
         filt  =[self.environments[env].env_type == type for env in self.environments]
         return allEnvs[filt]
 
-    def plotContactMatrix(self, partitioner, env_indices, title = "untitled", figure = None, createPlot=False, showPlot=False):
+    def plotContactMatrix(self, partitioner, env_indices, title = "untitled", figure = None):
         '''
         This function plots the contact matrix for a structured environment
         :param p_env: must be a structured environment
         '''
 
         contact_matrix = self.getContactMatrix(partitioner,env_indices)
-        if not createPlot: return contact_matrix
-
         plt.imshow(contact_matrix)
         plt.title("Contact Matrix for {}".format(title))
         labels = partitioner.labels
@@ -1579,11 +1584,7 @@ class PopulaceGraph:
         plt.yticks(axisticks, labels)
         plt.xlabel('Age Group')
         plt.ylabel('Age Group')
-
-        if showPlot:    
-            plt.show()
-
-        return contact_matrix
+        plt.show()
 
     def getContactMatrix(self, partitioner, env_indices):
         n_sets = partitioner.num_sets
@@ -1666,7 +1667,7 @@ class PopulaceGraph:
             self.graph.add_edge(k[0], k[1], transmission_weight=weight[k])
 
         simResult = simAlg(self.graph, tau, gamma, initial_recovereds=self.initial_vaccinated, initial_infecteds=self.initial_infected, transmission_weight='transmission_weight', return_full_data=full_data)
-        self.sims.append([title,simResult])
+
         """
         graph = nx.Graph()
         #add the edges of each environment to a single networkx graph
@@ -1808,8 +1809,8 @@ class PopulaceGraph:
             return
         else:
             for sim in self.sims:
-                title = sim[0]
-                sim = sim[1]
+                title = sim[1]
+                sim = sim[0]
                 t = sim.t()
                 ax[0].plot(t, sim.S())
                 ax[0].set_title('S')
@@ -1827,7 +1828,7 @@ class PopulaceGraph:
         return [max(sim[0].I()) for sim in self.sims]
 
     #If a structuredEnvironment is specified, the partition of the environment is applied, otherwise, a partition must be passed
-    def plotBars(self, partitioner, env_indices, SIRstatus = 'R', normalized = False):
+    def plotBars(self, environment = None, SIRstatus = 'R', normalized = False):
         """
         Will show a bar chart that details the final status of each partition set in the environment, at the end of the simulation
         :param environment: must be a structured environment
@@ -1835,41 +1836,38 @@ class PopulaceGraph:
         :param normalized: whether to plot each bar as a fraction or the number of people with the given status
         #TODO finish implementing None environment as entire graph
         """
+        partition = environment.partitioner
+        if isinstance(environment, StructuredEnvironment):
+            partitioned_people = environment.partition
+            partition = environment.partitioner
 
-        partition = partitioner
-        for index in env_indices:
+        simCount = len(self.sims)
+        partitionCount = partition.num_sets
+        barGroupWidth = 0.8
+        barWidth = barGroupWidth/simCount
+        index = np.arange(partitionCount)
 
-            if isinstance(environment, StructuredEnvironment):
-                partitioned_people = environment.partition
-                partition = environment.partitioner
+        offset = 0
+        for sim in self.sims:
+            title = sim[1]
+            sim = sim[0]
 
-            simCount = len(self.sims)
-            partitionCount = partition.num_sets
-            barGroupWidth = 0.8
-            barWidth = barGroupWidth/simCount
-            index = np.arange(partitionCount)
+            totals = []
+            end_time = sim.t()[-1]
+            for index in partitioned_people:
+                set = partitioned_people[index]
+                if len(set) == 0:
+                    #no bar if no people
+                    totals.append(0)
+                    continue
+                total = sum(status == SIRstatus for status in sim.get_statuses(set, end_time).values()) / len(set)
+                if normalized == True:  total = total/len(set)
+                totals.append[total]
 
-            offset = 0
-            for sim in self.sims:
-                title = sim[0]
-                sim = sim[1]
-
-                totals = []
-                end_time = sim.t()[-1]
-                for index in partitioned_people:
-                    set = partitioned_people[index]
-                    if len(set) == 0:
-                        #no bar if no people
-                        totals.append(0)
-                        continue
-                    total = sum(status == SIRstatus for status in sim.get_statuses(set, end_time).values()) / len(set)
-                    if normalized == True:  total = total/len(set)
-                    totals.append[total]
-
-                #totals = sorted(totals)
-                xCoor = [offset + x for x in list(range(len(totals)))]
-                plt.bar(xCoor,totals, barWidth, label = title)
-                offset = offset+barWidth
+            #totals = sorted(totals)
+            xCoor = [offset + x for x in list(range(len(totals)))]
+            plt.bar(xCoor,totals, barWidth, label = title)
+            offset = offset+barWidth
         plt.legend()
         plt.ylabel("Fraction of people with status {}".format(SIRstatus))
         plt.xlabel("Age groups of 5 years")
