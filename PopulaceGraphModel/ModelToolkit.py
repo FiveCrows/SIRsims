@@ -188,7 +188,7 @@ class TransmissionWeighter:
          the shared environment of two nodes for the weight
         :return:
         """
-        weight = self.global_weight * self.env_scalars[environment.quality]
+        weight = self.global_weight * self.env_scalars[environment.type]
         # including masks
         if environment.preventions != None:
             n_masks = (environment.mask_status[personA] + environment.mask_status[personB])
@@ -424,7 +424,7 @@ class PopulaceGraph:
             members = environment.members
         else:
             members = subgroup
-        type = environment.quality
+        type = environment.type
         member_count = len(members)
         # memberWeightScalar = np.sqrt(memberCount)
         for i in range(member_count):
@@ -446,15 +446,15 @@ class PopulaceGraph:
         :return:
         """
 
-        if environment.quality == 'household':
+        if environment.type == 'household':
             self.clusterDense(environment)
         else:
             # the graph is computed according to contact matrix of environment
             # self.clusterPartitionedStrogatz(environment, self.environment_degrees[environment.type])
-            preventions = self.preventions[environment.quality]
+            preventions = self.preventions[environment.type]
             environment.preventions = preventions
             environment.drawMasks()
-            alg(environment, self.environment_degrees[environment.quality])
+            alg(environment, self.environment_degrees[environment.type])
 
     def clusterStrogatz(self, environment, num_edges, weight_scalar=1, subgroup=None, rewire_p=0.1):
         """
@@ -890,7 +890,7 @@ class PopulaceGraph:
         if environment != None:
             people = environment.members
             graph = self.graph.subgraph(people)
-            plt.title("Degree plot for members of {} # {}".format(environment.quality, environment.index))
+            plt.title("Degree plot for members of {} # {}".format(environment.type, environment.index))
         else:
             graph = self.graph
             people = self.populace.keys()
@@ -950,7 +950,7 @@ class PopulaceGraph:
         :param normalized: whether to plot each bar as a fraction or the number of people with the given status
         #TODO finish implementing None environment as entire graph
         """
-        partition = environment.partitioner
+        partition = environment.partitio
         if isinstance(environment, PartitionedEnvironment):
             partitioned_people = environment.partition
             partition = environment.partitioner

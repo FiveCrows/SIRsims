@@ -1065,12 +1065,16 @@ class PopulaceGraph:
     """
 
     #-------------------------------
-    def setupHouseholds(self):
-        households = self.pops_by_category["sp_hh_id"]
+    def setupEnvironments(self, partitioner):
+        #setup households
+        households = self.setupHouseholds
+        for household in households:
+            houseObject = Environment(index, households[index], "household")
 
-        for index in households:
-            houseObject              = Environment(index, households[index], "household")
-            self.environments[index] = (houseObject)
+            self.environments[index] = houseObject
+
+
+    def setupHouseholds(self):
 
     #-----------------
     def setupWorkplaces(self, partitioner):
@@ -1662,7 +1666,7 @@ class PopulaceGraph:
             self.graph.add_edge(k[0], k[1], transmission_weight=weight[k])
 
         simResult = simAlg(self.graph, tau, gamma, initial_recovereds=self.initial_vaccinated, initial_infecteds=self.initial_infected, transmission_weight='transmission_weight', return_full_data=full_data)
-
+        self.sims.append([title,simResult])
         """
         graph = nx.Graph()
         #add the edges of each environment to a single networkx graph
@@ -1804,8 +1808,8 @@ class PopulaceGraph:
             return
         else:
             for sim in self.sims:
-                title = sim[1]
-                sim = sim[0]
+                title = sim[0]
+                sim = sim[1]
                 t = sim.t()
                 ax[0].plot(t, sim.S())
                 ax[0].set_title('S')
@@ -1823,7 +1827,7 @@ class PopulaceGraph:
         return [max(sim[0].I()) for sim in self.sims]
 
     #If a structuredEnvironment is specified, the partition of the environment is applied, otherwise, a partition must be passed
-    def plotBars(self, environment = None, SIRstatus = 'R', normalized = False):
+    def plotBars(self, partitioner, env_indices, SIRstatus = 'R', normalized = False):
         """
         Will show a bar chart that details the final status of each partition set in the environment, at the end of the simulation
         :param environment: must be a structured environment
@@ -1831,38 +1835,41 @@ class PopulaceGraph:
         :param normalized: whether to plot each bar as a fraction or the number of people with the given status
         #TODO finish implementing None environment as entire graph
         """
-        partition = environment.partitioner
-        if isinstance(environment, StructuredEnvironment):
-            partitioned_people = environment.partition
-            partition = environment.partitioner
 
-        simCount = len(self.sims)
-        partitionCount = partition.num_sets
-        barGroupWidth = 0.8
-        barWidth = barGroupWidth/simCount
-        index = np.arange(partitionCount)
+        partition = partitioner
+        for index in env_indices:
 
-        offset = 0
-        for sim in self.sims:
-            title = sim[1]
-            sim = sim[0]
+            if isinstance(environment, StructuredEnvironment):
+                partitioned_people = environment.partition
+                partition = environment.partitioner
 
-            totals = []
-            end_time = sim.t()[-1]
-            for index in partitioned_people:
-                set = partitioned_people[index]
-                if len(set) == 0:
-                    #no bar if no people
-                    totals.append(0)
-                    continue
-                total = sum(status == SIRstatus for status in sim.get_statuses(set, end_time).values()) / len(set)
-                if normalized == True:  total = total/len(set)
-                totals.append[total]
+            simCount = len(self.sims)
+            partitionCount = partition.num_sets
+            barGroupWidth = 0.8
+            barWidth = barGroupWidth/simCount
+            index = np.arange(partitionCount)
 
-            #totals = sorted(totals)
-            xCoor = [offset + x for x in list(range(len(totals)))]
-            plt.bar(xCoor,totals, barWidth, label = title)
-            offset = offset+barWidth
+            offset = 0
+            for sim in self.sims:
+                title = sim[0]
+                sim = sim[1]
+
+                totals = []
+                end_time = sim.t()[-1]
+                for index in partitioned_people:
+                    set = partitioned_people[index]
+                    if len(set) == 0:
+                        #no bar if no people
+                        totals.append(0)
+                        continue
+                    total = sum(status == SIRstatus for status in sim.get_statuses(set, end_time).values()) / len(set)
+                    if normalized == True:  total = total/len(set)
+                    totals.append[total]
+
+                #totals = sorted(totals)
+                xCoor = [offset + x for x in list(range(len(totals)))]
+                plt.bar(xCoor,totals, barWidth, label = title)
+                offset = offset+barWidth
         plt.legend()
         plt.ylabel("Fraction of people with status {}".format(SIRstatus))
         plt.xlabel("Age groups of 5 years")
