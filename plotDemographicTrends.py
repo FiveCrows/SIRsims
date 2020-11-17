@@ -4,6 +4,7 @@ import pickle
 import matplotlib.pyplot as plt
 import seaborn as sns
 from collections import defaultdict
+
 home_dir="RestructuredData/"
 people_file=home_dir+"people_list_serialized_rs.pkl"
 workplaces_file=home_dir+"workplaces_list_serialized_rs.pkl"
@@ -16,11 +17,13 @@ student_M, student_F, employee_M, employee_F=0,0,0,0
 ages_employees, ages_students={},{}
 ages_employees=defaultdict(lambda: 0,ages_employees)
 ages_students=defaultdict(lambda: 0,ages_students)
+
 race_codes=['White','Black or African American','American Indian', 'Alaska Native', 'America Indian and/or Alaska native', 'Asian', 
             'Native Hawaiian or Other Pacific Islander','Other', 'Mixed']
 employees_by_race={r:0 for r in race_codes}
 students_by_race={r:0 for r in race_codes}
 people_by_race={r:0 for r in race_codes}
+
 for row in people_data:
     person=people_data[row]
     if person.work_id:
@@ -40,12 +43,15 @@ for row in people_data:
     people_by_race[race_codes[person.race-1]]+=1
 # print("Employee distribution by race:\n",employees_by_race)
 # print("Student distribution by race:\n",students_by_race)
+
+#----------------------------------------------
 f, (ax1, ax2, ax3)=plt.subplots(3,1)
 plt.subplots_adjust(hspace=0.6)
-plt.figure(figsize=(12,12))
-student_ages=sorted(list(ages_students.keys()))
-employee_ages=sorted(list(ages_employees.keys()))
-yticks=range(min(ages_students.values()), max(ages_students.values()), 200) 
+#plt.figure(figsize=(12,12))
+student_ages  = sorted(list(ages_students.keys()))
+employee_ages = sorted(list(ages_employees.keys()))
+
+yticks = range(min(ages_students.values()), max(ages_students.values()), 200) 
 ax1.plot(student_ages, [ages_students[key] for key in student_ages])
 ax1.set_title("Student Age Distribution")
 #ax1.set_yticks(yticks)
@@ -58,7 +64,10 @@ y_vals=[student_M, student_F, employee_M, employee_F]
 #ax3.bar(x_vals, y_vals)
 ax3.bar(x_vals, y_vals, color=['blue','orange','blue','orange'])
 ax3.set_title("Gender Distribution")
-#plt.show()
+plt.tight_layout()
+plt.savefig("fig_age_gender_distribution.pdf")
+plt.savefig("fig_age_gender_distribution.png")
+#---------------------------------------
 
 f,(ax1,ax2,ax3)=plt.subplots(3,1)
 plt.subplots_adjust(hspace=0.6)
@@ -69,6 +78,7 @@ for key in race_codes:
         ax2.bar(key+"Employee",employees_by_race[key], width=1)
     if people_by_race[key] !=0:
         ax3.bar(key,people_by_race[key], label=key, width=1)
+
 ax1.set_title("Student")
 ax1.tick_params(
     axis='x',          # changes apply to the x-axis
@@ -90,9 +100,16 @@ ax3.tick_params(
     bottom=False,      # ticks along the bottom edge are off
     top=False,         # ticks along the top edge are off
     labelbottom=False) # labels along the bottom edge are off
+ax3.legend(fontsize=6)
 plt.suptitle("Population distribution by race showing students and employees")
-f.legend()
-plt.show()
+#plt.show()
+plt.tight_layout()
+plt.savefig("fig_pop+dist_race_students_employees.pdf")
+plt.savefig("fig_pop+dist_race_students_employees.png")
+
+#---------------------------------------
+
+f,ax1 = plt.subplots(1,1)
 households_by_income={i:0 for i in income_groups}
 for row in households_data:
     if households_data[row].hh_income<=25000:
@@ -113,4 +130,8 @@ sns.set(style="whitegrid")
 ax=sns.barplot(income_groups, [households_by_income[i] for i in income_groups])
 plt.title("Household Income distribution")
 plt.xticks(rotation=45)
-plt.show()
+plt.tight_layout()
+plt.savefig("fig_household_income_distribution.pdf")
+plt.savefig("fig_household_income_distribution.png")
+#plt.show()
+quit()
