@@ -59,6 +59,7 @@ model = PopulaceGraph(partitioner, prevention_adoptions, prevention_efficacies, 
 h_sizes = [0]*13
 s_sizes = [0]*35
 w_sizes = [0]*10
+
 for environment in model.environments:
     environment = model.environments[environment]
     if environment.env_type == 'household':
@@ -67,8 +68,8 @@ for environment in model.environments:
         s_sizes[environment.population//100] +=1
     if environment.env_type == 'workplace':
         w_sizes[int(np.log(environment.population))] +=1
-fig,axs = plt.subplots(3)
 
+fig,axs = plt.subplots(3)
 axs[0].set_title("household size hist")
 axs[1].set_title("school size hist")
 axs[2].set_title("log-log workplace size hist")
@@ -77,5 +78,6 @@ axs[1].bar(range(len(s_sizes)),s_sizes)
 axs[1].set_xticklabels(np.arange(0,100*(40),100))
 axs[2].bar(1+np.asarray(range(len(w_sizes))),np.log(w_sizes))
 plt.tight_layout()
-plt.savefig("stats_barchart.pdf")
+plt.savefig("plot_house_school_work_stats.pdf")
+plt.savefig("plot_house_school_work_stats.jpg")
 plt.show()
