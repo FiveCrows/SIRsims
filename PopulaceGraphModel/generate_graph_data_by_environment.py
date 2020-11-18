@@ -54,63 +54,63 @@ def edgeHistogram(edge_list):
     for node, deg in degree.items():
         hist[deg] += 1
     
-    return hist
+    return hist 
 #-------------------------------------
 
 envs = {'household':[], 'school':[], 'workplace':[]}
+envs_hist = {'household':[], 'school':[], 'workplace':[]}
+
 for index in model.environments:
     env = model.environments[index]
     envs[env.env_type].extend(env.members)
     hist = edgeHistogram(env.edges)
-    print(index, env.env_type, dict(hist))
+    envs_hist[env.env_type].append(hist)
+
+def avgHistogram(envs):
+    nb_hist = len(envs)
+    avg_hist = defaultdict(int)
+    for i in range(nb_hist):
+        hist = envs[i]
+        for k,v in hist.items():
+            avg_hist[k] += v
+
+    nb_nodes = sum(avg_hist.values())
+    #for k,v in avg_hist.items():
+        #avg_hist[k] /= nb_hist
+    # normalize by the total number of nodes
+    for k in avg_hist:
+        avg_hist[k] /= nb_nodes
+    return avg_hist
+
+sch_hist = avgHistogram(envs_hist['school'])
+print("school: ", sch_hist)
+wrk_hist = avgHistogram(envs_hist['workplace'])
+print("workplace: ", wrk_hist)
+
+k_sch = list(sch_hist.keys())
+k_wrk = list(wrk_hist.keys())
+print("k_sch= ", k_sch)
+print("k_sch= ", k_wrk)
+
+max_deg = max(k_sch + k_wrk)
+degrees = list(range(0,max_deg))
+deg_sch = []
+deg_wrk = []
+for d in degrees:
+    deg_sch.append(sch_hist[d])
+    deg_wrk.append(wrk_hist[d])
+df = pd.DataFrame({'degree': degrees, 'school': deg_sch, 'workplace':deg_wrk})
+print(df)
+
+sns.barplot('degree', 'workplace', data=df, lw=0, color='red', alpha=0.6, label='Workplace') #palette="Reds")
+ax = sns.barplot('degree', 'school', data=df, lw=0, color='blue', alpha=0.6, label='School') #palette="Blues", alpha=0.7)
+#ax.set_xticklabels(np.linspace(0, 40, 21, dtype='int'))
+ax.set_xticks(np.linspace(0, 40, 21, dtype='int'))
+#ax.set_xlim(0, 36)
+plt.ylabel('Percentage')
+plt.title("Histogram of workplace and school node degree")
+plt.legend()
+plt.savefig("plot_degree_histograms.pdf")
 quit()
 
-print("schools: ", len(envs['school']))
-print("workplaces: ", len(envs['workplace']))
-print("homes: ", len(envs['household']))
 
-def computeAgeHist(members, populace):
-    ages = [0]*16
-    # Compute age histogram in specified environment
-    for ix in members:
-        ages[enumerator[populace[ix]['age']]] += 1 # not most efficient
-    return ages
-
-def computeAgeGenderHist(members, populace):
-    ages_male   = [0]*16
-    ages_female = [0]*16
-    # Compute age histogram in specified environment
-    for ix in members:
-        p = populace[ix]
-        if p['sex'] == 1:  # female
-            ages_male[enumerator[populace[ix]['age']]] += 1 # not most efficient
-        else:
-            ages_female[enumerator[populace[ix]['age']]] += 1 # not most efficient
-    return ages_male, ages_female
-
-#------------------------------------------
-ages_school = computeAgeHist(envs['school'], model.populace)
-ages_workplace = computeAgeHist(envs['workplace'], model.populace)
-m_sch, f_sch = computeAgeGenderHist(envs['school'], model.populace)
-m_wrk, f_wrk = computeAgeGenderHist(envs['workplace'], model.populace)
-
-print()
-print("ages_schools: ", ages_school)
-print("ages_workplace: ", ages_workplace)
-print("ages_f_wrk: ", f_wrk)
-print("ages_m_wrk: ", m_wrk)
-print("ages_f_sch: ", f_sch)
-print("ages_m_sch: ", m_sch)
-
-print()
-print("ages(M,F)_schools: ", list(zip(m_sch, f_sch)))
-print("ages(M,F)_workplace: ", list(zip(m_wrk, f_wrk)))
-print(names)
-print(len(names))
-print(len(m_wrk))
-print(enumerator)
-
-df = pd.DataFrame({'ages':names, 'age_sch':ages_school, 'age_wrk':ages_workplace, 'm_sch':m_sch, 'f_sch':f_sch, 'm_wrk':m_wrk, 'f_wrk':f_wrk})
-df.to_csv("ages_gender_school_workplace.csv")
-quit()
-#----------------------------------------------------------------------
