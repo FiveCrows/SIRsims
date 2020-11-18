@@ -9,3 +9,5 @@ defaultParameters are now stored in a script, defaultParameters, which makes it 
 tests, starting with no masking, no distancing, and other default parameters.
 
 more edits are needed for the simulations to run with the vaccination routines and not be bugged.
+
+simpleTest.py is the current script, just to get things working

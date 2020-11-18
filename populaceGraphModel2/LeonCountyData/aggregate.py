@@ -79,7 +79,8 @@ def buildPkl(slim):
     #create a partitioner
     enumerator = {i:i//5 for i in range(75)}
     enumerator.update({i:15 for i in range(75,100)})
-    names = ["{}:{}".format(5 * i, 5 * (i + 1)) for i in range(15)]
+    names = ["{}:{}".format(5 * i, 5 * (i + 1)) for i in range(14)]
+    names.append("75:100")
     partitioner = Partitioner('age', enumerator, names)
 
     raw_wp = pickle.load(open(currentdir + "/workplaces_list_serialized.pkl", 'rb'))
