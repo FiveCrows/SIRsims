@@ -321,19 +321,11 @@ class NetBuilder:
         :param env_type_scalars: dict
         each environment type must map to a float. is for scaling weights
 
-        :param prevention_efficacies: dict
-        must map prevention names, currently either 'masking' or 'distancing'. Can map to floats, but
-        masking has the option of mapping to a list. In that case, the script will attempt to
-        determine,  for the environment, which masks each person should wear, and  pick the appropriate
-        scalar from the list. index [0] will represent no mask, 1 up will be mask types
-
         :param avg_contacts:
         if specified, the number of edges picked for an environment will be chosen to meet avg_contacts
         """
 
         self.global_weight = 1
-        self.prevention_efficacies = prevention_efficacies
-        self.env_scalars = env_type_scalars
 
 
     def addEdge(self, nodeA, nodeB, environment):
@@ -593,8 +585,6 @@ class StrogatzNetBuilder(NetBuilder):
         where to add edges
          :param num_edges: int
          the number of edges to add to the environment
-         :param weight_scalar: int
-          optional in case a larger or smaller weight is desired than transmission_weighter returns by default
          :param subgroup: list
          optional in case only edges for select members of the environment are wanted
          :param rewire_p:
@@ -745,8 +735,6 @@ class StrogatzNetBuilder(NetBuilder):
                 # try:
                 # attachments[""]
 
-#class edgeWeighter:
-    #def __init(self, env_scalars, ):
 class prefAttachmentNetBuilder(NetBuilder):
     pass
 
@@ -755,7 +743,7 @@ class PopulaceGraph:
     A list of people, environments, and functions, for tracking a weighted graph to represent contacts between members of the populace
     """
 
-    def __init__(self, prevention_adoptions=None, prevention_efficacies=None, slim = False, timestamp=None):
+    def __init__(self, slim = False, timestamp=None):
         """        
         :param partition: Partitioner
         needed to build schools and workplaces into structured environments
@@ -790,16 +778,7 @@ class PopulaceGraph:
         print("basedir= ", self.basedir)
         self.record = Record(self.basedir)
         self.preventions = None
-        self.prevention_efficacies = prevention_efficacies
 
-
-        if prevention_adoptions == None:
-            self.prevention_adoptions = {"household": {"masking": 0, "distancing": 0},
-                                           "school": {"masking": 0, "distancing": 0},
-                                           "workplace": {"masking": 0, "distancing": 0}}
-        else:
-            self.prevention_adoptions = prevention_adoptions
-        #print("populace: prevention_adoptions= ", prevention_adoptions); quit()
         if slim == True:
             pop_file = open("./LeonCountyData/slimmedLeon.pkl", 'rb')
         else:
@@ -808,18 +787,6 @@ class PopulaceGraph:
 
         # pick who masks and distances, in each environment
         # One has a list of people in each environment
-        for idx, env in self.environments.items():
-            env_type = env.env_type
-            #print("** self.prevention_adoptions: ", self.prevention_adoptions)
-            #print("env_type= ", env_type)
-            #print("idx= ", idx)
-            self.environments[idx].drawPreventions(self.prevention_adoptions, self.populace)
-            #self.env.drawPreventions(self.prevention_adoptions, self.populace)
-
-
-        #print("test printEnvironments")
-        self.printEnvironments()
-        # Must be called last
         self.resetVaccinatedInfected()
 
         # must call once in constructor
@@ -905,7 +872,6 @@ class PopulaceGraph:
         }
         return vacc_dict
 
-    #-------------------------------
     def zeroWeights(self, env):
         # GE: How to turn off a school without reconstructing the school graph? 
         # NOT USED
@@ -918,60 +884,14 @@ class PopulaceGraph:
             if env == environment.env_type:
                 self.graph.adj[e[0]][e[1]]['transmission_weight'] = 0
         print("zeroWeights[%s]: %f sec" % (env, time.time() - start_time))
-    #---------------------------------
+
     def printWeights(self):
         G = self.graph
         for e in G.edges():
             w = G[e[0]][e[1]]['transmission_weight']
             env = self.environments[G[e[0]][e[1]]['environment']]
             print("weight(e): ", e, " => ", w, env.env_type)
-    #---------------------------------
-    """
-    def envEdges(self):
-        # Added by Gordon Erlebacher, class PopulaceGraph
-        # Construct a dictionary for each environment, of its edges. This will be used
-        # to assign edge properties per environment. 
-        # NOT CALLED.
 
-        env_edges= {}
-        for ix in self.environments:
-            env_edges[ix] = []   # list of edges
-
-        for edge in self.graph.edges():
-            #get environment
-            env = self.environments[self.graph.adj[edge[0]][edge[1]]['environment']]
-            # env is an environment object
-            env_edges[env.index].append((edge[0], edge[1]))  ### ERROR
-
-        # attach edge list to the environment
-        for ix in self.environments:
-            env = self.environments[ix]
-            env.edges = env_edges[ix]
-            count = 0
-
-            # GE: New section, for debugging
-            print("GE: envEdges: Check for symmetries. Both e0,e1 and e1,e0 should not be present")
-            for e in env.edges:
-                try: 
-                    if e[0] != e[1]:
-                        env.edges[(e[0],e[1])]
-                        env.edges[(e[1],e[0])]
-                        count += 1
-                except:
-                    pass
-            if count > 0:
-                print("should not happen, count= ", count, ",  ix= ", ix)
-
-        quit()
-    """
-
-
-
-
-
-    #-----------------
-
-    #-----------------
     def setNbTopWorkplacesToVaccinate(self, nb, perc):
         self.nb_top_workplaces_vaccinated = nb
         self.perc_people_vaccinated_in_workplaces = perc
@@ -1048,9 +968,7 @@ class PopulaceGraph:
             print("* total workplace population to vaccinate: ", self.cum_sum_work_pop[self.nb_top_workplaces_vaccinated-1])
 
     #--------------------------------------------
-    def setupMaskAdoption(self, perc):
-        # Mask adoption should be per environment
-        self.mask_adoption = bernoulli.rvs(perc, size=self.population)
+
 
     #--------------------------------------------
     def setupMaskingReductions(self, avg_std):
@@ -1094,21 +1012,7 @@ class PopulaceGraph:
         mask_weight_factor = {} #np.ones(num_edges)
         environments = self.environments
 
-        for env_id, env in environments.items():
-            #print("env_id= ", env_id)
-            #env = environments[env_id]
-            # GE: Where is this computed? 
-            edges = env.edges   # list of edges. Edge is (personA_id, personB_id, weight)
-            env_type = env.env_type 
-            #adoption = self.prevention_adoptions[env.env_type]["masking"]
-            env.drawPreventions(self.prevention_adoptions, self.populace)
 
-            for idx, edge in enumerate(edges):
-                pa, pb = edge
-                mask_weight_factor[(pa,pb)] = (1. - env.mask_adoption[pa]*self.mask_reductions[pa]) \
-                    * (1. - env.mask_adoption[pb]*self.mask_reductions[pb])
-            #print("mask_weight_factor= ", mask_weight_factor)
-                
         #print("mask_weight_factor= ", mask_weight_factor)
         #quit()
         return mask_weight_factor
@@ -1130,31 +1034,7 @@ class PopulaceGraph:
         """
 
     #----------------------------------------
-    def setupDistancingWeights(self): #, num_edges):
-        # self.mask_reductions: defined for every person of the graph
-        # Whether a mask is worn or not are percentages set for each environment type
 
-        avg_std = self.prevention_efficacies["distancing"]
-        self.setupDistancingReductions(avg_std)
-
-        distance_weight_factor = {} #np.ones(num_edges)
-        environments = self.environments
-
-        for env_id in environments:
-            env = environments[env_id]
-            env.drawPreventions(self.prevention_adoptions, self.populace)
-
-            for ix, edge in enumerate(env.edges):
-                #print("adoption= ", env.distancing_adoption)
-                #print("distancing= ", self.distancing_reductions)  # INCORRECT. [list with indices]
-                #print("edge= ", edge)
-                reduction = env.distancing_adoption[edge]*self.distancing_reductions[ix]
-                distance_weight_factor[edge] = 1. - reduction
-
-        #for k,v in distance_weight_factor.items():
-            #print("distance_weight_factor= ", k, v)
-        #quit()
-        return distance_weight_factor
 
     #------------------
     # Called from the driver script
@@ -1356,7 +1236,7 @@ class PopulaceGraph:
         #if isBuilt == False:
 
     #--------------------------
-    def buildNetworks(self, netBuilder):
+    def networkEnvs(self, netBuilder):
         """
         builds net for each environment, then,
         constructs a graph for the objects populace
@@ -1380,11 +1260,7 @@ class PopulaceGraph:
         print("len(populace): ", len(self.populace))
         print("self.population = ", self.population)
         #add the edges of each environment to a single networkx graph
-        for environment in self.environments: 
-            # GE changed the function. Do not add weights
-            self.graph.add_edges_from(self.environments[environment].edges) 
-            #self.graph.add_weighted_edges_from(self.environments[environment].edges, weight = "transmission_weight")
-        self.isBuilt = True
+        self.isNetworked = True
 
     # class PopulaceGraph
     def reweight(self, netBuilder, new_prev_adoptions = None):
@@ -1503,36 +1379,9 @@ class PopulaceGraph:
     #-------------------------------------------------------------------
     def simulate(self, gamma, tau, simAlg=EoN.fast_SIR, title=None, full_data=True, global_dict={}):
 
-        # Gordon Change
-        assert self.graph.number_of_nodes() > 0, "nb graph nodes should be positive"
-        assert self.graph.number_of_edges() > 0, "nb graph edges should be positive"
-
         self.global_dict = global_dict
-        #global_dict
-        #print("enter setupMaskWeights, prevention_adoptions= ", self.prevention_adoptions)
-        mask_weight_factor       = self.setupMaskingWeights()
-        distancing_weight_factor = self.setupDistancingWeights()
-
-        #print("enter simulate: nb edges in graph: ", self.graph.number_of_edges())
-
-        weight = {}  # keys are (e1,e2): graph edge
-        for k in distancing_weight_factor:
-            weight[k] = distancing_weight_factor[k] * mask_weight_factor[k]
-            self.graph.add_edge(k[0], k[1], transmission_weight=weight[k])
-
         simResult = simAlg(self.graph, tau, gamma, initial_recovereds=self.initial_vaccinated, initial_infecteds=self.initial_infected, transmission_weight='transmission_weight', return_full_data=full_data)
         self.sims.append([title,simResult])
-        """
-        graph = nx.Graph()
-        #add the edges of each environment to a single networkx graph
-        print("total nb environments: ", len(self.environments)); 
-        for environment in self.environments: 
-            graph.add_weighted_edges_from(self.environments[environment].edges, weight = "transmission_weight")
-        print("Before simlation: Graph: nb nodes: ", graph.number_of_nodes())
-
-        simResult = simAlg(graph, tau, gamma, rho = 0.001, transmission_weight='transmission_weight',return_full_data=full_data)
-        #self.sims.append([simResult, title, [gamma, tau], preventions])
-        """
 
         start2 = time.time()
         sr = simResult
@@ -1558,14 +1407,6 @@ class PopulaceGraph:
         for k,v in statuses.items():
             ages_d[k] = self.SIRperBracket(v)
 
-            """
-            for bracket in ages_d[k].keys():  # bracket is either integer or string. How to change? 
-                #print("bracket: ", bracket)
-                #print("   keys: ", list(ages_d[k].keys()))
-                counts = ages_d[k][bracket]
-                print("bracket: ", bracket, ",  counts[S,I,R]: ", bracket, counts['S'], counts['I'], counts['R'])
-            """
-            
         self.record.print("time to change 'S','I','R' to 0,1,2 for faster processing: %f sec" % (time.time()-start3))
         #-----------
         # Create a dictionary to store all the data and save it to a file 
@@ -1589,6 +1430,66 @@ class PopulaceGraph:
         filename = "%s, gamma=%s, tau=%s, %s" % (title, gamma, tau, x)
         print("saveResults: filename: ", filename)
         self.saveResults(filename, data)
+
+    def weightNetwork(self, env_type_scalars, prevention_adoptions, prevention_efficacies):
+        '''
+        :param prevention_adoptations: dict
+        the rate at which preventions the people are 'masking', and 'distancing', for each environment type
+        :param prevention_efficacies: list
+        the efficetiveness from 0 to 1 100% effective of the masking and distancing, and the std for these per unit
+        :return:
+        '''
+
+        assert self.isNetworked, "env must be networked before graph can be built"
+        self.setupDistancingReductions(prevention_efficacies["distancing"])
+        self.setupMaskingReductions(prevention_efficacies["masking"])
+        envs = self.environments
+        for env in envs.values():
+            edges = env.edges
+            env.drawPreventions(prevention_adoptions, self.populace)
+
+            #draw masks
+            for ix, edge in enumerate(edges):
+                #get weight factor
+                reduction = env.distancing_adoption[edge] * self.distancing_reductions[ix]
+                distance_weight_factor = 1. - reduction
+                #get mask factor
+                pa, pb = edge
+                mask_weight_factor = (1. - env.mask_adoption[pa]*self.mask_reductions[pa]) \
+                    * (1. - env.mask_adoption[pb]*self.mask_reductions[pb])
+                #add weighted edge
+                dispersal =np.random.normal(1,0)#is a stub, will be replaced with better function later
+                weight = mask_weight_factor * distance_weight_factor * env_type_scalars[env.env_type] * dispersal
+                self.graph.add_edge(pa, pb, transmission_weight = weight)
+
+            #print("mask_weight_factor= ", mask_weight_factor)
+        return weight
+
+    # self.mask_reductions: defined for every person of the graph
+        # Whether a mask is worn or not are percentages set for each environment type
+
+        avg_std = self.prevention_efficacies["distancing"]
+        self.setupDistancingReductions(avg_std)
+
+        distance_weight_factor = {} #np.ones(num_edges)
+        environments = self.environments
+
+        for env_id in environments:
+            env = environments[env_id]
+            env.drawPreventions(self.prevention_adoptions, self.populace)
+
+            for ix, edge in enumerate(env.edges):
+                #print("adoption= ", env.distancing_adoption)
+                #print("distancing= ", self.distancing_reductions)  # INCORRECT. [list with indices]
+                #print("edge= ", edge)
+                reduction = env.distancing_adoption[edge]*self.distancing_reductions[ix]
+                distance_weight_factor[edge] = 1. - reduction
+
+        #for k,v in distance_weight_factor.items():
+            #print("distance_weight_factor= ", k, v)
+        #quit()
+        return weight
+
 
     #-------------------------------------------
     def saveResults(self, filename, data_dict):
@@ -1741,6 +1642,7 @@ class PopulaceGraph:
         self.graph = nx.Graph()
         self.total_weight = 0
         self.total_edges = 0
+
 
 class Record:
     def __init__(self, basedir):
