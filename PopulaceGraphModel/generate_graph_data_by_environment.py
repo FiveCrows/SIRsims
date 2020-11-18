@@ -13,6 +13,7 @@ import numpy as np
 # Questions: how to handle workplaces of 1 person? 
 
 save_output = False
+slim = True
 slim = False
 
 #construct partitioner
@@ -58,13 +59,14 @@ def edgeHistogram(edge_list):
 #-------------------------------------
 
 envs = {'household':[], 'school':[], 'workplace':[]}
-envs_hist = {'household':[], 'school':[], 'workplace':[]}
+envs_hist = {'household':[], 'school':[], 'workplace':[], 'all':[]}
 
 for index in model.environments:
     env = model.environments[index]
     envs[env.env_type].extend(env.members)
     hist = edgeHistogram(env.edges)
     envs_hist[env.env_type].append(hist)
+    envs_hist['all'].append(hist)
 
 def avgHistogram(envs):
     nb_hist = len(envs)
@@ -86,31 +88,59 @@ sch_hist = avgHistogram(envs_hist['school'])
 print("school: ", sch_hist)
 wrk_hist = avgHistogram(envs_hist['workplace'])
 print("workplace: ", wrk_hist)
+hm_hist = avgHistogram(envs_hist['household'])
+print("household: ", wrk_hist)
+all_hist = avgHistogram(envs_hist['all'])  # full graph
+print("all: ", wrk_hist)
 
 k_sch = list(sch_hist.keys())
 k_wrk = list(wrk_hist.keys())
+k_hm = list(hm_hist.keys())
+k_all = list(all_hist.keys())
 print("k_sch= ", k_sch)
-print("k_sch= ", k_wrk)
+print("k_wrk= ", k_wrk)
+print("k_hm= ", k_hm)
+print("k_all= ", k_all)
 
-max_deg = max(k_sch + k_wrk)
+max_deg = max(k_sch + k_wrk + k_hm)
 degrees = list(range(0,max_deg))
 deg_sch = []
 deg_wrk = []
+deg_hm  = []
+deg_all  = []
 for d in degrees:
     deg_sch.append(sch_hist[d])
     deg_wrk.append(wrk_hist[d])
-df = pd.DataFrame({'degree': degrees, 'school': deg_sch, 'workplace':deg_wrk})
+    deg_hm.append(hm_hist[d])
+    deg_all.append(all_hist[d])
+df = pd.DataFrame({'degree': degrees, 'school': deg_sch, 'workplace':deg_wrk, 'household':deg_hm, 'all':deg_all})
 print(df)
 
-sns.barplot('degree', 'workplace', data=df, lw=0, color='red', alpha=0.6, label='Workplace') #palette="Reds")
-ax = sns.barplot('degree', 'school', data=df, lw=0, color='blue', alpha=0.6, label='School') #palette="Blues", alpha=0.7)
-#ax.set_xticklabels(np.linspace(0, 40, 21, dtype='int'))
+sns.barplot('degree', 'workplace', data=df, color='red', alpha=0.5, label='Workplace') #palette="Reds")
+sns.barplot('degree', 'school', data=df, color='blue', alpha=0.5, edgecolor='blue', label='School') #palette="Blues", alpha=0.7)
+ax = sns.barplot('degree', 'household', data=df, lw=0, color='green', alpha=0.5, edgecolor='green', label='Household') #palette="Reds")
+
 ax.set_xticks(np.linspace(0, 40, 21, dtype='int'))
 #ax.set_xlim(0, 36)
 plt.ylabel('Percentage')
-plt.title("Histogram of workplace and school node degree")
+plt.title("Histogram of home, workplace, and school node degree")
 plt.legend()
 plt.savefig("plot_degree_histograms.pdf")
+
+# plot of degree for full graph
+#df = pd.DataFrame({'degree': degrees, 'all': deg_all, 'workplace':deg_wrk, 'household':deg_hm})
+ax = sns.barplot('degree', 'all', data=df, color='black', alpha=0.2, label='Full Graph') #palette="Reds")
+
+lw = 1.5
+ax = sns.barplot('degree', 'school', data=df, lw=lw, facecolor=(1,1,1,0), edgecolor='blue') #palette="Reds")
+ax = sns.barplot('degree', 'workplace', data=df, lw=lw, facecolor=(1,1,1,0), edgecolor='red') #palette="Reds")
+ax = sns.barplot('degree', 'household', data=df, lw=lw, facecolor=(1,1,1,0), edgecolor='green') #palette="Reds")
+ax = sns.barplot('degree', 'all', data=df, lw=lw, facecolor=(1,1,1,0), edgecolor='black') #palette="Reds")
+
+ax.set_xticks(np.linspace(0, 40, 21, dtype='int'))
+plt.legend()
+plt.savefig("plot_degree_histograms_fullgraph.pdf")
+
 quit()
 
 
