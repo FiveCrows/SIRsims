@@ -71,16 +71,16 @@ print("df1= ", df1)
 
 # How to do arithmetic on DF columns
 
-f, ax = plt.subplots(figsize = (10,7))
-plt.title("Population Age Distribution in the schools+workplaces", fontsize=14)
-g = sns.FacetGrid(df1, col='env')
-g.map(sns.barplot,'ages', 'value', 'sex', lw=0, palette="Blues")
-#sns.barplot('ages', 'value', hue='sex', data=df1, errwidth=0, lw=0)
+#sns.set(rc={'figure.figsize':(11,8.57)})
+g = sns.FacetGrid(df1, col='env') #, height=4.5) #, aspect=11.5/8.5)
+mm = g.map(sns.barplot,'ages', 'value', 'sex', lw=0, palette="Blues")
+mm.add_legend()
+mm.fig.suptitle("Population Age Distribution in the schools+workplaces", fontsize=14)
 g.set_xticklabels(rotation=45, fontsize=6)
-#ax.set_xticks(rotation=45, fontsize=6)
-#plt.xticks(rotation=45, fontsize=8)
-#plt.ylim(0, 8000)
+#plt.title("Population Age Distribution in the schools+workplaces", fontsize=14)
+plt.tight_layout()
 plt.savefig("plot_demographics.jpg")
+plt.savefig("plot_demographics.pdf")
 
 quit()
 
