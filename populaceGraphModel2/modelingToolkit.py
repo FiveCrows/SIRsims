@@ -503,6 +503,7 @@ class NetBuilder:
                 #make sure there are enough people to fit num_edges
                 if i == j:
                     num_edges = int(total_edges * contactFraction)
+                    # GE: should divide by 2. This is undirected graph
                     max_edges = p_n[i] * (p_n[i]-1)
                     if max_edges <= num_edges:
                         self.buildDenseNet(environment)
