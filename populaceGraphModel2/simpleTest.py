@@ -12,7 +12,7 @@ netBuilder = NetBuilder(env_type_scalars, prevention_efficacies)
 model.networkEnvs(netBuilder)
 model.weightNetwork(env_type_scalars, prevention_adoptions, prevention_efficacies)
 model.infectPopulace(0.001)
-#simulate
 
+#simulate
 model.simulate(gamma,tau)
 model.plotSIR()

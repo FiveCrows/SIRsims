@@ -199,23 +199,6 @@ class Environment:
         self.mask_adoption = dict(zip(self.members, mask_adoption))
         # distancing_adoption: 0 or 1 for each member within a structured environment (workplace or school)
 
-    # class Environment
-    def reweight(self, netBuilder, newPreventions = None):
-        print("Reweight should not be called"); quit()
-        """
-        Rechooses the weights on each edge with, presumably, a distinct weighter or preventions
-        :param weighter: TransmissionWeighter object
-        will be used to determine the graphs weights
-        :param preventions: dict
-        should associate each environment type to another dict, which associates each prevention to a adoption
-        :return: None
-        """
-
-        #update new prevention strategies on each environment
-        #recalculate weight for each edge
-        for edge in self.edges:
-            new_weight = netBuilder.getWeight(edge[0], edge[1], self)
-            edge[2] = new_weight
 
 
     # class Environment
@@ -324,9 +307,7 @@ class NetBuilder:
         :param avg_contacts:
         if specified, the number of edges picked for an environment will be chosen to meet avg_contacts
         """
-
         self.global_weight = 1
-
 
     def addEdge(self, nodeA, nodeB, environment):
         """
@@ -344,7 +325,6 @@ class NetBuilder:
             environment.addEdge(nodeB, nodeA)
             pass
 
-    # class NetBuilder
     def buildDenseNet(self, environment, subgroup=None, weight_scalar = 1):
         """
         This function will add every edge possible for the environment. Thats n*(n-1)/2 edges
@@ -363,16 +343,14 @@ class NetBuilder:
             members = environment.members
         else:
             members = subgroup
-        #env_type = environment.env_type
+        #quality = environment.quality
         member_count = len(members)
 
         for i in range(member_count):
             for j in range(i):
                 nodeA, nodeB = members[i], members[j]
-                if nodeA < nodeB:
-                    environment.addEdge(nodeA, nodeB)
-                else:
-                    environment.addEdge(nodeB, nodeA)
+                environment.addEdge(nodeA, nodeB)
+
 
     def genRandEdgeList(self, setA, setB, n_edges):
         if n_edges == 0:
@@ -382,15 +360,17 @@ class NetBuilder:
         n_B = len(setB)
         if setA == setB:
             pos_edges = n_A * (n_A - 1) / 2
-            same_sets = True
         else:
             pos_edges = n_A * n_B
-            same_sets = False
 
-        #        p_duplicate = n_edges/pos_edges
-        #        if p_duplicate< 0.001:
-        #            list = [(random.choice(setA),random.choice(setB)) for i in range(n_edges)]
-        #        else:
+        p_duplicate = n_edges/pos_edges
+        if n_edges > pos_edges:
+            print("oh nooo!")
+            n_edges = pos_edges
+
+    #elif p_duplicate> 0.5:
+        #pass
+            #list = random.shuffle(enumerate())
         edge_dict = {}
         while len(edge_dict) < n_edges:
             A, B = random.choice(setA), random.choice(setB)
@@ -399,7 +379,9 @@ class NetBuilder:
             elif B > A:
                 edge_dict[B, A] = 1
         list = edge_dict.keys()
+        print(len(list))
         return list
+
 
     # for clusterRandGraph
     def buildBipartiteNet(self, environment, members_A, members_B, edge_count, weight_scalar = 1, p_random = 0.2):
@@ -468,7 +450,8 @@ class NetBuilder:
         the environment to add edges for
 
         :param avg_degree: int or double
-         if avg_degree is not None, then the contact matrix should scaled such that the average degree
+         if avg_
+        degree is not None, then the contact matrix should scaled such that the average degree
 
         :param topology: string
         can be either 'random', or 'strogatz'
@@ -499,7 +482,7 @@ class NetBuilder:
         #default_weight = total_contact/totalEdges
         if avg_degree == None:
             avg_degree = total_contact/environment.population
-
+        
         if avg_degree == 0: return
 
         #print('by the sum of the CM, avg_degree should be : {}'.format(avg_degree ))
@@ -516,32 +499,33 @@ class NetBuilder:
                 contactFraction = CM[i, j]*p_n[i]/(total_contact)
                 if contactFraction == 0:
                     continue
+
                 #make sure there are enough people to fit num_edges
                 if i == j:
                     num_edges = int(total_edges * contactFraction)
                     max_edges = p_n[i] * (p_n[i]-1)
+                    if max_edges <= num_edges:
+                        self.buildDenseNet(environment)
+                        continue
                 else:
-                    # edges = 0, fraction = NaN
-                    #print("tot_edgess= ", total_edges, ",  contactFraction= ", contactFraction)
                     num_edges = int(total_edges*contactFraction*2)
                     max_edges = p_n[i] * p_n[j]
-                if max_edges < num_edges:
-                    num_edges = max_edges
+                    if num_edges > max_edges:
+                        num_edges = max_edges
                 if num_edges == 0:
                     continue
 
-                #not worth the concern atm tbh
                 #to  compensate by scaling the weights up a bit
                 #residual_scalar = total_edges * contactFraction / num_edges
                 #if residual_scalar>2 and sizeA>3:
                     #print("error in environment # {}, it's contacts count for i,j = {} is {}but there are only {} people in that set".format(environment.index, index_i, CM[index_i,index_j], len(environment.partitioned_members[index_i])))
-
+                if(num_edges> len(p_sets[i])*len(p_sets[j])):
+                    print("ohhh nooo ")
                 edgeList = self.genRandEdgeList(p_sets[i], p_sets[j], num_edges)
-                check = list(set(edgeList) &set(environment.edges))
-
+                if(len(edgeList)==0):
+                    print("oh, noo!")
                 for edge in edgeList:
                     self.addEdge(edge[0], edge[1], environment)
-                    pass
 
     def setEnvScalars(self, env_scalars):
         self.env_scalars = env_scalars
@@ -549,24 +533,6 @@ class NetBuilder:
     #def setPreventions(self, preventions):
         #self.preventions = preventions
 
-    # class NetBuilder
-    def getWeight(self, personA, personB, environment):
-
-        """
-        Uses the environments type and preventions to deternmine weight
-        :param personA: int
-
-        Uses the environments type and preventions to deternmine weight
-        :param personA: int
-        a persons index, which should be a member of the environment
-        :param personB: int
-        :param environment: environment
-         the shared environment of two nodes for the weight
-        :return:
-        """
-        weight = self.global_weight*self.env_scalars[environment.env_type]
-
-        return weight
 
     #def weightEnvs(self, envs, ):
 
@@ -603,7 +569,7 @@ class StrogatzNetBuilder(NetBuilder):
         local_k = math.floor(num_edges/member_count)*2
         remainder = num_edges - local_k*member_count/2
         if local_k >= member_count:
-            self.buildDenseNet(environment, weight_scalar = weight_scalar)
+            self.buildDenseNet(environment)
             return
 
         for i in range(member_count):
@@ -1459,7 +1425,6 @@ class PopulaceGraph:
                 self.graph.add_edge(pa, pb, transmission_weight = weight)
 
             #print("mask_weight_factor= ", mask_weight_factor)
-        return weight
 
     # self.mask_reductions: defined for every person of the graph
         # Whether a mask is worn or not are percentages set for each environment type
@@ -1708,3 +1673,18 @@ class Utils:
         SIR['I'] = Inew
         SIR['R'] = Rnew
         return SIR
+
+
+def davisBrokenIdea(listA, listB, epp, lists_are_same):
+    edge_dict = {}
+    indexA = 0
+    for A in listA:
+        used_indices = []
+        for i in range(epp):
+            indexB = random.random(indexA if lists_are_same else 0, len(listB))
+
+            if used_indices.count(indexB) > 0:
+                continue
+            used_indices.append(indexB)
+            edge_dict[A, listB[indexB]] = 1
+        indexA += 1
