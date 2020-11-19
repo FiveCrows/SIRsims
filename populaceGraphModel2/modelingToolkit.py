@@ -107,6 +107,7 @@ class Environment:
     Objects to the carry details for every home
     """
 
+
     def __init__(self, attributes, members):
         """
         :param index: int
@@ -117,9 +118,7 @@ class Environment:
         either 'household', 'school', or 'workplace'
         :param latitude: float
         :param longitude: float
-
         """
-
 
         self.__dict__.update(attributes)
         self.members = members  # list of keys (integers), probably people
@@ -220,7 +219,7 @@ class Environment:
 
 
     # class Environment
-    def addEdge(self, nodeA, nodeB, weight):
+    def addEdge(self, nodeA, nodeB):
         '''
         This helper function  not only makes it easier to track
         variables like the total weight and edges for the whole graph, it can be useful for debugging
@@ -232,7 +231,7 @@ class Environment:
          the weight for the edge
         '''
 
-        self.total_weight += weight
+        #self.total_weight += weight
         # NOT SURE how weight is used. 
         #self.edges.append([nodeA, nodeB, weight])
         self.edges.append((nodeA, nodeB))
@@ -309,6 +308,7 @@ class Workplace(StructuredEnvironment):
 class School(StructuredEnvironment):
     env_type = 'school'
 
+
 class NetBuilder:
     """
     This class is written to hold network building algorithms
@@ -330,7 +330,7 @@ class NetBuilder:
 
     def addEdge(self, nodeA, nodeB, environment):
         """
-        just gets the weight and calls it into the environment
+        makes sure the edge is added in the proper direction
         :return:
         """
 
@@ -339,13 +339,10 @@ class NetBuilder:
         # maintaining lists constructed outside the Networkx library.
 
         if nodeA < nodeB:
-            #weight = self.getWeight(nodeA, nodeB, environment)
-            weight = 1.0  # GE, 2020-11-01
-            environment.addEdge(nodeA, nodeB, weight)
+            environment.addEdge(nodeA, nodeB)
         else:
-            #weight = self.getWeight(nodeB, nodeA, environment)
-            weight = 1. # GE, 2020-11-01
-            environment.addEdge(nodeB, nodeA, weight)
+            environment.addEdge(nodeB, nodeA)
+            pass
 
     # class NetBuilder
     def buildDenseNet(self, environment, subgroup=None, weight_scalar = 1):
@@ -373,13 +370,9 @@ class NetBuilder:
             for j in range(i):
                 nodeA, nodeB = members[i], members[j]
                 if nodeA < nodeB:
-                    #weight = self.getWeight(nodeA, nodeB, environment)
-                    weight = 1.0  # GE
-                    environment.addEdge(nodeA, nodeB, weight)
+                    environment.addEdge(nodeA, nodeB)
                 else:
-                    # weight = self.getWeight(nodeB, nodeA, environment) 
-                    weight = 1.0 # GE
-                    environment.addEdge(nodeB, nodeA, weight)
+                    environment.addEdge(nodeB, nodeA)
 
     def genRandEdgeList(self, setA, setB, n_edges):
         if n_edges == 0:
@@ -404,7 +397,7 @@ class NetBuilder:
             if A > B:
                 edge_dict[A, B] = 1
             elif B > A:
-                edge_dict[A, B] = 1
+                edge_dict[B, A] = 1
         list = edge_dict.keys()
         return list
 
@@ -453,7 +446,7 @@ class NetBuilder:
                     nodeA, nodeB = A[i], B[(begin_B_edges +j)%size_B]
                     #weight = self.getWeight(nodeA, nodeB, environment)
                     weight = 1.0 # GE
-                    environment.addEdge(nodeA,nodeB,weight)
+                    environment.addEdge(nodeA,nodeB)
                 else:
                     remainder +=1
 
@@ -484,6 +477,7 @@ class NetBuilder:
         """
 
         #to clean up code just a little
+        environment.edges = []
         p_sets = environment.partition
         CM = environment.returnReciprocatedCM()
 
@@ -506,7 +500,7 @@ class NetBuilder:
         if avg_degree == None:
             avg_degree = total_contact/environment.population
 
-        if avg_degree ==0: return
+        if avg_degree == 0: return
 
         #print('by the sum of the CM, avg_degree should be : {}'.format(avg_degree ))
         #determine total edges needed for entire network. There are two connections per edge)
@@ -543,8 +537,11 @@ class NetBuilder:
                     #print("error in environment # {}, it's contacts count for i,j = {} is {}but there are only {} people in that set".format(environment.index, index_i, CM[index_i,index_j], len(environment.partitioned_members[index_i])))
 
                 edgeList = self.genRandEdgeList(p_sets[i], p_sets[j], num_edges)
+                check = list(set(edgeList) &set(environment.edges))
+
                 for edge in edgeList:
                     self.addEdge(edge[0], edge[1], environment)
+                    pass
 
     def setEnvScalars(self, env_scalars):
         self.env_scalars = env_scalars
@@ -790,7 +787,6 @@ class PopulaceGraph:
         self.resetVaccinatedInfected()
 
         # must call once in constructor
-
     def loadPopulace(self, file):
         '''
 
@@ -1418,7 +1414,6 @@ class PopulaceGraph:
         data['title']  = title
         data['params'] = {'gamma':gamma, 'tau':tau}
         data['preventions'] = self.preventions
-        data['prevention_efficacies'] = self.prevention_efficacies  # no longer needed
         data['prevention_adoptions']  = self.prevention_adoptions
         data['ages_SIR']    = ages_d # ages_d[time][k] ==> S,I,R counts for age bracket k
         data['vacc_dict']   = self.createVaccinationDict()
@@ -1439,16 +1434,17 @@ class PopulaceGraph:
         the efficetiveness from 0 to 1 100% effective of the masking and distancing, and the std for these per unit
         :return:
         '''
-
+        self.prevention_adoptions = prevention_adoptions
         assert self.isNetworked, "env must be networked before graph can be built"
         self.setupDistancingReductions(prevention_efficacies["distancing"])
         self.setupMaskingReductions(prevention_efficacies["masking"])
         envs = self.environments
         for env in envs.values():
             edges = env.edges
+            # draw masks and distancers
             env.drawPreventions(prevention_adoptions, self.populace)
 
-            #draw masks
+
             for ix, edge in enumerate(edges):
                 #get weight factor
                 reduction = env.distancing_adoption[edge] * self.distancing_reductions[ix]
@@ -1489,7 +1485,6 @@ class PopulaceGraph:
             #print("distance_weight_factor= ", k, v)
         #quit()
         return weight
-
 
     #-------------------------------------------
     def saveResults(self, filename, data_dict):

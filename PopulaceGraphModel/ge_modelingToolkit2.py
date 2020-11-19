@@ -400,7 +400,7 @@ class NetBuilder:
             if A > B:
                 edge_dict[A, B] = 1
             elif B > A:
-                edge_dict[A, B] = 1
+                edge_dict[B, A] = 1
         list = edge_dict.keys()
         return list
 
@@ -542,7 +542,9 @@ class NetBuilder:
                 edgeList = self.genRandEdgeList(p_sets[i], p_sets[j], num_edges)
                 for edge in edgeList:
                     self.addEdge(edge[0], edge[1], environment)
-
+                    edgediff = len(environment.edges)-len(set(environment.edges))
+                    if edgediff > 0:
+                        print("error!")
 
     def setEnvScalars(self, env_scalars):
         self.env_scalars = env_scalars
