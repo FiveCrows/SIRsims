@@ -186,6 +186,7 @@ class Environment:
 
 
     # class Environment
+    '''
     def reweight(self, netBuilder, newPreventions = None):
         print("Reweight should not be called"); quit()
         """
@@ -202,10 +203,11 @@ class Environment:
         for edge in self.edges:
             new_weight = netBuilder.getWeight(edge[0], edge[1], self)
             edge[2] = new_weight
+    '''
 
 
     # class Environment
-    def addEdge(self, nodeA, nodeB, weight):
+    def addEdge(self, nodeA, nodeB): #, weight):
         '''
         This helper function  not only makes it easier to track
         variables like the total weight and edges for the whole graph, it can be useful for debugging
@@ -217,9 +219,6 @@ class Environment:
          the weight for the edge
         '''
 
-        self.total_weight += weight
-        # NOT SURE how weight is used. 
-        #self.edges.append([nodeA, nodeB, weight])
         self.edges.append((nodeA, nodeB))
 
     def network(self, netBuilder):
@@ -335,12 +334,10 @@ class NetBuilder:
 
         if nodeA < nodeB:
             #weight = self.getWeight(nodeA, nodeB, environment)
-            weight = 1.0  # GE, 2020-11-01
-            environment.addEdge(nodeA, nodeB, weight)
+            environment.addEdge(nodeA, nodeB)
         else:
             #weight = self.getWeight(nodeB, nodeA, environment)
-            weight = 1. # GE, 2020-11-01
-            environment.addEdge(nodeB, nodeA, weight)
+            environment.addEdge(nodeB, nodeA)
 
     # class NetBuilder
     def buildDenseNet(self, environment, subgroup=None, weight_scalar = 1):
@@ -368,13 +365,9 @@ class NetBuilder:
             for j in range(i):
                 nodeA, nodeB = members[i], members[j]
                 if nodeA < nodeB:
-                    #weight = self.getWeight(nodeA, nodeB, environment)
-                    weight = 1.0  # GE
-                    environment.addEdge(nodeA, nodeB, weight)
+                    environment.addEdge(nodeA, nodeB)
                 else:
-                    # weight = self.getWeight(nodeB, nodeA, environment) 
-                    weight = 1.0 # GE
-                    environment.addEdge(nodeB, nodeA, weight)
+                    environment.addEdge(nodeB, nodeA)
 
 
     def genRandEdgeList(self, setA, setB, n_edges):
@@ -395,14 +388,16 @@ class NetBuilder:
         #            list = [(random.choice(setA),random.choice(setB)) for i in range(n_edges)]
         #        else:
         edge_dict = {}
+        count = 0
         while len(edge_dict) < n_edges:
             A, B = random.choice(setA), random.choice(setB)
-            if A > B:
+            if (n_edges < 3 and count < 5): 
+                count += 1
+            if A < B:
                 edge_dict[A, B] = 1
-            elif B > A:
+            elif B < A:
                 edge_dict[B, A] = 1
-        list = edge_dict.keys()
-        return list
+        return edge_dict.keys()  # iterator
 
     # for clusterRandGraph
     def buildBipartiteNet(self, environment, members_A, members_B, edge_count, weight_scalar = 1, p_random = 0.2):
@@ -447,18 +442,14 @@ class NetBuilder:
             for j in range(k):
                 if random.random()>p_random:
                     nodeA, nodeB = A[i], B[(begin_B_edges +j)%size_B]
-                    #weight = self.getWeight(nodeA, nodeB, environment)
-                    weight = 1.0 # GE
-                    environment.addEdge(nodeA,nodeB,weight)
+                    environment.addEdge(nodeA,nodeB)
                 else:
                     remainder +=1
 
 
         eList = self.genRandEdgeList(members_A, members_B, remainder)
         for edge in eList:
-            #weight = self.getWeight(edge[0], edge[1], environment)
-            weight = 1.0 # GE
-            environment.addEdge(edge[0], edge[1], weight)
+            environment.addEdge(edge[0], edge[1])
 
 
     def buildStructuredNet(self, environment, avg_degree = None):
@@ -522,7 +513,7 @@ class NetBuilder:
                 #make sure there are enough people to fit num_edges
                 if i == j:
                     num_edges = int(total_edges * contactFraction)
-                    max_edges = p_n[i] * (p_n[i]-1)
+                    max_edges = p_n[i] * (p_n[i]-1) / 2  # undirected graph
                 else:
                     # edges = 0, fraction = NaN
                     #print("tot_edgess= ", total_edges, ",  contactFraction= ", contactFraction)
@@ -539,12 +530,16 @@ class NetBuilder:
                 #if residual_scalar>2 and sizeA>3:
                     #print("error in environment # {}, it's contacts count for i,j = {} is {}but there are only {} people in that set".format(environment.index, index_i, CM[index_i,index_j], len(environment.partitioned_members[index_i])))
 
+                #print("1 call genRandEdgeList, i,j, p_n[i], p_n[j]= ", i,j, p_n[i], p_n[j])
+                #print("1 call genRandEdgeList, num_edges, max_edges= ", num_edges, max_edges)
                 edgeList = self.genRandEdgeList(p_sets[i], p_sets[j], num_edges)
                 for edge in edgeList:
                     self.addEdge(edge[0], edge[1], environment)
-                    edgediff = len(environment.edges)-len(set(environment.edges))
-                    if edgediff > 0:
-                        print("error!")
+                    # check that edges are not counted twice. Cute trick. 
+                edgediff = len(environment.edges)-len(set(environment.edges))
+                if edgediff > 0:
+                    print("error!")
+                    quit()
 
     def setEnvScalars(self, env_scalars):
         self.env_scalars = env_scalars
