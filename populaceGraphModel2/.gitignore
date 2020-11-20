@@ -1,0 +1,4 @@
+*.pkl
+PopulaceGraphModel/**
+results/**
+.vscode/**
