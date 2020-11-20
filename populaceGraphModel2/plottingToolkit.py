@@ -1,6 +1,9 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-import 
+import modelingToolkit
+import seaborn as sns
 
-class Plot{}
-    
+
+class Plot:
+    def __init__()
+        pass
