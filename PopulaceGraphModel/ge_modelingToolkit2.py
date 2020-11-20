@@ -291,7 +291,7 @@ class NetBuilder:
     and Random nets for partitioned Environments.
     """
 
-    def __init__(self, env_type_scalars, prevention_efficacies, cv_dict = {}, avg_contacts = None):
+    def __init__(self, env_type_scalars, prevention_efficacies, avg_contacts = None):
         """
         :param env_type_scalars: dict
         each environment type must map to a float. is for scaling weights
@@ -304,17 +304,11 @@ class NetBuilder:
 
         :param avg_contacts:
         if specified, the number of edges picked for an environment will be chosen to meet avg_contacts
-
-        :param cv_dict: dict
-        the cv dict allows the user to specify values for keys "weight", "contact", and "mask_eff",
-        which will be used as the coefficient of variation for applying noise to these parrameters,
-        noise to the weights, the number of contacts in structured environments, and the efficacy of masks
         """
 
         self.global_weight = 1
         self.prevention_efficacies = prevention_efficacies
         self.env_scalars = env_type_scalars
-        #self.cv_dict = cv_dict   #### HOW IS CV_DICT USED? GE
         self.avg_contacts = avg_contacts   #### HOW IS avg_contacts USED? GE
 
     def setModel(self, model):
@@ -475,13 +469,6 @@ class NetBuilder:
         p_sets = environment.partition
         CM = environment.returnReciprocatedCM()
 
-        """
-        #add gaussian noise to contact matrix values
-        if "contact" in self.cv_dict: 
-            CM = CM*np.random.normal(1, self.cv_dict["contact"], CM.shape)
-            CM[np.where(CM < 0.)] = 0.
-        """
-
         assert isinstance(environment, StructuredEnvironment), "must be a structured environment"
         #a list of the number of people in each partition set
         p_n      = [len(p_sets[i]) for i in p_sets]
@@ -592,17 +579,6 @@ class NetBuilder:
             redA = mask_eff[environment.mask_adoption[personA]]  # <<< ERROR?
             redB = mask_eff["masking"][environment.mask_adoption[personB]]
 
-            """
-            # Apply spread to mask effectiveness if requested
-            if "mask_eff" in self.cv_dict: 
-                redA = redA*self.cv_dict["mask_eff"] 
-                redA[np.where[redA < 0.]] = 0.
-                redA[np.where[redA > 1.]] = 1.
-                redB = redB*self.cv_dict["mask_eff"]
-                redB[np.where[redB < 0.]] = 0.
-                redB[np.where[redB > 1.]] = 1.
-            """
-
             # Next line assumes that two distancers don't double distance, but at least one distancer 
             # is needed to be distanced, will be 1 or 0
             weight = weight*(1-redA)*(1-redB)        
@@ -613,24 +589,7 @@ class NetBuilder:
         #  REPLACE BY MORE GENERAL APPROACH
         weight = weight*(1.-avg_dist)**isDistanced
 
-        """
-        # Add noise to the weight, if requested
-        if "weight" in self.cv_dict: 
-            scal = np.random.normal(1, self.cv_dict["weight"])
-            if scal < 0.: scal = 0.
-            if scal > 1.: scal = 1.
-            weight = weight * scal
-        """
-    
         # apply spread to mask effectiveness if requested
-
-        """
-        # This was in uncommented in ModelingToolkit2.py (2020-10-29) and generated an error. 
-        # redA not defined. 
-        if "mask_eff" in self.cv_dict: 
-            redA = redA * self.cv_dict["mask_eff"]
-            redB = redB * self.cv_dict["mask_eff"]
-        """
 
         return weight
 
@@ -940,11 +899,12 @@ class PopulaceGraph:
         self.resetVaccinatedInfected()
 
         # must call once in constructor
+        # Arguments are (mean, std)
         self.setupMaskingReductions(self.prevention_efficacies["masking"])
         self.setupDistancingReductions(self.prevention_efficacies["distancing"])
 
-        self.setupMaskingReductions((.3, .3))
-        self.setupDistancingReductions((.4, .4))
+        #self.setupMaskingReductions((.3, .3))
+        #self.setupDistancingReductions((.4, .4))
 
     #-------------------------------------------------
     def printEnvironments(self):
@@ -1218,59 +1178,56 @@ class PopulaceGraph:
         """
 
         avg, std = avg_std
-        reduction = np.random.normal(avg, std, self.population)
+        num_edges = self.graph.number_of_edges()
+        if num_edges == 0:  return
+
+        reduction = np.random.normal(avg, std, num_edges)
         reduction[np.where(reduction < 0.)] = 0.
         reduction[np.where(reduction > 1.)] = 1.
         self.distancing_reductions = reduction
         return reduction
 
     #-----------------------------------------
-    def setupMaskingWeights(self): #, num_edges):
+    def setupMaskingWeights(self): 
         # self.mask_reductions: defined for every person of the graph
         # Whether a mask is worn or not are percentages set for each environment type
 
         avg_std = self.prevention_efficacies["masking"]
         self.setupMaskingReductions(avg_std)
 
-        #print("setupMaskingWeights, avg_std= ", avg_std); quit()
-
         mask_weight_factor = {} #np.ones(num_edges)
         environments = self.environments
 
         for env_id, env in environments.items():
-            #print("env_id= ", env_id)
-            #env = environments[env_id]
-            # GE: Where is this computed? 
             edges = env.edges   # list of edges. Edge is (personA_id, personB_id, weight)
             env_type = env.env_type 
-            #adoption = self.prevention_adoptions[env.env_type]["masking"]
             env.drawPreventions(self.prevention_adoptions, self.populace)
 
             for idx, edge in enumerate(edges):
                 pa, pb = edge
                 mask_weight_factor[(pa,pb)] = (1. - env.mask_adoption[pa]*self.mask_reductions[pa]) \
                     * (1. - env.mask_adoption[pb]*self.mask_reductions[pb])
-            #print("mask_weight_factor= ", mask_weight_factor)
                 
-        #print("mask_weight_factor= ", mask_weight_factor)
-        #quit()
         return mask_weight_factor
 
-        """
-        count = 0
-        for k,v in mask_weight_factor.items():
-            e1,e2 = k
-            try:
-                mask_weight_factor[(e2,e1)]; 
-                if e1 != e2: count += 1
-            except: 
-                try: mask_weight_factor[(e2,e1)]
-                except: pass
+    #----------------------------------------
+    # class PopulaceGraph
+    def setupTransmissibilityWeights(self):
+        self.avg_transmissibility = None
 
-        #count = count // 2  # (i,j),(j,i) should only be counted once
-        print("nb of mask elements with symmetry: count= ", count)
-        return mask_weight_factor
-        """
+        shape = self.global_dict["gamma_shape"]
+        scale = self.global_dict["gamma_scale"]
+
+        num_edges = self.graph.number_of_edges()
+        if num_edges == 0:  return
+
+        self.avg_transmissibility = np.random.gamma(shape, scale, num_edges)
+        transmission_weight_factor = {} 
+
+        # just a pointer assignment. Changing avg_transmibility will change the weight_factor. 
+        transmission_weight_factor = self.avg_transmissibility
+
+        return transmission_weight_factor
 
     #----------------------------------------
     def setupDistancingWeights(self): #, num_edges):
@@ -1288,31 +1245,22 @@ class PopulaceGraph:
             env.drawPreventions(self.prevention_adoptions, self.populace)
 
             for ix, edge in enumerate(env.edges):
-                #print("adoption= ", env.distancing_adoption)
-                #print("distancing= ", self.distancing_reductions)  # INCORRECT. [list with indices]
-                #print("edge= ", edge)
                 reduction = env.distancing_adoption[edge]*self.distancing_reductions[ix]
                 distance_weight_factor[edge] = 1. - reduction
 
-        #for k,v in distance_weight_factor.items():
-            #print("distance_weight_factor= ", k, v)
-        #quit()
         return distance_weight_factor
 
     #------------------
     # Called from the driver script
     def infectPopulace(self, perc):
-        # vaccinate a fraction perc 
         """
         :param perc
         infect a fraction perc [0,1] of the population at random, all ages
         """
 
         infected_01 = bernoulli.rvs(perc, size=self.population)
-        ## ERROR: list object self.populace has no keys()
         # how to get the keys of a list subject to conditionals. 
         self.initial_infected = np.where(infected_01 == 1)[0]
-        #print("self.initial_infected= ", self.initial_infected); quit()
 
     #-------------------------------------------------
     # Why this more sophisticated version, with same signature as the two-line version above?
@@ -1507,11 +1455,6 @@ class PopulaceGraph:
         :param netBuilder: NetBuilder object
         defines how to choose edges and weights by each environment
         """
-        #None is default so old scripts can still run. self not defined in signatur
-        #for index in self.environments:
-            #environment = self.environments[index]
-            #environment.network(netBuilder)
-        #self.isBuilt = True
 
         #None is default, so old scripts can still run. self not defined in signature
         for index in self.environments:
@@ -1526,7 +1469,6 @@ class PopulaceGraph:
         for environment in self.environments: 
             # GE changed the function. Do not add weights
             self.graph.add_edges_from(self.environments[environment].edges) 
-            #self.graph.add_weighted_edges_from(self.environments[environment].edges, weight = "transmission_weight")
         self.isBuilt = True
 
     # class PopulaceGraph
@@ -1655,27 +1597,32 @@ class PopulaceGraph:
         #print("enter setupMaskWeights, prevention_adoptions= ", self.prevention_adoptions)
         mask_weight_factor       = self.setupMaskingWeights() 
         distancing_weight_factor = self.setupDistancingWeights()
+        beta_weight_factor       = self.setupTransmissibilityWeights()
+
+        print("beta_weight_factor= ", len(beta_weight_factor))
+        print("mask_weight_factor= ", len(mask_weight_factor))
+        print("distancing_weight_factor= ", len(distancing_weight_factor))
 
         #print("enter simulate: nb edges in graph: ", self.graph.number_of_edges())
 
         weight = {}  # keys are (e1,e2): graph edge
-        for k in distancing_weight_factor.keys():
-            weight[k] = distancing_weight_factor[k] * mask_weight_factor[k]
+        for ix, k in enumerate(distancing_weight_factor.keys()):
+            weight[k] = distancing_weight_factor[k] * mask_weight_factor[k]; # * beta_weight_factor[ix]
             self.graph.add_edge(k[0], k[1], transmission_weight=weight[k])
 
-        simResult = simAlg(self.graph, tau, gamma, initial_recovereds=self.initial_vaccinated, initial_infecteds=self.initial_infected, transmission_weight='transmission_weight', return_full_data=full_data)
+        print("nb initial infected: ", len(self.initial_infected))
+        print("nb initial recovered: ", len(self.initial_vaccinated))
 
-        """
-        graph = nx.Graph()
-        #add the edges of each environment to a single networkx graph
-        print("total nb environments: ", len(self.environments)); 
-        for environment in self.environments: 
-            graph.add_weighted_edges_from(self.environments[environment].edges, weight = "transmission_weight")
-        print("Before simlation: Graph: nb nodes: ", graph.number_of_nodes())
-
-        simResult = simAlg(graph, tau, gamma, rho = 0.001, transmission_weight='transmission_weight',return_full_data=full_data)
-        #self.sims.append([simResult, title, [gamma, tau], preventions])
-        """
+        if simAlg == EoN.fast_SIR:
+            print("Simulation Algorithm: fast_SIR")
+            simResult = simAlg(self.graph, tau, gamma, initial_recovereds=self.initial_vaccinated, 
+                    initial_infecteds=self.initial_infected, 
+                    transmission_weight='transmission_weight', return_full_data=full_data)
+        elif simAlg == EoN.fast_nonMarkovSIR:
+            print("Simulation Algorithm: fast_nonMarkov_SIR")
+            simResult = simAlg(self.graph, tau, gamma, initial_recovereds=self.initial_vaccinated, 
+                    initial_infecteds=self.initial_infected, 
+                    transmission_weight='transmission_weight', return_full_data=full_data)
 
         start2 = time.time()
         sr = simResult
@@ -1684,8 +1631,6 @@ class PopulaceGraph:
 
         for tix in range(0, int(last_time)+2, 2):
             # statuses[tix]: for each node of the graph, S,I,R status
-            #print("sr= ", sr)
-            #print("tix= ", tix)
             statuses[tix] = sr.get_statuses(time=tix)
         key0 = list(statuses.keys())[0]
         # statuses[graph node] = Dictionary: node# => 'S', 'I', or 'R'}
@@ -1701,14 +1646,6 @@ class PopulaceGraph:
         for k,v in statuses.items():
             ages_d[k] = self.SIRperBracket(v)
 
-            """
-            for bracket in ages_d[k].keys():  # bracket is either integer or string. How to change? 
-                #print("bracket: ", bracket)
-                #print("   keys: ", list(ages_d[k].keys()))
-                counts = ages_d[k][bracket]
-                print("bracket: ", bracket, ",  counts[S,I,R]: ", bracket, counts['S'], counts['I'], counts['R'])
-            """
-            
         self.record.print("time to change 'S','I','R' to 0,1,2 for faster processing: %f sec" % (time.time()-start3))
         #-----------
         # Create a dictionary to store all the data and save it to a file 
@@ -1936,12 +1873,19 @@ class Utils:
         print("len(t)= ", len(t))
         # interpolate on daily intervals.
         new_t = np.linspace(0., int(t[-1]), int(t[-1])+1)
+
+        if len(t) < 2:
+            print("error in interpolateSIR: ")
+            print("Make sure the intial number of infected is greater than zero!")
+            quit()
+
         func = interp1d(t, S)
         Snew = func(new_t)
         func = interp1d(t, I)
         Inew = func(new_t)
         func = interp1d(t, R)
         Rnew = func(new_t)
+
         #print("t= ", new_t)
         #print("S= ", Snew)
         #print("I= ", Inew)

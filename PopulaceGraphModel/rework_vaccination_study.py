@@ -40,15 +40,15 @@ partitioner = Partitioner('age', enumerator, names)
 
 # denotes the fraction of people using masks
 prevention_adoptions = {"household": {"masking": 0, "distancing": 0},
-                          "school": {"masking": 0, "distancing": 0},
-                          "workplace": {"masking": 0, "distancing": 0}}
+                        "school":    {"masking": 0, "distancing": 0},
+                        "workplace": {"masking": 0, "distancing": 0}}
 
 glob_dict['enumerator'] = enumerator
 glob_dict['prevention_adoptions'] = prevention_adoptions
 
 #initialize populaceGraph
-slim = True
 slim = False
+slim = True
 print("Running with slim= %d" % slim)
 
 glob_dict['slim'] = slim
@@ -93,19 +93,19 @@ glob_dict['mask_types'] = mask_types
 # cv is the std / avg. The avg are the prevention_efficacies
 
 # IGNORE "contact" for now, since there is no defined average. 
-cv_dict={"distancing": 0.2, "contact": 0.3, "masking": 0.4}
-cv_dict = {}
-netBuilder = NetBuilder(env_type_scalars, prevention_efficacies, cv_dict=cv_dict)
+netBuilder = NetBuilder(env_type_scalars, prevention_efficacies)
 
 pop_vacc_perc = 0.0
 infect_perc = 0.001
 glob_dict['pop_vacc_perc'] = pop_vacc_perc
 glob_dict['infect_perc'] = infect_perc
+glob_dict["gamma_shape"] = 1.
+glob_dict["gamma_scale"] = 1.
 
 model.vaccinatePopulace(perc=pop_vacc_perc)
 model.infectPopulace(perc=infect_perc)
 model.buildNetworks(netBuilder)
-model.simulate(gamma, tau, title = "cv is None")
+model.simulate(gamma, tau, title = "cv is None", global_dict=glob_dict)
 cv_vals = np.linspace(0., 1., 6) # Coefficient of variation (stdev/mean)
 cv_vals = np.linspace(0.1, 1., 5) # Coefficient of variation (stdev/mean)
 cv_vals = np.linspace(0., 0.6, 4) # Coefficient of variation (stdev/mean)
