@@ -16,3 +16,4 @@ model.infectPopulace(0.001)
 #simulate
 model.simulate(gamma,tau)
 model.plotSIR()
+#
