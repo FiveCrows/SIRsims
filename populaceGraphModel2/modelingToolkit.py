@@ -9,9 +9,200 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 import math
-import Environments
 from scipy.interpolate import interp1d
 from scipy.stats import bernoulli
+
+
+class Environment:
+    """
+    Objects to the carry details for every home
+    """
+
+
+    def __init__(self, attributes, members):
+        """
+        :param index: int
+        an identifier
+        :param members: list
+        a list of people who attend the environment
+        :param type: string
+        either 'household', 'school', or 'workplace'
+        :param latitude: float
+        :param longitude: float
+        """
+
+        self.__dict__.update(attributes)
+        self.members = members  # list of keys (integers), probably people
+        self.population = len(members)
+        self.num_mask_types = 1
+        # self.distancing = distancing
+        self.total_weight = 0
+        self.edges = []
+        #booleans to keep track of build process
+        self.hasEdges = False
+        self.isWeighted = False
+        #creates a dict linking each member of the environment with each prevention
+        """
+        :param attributes: dict
+        a lattitude, a longitude, an index
+                          
+        :param members: list
+        the people who attend the environment 
+        """
+
+        self.__dict__.update(attributes)
+        self.members = members
+
+    #-----------------------------------
+    def drawPreventions(self, adoptions, populace):
+        # populace[0]: list of properties of one person
+        #print("populace: ", populace[0]); quit()
+        """
+        picks masks and distancing parameters
+        :param adoptions: dict
+        the adoptions for each prevention, with keys for environment type, to prevention type to adoption
+        :param populace: dict
+        the populace dict is needed to know which mask everybody is using, if necessary
+
+        :return:
+        """
+
+        myadoptions = adoptions[self.env_type]  # self.env_type: household, school, workplace
+        #----------------
+        num_edges  = len(self.edges)
+        num_social = int(num_edges * myadoptions["distancing"])
+
+        #print("x num_edges= ", num_edges)
+        #print("x num_social= ", num_social)
+
+        # NOT a good approach when man businesses have only a single employee
+        # But then there are no edges in the business, so there will be no effect. 
+        distancing_adoption = [1] * num_social + [0] * (num_edges - num_social)
+        random.shuffle(distancing_adoption)
+
+        # class Environment
+        #print(type(self.edges), type(distancing_adoption))
+        #print(len(self.edges), len(distancing_adoption))
+        #print("self.edges= ", self.edges)
+        #print("distancing_adoption= ", distancing_adoption)
+        self.distancing_adoption = dict(zip(self.edges, distancing_adoption))
+
+        #----------------
+
+        #print("self.env_type= ", self.env_type)
+        #print("myadoptions= ", myadoptions)
+
+        #assign distancers per environment
+        num_distancers = int(self.population * myadoptions["distancing"])
+        distancing_adoption = [1] * num_distancers + [0] * (self.population - num_distancers)
+        random.shuffle(distancing_adoption)
+
+        # number of people with masks
+        num_masks = int(self.population * myadoptions["masking"])
+        #print("self.population= ", self.population)
+        #print("num_masks= ", num_masks)
+
+        mask_adoption = [1] * num_masks + [0] * (self.population - num_masks)
+        random.shuffle(mask_adoption)
+
+
+        # mask_adoption: 0 or 1 for each member within a structured environment (workplace or school)
+        self.mask_adoption = dict(zip(self.members, mask_adoption))
+        # distancing_adoption: 0 or 1 for each member within a structured environment (workplace or school)
+
+
+
+    # class Environment
+    def addEdge(self, nodeA, nodeB):
+        '''
+        This helper function  not only makes it easier to track
+        variables like the total weight and edges for the whole graph, it can be useful for debugging
+        :param nodeA: int
+         Index of the node for one side of the edge
+        :param nodeB: int
+        Index of the node for the other side
+        :param weight: double
+         the weight for the edge
+        '''
+
+        #self.total_weight += weight
+        # NOT SURE how weight is used. 
+        #self.edges.append([nodeA, nodeB, weight])
+        self.edges.append((nodeA, nodeB))
+
+
+    def network(self, netBuilder):
+        netBuilder.buildDenseNet(self)
+
+
+    def clearNet(self):
+        self.edges = []
+        self.total_weight = 0
+
+class Household(Environment):
+    env_type = 'household'
+
+class StructuredEnvironment(Environment):
+    """
+    These environments are extended with a contact matrix and partition
+    """
+
+    def __init__(self, attributes, members, populace, contact_matrix, partitioner, preventions = None):
+        """
+        :param index: int
+        to index the specific environment
+        :param members: list
+        a list of people who attend the environment
+        :param type: string
+        either 'household', 'school', or 'workplace'
+        :param preventions: dict
+        keys should be 'household', 'school', or 'workplace'. Each should map to another dict,
+        with keys for 'masking', and 'distancing', which should map to an int in range[0:1] that represents
+        the prevelance of the prevention strategy in the environment
+        :param populace: dict
+
+        :param contact_matrix: 2d array
+        :param partitioner: Partitioner
+        for creating a partition
+        """
+        super().__init__(attributes, members, )
+        self.partitioner = partitioner
+        self.contact_matrix = contact_matrix
+        self.id_to_partition = dict.fromkeys(members)
+
+        #self.total_matrix_contact = contact_matrix.sum()
+        self.partition = partitioner.partitionGroup(members, populace)
+        for set in self.partition:
+            for person in self.partition[set]:
+                self.id_to_partition[person] = (set)
+
+    def returnReciprocatedCM(self):
+        '''
+        :return: this function  averages to returs a modified version of the contact matrix where
+        CM_[i,j]*N[i]= CM_[j,i]*N[j]
+        '''
+
+        cm = self.contact_matrix
+        dim = cm.shape
+        rm = np.zeros(dim)
+        set_sizes = [len(self.partition[i]) for i in self.partition]
+
+        for i in range(dim[0]):
+            for j in range(dim[1]):
+                if set_sizes[i] != 0:
+                    rm[i,j] = (cm[i,j]*set_sizes[i]+cm[j,i]*set_sizes[j])/(2*set_sizes[i])
+        return rm
+
+    def network(self, netBuilder):
+        netBuilder.buildStructuredNet(self)
+
+class Workplace(StructuredEnvironment):
+    env_type = 'workplace'
+
+class School(StructuredEnvironment):
+    env_type = 'school'
+
+
 
 
 class Partitioner:
@@ -176,12 +367,8 @@ class NetBuilder:
         else:
             pos_edges = n_A * n_B
 
-        p_duplicate = n_edges/pos_edges
-        if n_edges > pos_edges:
-            print("oh nooo!")
-            n_edges = pos_edges
-
-    #elif p_duplicate> 0.5:
+        #p_duplicate = n_edges/pos_edges
+        #if p_duplicate> 0.5:
         #pass
             #list = random.shuffle(enumerate())
         edge_dict = {}
@@ -191,8 +378,7 @@ class NetBuilder:
                 edge_dict[A, B] = 1
             elif B > A:
                 edge_dict[B, A] = 1
-        list = edge_dict.keys()
-        print(len(list))
+        list = edge_dict.keys()        
         return list
 
 
@@ -317,7 +503,7 @@ class NetBuilder:
                 if i == j:
                     num_edges = int(total_edges * contactFraction)
                     # GE: should divide by 2. This is undirected graph
-                    max_edges = p_n[i] * (p_n[i]-1)
+                    max_edges = p_n[i] * (p_n[i]-1)/2
                     if max_edges <= num_edges:
                         self.buildDenseNet(environment)
                         continue
@@ -333,11 +519,7 @@ class NetBuilder:
                 #residual_scalar = total_edges * contactFraction / num_edges
                 #if residual_scalar>2 and sizeA>3:
                     #print("error in environment # {}, it's contacts count for i,j = {} is {}but there are only {} people in that set".format(environment.index, index_i, CM[index_i,index_j], len(environment.partitioned_members[index_i])))
-                if(num_edges> len(p_sets[i])*len(p_sets[j])):
-                    print("ohhh nooo ")
                 edgeList = self.genRandEdgeList(p_sets[i], p_sets[j], num_edges)
-                if(len(edgeList)==0):
-                    print("oh, noo!")
                 for edge in edgeList:
                     self.addEdge(edge[0], edge[1], environment)
 
@@ -1038,20 +1220,6 @@ class PopulaceGraph:
         #add the edges of each environment to a single networkx graph
         self.isNetworked = True
 
-    # class PopulaceGraph
-    def reweight(self, netBuilder, new_prev_adoptions = None):
-        print("Reweight should not be called"); quit()
-        return   # Changing code from what it was. GE. 2020-11-01,3.06pm
-        """
-        :param netBuilder: netBuilder object
-        to calculate new weights
-        :param new_prev_adoptions: dict
-        to change the preventions used in each environment before reweight
-        """
-
-        #choose new preventions if requested
-        for env in self.environments:
-            self.environments[env].reweight(netBuilder, new_prev_adoptions)
 
     #merge environments, written for plotting and exploration
     def returnMergedEnvironments(self, env_indexes, partitioner = None):
@@ -1218,6 +1386,7 @@ class PopulaceGraph:
         assert self.isNetworked, "env must be networked before graph can be built"
         self.setupDistancingReductions(prevention_efficacies["distancing"])
         self.setupMaskingReductions(prevention_efficacies["masking"])
+        dispersal ={np.random.gamma(1,0)}#is a stub, will be replaced with better function later
         envs = self.environments
         for env in envs.values():
             edges = env.edges
@@ -1231,11 +1400,12 @@ class PopulaceGraph:
                 distance_weight_factor = 1. - reduction
                 #get mask factor
                 pa, pb = edge
-                mask_weight_factor = (1. - env.mask_adoption[pa]*self.mask_reductions[pa]) \
+                mask_wf = (1. - env.mask_adoption[pa]*self.mask_reductions[pa]) \
                     * (1. - env.mask_adoption[pb]*self.mask_reductions[pb])
+                dist_wf = 
                 #add weighted edge
-                dispersal =np.random.normal(1,0)#is a stub, will be replaced with better function later
-                weight = mask_weight_factor * distance_weight_factor * env_type_scalars[env.env_type] * dispersal
+                
+                weight = mask_wf * dist_wf * env_type_scalars[env.env_type] * dispersal
                 self.graph.add_edge(pa, pb, transmission_weight = weight)
 
             #print("mask_weight_factor= ", mask_weight_factor)
@@ -1291,40 +1461,6 @@ class PopulaceGraph:
 
 
     #---------------------------------------------------------------------------
-    def plotNodeDegreeHistogram(self, env_indexes, layout = 'bars', title = "untitled", ax = None, normalized = True):
-        """
-        creates a histogram which displays the frequency of degrees for all nodes in the specified environment.
-        :param environment: The environment to plot for. if not specified, a histogram for everyone in the model will be plotted
-        :param layout: if 'lines', a line plot will be generated. otherwise a barplot will be used
-        :param title: the title that will appear on the plot
-        #:param ax: if an pyplot axis is specified, the plot will be added to it. Otherwise, the plot will be shown
-        :param normalized, when true the histogram will display the portion of total
-        """
-        degreeCounts = [0] * 100
-        for index in env_indexes:
-            env = self.environments[index]
-            people = env.members
-            graph = self.graph.subgraph(people)
-            plt.title("Degree plot for {}".format(title))
-
-
-            for person in people:
-                try:
-                    degree = len(graph[person])
-                except:
-                    degree = 0
-                degreeCounts[degree] += 1
-        while degreeCounts[-1] == 0:
-            degreeCounts.pop()
-        if layout == 'lines':
-            plt.plot(range(len(degreeCounts)), degreeCounts)
-        else:
-            plt.bar(range(len(degreeCounts)), degreeCounts)
-        plt.ylabel("total people")
-        plt.xlabel("degree")
-        plt.show()
-        plt.savefig(self.basedir+"/plotNodeDegreeHistogram.pdf")
-
     def plotSIR(self, memberSelection = None):
         """
         For members of the entire graph, will generate three charts in one plot, representing the frequency of S,I, and R, for all nodes in each simulation
@@ -1368,7 +1504,6 @@ class PopulaceGraph:
 
         partition = partitioner
         for index in env_indices:
-
             if isinstance(environment, StructuredEnvironment):
                 partitioned_people = environment.partition
                 partition = environment.partitioner
