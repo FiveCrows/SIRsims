@@ -79,18 +79,13 @@ class Environment:
         # But then there are no edges in the business, so there will be no effect. 
         distancing_adoption = [1] * num_social + [0] * (num_edges - num_social)
         random.shuffle(distancing_adoption)
-
         # class Environment
         #print(type(self.edges), type(distancing_adoption))
         #print(len(self.edges), len(distancing_adoption))
         #print("self.edges= ", self.edges)
         #print("distancing_adoption= ", distancing_adoption)
         self.distancing_adoption = dict(zip(self.edges, distancing_adoption))
-
-        #----------------
-
-        #print("self.env_type= ", self.env_type)
-        #print("myadoptions= ", myadoptions)
+        
 
         #assign distancers per environment
         num_distancers = int(self.population * myadoptions["distancing"])
@@ -457,6 +452,10 @@ class NetBuilder:
 
         :return:
         """
+
+        #make sure there's at least 1 edge to add
+        if environment.population <= 1:
+            return
 
         #to clean up code just a little
         environment.edges = []
@@ -941,61 +940,8 @@ class PopulaceGraph:
         self.mask_reductions = reduction
 
 
-    #------------------------------------
-    def setupDistancingReductions(self, avg_std):
-        """
-        :param avg: Average reduction in the efficacy of social distancing
-        :param cv: Coefficient of variation = std / avg
-        Social distance reduction reduction (weight = (1-mask_reduction) is a person-level quantity
-        Every person social distances (or not) and retains this property across the simulation
-        """
-
-        avg, std = avg_std
-        reduction = np.random.normal(avg, std, self.population)
-        reduction[np.where(reduction < 0.)] = 0.
-        reduction[np.where(reduction > 1.)] = 1.
-        self.distancing_reductions = reduction
-        return reduction
 
     #-----------------------------------------
-    def setupMaskingWeights(self): #, num_edges):
-        # self.mask_reductions: defined for every person of the graph
-        # Whether a mask is worn or not are percentages set for each environment type
-
-        avg_std = self.prevention_efficacies["masking"]
-        self.setupMaskingReductions(avg_std)
-
-        #print("setupMaskingWeights, avg_std= ", avg_std); quit()
-
-        mask_weight_factor = {} #np.ones(num_edges)
-        environments = self.environments
-
-
-        #print("mask_weight_factor= ", mask_weight_factor)
-        #quit()
-        return mask_weight_factor
-
-        """
-        count = 0
-        for k,v in mask_weight_factor.items():
-            e1,e2 = k
-            try:
-                mask_weight_factor[(e2,e1)]; 
-                if e1 != e2: count += 1
-            except: 
-                try: mask_weight_factor[(e2,e1)]
-                except: pass
-
-        #count = count // 2  # (i,j),(j,i) should only be counted once
-        print("nb of mask elements with symmetry: count= ", count)
-        return mask_weight_factor
-        """
-
-    #----------------------------------------
-
-
-    #------------------
-    # Called from the driver script
     def infectPopulace(self, perc):
         # vaccinate a fraction perc 
         """
@@ -1376,64 +1322,50 @@ class PopulaceGraph:
 
     def weightNetwork(self, env_type_scalars, prevention_adoptions, prevention_efficacies):
         '''
+        :param env_type_scalars: dict
+        to associate each env type with a parameter for scaling its use
         :param prevention_adoptations: dict
-        the rate at which preventions the people are 'masking', and 'distancing', for each environment type
+        to associate a rate for mask and distancing practices to each environment type
         :param prevention_efficacies: list
-        the efficetiveness from 0 to 1 100% effective of the masking and distancing, and the std for these per unit
+         efficetiveness from 0 to 1 100% effective of the masking and distancing, and the std for these per unit
         :return:
         '''
         self.prevention_adoptions = prevention_adoptions
         assert self.isNetworked, "env must be networked before graph can be built"
-        self.setupDistancingReductions(prevention_efficacies["distancing"])
+
+        #draw an effictiveness of each persons practice of each prevention, then, for each environment, 
+        #draw who is actually practices each prevention. This way, while people may practice a prevention 
+        #within some environments, but not others, their effictiveness remains a constant across each env
+        
         self.setupMaskingReductions(prevention_efficacies["masking"])
-        dispersal ={np.random.gamma(1,0)}#is a stub, will be replaced with better function later
+        
+        #dispersal ={np.random.gamma(1,0)}#is a stub, will be replaced with better function later
         envs = self.environments
         for env in envs.values():
             edges = env.edges
             # draw masks and distancers
             env.drawPreventions(prevention_adoptions, self.populace)
-
+            #distribute the reduction factor for distancing on each edge
+            avg,std = prevention_efficacies["distancing"]
+            dist_reduction = np.random.normal(avg, std, len(env.edges))            
+            dist_reduction[np.where(dist_reduction < 0.)] = 0.
+            dist_reduction[np.where(dist_reduction > 1.)] = 1.
 
             for ix, edge in enumerate(edges):
-                #get weight factor
-                reduction = env.distancing_adoption[edge] * self.distancing_reductions[ix]
-                distance_weight_factor = 1. - reduction
+                #get distancing factor
+                dist_wf = 1- env.distancing_adoption[edge] * dist_reduction[ix]                
                 #get mask factor
                 pa, pb = edge
-                mask_wf = (1. - env.mask_adoption[pa]*self.mask_reductions[pa]) \
-                    * (1. - env.mask_adoption[pb]*self.mask_reductions[pb])
-                dist_wf = 
-                #add weighted edge
-                
-                weight = mask_wf * dist_wf * env_type_scalars[env.env_type] * dispersal
+                mask_wf = ((1 - env.mask_adoption[pa] * self.mask_reductions[pa]) 
+                         * (1 - env.mask_adoption[pb] * self.mask_reductions[pb]))                
+                #add weighted edge                
+                weight = mask_wf * dist_wf * env_type_scalars[env.env_type] #* dispersal #* dist_wf
                 self.graph.add_edge(pa, pb, transmission_weight = weight)
 
             #print("mask_weight_factor= ", mask_weight_factor)
 
     # self.mask_reductions: defined for every person of the graph
         # Whether a mask is worn or not are percentages set for each environment type
-
-        avg_std = self.prevention_efficacies["distancing"]
-        self.setupDistancingReductions(avg_std)
-
-        distance_weight_factor = {} #np.ones(num_edges)
-        environments = self.environments
-
-        for env_id in environments:
-            env = environments[env_id]
-            env.drawPreventions(self.prevention_adoptions, self.populace)
-
-            for ix, edge in enumerate(env.edges):
-                #print("adoption= ", env.distancing_adoption)
-                #print("distancing= ", self.distancing_reductions)  # INCORRECT. [list with indices]
-                #print("edge= ", edge)
-                reduction = env.distancing_adoption[edge]*self.distancing_reductions[ix]
-                distance_weight_factor[edge] = 1. - reduction
-
-        #for k,v in distance_weight_factor.items():
-            #print("distance_weight_factor= ", k, v)
-        #quit()
-        return weight
 
     #-------------------------------------------
     def saveResults(self, filename, data_dict):
