@@ -1513,7 +1513,7 @@ class PopulaceGraph:
         '''
 
         contact_matrix = self.getContactMatrix(partitioner,env_indices)
-        plt.imshow(contact_matrix)
+        plt.imshow(contact_matrix, origin='lower')
         plt.title("Contact Matrix for {}".format(title))
         labels = partitioner.labels
         if labels == None:
