@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 
 # Example SIR model using fast_SIR, based on an N to N graph (homogeneous connections. The graph is undirected. Transmission and recovery parameters are constant. 
 
-beta = .002   # Transmission (S ->beta -> I) [1/days] (per edge)
-gamma = .002  # Recovery (I -> R)  [1/days]  (per node)
+beta = .02   # Transmission (S ->beta -> I) [1/days] (per edge)
+gamma = .02  # Recovery (I -> R)  [1/days]  (per node)
 
 # A graph with N nodes has N*(N-1)/2 edges. 
 
@@ -44,11 +44,13 @@ sim_result = eon.fast_SIR(G, beta, gamma, initial_infecteds=initial_infected,
         return_full_data = True, 
         tmin=tmin, tmax=tmax)
 
+# All the times for which there is data. Print out to see: floats. 
 times = sim_result.t()
 statuses = {}
 last_time = times[-1]
 
-for tix in range(0, int(last_time)+2, 2):
+# Specify the times you wish to work with. Tix is the time index. 
+for tix in range(0, int(last_time)+2, 1):
     # statuses[tix]: for each node of the graph, S,I,R status at time tix
     # this is computed by some internal interpolation
     statuses[tix] = sim_result.get_statuses(time=tix)
@@ -67,11 +69,11 @@ y = np.random.choice(100, nb_nodes, replace=False)
 # Replace: 'S', 'I', 'R' by 0, 1, 2 in statuse
 
 subst_dict = {'S':0,  'I':1, 'R':2}
-print("keys: ", statuses[2].keys())
+print("keys: ", statuses[1].keys())
 print("last_time= ", last_time)
 
 def replace(time_index):
-    d = np.zeros(len(statuses[2]), dtype='int')
+    d = np.zeros(len(statuses[0]), dtype='int')
     for k,v in statuses[time_index].items():
         d[k] = subst_dict[v]
     return d
@@ -80,22 +82,22 @@ def replace(time_index):
 #    print(replace(i))
 
 # Notes: https://stackoverflow.com/questions/14827650/pyplot-scatter-plot-marker-size
-nrows = 5
-ncols = 5
+nrows = 6
+ncols = 6
 plt.subplots(ncols,nrows)
+
 import matplotlib as mpl
 # Map 0,1,2 to black, red, green
 cmap = mpl.colors.ListedColormap(['black', 'red', 'green'])
-c_norm = mpl.colors.BoundaryNorm(boundaries=[0,1,2], ncolors=3)
+c_norm = mpl.colors.BoundaryNorm(boundaries=[-0.5, 0.5, 1.5, 2.5], ncolors=4)
 
 
 for i in range(nrows*ncols):
     plt.subplot(ncols,nrows,i+1)
     try:
         col = replace(2*i)
-        print("col= ", col)
     except:
         break
     plt.scatter(x, y, c=col, s=3*3*3, cmap=cmap, norm=c_norm, alpha=0.5)
-print("last_time= ", last_time)
+plt.colorbar()
 plt.show()
