@@ -62,15 +62,15 @@ plt.subplots(1,2)
 
 plt.suptitle("Contact Matrices\nSchools (left), Workplaces (right)", fontsize=16)
 plt.subplot(1,2,1)
-plt.imshow(schoolBaseCM)
+plt.imshow(schoolBaseCM, origin='lower')
 plt.xlabel("age bracket")
 plt.ylabel("age bracket")
 
 plt.subplot(1,2,2)
-plt.imshow(workplaceBaseCM)
+plt.imshow(workplaceBaseCM, origin='lower')
 plt.xlabel("age bracket")
 plt.ylabel("age bracket")
 plt.tight_layout()
 
 plt.tight_layout()
-plt.show()
+plt.savefig("plot_contact_matrices.pdf")
