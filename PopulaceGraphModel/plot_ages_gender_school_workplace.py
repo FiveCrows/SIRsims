@@ -128,6 +128,8 @@ print(len(M))
 
 # Integrate M, N, into the dataframe: M_US, F_US
 print(df1)
-
+df1.to_csv('ages_gender_school_workplace.csv')
 
 plt.savefig("plot_demographics.jpg")
+
+
