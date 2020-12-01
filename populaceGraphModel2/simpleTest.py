@@ -5,13 +5,14 @@ import json
 globals().update(json.load(open('defaultParameters')))
 
 #initialize model
-model = PopulaceGraph(prevention_adoptions, prevention_efficacies)
+model = PopulaceGraph(slim = True)
 
 #initialize NetBuilder and build networks
 netBuilder = NetBuilder(env_type_scalars, prevention_efficacies)
 model.networkEnvs(netBuilder)
 model.weightNetwork(env_type_scalars, prevention_adoptions, prevention_efficacies)
-model.infectPopulace(0.001)
+
+model.infectPopulace(0.01)
 
 #simulate
 model.simulate(gamma,tau)
