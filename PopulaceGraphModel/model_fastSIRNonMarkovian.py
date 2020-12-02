@@ -3,6 +3,12 @@ import EoN as eon
 import numpy as np
 import matplotlib.pyplot as plt
 from collections import defaultdict
+import random
+
+# Experiment with setting up an array of infectivities and an array of 
+# recoveries. The infectivities beta[] will be a Poisson-Gamma mixture
+# choose beta from a Gamma, and use that Beta for the individual
+
 
 
 def processTransmissionTimes(trans):
@@ -117,14 +123,30 @@ initial_recovered = []
 initial_infected = [1]
 
 tmin, tmax = 0., 10000.
+betas = np.random.gamma(1.0*beta, 1.0*beta, nb_nodes)
+betas = np.random.gamma(0.8*beta, 0.8*beta, nb_nodes)
+print("gamma: mean, std= ", np.mean(betas), np.std(betas))
 
-sim_result = eon.fast_SIR(G, beta, gamma, initial_infecteds=initial_infected, 
+def transTime(nodeA, nodeB, rates):
+    return random.expovariate(rates[nodeA])
+
+def recovTime(nodeA, rate):
+    return random.expovariate(rate)
+
+#sim_result = eon.fast_SIR(G, beta, gamma, initial_infecteds=initial_infected, 
+sim_result = eon.fast_nonMarkov_SIR(G, 
+        trans_time_fxn = transTime, 
+        trans_time_args = (betas,),
+        rec_time_fxn = recovTime,
+        rec_time_args = (gamma,),
+        initial_infecteds=initial_infected, 
         initial_recovereds=initial_recovered, 
         #transmission_weight="tw", 
         #recovery_weight="rw",
         return_full_data = True, 
         tmin=tmin, tmax=tmax)
 
+print("after simResult")
 # All the times for which there is data. Print out to see: floats. 
 times = sim_result.t()
 statuses = {}
