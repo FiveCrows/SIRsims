@@ -1,3 +1,5 @@
 model_fastSIR.py: simple code that runs EoN.fast_SIR and  plots the results in a scattergram. 
 
+- fully-connected graph (1000 nodes)
+
 

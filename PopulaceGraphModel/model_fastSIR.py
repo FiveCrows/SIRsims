@@ -17,7 +17,6 @@ def processTransmissionTimes(trans):
     # Need dictionary: who[u] to return u1
 
     t0,u0,v0 = trans[0]
-    print("trans[0]= ", t0,u0,v0)
     # u can infect multiple v
     # I should be able to construct the forward generation (fg) histogram across 
     # the population and binned per day. 
@@ -28,22 +27,33 @@ def processTransmissionTimes(trans):
 
     for t,u,v in trans:
         fwd[u].append((t,v))
+        print(t, u, v)
+        if v in infect:
+            print("v= ", v, "   should not happen!")
+            quit()
         infect[v] = t
 
     # construct time intervals
     gen_times = []
     for t,u,v in trans:
-        gen_times.append(infect[v] - infect[u])
+        #if infect[u] < 0.1: # (early times)
+        if 1:
+            gen_times.append(infect[v] - infect[u])
 
     # superimpose a range of exponentials (theoretically the case)
     def expf(t, lmbda):
         return lmbda * np.exp(-lmbda*t)
 
+    mean = np.mean(gen_times)
+    var = np.var(gen_times)
+    std = np.sqrt(np.var(gen_times))
+    print("mean/var(gen_times)= ", mean, var)
+    print("std= ", std)
+
     t = np.linspace(0., 0.6, 20)
-    plt.hist(gen_times, density=True)
+    plt.hist(gen_times, density=True, bins=50)
     #for v in [10,12,14,16,18,20]:
-    for v in [12]:
-        plt.plot(t, expf(t, v), label=v)
+    plt.plot(t, expf(t, 1./mean), label=mean)
     plt.legend(fontsize=10)
     plt.show()
     quit()
@@ -75,8 +85,9 @@ gamma = .02  # Recovery (I -> R)  [1/days]  (per node)
 
 # A graph with N nodes has N*(N-1)/2 edges. 
 
-N = 1000  # number of nodes
+N = 3000  # number of nodes
 G = nx.complete_graph(N)
+#G = nx.erdos_renyi_graph(N, 0.03)
 nb_nodes = G.number_of_nodes()
 
 # Other useful graphs you could create
@@ -119,7 +130,6 @@ trans = sim_result.transmissions()
 trans_tree = sim_result.transmission_tree()
 print("nodes: ", trans_tree.number_of_nodes())
 print("edges: ", trans_tree.number_of_edges())
-print(trans)
 processTransmissionTimes(trans)
 quit()
 
@@ -128,7 +138,7 @@ for tix in range(0, int(last_time)+2, 1):
     # statuses[tix]: for each node of the graph, S,I,R status at time tix
     # this is computed by some internal interpolation
     statuses[tix] = sim_result.get_statuses(time=tix)
-    print("time= ", tix, "  status= ", statuses[tix])
+    #print("time= ", tix, "  status= ", statuses[tix])
 
 # statuses.keys() tells you the times at which data is saved.
 # statuses[2] is a dictionary of the network at t=2., for example: 
