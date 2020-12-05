@@ -5,10 +5,25 @@ import matplotlib.pyplot as plt
 from collections import defaultdict
 import random
 
-# Experiment with setting up an array of infectivities and an array of 
-# recoveries. The infectivities beta[] will be a Poisson-Gamma mixture
-# choose beta from a Gamma, and use that Beta for the individual
+# Experiment with creating a negative binomial of mean R0 and variance
+# R0 * (1 + k*R0)
 
+def gamma(R0, k, n):
+    # This is correct
+    alpha = 1 / k 
+    beta = R0 * k
+    gammas = np.random.gamma(alpha, beta, n)
+
+def poisson(lmbda, n):
+    # This is correct
+    pois = np.random.poisson(lmbda, n)
+    print("mean/var= ", np.mean(pois), np.var(pois))
+
+
+#gams = gamma(5., .045, 100000)
+lmbda = 3.
+pois = poisson(lmbda, 10000)
+quit()
 
 
 def processTransmissionTimes(trans):
