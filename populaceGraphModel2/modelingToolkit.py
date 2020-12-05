@@ -298,7 +298,7 @@ class NetBuilder:
     and Random nets for partitioned Environments.
     """
 
-    def __init__(self, prevention_adoptions, avg_contacts = None):
+    def __init__(self,  avg_contacts = None):
         """
         :param env_type_scalars: dict
         each environment type must map to a float. is for scaling weights
@@ -1266,7 +1266,8 @@ class PopulaceGraph:
         #print("  keys(ages_d): ", list(ages_d.keys()))
         return ages_d
 
-    #-------------------------------------------------------------------
+    #----------------------------------------
+    
     def simulate(self, gamma, tau, simAlg=EoN.fast_SIR, title=None, full_data=True, global_dict={}):
 
         self.global_dict = global_dict
