@@ -91,8 +91,10 @@ gamma = .2  # Recovery (I -> R)  [1/days]  (per node)
 
 # last_time approx 389 (independent of graph size (1000, 3000 nodes).)
 # mean(Tg) (=0.02)
-beta = .02   # Transmission (S ->beta -> I) [1/days] (per edge)
-gamma = .02  # Recovery (I -> R)  [1/days]  (per node)
+beta = .2   # Transmission (S ->beta -> I) [1/days] (per edge)
+gamma = .2  # Recovery (I -> R)  [1/days]  (per node)
+print("1\/beta = %3.1f days" % (1./beta))
+print("1\/gamma = %3.1f days" % (1./gamma))
 
 # A graph with N nodes has N*(N-1)/2 edges. 
 
@@ -125,7 +127,36 @@ initial_infected = [1]
 tmin, tmax = 0., 10000.
 betas = np.random.gamma(1.0*beta, 1.0*beta, nb_nodes)
 betas = np.random.gamma(0.8*beta, 0.8*beta, nb_nodes)
-print("gamma: mean, std= ", np.mean(betas), np.std(betas))
+alpha, beta = 0.3, 0.7
+print("alpha,beta= ", alpha, beta)
+betas = np.random.gamma(alpha, beta, 10000)
+#print("betas= ", betas)
+print("gamma: mean, var= ", np.mean(betas), np.var(betas))
+# shape/scale: mean: alpha*beta, variance: alpha*beta**2
+print("alpha: shape, beta: scale")
+print("mean: alpha*beta= ", alpha*beta)
+print("var: alpha*beta**2= ", alpha*beta**2)
+
+# sps.gamma is the gamma function
+import scipy.special as sps
+shape, scale = 2, 2
+print("sps.gamma(shape)= ",  sps.gamma(shape))
+s = np.random.gamma(shape, scale, 10000)
+count, bins, ignored = plt.hist(s, 50, density=True)
+y = bins**(shape-1)*(np.exp(-bins/scale) /
+                      (sps.gamma(shape)*scale**shape))
+
+# Mean of gamma should
+# Compose this gamma with Poisson: 
+# int_0^inf p(beta|lambda) * p(lambda; alpha,beta) dlambda
+# = int_0^inf Pois(beta
+
+
+#plt.plot(bins, y, linewidth=2, color='r')
+#plt.show()
+#quit()
+
+# The gamma will be a distribution of rates (beta)
 
 def transTime(nodeA, nodeB, rates):
     return random.expovariate(rates[nodeA])
@@ -146,7 +177,7 @@ sim_result = eon.fast_nonMarkov_SIR(G,
         return_full_data = True, 
         tmin=tmin, tmax=tmax)
 
-print("after simResult")
+print("==> after simResult")
 # All the times for which there is data. Print out to see: floats. 
 times = sim_result.t()
 statuses = {}
