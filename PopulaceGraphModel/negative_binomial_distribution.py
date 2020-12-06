@@ -18,14 +18,14 @@ def gamma(R0, k, n):
 def poisson(lmbda, n):
     # This is correct
     pois = np.random.poisson(lmbda, n)
-    print("Poisson: mean/var= ", np.mean(pois), np.var(pois))
+    #print("Poisson: mean/var= ", np.mean(pois), np.var(pois))
     return(pois)
 
 def expon(lmbda, n):
     #expo = np.random.exponential(lmbda, n)
     expo = np.random.exponential(lmbda, n)
     # Expect mean,std = lmbda, lmbda
-    print("mean/var/std= ", np.mean(expo), np.var(expo), np.std(expo))
+    #print("mean/var/std= ", np.mean(expo), np.var(expo), np.std(expo))
     return expo
 
 
