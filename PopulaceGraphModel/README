@@ -1,0 +1,9 @@
+model_fastSIR.py: simple code that runs EoN.fast_SIR and  plots the results in a scattergram. 
+
+- fully-connected graph (1000 nodes)
+
+multHist.py: generates 4 plots: Household size, school size, log-log workplace size, and populate age distribution. As a function of age group. 
+
+
+
+

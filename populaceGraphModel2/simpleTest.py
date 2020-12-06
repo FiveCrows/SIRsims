@@ -2,19 +2,19 @@ from modelingToolkit import *
 import json
 
 # load default params for model
-globals().update(json.load(open('defaultParameters')))
-
+defaultParams  = (json.load(open('defaultParameters')))
+globals().update(defaultParams)
 #initialize model
 model = PopulaceGraph(slim = True)
 
 #initialize NetBuilder and build networks
-netBuilder = NetBuilder(env_type_scalars, prevention_efficacies)
+netBuilder = NetBuilder()
 model.networkEnvs(netBuilder)
 model.weightNetwork(env_type_scalars, prevention_adoptions, prevention_efficacies)
 
-model.infectPopulace(0.01)
+model.infectPopulace(initial_infection_rate)
 
 #simulate
-model.simulate(gamma,tau)
-model.plotSIR()
+#model.simulate(gamma,tau)
+#model.plotSIR()
 #
