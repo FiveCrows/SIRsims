@@ -10,8 +10,8 @@ import os
 def getDegreeHistogram(model, env_indexes, normalized = True): 
     """
     :param model: PopulaceGraph
-    the PopulaceGraph model to produce histogram for
-    :param normalized, when true the histogram will normalized
+    Produce a histogram of the populace 
+    :param normalized: normalize the histogram if true. 
     """
     degreeCounts = [0] * 100
     for index in env_indexes:
