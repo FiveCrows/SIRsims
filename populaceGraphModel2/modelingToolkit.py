@@ -214,8 +214,19 @@ class Partitioner:
 
         :function partitionGroup
 
-    """
+        """
+    @staticmethod
+    def agePartitionerA():
+        """
+        returns a useful partitioner object fore ages
+        """
+        enumerator = {i:i//5 for i in range(75)}
+        enumerator.update({i:15 for i in range(75,100)})
+        names = ["{}:{}".format(5 * i, 5 * (i + 1)) for i in range(15)]
+        return(Partitioner('age', enumerator, names))
+        
 
+        pass
     def __init__(self, attribute, enumerator, labels=None):
         """
         :param attribute: string
@@ -734,7 +745,7 @@ class PopulaceGraph:
 
         self.basedir = "./results/{}".format(self.timestamp)
         print("basedir= ", self.basedir)
-        self.record = Record(self.basedir)
+        
         self.preventions = None
 
         if slim == True:
@@ -1187,39 +1198,6 @@ class PopulaceGraph:
         filt  =[self.environments[env].env_type == type for env in self.environments]
         return allEnvs[filt]
 
-    def plotContactMatrix(self, partitioner, env_indices, title = "untitled", figure = None):
-        '''
-        This function plots the contact matrix for a structured environment
-        :param p_env: must be a structured environment
-        '''
-
-        contact_matrix = self.getContactMatrix(partitioner,env_indices)
-        plt.imshow(contact_matrix)
-        plt.title("Contact Matrix for {}".format(title))
-        labels = partitioner.labels
-        if labels == None:
-            labels = ["{}-{}".format(5 * i, (5 * (i + 1))-1) for i in range(15)]
-        axisticks= list(range(15))
-        plt.xticks(axisticks, labels, rotation= 'vertical')
-        plt.yticks(axisticks, labels)
-        plt.xlabel('Age Group')
-        plt.ylabel('Age Group')
-        plt.show()
-
-    def getContactMatrix(self, partitioner, env_indices):
-        n_sets = partitioner.num_sets
-        cm = np.zeros([n_sets, n_sets])
-        setSizes = np.zeros(n_sets)
-        #add every
-        for index in env_indices:
-            env = self.environments[index]
-            #assigns each person to a set
-            placements, partition = partitioner.placeAndPartition(env.members, self.populace)
-            setSizes += np.array([len(partition[index]) for index in partition])
-            for edge in env.edges:
-                cm[placements[edge[0]], placements[edge[1]]] += 1
-        cm = np.nan_to_num([np.array(row)/setSizes for row in cm])
-        return cm
 
     #-------------------------------------------------------------------
     #def SIRperBracket(self, tlast): 
@@ -1287,7 +1265,7 @@ class PopulaceGraph:
         key0 = list(statuses.keys())[0]
         # statuses[graph node] = Dictionary: node# => 'S', 'I', or 'R'}
 
-        self.record.print("handle simulation output: {} seconds".format(time.time() - start2))
+        
 
         # Next: calculate final S,I,R for the different age groups. 
 
@@ -1298,7 +1276,7 @@ class PopulaceGraph:
         for k,v in statuses.items():
             ages_d[k] = self.SIRperBracket(v)
 
-        self.record.print("time to change 'S','I','R' to 0,1,2 for faster processing: %f sec" % (time.time()-start3))
+        
         #-----------
         # Create a dictionary to store all the data and save it to a file 
         data = {}
@@ -1369,192 +1347,14 @@ class PopulaceGraph:
         # Whether a mask is worn or not are percentages set for each environment type
 
     #-------------------------------------------
-    def saveResults(self, filename, data_dict):
-        """
-        :param filename: string
-        File to save results to
-        :param data_dict: dictionary
-        Save SIR traces, title, [gamma, tau], preventions
-        # save simulation results and metadata to filename
-        """
-
-        full_path = "/".join([self.basedir, filename])
-
-        with open(full_path, "wb") as pickle_file:
-            pickle.dump(data_dict, pickle_file)
-
-        """
-        # reload pickle data
-        fd = open(filename, "rb")
-        d = pickle.load(fd)
-        SIR = d['sim_results']
-        print("SIR['t']= ", SIR['t'])
-        quit()
-        """
 
 
     #---------------------------------------------------------------------------
-    def plotSIR(self, memberSelection = None):
-        """
-        For members of the entire graph, will generate three charts in one plot, representing the frequency of S,I, and R, for all nodes in each simulation
-        """
-
-        rowTitles = ['S','I','R']
-        fig, ax = plt.subplots(3,1,sharex = True, sharey = True)
-        simCount = len(self.sims)
-        if simCount == []:
-            print("no sims to show")
-            return
-        else:
-            for sim in self.sims:
-                title = sim[0]
-                sim = sim[1]
-                t = sim.t()
-                ax[0].plot(t, sim.S())
-                ax[0].set_title('S')
-
-                ax[1].plot(t, sim.I(), label = title)
-                ax[1].set_ylabel("people")
-                ax[1].set_title('I')
-                ax[2].plot(t, sim.R())
-                ax[2].set_title('R')
-                ax[2].set_xlabel("days")
-        ax[1].legend()
-        plt.show()
-
-    def getPeakPrevalences(self):
-        return [max(sim[0].I()) for sim in self.sims]
-
-    #If a structuredEnvironment is specified, the partition of the environment is applied, otherwise, a partition must be passed
-    def plotBars(self, partitioner, env_indices, SIRstatus = 'R', normalized = False):
-        """
-        Will show a bar chart that details the final status of each partition set in the environment, at the end of the simulation
-        :param environment: must be a structured environment
-        :param SIRstatus: should be 'S', 'I', or 'R'; is the status bars will represent
-        :param normalized: whether to plot each bar as a fraction or the number of people with the given status
-        #TODO finish implementing None environment as entire graph
-        """
-
-        partition = partitioner
-        for index in env_indices:
-            if isinstance(environment, StructuredEnvironment):
-                partitioned_people = environment.partition
-                partition = environment.partitioner
-
-            simCount = len(self.sims)
-            partitionCount = partition.num_sets
-            barGroupWidth = 0.8
-            barWidth = barGroupWidth/simCount
-            index = np.arange(partitionCount)
-
-            offset = 0
-            for sim in self.sims:
-                title = sim[0]
-                sim = sim[1]
-
-                totals = []
-                end_time = sim.t()[-1]
-                for index in partitioned_people:
-                    set = partitioned_people[index]
-                    if len(set) == 0:
-                        #no bar if no people
-                        totals.append(0)
-                        continue
-                    total = sum(status == SIRstatus for status in sim.get_statuses(set, end_time).values()) / len(set)
-                    if normalized == True:  total = total/len(set)
-                    totals.append[total]
-
-                #totals = sorted(totals)
-                xCoor = [offset + x for x in list(range(len(totals)))]
-                plt.bar(xCoor,totals, barWidth, label = title)
-                offset = offset+barWidth
-        plt.legend()
-        plt.ylabel("Fraction of people with status {}".format(SIRstatus))
-        plt.xlabel("Age groups of 5 years")
-        plt.show()
-        plt.savefig(self.basedir+"/evasionChart.pdf")
-
-    def getR0(self):
-        sim = self.sims[-1]
-        herd_immunity = list.index(max(sim.I))
-        return(self.population/sim.S([herd_immunity]))
 
     def reset(self):
         self.sims = []
         self.graph = nx.Graph()
         self.total_weight = 0
         self.total_edges = 0
-
-
-class Record:
-    def __init__(self, basedir):
-        self.log = ""
-        self.comments = ""
-        self.graph_stats = {}
-        self.last_runs_percent_uninfected = 1
-        self.basedir = basedir
-
-        try:
-            mkdir(self.basedir)
-        except:
-            pass
-
-    def print(self, string):
-        print(string)
-        self.log+=('\n')
-        self.log+=(string)
-
-    def addComment(self):
-        comment = input("Enter comment")
-        self.comments += comment
-        self.log +=comment
-
-    def printGraphStats(self, graph, statAlgs):
-        if not nx.is_connected(graph):
-            self.print("graph is not connected. There are {} components".format(nx.number_connected_components(graph)))
-            max_subgraph = graph.subgraph(max(nx.connected_components(graph)))
-            self.print("{} of nodes lie within the maximal subgraph".format(max_subgraph.number_of_nodes()/graph.number_of_nodes()))
-        else:
-            max_subgraph = graph
-        graphStats = {}
-        for statAlg in statAlgs:
-            graphStats[statAlg.__name__] = statAlg(max_subgraph)
-        self.print(str(graphStats))
-
-    def dump(self):
-        #log_txt = open("./ge_simResults/{}/log.txt".format(self.timestamp), "w+")
-        log_txt = open(basedir+"/log.txt", "w+")
-        log_txt.write(self.log)
-        if self.comments != "":
-            #comment_txt = open("./ge_simResults/{}/comments.txt".format(self.timestamp),"w+")
-            comment_txt = open(basedir+"/comments.txt", "w+")
-            comment_txt.write(self.comments)
-
-#written by Gordon
-class Utils:
-    def interpolateSIR(self, SIR):
-        S = SIR['S']
-        I = SIR['I']
-        R = SIR['R']
-        t = SIR['t']
-        print("len(t)= ", len(t))
-        # interpolate on daily intervals.
-        new_t = np.linspace(0., int(t[-1]), int(t[-1])+1)
-        func = interp1d(t, S)
-        Snew = func(new_t)
-        func = interp1d(t, I)
-        Inew = func(new_t)
-        func = interp1d(t, R)
-        Rnew = func(new_t)
-        #print("t= ", new_t)
-        #print("S= ", Snew)
-        #print("I= ", Inew)
-        #print("R= ", Rnew)
-        SIR['t'] = new_t
-        SIR['S'] = Snew
-        SIR['I'] = Inew
-        SIR['R'] = Rnew
-        return SIR
-
 
 

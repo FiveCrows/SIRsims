@@ -11,10 +11,8 @@ model = PopulaceGraph(slim = True)
 netBuilder = NetBuilder()
 model.networkEnvs(netBuilder)
 model.weightNetwork(env_type_scalars, prevention_adoptions, prevention_efficacies)
+model.infectPopulace(init_infection_rate)
 
-model.infectPopulace(initial_infection_rate)
-
-#simulate
 #model.simulate(gamma,tau)
 #model.plotSIR()
 #

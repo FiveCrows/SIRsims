@@ -1,5 +1,10 @@
+###############################################################################
+#this script is written to export a network for testing with other scripts
+##############################################################################
+
+
 from modelingToolkit import *
-from resultAnalysisToolkit import aFormatGraph
+from resultExportsToolkit import aFormatGraph
 import json
 #this short script generates the example exported graph, with nodes and edges 
 # load default params for model
