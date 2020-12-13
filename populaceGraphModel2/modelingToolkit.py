@@ -1177,6 +1177,11 @@ class PopulaceGraph:
         #add the edges of each environment to a single networkx graph
         self.isNetworked = True
 
+        print("End of networkEnvs:")
+        print("Graph parameters:")
+        print("  - Node count: ", self.graph.number_of_nodes())
+        print("  - Edge count: ", self.graph.number_of_edges())
+
 
     #merge environments, written for plotting and exploration
     def returnMergedEnvironments(self, env_indexes, partitioner = None):
@@ -1242,6 +1247,7 @@ class PopulaceGraph:
 
     #----------------------------------------
     
+    #------------------------------
     def simulate(self, gamma, tau, simAlg=EoN.fast_SIR, title=None, full_data=True, global_dict={}):
 
         self.global_dict = global_dict
@@ -1295,6 +1301,7 @@ class PopulaceGraph:
         print("saveResults: filename: ", filename)
         self.saveResults(filename, data)
 
+    #------------------------------
     def weightNetwork(self, env_type_scalars, prevention_adoptions, prevention_efficacies):
         '''
         :param env_type_scalars: dict
@@ -1341,6 +1348,11 @@ class PopulaceGraph:
 
     # self.mask_reductions: defined for every person of the graph
         # Whether a mask is worn or not are percentages set for each environment type
+
+        print("Finished with weightNetwork.")
+        print("Graph parameters:")
+        print("  - Node count: ", self.graph.number_of_nodes())
+        print("  - Edge count: ", self.graph.number_of_edges())
 
     #-------------------------------------------
 

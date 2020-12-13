@@ -3,6 +3,7 @@ import EoN as eon
 import numpy as np
 import matplotlib.pyplot as plt
 from collections import defaultdict
+import plot_utils
 
 
 def processTransmissionTimes(trans):
@@ -85,13 +86,16 @@ gamma = .2  # Recovery (I -> R)  [1/days]  (per node)
 
 # last_time approx 389 (independent of graph size (1000, 3000 nodes).)
 # mean(Tg) (=0.02)
-beta = .02   # Transmission (S ->beta -> I) [1/days] (per edge)
-gamma = .02  # Recovery (I -> R)  [1/days]  (per node)
+#beta = .02   # Transmission (S ->beta -> I) [1/days] (per edge)
+#gamma = .02  # Recovery (I -> R)  [1/days]  (per node)
 
 # A graph with N nodes has N*(N-1)/2 edges. 
 
 N = 2000  # number of nodes
-G = nx.complete_graph(N)
+N = 100000  # number of nodes
+#G = nx.complete_graph(N)
+#G = nx.erdos_renyi_graph(N, p=0.01, directed=False)
+G = nx.barabasi_albert_graph(N,10)
 #G = nx.erdos_renyi_graph(N, 0.03)
 nb_nodes = G.number_of_nodes()
 
@@ -115,15 +119,21 @@ initial_recovered = []
 # Single initial infected. Does not matter which one since the graph 
 # is fully-connected
 initial_infected = [1]
+rho=0.001,
 
 tmin, tmax = 0., 10000.
 
-sim_result = eon.fast_SIR(G, beta, gamma, initial_infecteds=initial_infected, 
+sim_result = eon.fast_SIR(G, beta, gamma, rho=0.001, #initial_infecteds=initial_infected, 
         initial_recovereds=initial_recovered, 
         #transmission_weight="tw", 
         #recovery_weight="rw",
         return_full_data = True, 
         tmin=tmin, tmax=tmax)
+
+plot_utils.plotPopulaceSIR(sim_result)
+plt.show()
+quit()
+#------------------
 
 # All the times for which there is data. Print out to see: floats. 
 times = sim_result.t()
