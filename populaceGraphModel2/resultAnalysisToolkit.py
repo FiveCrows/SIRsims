@@ -6,6 +6,16 @@ import os
 
 #def getDegrees(model):
 #    degrees = [len(graph[person]) for person in 
+def filterEnvByType(envs, env_type):
+    '''return all the household, workplace, or school type envs from a list'
+    :envs dict:
+    all the environments
+    :env_type string:
+    the name of the type of environment to search for
+    :return dict:
+    '''
+    #return list(filter(lambda env: env.env_type == env_type, envs.values()))
+    return dict(filter(lambda env: env[1].env_type == env_type, envs.items()))
 
 def plotContactMatrix(model, partitioner, env_indices, title = "untitled", ax = plt):
     '''
