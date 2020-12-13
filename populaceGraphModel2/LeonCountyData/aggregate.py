@@ -10,7 +10,7 @@ sys.path.append(parentdir)
 from modelingToolkit import *
 
 ############################################
-#load populace#
+#load populace#py
 ############################################
 def buildPkl(slim):
     with open(currentdir+"/people_list_serialized.pkl", 'rb') as file:
@@ -75,7 +75,7 @@ def buildPkl(slim):
             env = Household(dict, pops_by_category['sp_hh_id'][(dict['index'])])
         except:
             env = Household(dict, [])
-        environments[index] = env
+        environments[dict['index']] = env
 
 
     #create a partitioner

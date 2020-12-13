@@ -1198,10 +1198,6 @@ class PopulaceGraph:
             members.extend(self.environments[index].members)
         return StructuredEnvironment(None, members, 'multiEnvironment', self.populace, None, partitioner)
 
-    def listEnvByType(self, type):
-        allEnvs = np.array(list(self.environments.keys()))
-        filt  =[self.environments[env].env_type == type for env in self.environments]
-        return allEnvs[filt]
 
 
     #-------------------------------------------------------------------
