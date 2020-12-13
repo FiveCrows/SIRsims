@@ -44,7 +44,7 @@ def plot_group(by, group):
     print("len(recov)= ", len(recov))
     plt.plot(range(len(recov)), recov, label="r")
 
-for i in range(0,5):
+for i in range(0,1):
     plot_group(by, i)
 plt.show()
 quit()
