@@ -23,7 +23,7 @@ void initialize(int argc, char *argv[])
   int seed;
 
   n_runs = 100;
-  n_runs = 1;
+  n_runs = 10;
   parameters = 0;
 
   seed = time(NULL);

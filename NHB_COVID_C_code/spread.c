@@ -350,6 +350,15 @@ void results(int run)
 {
   //Cumulative values
   for(int i=0;i<NAGE;i++)
-    fprintf(f_cum,"%d %d %d %d %d %d %d %d %d ",latent_asymptomatic.cum[i],latent_symptomatic.cum[i],infectious_asymptomatic.cum[i],pre_symptomatic.cum[i],infectious_symptomatic.cum[i],home.cum[i],hospital.cum[i],icu.cum[i],recovered.cum[i]);
-  fprintf(f_cum,"%d\n",run);
+    fprintf(f_cum,"%d %d %d %d %d %d %d %d %d %d \n",
+	   latent_asymptomatic.cum[i],
+	   latent_symptomatic.cum[i],
+	   infectious_asymptomatic.cum[i],
+	   pre_symptomatic.cum[i],
+	   infectious_symptomatic.cum[i],
+	   home.cum[i],
+	   hospital.cum[i],
+	   icu.cum[i],
+	   recovered.cum[i],
+	   run);
 }
