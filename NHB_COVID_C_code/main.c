@@ -42,7 +42,7 @@ void runSimulation()
      {
         init();
         while(n_active>0) {
-          printf("runSinm n_active= %d\n", n_active);
+          //printf("runSinm n_active= %d\n", n_active);
 	      spread(run);
 		}
         results(run);

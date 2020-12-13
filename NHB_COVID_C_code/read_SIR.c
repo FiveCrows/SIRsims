@@ -1,5 +1,5 @@
 #include "head.h"
-char folder[80] = "Data_SIR";
+char folder[80] = "Data_BA";
 //char folder[80] = "Data";
 
 void readData()

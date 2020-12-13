@@ -38,13 +38,15 @@ by = df.groupby("run")
 def plot_group(by, group):
     # Different groups have different lengths
     df = by.get_group(group)
-    infected    = df["i_asymp"] + df["l_sympt"] + df["i_sympt"] + df["pre_sympt"] 
+    #infected    = df["i_asymp"] + df["l_sympt"] + df["i_sympt"] + df["pre_sympt"] 
+    infected    = df["i_sympt"];
     plt.plot(range(len(infected)),infected, label="i")
     recov = df["recov"]
-    print("len(recov)= ", len(recov))
+    #print("len(recov)= ", len(recov))
     plt.plot(range(len(recov)), recov, label="r")
 
-for i in range(0,1):
+nb_runs = 1
+for i in range(0, nb_runs):
     plot_group(by, i)
 plt.show()
 quit()

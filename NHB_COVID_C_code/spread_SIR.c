@@ -1,11 +1,10 @@
 #include "head.h"
-//#include "assert.h"
 
 // Implement an SIR version of this code. 
 
 void init()
 {
-  printf("Spread_SIR\n");
+  //printf("Spread_SIR\n");
   resetVariables();
   resetNodes();
   
@@ -22,7 +21,7 @@ void seedInfection()
 
   node[seed].state = L;
   float rho = 0.001; // infectivity percentage at t=0
-  int ninfected = rho * N;
+  int ninfected = rho * 260000;
   printf("ninfected= %d\n", ninfected);
   for (int i=0; i < ninfected; i++) { 
        addToList(&latent_symptomatic, seed);
@@ -44,13 +43,13 @@ void spread(int run)
   //P to I
   preToI();
   //IatoR
-  IaToR();
+  //IaToR();
   //IstoR
   IsTransition();
   //Home
-  homeTransition();
+  //homeTransition();
   //Hospital dynamics
-  hospitals();
+  //hospitals();
 
   updateLists();
   updateTime();
@@ -89,12 +88,14 @@ void infection()
     //infect(infectious_asymptomatic.v[i],IA);
 
   //Pre-symptomatic (Non-zero)
-  for (int i=0; i<pre_symptomatic.n; i++) {
+  printf("- pre_symptomatic.n= %d\n", pre_symptomatic.n);
+  for (int i=0; i < pre_symptomatic.n; i++) {
     infect(pre_symptomatic.v[i], PS);
   }
     
   //Infectious symptomatic
   //printf("enter infection, nb symptomatic: %d\n", infectious_symptomatic.n);
+  printf("- infectious_symptomatic.n= %d\n", infectious_symptomatic.n);
   for (int i=0; i < infectious_symptomatic.n; i++) {
     infect(infectious_symptomatic.v[i], IS);
   }
@@ -104,13 +105,18 @@ void infect(int source, int type)
 {
   int target;
   double prob;
+ 
   // All types are 4: IS
   //printf("enter infect from infection, source= %d, type= %d\n", source, type);
+  //if (type != 4) {printf("type should be 4\n"); exit(1);}
+ 
+  //printf("node: %d\n", node[source].k); // retuns 0
 
   for (int j=0; j < node[source].k; j++) { // for
       target = node[source].v[j];
       if (node[target].state == S) {   // == S
 	    prob = beta[type] * node[source].w[j];
+	    printf("prob= %f\n", prob);
 	  
 	    if (gsl_rng_uniform(random_gsl) < prob) {
 	      //Check if asymptomatic
@@ -120,6 +126,8 @@ void infect(int source, int type)
 		    addToList(&new_latent_asymptomatic, target);
 		  } else {
 		    addToList(&new_latent_symptomatic, target);
+			// new latent symptomatic not forming. Why? 
+			//printf("add new_latent_symptomatic\n"); exit(1);
 		  }
 #endif
 	      
@@ -128,7 +136,7 @@ void infect(int source, int type)
 
 	      //Various
 	      n_active++;
-		  printf("infect, n_active: %d\n", n_active);
+		  //printf("infect, n_active: %d\n", n_active);
 	    }
 	  } // == S
   } // for  
@@ -153,7 +161,8 @@ void latency()
   }
 #endif
 
-  printf("inside latency, nb latent_symptomatic: %d\n", latent_symptomatic.n);
+  //printf("inside latency, nb latent_symptomatic: %d\n", latent_symptomatic.n);
+#if 1
   for (int i=0; i < latent_symptomatic.n; i++) {
       id = latent_symptomatic.v[i];
       if (gsl_rng_uniform(random_gsl) < epsilon_symptomatic) {
@@ -162,6 +171,21 @@ void latency()
 	    i = removeFromList(&latent_symptomatic,i);
 	  }
   }
+#endif
+
+#if 0
+  // GE: Go from L_S directory to I_S (skip the pre_symptomatic stage)
+  printf("latent_symptomatic.n= %d\n", latent_symptomatic.n);
+  //printf("gammita= %f\n", gammita); // 0.2
+  for (int i=0; i < latent_symptomatic.n; i++) {
+      id = latent_symptomatic.v[i];
+      if (gsl_rng_uniform(random_gsl) < gammita) { //onset of symptoms
+	    addToList(&new_infectious_symptomatic, id);
+	    node[id].state = IS;
+	    i = removeFromList(&latent_symptomatic, i);
+	  }
+  }
+#endif
 }
 
 void IaToR()
@@ -193,22 +217,18 @@ void preToI()
   int id;
   // These values are non-zero
   //printf("enter preToI, pre_symptomatic.n= %d\n", pre_symptomatic.n);
-  //if (pre_symptomatic.n > 0) printf("***** EXPECT VALUE OF ZERO ****\n");
-
-  //assert(pre_symptomatic.n == 0);
+  //if (pre_symptomatic.n > 0) {printf("pre_symptomatic.n should be zero\n"); exit(1);}
 
   for (int i=0; i < pre_symptomatic.n; i++) {
       id = pre_symptomatic.v[i];
       if (gsl_rng_uniform(random_gsl) < gammita) { //onset of symptoms
-		//printf("gamma\n"); exit(1);  // POINT REACHED
 	    addToList(&new_infectious_symptomatic, id);
 	    node[id].state = IS;
 
-#if 1
+#if 0
 	    if (gsl_rng_uniform(random_gsl) < alpha[node[id].age]) //if hospitalization will be required
 	      node[id].hospitalization = 1;
 	    else {
-	      node[id].hospitalization = 0;
 	      node[id].hospitalization = 0;
 		}
 #endif
@@ -233,7 +253,7 @@ void IsTransition()
       addToList(&new_recovered, id);
       node[id].state = R;
       n_active--;
-	  printf("recov: n_active= %d\n", n_active);  // THERE ARE TOO MANY!! HOW???
+	  //printf("recov: n_active= %d\n", n_active);  // THERE ARE TOO MANY!! HOW???
 	  // PERHAPS SOMETHING WRONG WITH NEXT LINE? I DO NOT KNOW
       i = removeFromList(&infectious_symptomatic, i);
 	}
@@ -304,7 +324,7 @@ void hospitals()
 	    node[id].state = R;
 	    i = removeFromList(&hospital,i);
 	    n_active--;
-	    printf("Hospitals, n_active= %d\n", n_active); // never reached
+	    //printf("Hospitals, n_active= %d\n", n_active); // never reached
 	  }
   }
   
@@ -316,7 +336,7 @@ void hospitals()
 	    node[id].state = R;
 	    i = removeFromList(&icu, i);
 	    n_active--;
-	    printf("ICU, n_active= %d\n", n_active);
+	    //printf("ICU, n_active= %d\n", n_active);
 	  }
   }
 }
