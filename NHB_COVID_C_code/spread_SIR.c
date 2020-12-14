@@ -1,5 +1,7 @@
 #include "head.h"
 
+#define EXP 1
+
 // Implement an SIR version of this code. 
 
 void init()
@@ -102,14 +104,14 @@ void infection()
     //infect(infectious_asymptomatic.v[i],IA);
 
   //Pre-symptomatic (Non-zero)
-  printf("- pre_symptomatic.n= %d\n", pre_symptomatic.n);
+  //printf("- pre_symptomatic.n= %d\n", pre_symptomatic.n);
   for (int i=0; i < pre_symptomatic.n; i++) {
     infect(pre_symptomatic.v[i], PS);
   }
     
   //Infectious symptomatic
   //printf("enter infection, nb symptomatic: %d\n", infectious_symptomatic.n);
-  printf("- infectious_symptomatic.n= %d\n", infectious_symptomatic.n);
+  //printf("- infectious_symptomatic.n= %d\n", infectious_symptomatic.n);
   for (int i=0; i < infectious_symptomatic.n; i++) {
     infect(infectious_symptomatic.v[i], IS);
   }
@@ -129,8 +131,12 @@ void infect(int source, int type)
   for (int j=0; j < node[source].k; j++) { // for
       target = node[source].v[j];
       if (node[target].state == S) {   // == S
+		// There is an implicit dt factor (== 1 day)
+#if EXP
+	    prob = 1.-exp(-beta[type] * node[source].w[j]);
+#else
 	    prob = beta[type] * node[source].w[j];
-	    printf("prob= %f\n", prob);
+#endif
 	  
 	    if (gsl_rng_uniform(random_gsl) < prob) {
 	      //Check if asymptomatic
@@ -183,7 +189,13 @@ void latency()
       id = latent_symptomatic.v[i];
       // if epsilon_sympt == 1, immediately add to new_pre_sympto. 
 	  // if epsilon_symp == 1, no more than initial_infecced are infected. WHY?
-      if (gsl_rng_uniform(random_gsl) < epsilon_symptomatic) {
+	  float pe = 1.-exp(-epsilon_symptomatic);
+	  //printf("1-exp(eps_sympt)= %f\n", 1-exp(-epsilon_symptomatic));
+#if EXP
+	  if (gsl_rng_uniform(random_gsl) < (1.-exp(-epsilon_symptomatic))) {
+#else
+	  if (gsl_rng_uniform(random_gsl) < epsilon_symptomatic) {
+#endif
 	    addToList(&new_pre_symptomatic, i);
 		count_l_presymp += 1;
 	    node[id].state = PS;
@@ -245,15 +257,24 @@ void preToI()
 
   for (int i=0; i < pre_symptomatic.n; i++) {
       id = pre_symptomatic.v[i];
+      //float pp1 = gammita;
+      //float pp2 = 1.-exp(-gammita);
+	  //printf("pp1,pp2= %f, %f\n", pp1, pp2);
+#if EXP
+	  //printf("EXP\n");
+      if (gsl_rng_uniform(random_gsl) < (1.-exp(-gammita))) { //onset of symptoms
+#else
+	  //printf("no EXP\n");
       if (gsl_rng_uniform(random_gsl) < gammita) { //onset of symptoms
+#endif
 	    addToList(&new_infectious_symptomatic, id);
 		count_i_symp += 1;
 	    node[id].state = IS;
 
 #if 0
-	    if (gsl_rng_uniform(random_gsl) < alpha[node[id].age]) //if hospitalization will be required
+	    if (gsl_rng_uniform(random_gsl) < alpha[node[id].age]) { //if hospitalization will be required
 	      node[id].hospitalization = 1;
-	    else {
+		} else {
 	      node[id].hospitalization = 0;
 		}
 #endif
@@ -275,6 +296,7 @@ void IsTransition()
     id = infectious_symptomatic.v[i];
 	//if (node[id].hospitalization == 1) {printf("hospital SHOULD BE 0?\n"); exit(1); }
     if (gsl_rng_uniform(random_gsl) < mu) { //days to R/Home
+    //if (gsl_rng_uniform(random_gsl) < (1.-exp(mu))) { //days to R/Home
       addToList(&new_recovered, id);
 	  count_recov += 1;;
       node[id].state = R;
@@ -291,7 +313,7 @@ void IsTransition()
   for(int i=0; i<infectious_symptomatic.n; i++) {
     id = infectious_symptomatic.v[i];
 
-    if(gsl_rng_uniform(random_gsl)<mu) { //days to R/Home
+    if(gsl_rng_uniform(random_gsl)< mu) { //days to R/Home
 
 	  if(node[id].hospitalization==1) { //Home
 	      addToList(&new_home,id);
@@ -318,7 +340,7 @@ void homeTransition()
   for (int i=0; i < home.n; i++)
     {
       id = home.v[i];
-      if(gsl_rng_uniform(random_gsl)<delta) //time to hospitalization
+      if(gsl_rng_uniform(random_gsl)< delta) //time to hospitalization
 	{
 	  if(gsl_rng_uniform(random_gsl)<(1-xi[node[id].age])) //Go to hospital
 	    {

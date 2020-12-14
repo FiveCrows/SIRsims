@@ -42,12 +42,7 @@ def plot_group(by, group):
     pre_sympt = df["pre_sympt"]
     lat_sympt   = df["l_sympt"]
     recov     = df["recov"]
-    total_recov = np.sum(recov)
-    total_infected = np.sum(infected)
-    total_pre_sympt = np.sum(pre_sympt)
-    total_lat_sympt = np.sum(lat_sympt)
-    print("totals l,p,i,r= ", 
-        total_lat_sympt, total_pre_sympt, total_infected, total_recov)
+
     inf_s, = plt.plot(range(len(infected)),  infected,  color='r', label="infectious_s")
     pre_s, = plt.plot(range(len(pre_sympt)), pre_sympt, color='orange', label="pre_s")
     lat_s, = plt.plot(range(len(lat_sympt)),   lat_sympt,   color='b', label="latent_s")
@@ -55,7 +50,7 @@ def plot_group(by, group):
     handles = [inf_s, pre_s, lat_s, rec_]
     return handles
 
-nb_runs = 5
+nb_runs = 50
 for run in range(0, nb_runs):
     handles = plot_group(by, run)
 plt.legend(handles=handles, loc='center right', ncol=1)
