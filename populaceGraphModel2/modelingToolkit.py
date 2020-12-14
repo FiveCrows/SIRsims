@@ -30,6 +30,10 @@ class Environment:
         :param latitude: float
         :param longitude: float
         """
+        
+        # these will be defined elsewhere, but I include them here for typehinting
+        self.populace
+        self.enviroments
 
         self.__dict__.update(attributes)
         self.members = members  # list of keys (integers), probably people
@@ -761,17 +765,23 @@ class PopulaceGraph:
         # must call once in constructor
     def loadPopulace(self, file):
         '''
-
-        :param file: a file object to reference a pickled populace
-        :return:
+        this function takes a pickled dict and loads all key:pair as object variables
+        :param file: a file object to reference the pickle         
         '''
+
         self.__dict__.update(pickle.load(file))
+        
         self.population = len(self.populace)
-
-        #these are used for the vaccinate methods
         self.schools = self.pops_by_category["school_id"]
-        self.workplaces = self.pops_by_category["work_id"]
-
+        self.workplaces = self.pops_by_category["work_id"]        
+        #add direct reference to env objects in populace
+        #None is temporarily added for cases there is no school or workplace id
+        self.environments[None] = None
+        names = zip(['sp_hh_id', 'work_id', 'school_id'], ['household', 'workplace', 'school'])
+        for namePair in names:            
+            list(map(lambda x: x.update({namePair[1]: self.environments[x[namePair[0]]]}), self.populace))
+        #None must be removed because school doesn't actually network
+        self.environments.pop(None)
 
     #-------------------------------------------------
     def printEnvironments(self):

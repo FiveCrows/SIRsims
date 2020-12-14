@@ -36,7 +36,7 @@ boundaries.append(personal_incomes[-1])
 #enumerator = [i: ]
 #davis scrub python 
 binwidth = len(person_incomes)//nbins
-enumerator = [personal_incomes[i]: i//binwidth for i in range(len(personal_incomes))]
+#enumerator = [personal_incomes[i]: i//binwidth for i in range(len(personal_incomes))]
 
 
     
