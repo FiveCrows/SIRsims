@@ -16,17 +16,15 @@ void init()
 void seedInfection()
 {
   int seed;
-  const gsl_rng_type* T;
-  gsl_rng* r;
 
   // Use a permutation to make sure that there are no duplicates when 
   // choosing more than one initial infected
   gsl_permutation* p = gsl_permutation_alloc(N);
   gsl_rng_env_setup();
   T = gsl_rng_default;
-  r = gsl_rng_alloc(T);
+  r_rng = gsl_rng_alloc(T);
   gsl_permutation_init(p);
-  gsl_ran_shuffle(r, p->data, N, sizeof(size_t));
+  gsl_ran_shuffle(r_rng, p->data, N, sizeof(size_t));
 
   float rho = 0.001; // infectivity percentage at t=0
   int ninfected = rho * N;
@@ -133,6 +131,20 @@ void infect(int source, int type)
       if (node[target].state == S) {   // == S
 		// There is an implicit dt factor (== 1 day)
 #if EXP
+
+		// mean=a*b, var=a*b**2
+#if 0
+		// Test Gamma Distribution
+		float a = 0.3;
+		float b = 4;
+		float mean = 0.;
+		for (int l=0; l < 100000; l++) {
+		   float g = gsl_ran_gamma(r_rng, a, b);
+		   mean += g;
+		}
+		printf("mean= %f\n", mean/100000.);
+		exit(1);
+#endif
 	    prob = 1.-exp(-beta[type] * node[source].w[j]);
 #else
 	    prob = beta[type] * node[source].w[j];
