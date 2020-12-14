@@ -39,7 +39,7 @@ void setBeta()
 
   beta_pre = beta_normal*gammita*k/(mu*(1-k));
     
-  for(int i=0;i<NCOMPARTMENTS;i++)
+  for(int i=0; i < NCOMPARTMENTS; i++)
     beta[i] = 0;
 
   beta[IA] = r*beta_normal;

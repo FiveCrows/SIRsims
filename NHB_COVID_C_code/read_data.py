@@ -36,33 +36,28 @@ print(df)
 by = df.groupby("run")
 
 def plot_group(by, group):
-    #inf_s = []
-    #pre_s = []
-    #lat_s = []
-    #rec_ = []
     # Different groups have different lengths
     df = by.get_group(group)
-    #infected    = df["i_asymp"] + df["l_sympt"] + df["i_sympt"] + df["pre_sympt"] 
-    infected    = df["i_sympt"];
-    pre_sympt   = df["pre_sympt"]
-    l_sympt   = df["l_sympt"]
+    infected  = df["i_sympt"];
+    pre_sympt = df["pre_sympt"]
+    lat_sympt   = df["l_sympt"]
+    recov     = df["recov"]
+    total_recov = np.sum(recov)
+    total_infected = np.sum(infected)
+    total_pre_sympt = np.sum(pre_sympt)
+    total_lat_sympt = np.sum(lat_sympt)
+    print("totals l,p,i,r= ", 
+        total_lat_sympt, total_pre_sympt, total_infected, total_recov)
     inf_s, = plt.plot(range(len(infected)),  infected,  color='r', label="infectious_s")
     pre_s, = plt.plot(range(len(pre_sympt)), pre_sympt, color='orange', label="pre_s")
-    lat_s, = plt.plot(range(len(l_sympt)),   l_sympt,   color='b', label="latent_s")
-    recov = df["recov"]
-    #print("len(recov)= ", len(recov))
-    rec_, = plt.plot(range(len(recov)), recov, color='g', label="recovered")
-    print("-----------------\n")
-    print("rec_= ", rec_, ", type= ", type(rec_))
+    lat_s, = plt.plot(range(len(lat_sympt)),   lat_sympt,   color='b', label="latent_s")
+    rec_,  = plt.plot(range(len(recov)), recov, color='g', label="recovered")
     handles = [inf_s, pre_s, lat_s, rec_]
-    labels = ['a','b','c','d']
-    #handles = [inf_s[0]]
-    #labels = ['a']
-    return handles, labels
+    return handles
 
-nb_runs = 10
-for i in range(0, nb_runs):
-    handles, labels = plot_group(by, i)
+nb_runs = 5
+for run in range(0, nb_runs):
+    handles = plot_group(by, run)
 plt.legend(handles=handles, loc='center right', ncol=1)
 plt.show()
 quit()

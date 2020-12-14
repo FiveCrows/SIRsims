@@ -5,6 +5,7 @@
 #include <string.h>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
+#include <gsl/gsl_permutation.h>
 
 #define NAGE 5
 #define NCOMPARTMENTS 9
@@ -26,6 +27,12 @@ typedef struct List{
   int n;
   int cum[NAGE];
 } List;
+
+int count_l_asymp;
+int count_l_symp;
+int count_l_presymp;
+int count_i_symp;
+int count_recov;
 
 //States
 #define S 0

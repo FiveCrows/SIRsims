@@ -4,7 +4,6 @@
 
 void init()
 {
-  //printf("Spread_SIR\n");
   resetVariables();
   resetNodes();
   
@@ -15,19 +14,33 @@ void init()
 void seedInfection()
 {
   int seed;
+  const gsl_rng_type* T;
+  gsl_rng* r;
 
-  seed = gsl_rng_uniform_int(random_gsl, N);
-  index_node = seed;
+  // Use a permutation to make sure that there are no duplicates when 
+  // choosing more than one initial infected
+  gsl_permutation* p = gsl_permutation_alloc(N);
+  gsl_rng_env_setup();
+  T = gsl_rng_default;
+  r = gsl_rng_alloc(T);
+  gsl_permutation_init(p);
+  gsl_ran_shuffle(r, p->data, N, sizeof(size_t));
 
-  node[seed].state = L;
   float rho = 0.001; // infectivity percentage at t=0
-  int ninfected = rho * 260000;
+  int ninfected = rho * N;
   printf("ninfected= %d\n", ninfected);
+
   for (int i=0; i < ninfected; i++) { 
-       addToList(&latent_symptomatic, seed);
+  	//seed = gsl_rng_uniform_int(random_gsl, N);
+  	seed = p->data[i];
+  	node[seed].state = L;
+    addToList(&latent_symptomatic, seed); // orig (should be new_latent_symptomatic
   }
 
+  gsl_permutation_free(p);
+
   n_active = ninfected;
+  count_l_symp += ninfected;
 
   t = 1;
 }
@@ -50,6 +63,7 @@ void spread(int run)
   //homeTransition();
   //Hospital dynamics
   //hospitals();
+
 
   updateLists();
   updateTime();
@@ -108,7 +122,7 @@ void infect(int source, int type)
  
   // All types are 4: IS
   //printf("enter infect from infection, source= %d, type= %d\n", source, type);
-  //if (type != 4) {printf("type should be 4\n"); exit(1);}
+  //if (type != 4) {printf("%d, type should be 4\n", type); exit(1);}
  
   //printf("node: %d\n", node[source].k); // retuns 0
 
@@ -124,8 +138,10 @@ void infect(int source, int type)
 	      if (gsl_rng_uniform(random_gsl) < p) {
 		    printf("there are no asymptomatics\n"); exit(1);
 		    addToList(&new_latent_asymptomatic, target);
+			count_l_asymp += 1;
 		  } else {
 		    addToList(&new_latent_symptomatic, target);
+			count_l_symp += 1;
 			// new latent symptomatic not forming. Why? 
 			//printf("add new_latent_symptomatic\n"); exit(1);
 		  }
@@ -165,10 +181,16 @@ void latency()
 #if 1
   for (int i=0; i < latent_symptomatic.n; i++) {
       id = latent_symptomatic.v[i];
+      // if epsilon_sympt == 1, immediately add to new_pre_sympto. 
+	  // if epsilon_symp == 1, no more than initial_infecced are infected. WHY?
       if (gsl_rng_uniform(random_gsl) < epsilon_symptomatic) {
 	    addToList(&new_pre_symptomatic, i);
+		count_l_presymp += 1;
 	    node[id].state = PS;
 	    i = removeFromList(&latent_symptomatic, i);
+	  } else {
+	     //printf("else in epsilon_S\n");
+		 ;
 	  }
   }
 #endif
@@ -225,6 +247,7 @@ void preToI()
       id = pre_symptomatic.v[i];
       if (gsl_rng_uniform(random_gsl) < gammita) { //onset of symptoms
 	    addToList(&new_infectious_symptomatic, id);
+		count_i_symp += 1;
 	    node[id].state = IS;
 
 #if 0
@@ -253,6 +276,7 @@ void IsTransition()
 	//if (node[id].hospitalization == 1) {printf("hospital SHOULD BE 0?\n"); exit(1); }
     if (gsl_rng_uniform(random_gsl) < mu) { //days to R/Home
       addToList(&new_recovered, id);
+	  count_recov += 1;;
       node[id].state = R;
       n_active--;
 	  //printf("recov: n_active= %d\n", n_active);  // THERE ARE TOO MANY!! HOW???
