@@ -41,6 +41,7 @@ void seedInfection()
 
   n_active = ninfected;
   count_l_symp += ninfected;
+  printf("added ninfected to latent_symptomatic\n");
 
   t = 1;
 }
@@ -103,7 +104,9 @@ void infection()
 
   //Pre-symptomatic (Non-zero)
   //printf("- pre_symptomatic.n= %d\n", pre_symptomatic.n);
+  
   for (int i=0; i < pre_symptomatic.n; i++) {
+	printf("pre_sympto %d\n", i);
     infect(pre_symptomatic.v[i], PS);
   }
     
@@ -111,8 +114,10 @@ void infection()
   //printf("enter infection, nb symptomatic: %d\n", infectious_symptomatic.n);
   //printf("- infectious_symptomatic.n= %d\n", infectious_symptomatic.n);
   for (int i=0; i < infectious_symptomatic.n; i++) {
+	printf("sympto %d\n", i);
     infect(infectious_symptomatic.v[i], IS);
   }
+  //printf("end infection()\n"); exit(1);
 }
 
 void infect(int source, int type)
@@ -130,7 +135,6 @@ void infect(int source, int type)
       target = node[source].v[j];
       if (node[target].state == S) {   // == S
 		// There is an implicit dt factor (== 1 day)
-#if EXP
 
 		// mean=a*b, var=a*b**2
 #if 0
@@ -144,7 +148,16 @@ void infect(int source, int type)
 		}
 		printf("mean= %f\n", mean/100000.);
 		exit(1);
+
+alpha: 2.23 (1.86 - 2.89)
+beta: 0.37 (0.3 - 0.47)
 #endif
+		float a = 1. / beta_normal;
+		//float a = 2.23;
+	    float b = 1. / 0.37;
+		float g = gsl_ran_gamma(r_rng, a, b);
+		printf("g, gi= %f, %f, beta= %f, type= %d\n", g, 1./g, beta[type], type);
+#if EXP
 	    prob = 1.-exp(-beta[type] * node[source].w[j]);
 #else
 	    prob = beta[type] * node[source].w[j];
@@ -160,6 +173,8 @@ void infect(int source, int type)
 		  } else {
 		    addToList(&new_latent_symptomatic, target);
 			count_l_symp += 1;
+			// Where are they added from? (from Susceptibles, which are not traced)
+			printf("infect: add new latent_symptomatic, count= %d\n", count_l_symp);
 			// new latent symptomatic not forming. Why? 
 			//printf("add new_latent_symptomatic\n"); exit(1);
 		  }
@@ -208,6 +223,7 @@ void latency()
 #else
 	  if (gsl_rng_uniform(random_gsl) < epsilon_symptomatic) {
 #endif
+	    //printf("add to pre_symptomatic\n");
 	    addToList(&new_pre_symptomatic, i);
 		count_l_presymp += 1;
 	    node[id].state = PS;

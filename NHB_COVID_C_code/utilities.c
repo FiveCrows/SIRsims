@@ -45,6 +45,9 @@ void setBeta()
   beta[IA] = r*beta_normal;
   beta[IS] = beta_normal;
   beta[PS] = beta_pre;
+  printf("beta[IA] = %f\n", beta[IA]);
+  printf("beta[IS] = %f\n", beta[IS]);
+  printf("beta[PS] = %f\n", beta[PS]);
 }
 
 void openFiles()

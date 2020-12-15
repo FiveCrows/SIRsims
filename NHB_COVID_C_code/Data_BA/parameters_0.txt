@@ -18,5 +18,5 @@ xi4 0.
 delta 2
 muH-1 8
 muICU-1 13
-k 0.15
+k 0.000015
 beta 0.20
