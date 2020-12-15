@@ -42,6 +42,8 @@ void readParameters()
   muICU = 1.0/muICU;
   fscanf(f,"%s %lf", trash, &k); //k
   fscanf(f,"%s %lf", trash, &beta_normal); //infectivity
+  printf("fscanf, beta_normal= %lf\n", beta_normal);
+  printf("fscanf, r= %lf\n", r);
   fclose(f);
 }
 

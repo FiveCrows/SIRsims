@@ -1,0 +1,12 @@
+
+main.c
+read.c
+
+# Select the model in the Makefile
+spread.c  # Original code from author
+# I beautified parts of the code
+# Calculate SIR spread
+spread_SEPIR_clean.c  # SEPIR model
+spread_SEIR_clean.c # SEIR model
+spread_SIR_clean.c  # SIR model with commented out lines removed
+spread_SIR.c # SIR model (with comment and print statements)

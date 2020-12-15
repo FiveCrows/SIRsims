@@ -43,7 +43,7 @@ def plot_group(by, group):
     lat_sympt   = df["l_sympt"]
     recov     = df["recov"]
 
-    alpha=0.2
+    alpha=1.0
     inf_s, = plt.plot(range(len(infected)),   infected,  alpha=alpha, color='r', label="infectious_s")
     pre_s, = plt.plot(range(len(pre_sympt)), pre_sympt, alpha=alpha, color='orange', label="pre_s")
     lat_s, = plt.plot(range(len(lat_sympt)),   lat_sympt,   alpha=alpha, color='b', label="latent_s")
