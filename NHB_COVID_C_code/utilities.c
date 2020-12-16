@@ -42,9 +42,15 @@ void setBeta()
   for(int i=0; i < NCOMPARTMENTS; i++)
     beta[i] = 0;
 
+  printf("r= %f\n", r);
+  printf("beta_normal= %f\n", beta_normal);
   beta[IA] = r*beta_normal;
   beta[IS] = beta_normal;
   beta[PS] = beta_pre;
+  beta[PS] = 0.0;  // I want infected under these conditions
+  printf("beta[IA] = %f\n", beta[IA]);
+  printf("beta[IS] = %f\n", beta[IS]);
+  printf("beta[PS] = %f\n", beta[PS]);
 }
 
 void openFiles()

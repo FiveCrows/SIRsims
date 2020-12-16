@@ -42,6 +42,8 @@ void readParameters()
   muICU = 1.0/muICU;
   fscanf(f,"%s %lf", trash, &k); //k
   fscanf(f,"%s %lf", trash, &beta_normal); //infectivity
+  printf("fscanf, beta_normal= %lf\n", beta_normal);
+  printf("fscanf, r= %lf\n", r);
   fclose(f);
 }
 
@@ -79,7 +81,17 @@ void readNetwork()
       //Write data
       node[s].v[node[s].k-1] = t;
       node[s].w[node[s].k-1] = w;
+
+	  // The input data was an undirected graph
+	  if (t != s) {
+		node[t].k++;
+      	node[t].v = realloc(node[t].v, node[t].k * sizeof *node[t].v);
+        node[t].w = realloc(node[t].w, node[t].k * sizeof *node[t].w);
+        node[t].v[node[t].k-1] = s;
+        node[t].w[node[t].k-1] = w;
+	  }
     }
+  printf("exit while\n");
   fclose(f);
 }
 

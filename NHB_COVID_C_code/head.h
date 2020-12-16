@@ -28,6 +28,9 @@ typedef struct List{
   int cum[NAGE];
 } List;
 
+const gsl_rng_type* T;
+gsl_rng* r_rng;
+
 int count_l_asymp;
 int count_l_symp;
 int count_l_presymp;
