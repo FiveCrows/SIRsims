@@ -4,14 +4,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 from collections import defaultdict
 import random
+import distributions as dist
 
 # Experiment with creating a negative binomial of mean R0 and variance
 # R0 * (1 + k*R0)
 
 def gamma(R0, k, n):
     # This is correct
-    alpha = 1 / k 
-    beta = R0 * k
+    alpha = k 
+    beta = R0 / k
+    #print("gamma: alpha, beta= ", alpha, beta)
     gammas = np.random.gamma(alpha, beta, n)
     return gammas
 
@@ -39,7 +41,7 @@ print("R0= ", R0)
 print("k= ", k)
 
 N = 500000
-lmbda = gamma(R0, k, N)
+lmbda = dist.gamma(R0, k, N)
 print("lmbda= ", lmbda)
 
 # the results should be equivalent to a properly scaled Negative Binomial
@@ -108,7 +110,8 @@ N = 200000
 p = 1. / (1+R0/k)
 r =  k
 
-samples = np.random.negative_binomial(r, p, N)
+#samples = np.random.negative_binomial(r, p, N)
+samples = dist.negativeBinomial(R0, k, N)
 muhat = np.mean(samples)
 varhat = np.var(samples)
 stdhat = np.sqrt(varhat)
@@ -132,9 +135,9 @@ print(strg)
 print("N: %d samples" % N)
 p = 1 / R0
 samples = np.random.geometric(p, N)
-muhat = np.mean(samples)
-varhat = np.var(samples)
-stdhat = np.sqrt(varhat)
+muhat   = np.mean(samples)
+varhat  = np.var(samples)
+stdhat  = np.sqrt(varhat)
 print("R0= ", R0, ",  R0*(1.+R0)= ", R0*(1.+R0*k))
 print("mean=1/p= %f" % (1/p))
 print("var=(1-p)/p**2= %f" % ((1-p)/p**2))
@@ -143,44 +146,63 @@ print("(varhat/muhat-1.)= ", varhat/muhat-1.)
 
 strg = """
 ==============================================
-POISSON MIXTURE WITH POISSON is a GEOMETRIC DISTRIBUTION
+EXPONENTIAL MIXTURE WITH POISSON is a GEOMETRIC DISTRIBUTION
+interpreted as the number of FAILURES before the first SUCCESS
 Choose R according to Poisson with mean R0
-Sample Poission with this R
+Sample Poisson with this R
 
 My formulas for mu, var=sigma^2 are not correct 
 ==============================================
 """
 print(strg)
 
-samples = poisson(R0, N)
+samples = dist.exponential(R0, N)
+muhat   = np.mean(samples)
+varhat  = np.var(samples)
+print("dist.exponential: muhat= %f, varhat= %f" % (muhat, varhat))
 samples = poisson(samples, N)
-muhat = np.mean(samples)
-varhat = np.var(samples)
-stdhat = np.sqrt(varhat)
+muhat   = np.mean(samples)
+varhat  = np.var(samples)
+
 p = 1. / (1.+R0)  # p of resulting geometric distribution
-print("muhat= %f, varhat= %f, stdhat= %f\n" % (muhat, varhat, stdhat))
-print("p = ", p)
-print("mean=1/p= %f" % (1/p))
-print("var=(1-p)/p**2= %f" % ((1-p)/p**2))
+print("exponential-poisson: muhat= %f, varhat= %f" % (muhat, varhat))
+print("p=1./(1.+R0)= ", p)
+print("Geometric mean=1/p= %f" % (1/p))
+print("Geometric var=(1-p)/p**2= %f" % ((1-p)/p**2))
+
+# Equivalent geometric
+# p* = p/(1-p) ==> p* (1-p) = p ==> p* = p(p*+1) => p = p* / (p* + 1)
+samples = np.random.geometric(p, N)  # number of trials to achieve success
+muhat   = np.mean(samples)    # average number of trials to achieve success
+muhat   = np.mean(samples-1)  # average number of failures to achieve success
+varhat  = np.var(samples)
+print("geometric(p=%f): muhat=      %f" % (p, muhat))
+print("geometric(p=%f): varhat=     %f" % (p, varhat))
+print("geometric(p=%f): mu=(1-p)/p= %f" % (p, (1-p)/p))
+print("geometric(p=%f): var= %f"        % (p, (1-p)/p**2))
+
 
 strg = """
 ==============================================
 POISSON MIXTURE WITH GAMMA is a NEGATIVE BINOMIAL
 Choose R according to Poisson with mean R0
-Sample Poission with this R
-
-My formulas for mu, var=sigma^2 are not correct 
+Sample Poisson with this R
 ==============================================
 """
 print(strg)
 
-samples =  gamma(R0, k, N)
-print("mean gamma: ", np.mean(samples))
-print("var gamma: ", np.var(samples))
-samples = poisson(samples, N)
+samples = dist.gamma(R0, k, N)
+muhat   = np.mean(samples)
+varhat  = np.var(samples)
+print("dist.gamma mean: ", muhat)
+print("dist.gamma var: ", varhat)
+samples = dist.poisson(samples, N)
+muhat   = np.mean(samples)
+varhat  = np.var(samples)
 print("k= ", k)
-print("muhat= %f, varhat= %f, stdhat= %f\n" % (muhat, varhat, stdhat))
-print("var/mean= ", np.var(samples)/np.mean(samples))
-# Once I figure this out. 
+print("gamma-poisson: muhat= %f" % (muhat))
+print("gamma-poisson: varhat= %f" % (varhat))
+print("R0*(1.+R0/k)= ", R0*(1.+R0/k))
+# I must figure this out. 
 quit()
 

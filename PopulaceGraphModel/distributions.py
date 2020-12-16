@@ -7,8 +7,9 @@ import numpy as np
 
 def gamma(R0, k, n):
     # This is correct
-    alpha = 1 / k 
-    beta = R0 * k
+    alpha = k 
+    beta = R0 / k
+    print("dist.gamma: alpha, beta= %f, %f" % (alpha, beta))
     gammas = np.random.gamma(alpha, beta, n)
     return gammas
 
@@ -17,15 +18,16 @@ def poisson(lmbda, n):
     pois = np.random.poisson(lmbda, n)
     return(pois)
 
-def expon(lmbda, n):
+def exponential(lmbda, n):
     expos = np.random.exponential(lmbda, n)
     return expos
 
-def negBinomial(R0, k, n):
+def negativeBinomial(R0, k, n):
     # average mu=R0, var=sigma**2=mu*(1+k*mu)
     # k: Dispersion
     # R0: reproduction number at early times
-    p = 1 - k*R0/(1+k*R0)
-    n = 1. / k
-    neg_bins = np.random.negative_binomial(n, p, N)
+    p = 1 / (1+R0/k)
+    #n = 1. / k  # do not know which is correct. This or next line
+    r = k 
+    neg_bins = np.random.negative_binomial(r, p, n)
     return neg_bins
