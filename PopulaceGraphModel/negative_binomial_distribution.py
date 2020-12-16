@@ -9,31 +9,6 @@ import distributions as dist
 # Experiment with creating a negative binomial of mean R0 and variance
 # R0 * (1 + k*R0)
 
-def gamma(R0, k, n):
-    # This is correct
-    alpha = k 
-    beta = R0 / k
-    #print("gamma: alpha, beta= ", alpha, beta)
-    gammas = np.random.gamma(alpha, beta, n)
-    return gammas
-
-def poisson(lmbda, n):
-    # This is correct
-    pois = np.random.poisson(lmbda, n)
-    #print("Poisson: mean/var= ", np.mean(pois), np.var(pois))
-    return(pois)
-
-def expon(lmbda, n):
-    #expo = np.random.exponential(lmbda, n)
-    expo = np.random.exponential(lmbda, n)
-    # Expect mean,std = lmbda, lmbda
-    #print("mean/var/std= ", np.mean(expo), np.var(expo), np.std(expo))
-    return expo
-
-
-#gams = gamma(5., .045, 100000)
-#lmbda = 3.
-#lmbda = np.random.uniform(0.,1.,50000)
 
 R0 = 2.5
 dispersion = k = 0.75
@@ -46,7 +21,7 @@ print("lmbda= ", lmbda)
 
 # the results should be equivalent to a properly scaled Negative Binomial
 print("Composite Poisson")
-expo = poisson(lmbda, N)
+expo = dist.poisson(lmbda, N)
 
 """
 negative_binomial(n, p, size=None)
@@ -76,25 +51,6 @@ print("R0*(1+k*R0)= ", R0*(1+k*R0))
 
 p = 1. / (1. + R0 / k)
 r = p / (1.-p) / R0
-
-# The composite gives Gamma(r+k)/[k!*Gamma(r)] p**k (1-p)**r
-# This generates the negative binomial f(k; r,p) (Wikipedia)
-# f(k; r, p) = Pr(X=k) = C((i+r-1), r-1)) (1-p)**k p**r
-# r is number of successes
-# k is number of failures
-# p is probability of success
-# Mean: p*r/(1-p), 
-# var = p*r/(1-p)**2 = mean/(1-p)
-# Mean = mu = R0 = p*r/(1-p)
-# var = R0 + k*R0**2 = mean/(1-p)
-# Compute p and r
-# mu*(1-p) = R0*(1-p) = p*r ==> 
-# R0 + k*R0**2 = R0 / (1-p) ==> (1-p) = R0 / (R0 + k*R0**2) = 1/(1+k*R0)
-#   ==> p = 1 - 1/(1+k*R0) = k*R0 / (1+k*R0)
-#   ==> r = R0 * (1-p) / p
-
-#p = k*R0 / (1+k*R0)
-#p = 1. - k*R0 / (1+k*R0)
 
 strg = """
 =============================================
@@ -160,7 +116,7 @@ samples = dist.exponential(R0, N)
 muhat   = np.mean(samples)
 varhat  = np.var(samples)
 print("dist.exponential: muhat= %f, varhat= %f" % (muhat, varhat))
-samples = poisson(samples, N)
+samples = dist.poisson(samples, N)
 muhat   = np.mean(samples)
 varhat  = np.var(samples)
 
