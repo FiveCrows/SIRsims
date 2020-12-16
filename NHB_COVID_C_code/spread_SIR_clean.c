@@ -33,14 +33,16 @@ void seedInfection()
   for (int i=0; i < ninfected; i++) { 
   	seed = p->data[i];
   	node[seed].state = L;
-    addToList(&latent_symptomatic, seed); // orig (should be new_latent_symptomatic
+    //addToList(&latent_symptomatic, seed); // orig (should be new_latent_symptomatic)
+    addToList(&infectious_symptomatic, seed); // GE (go directly to IS state
   }
 
   gsl_permutation_free(p);
 
   n_active = ninfected;
   count_l_symp += ninfected;
-  printf("added %d latent_symptomatic individuals\n", ninfected);
+  //printf("added %d latent_symptomatic individuals\n", ninfected);
+  printf("added %d infectious_symptomatic individuals\n", ninfected);
 
   t = 1;
 }
@@ -93,13 +95,13 @@ void infection()
   if (infectious_asymptomatic.n > 0) {printf("infectious_asymptomatic should be == 0\n"); exit(1); }
 
   for (int i=0; i < pre_symptomatic.n; i++) {
-	printf("call infect(pre_symptomatic) %d/%d\n", i, pre_symptomatic.n);
+	//printf("call infect(pre_symptomatic) %d/%d\n", i, pre_symptomatic.n);
     infect(pre_symptomatic.v[i], PS);
   }
     
   //Infectious symptomatic
   for (int i=0; i < infectious_symptomatic.n; i++) {
-	printf("call infect(infectious_symptomatic) %d/%d\n", i, infectious_symptomatic.n);
+	//printf("call infect(infectious_symptomatic) %d/%d\n", i, infectious_symptomatic.n);
     infect(infectious_symptomatic.v[i], IS);
   }
 }
@@ -133,9 +135,10 @@ void infect(int source, int type)
 			count_l_asymp += 1;
 			exit(1);
 		  } else {
-		    addToList(&new_latent_symptomatic, target);
+		    //addToList(&new_latent_symptomatic, target); // orig code
+		    addToList(&new_infectious_symptomatic, target);  // GE: infectious to infectious
 			count_l_symp += 1;
-			printf("... add new latent symptomatic (%d, %d)\n", j, count_l_symp);
+			//printf("... add new latent symptomatic (%d, %d)\n", j, count_l_symp);
 		  }
 	      
 	      //Update target data
@@ -166,7 +169,7 @@ void latency()
 	    //addToList(&new_pre_symptomatic, i);  // orig code
 	    addToList(&new_infectious_symptomatic, i); // GE
 		count_l_presymp += 1;
-		printf("... add new_pre_symptomatic (%d, %d, %d)\n", i, count_l_presymp, latent_symptomatic.n);
+		//printf("... add new_pre_symptomatic (%d, %d, %d)\n", i, count_l_presymp, latent_symptomatic.n);
 	    node[id].state = PS;
 	    i = removeFromList(&latent_symptomatic, i);
 	  } else {
@@ -189,7 +192,7 @@ void preToI()
 #endif
 	    addToList(&new_infectious_symptomatic, id);
 		count_i_symp += 1;
-		printf("... add new infectious_symptomatic (%d, %d)\n", i, count_i_symp);
+		//printf("... add new infectious_symptomatic (%d, %d)\n", i, count_i_symp);
 	    node[id].state = IS;
 
 	    i = removeFromList(&pre_symptomatic, i);
@@ -207,7 +210,7 @@ void IsTransition()
     if (gsl_rng_uniform(random_gsl) < mu) { //days to R/Home
       addToList(&new_recovered, id);
 	  count_recov += 1;;
-	  printf("... add recovered (%d, %d)\n", i, count_recov);
+	  //printf("... add recovered (%d, %d)\n", i, count_recov);
       node[id].state = R;
       n_active--;
       i = removeFromList(&infectious_symptomatic, i);
@@ -220,7 +223,7 @@ void IsTransition()
 void updateTime()
 { 
   t++;
-  printf("     Update Time, t= %d\n", t);
+  //printf("     Update Time, t= %d\n", t);
 }
 
 void resetVariables()

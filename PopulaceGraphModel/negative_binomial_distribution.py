@@ -56,8 +56,8 @@ negative_binomial(n, p, size=None)
     is > 0 and `p` is in the interval [0, 1].
 """
 
-p = k*R0/(1+k*R0)
-p = 1-p
+p = 1. - k*R0/(1+k*R0)
+#p = (1+k*R0-k*R0)/(1+k*R0) = 1/(1+k*R0)
 n = 1./k
 neg_bin = np.random.negative_binomial(n, p, N)
 mean = np.mean(neg_bin)
@@ -71,7 +71,6 @@ print("p= ", p, ",   n= ", n)
 print("R0= ", R0)
 print("k= ", k)
 print("R0*(1+k*R0)= ", R0*(1+k*R0))
-quit()
 
 p = 1. / (1. + R0 / k)
 r = p / (1.-p) / R0
@@ -92,28 +91,96 @@ r = p / (1.-p) / R0
 #   ==> p = 1 - 1/(1+k*R0) = k*R0 / (1+k*R0)
 #   ==> r = R0 * (1-p) / p
 
-p = k*R0 / (1+k*R0)
-p = 1. - k*R0 / (1+k*R0)
-r =  1 / k
-print("p= ", p, ",  r= ", r)
+#p = k*R0 / (1+k*R0)
+#p = 1. - k*R0 / (1+k*R0)
 
+strg = """
+=============================================
+NEGATIVE BINOMIAL DISTRIBUTION
+p = 1 / (1+R0/k)
+r =  k
 nb = np.random.negative_binomial(r, p, N)
-print("R0= ", R0, ",  R0*(1.+R0*k)= ", R0*(1.+R0*k))
-print("mean/var/std(nb)= ", np.mean(nb), np.var(nb), np.std(nb))
-print("mu=p*r/(1-p)= ", p*r/(1-p))
-print("var=mean/p= ", p*r/(1-p)**2)  
+=============================================
+"""
+print(strg)
 
-# This seems the same as the calculated mu/var. So p is prob of failure
-# (I interchanged p and 1-p in the formula above)
-print("mu=(1-p)*r/p= ", (1-p)*r/p)
-print("var=mean/p= ", (1-p)*r/p**2)  
-# This means that
-# 1-p = k*R0 / (1 + k*R0)
-# p = 1 / (1 + k*R0) 
-# r = R0 * p / (1-p)
+N = 200000
+p = 1. / (1+R0/k)
+r =  k
 
-#print(help(np.random.negative_binomial))
+samples = np.random.negative_binomial(r, p, N)
+muhat = np.mean(samples)
+varhat = np.var(samples)
+stdhat = np.sqrt(varhat)
 
+print("p= ", p, ",  r= ", r)
+print("R0= ", R0, ",  R0*(1.+R0/k)= ", R0*(1.+R0/k))
+print("muhat= %f, varhat= %f, stdhat= %f\n" % (muhat, varhat, stdhat))
+print("muhat= ", muhat)
+print("k= ", k)
+print("muhat*(1.+muhat/k)= %f" % (muhat*(1.+muhat/k)))
+
+strg = """
+=============================================
+GEOMETRIC DISTRIBUTION
+p = 1 / (1+R0)
+nb = np.random.geometric(p, N)
+=============================================
+"""
+print(strg)
+
+print("N: %d samples" % N)
+p = 1 / R0
+samples = np.random.geometric(p, N)
+muhat = np.mean(samples)
+varhat = np.var(samples)
+stdhat = np.sqrt(varhat)
+print("R0= ", R0, ",  R0*(1.+R0)= ", R0*(1.+R0*k))
+print("mean=1/p= %f" % (1/p))
+print("var=(1-p)/p**2= %f" % ((1-p)/p**2))
+print("muhat= %f, varhat= %f, stdhat= %f\n" % (muhat, varhat, stdhat))
+print("(varhat/muhat-1.)= ", varhat/muhat-1.)
+
+strg = """
+==============================================
+POISSON MIXTURE WITH POISSON is a GEOMETRIC DISTRIBUTION
+Choose R according to Poisson with mean R0
+Sample Poission with this R
+
+My formulas for mu, var=sigma^2 are not correct 
+==============================================
+"""
+print(strg)
+
+samples = poisson(R0, N)
+samples = poisson(samples, N)
+muhat = np.mean(samples)
+varhat = np.var(samples)
+stdhat = np.sqrt(varhat)
+p = 1. / (1.+R0)  # p of resulting geometric distribution
+print("muhat= %f, varhat= %f, stdhat= %f\n" % (muhat, varhat, stdhat))
+print("p = ", p)
+print("mean=1/p= %f" % (1/p))
+print("var=(1-p)/p**2= %f" % ((1-p)/p**2))
+
+strg = """
+==============================================
+POISSON MIXTURE WITH GAMMA is a NEGATIVE BINOMIAL
+Choose R according to Poisson with mean R0
+Sample Poission with this R
+
+My formulas for mu, var=sigma^2 are not correct 
+==============================================
+"""
+print(strg)
+
+samples =  gamma(R0, k, N)
+print("mean gamma: ", np.mean(samples))
+print("var gamma: ", np.var(samples))
+samples = poisson(samples, N)
+print("k= ", k)
+print("muhat= %f, varhat= %f, stdhat= %f\n" % (muhat, varhat, stdhat))
+print("var/mean= ", np.var(samples)/np.mean(samples))
 # Once I figure this out. 
 quit()
 
