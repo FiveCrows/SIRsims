@@ -2,7 +2,9 @@
 
 #define EXP 1
 
-// Implement an SIR version of this code. 
+// Implement an SEIR version of this code. 
+// There are 4 states: Susceptible, Exposed (latent), Infected, Recovered
+// Recovered means death or cured. 
 
 void init()
 {
@@ -91,11 +93,14 @@ void spread(int run)
 void infection()
 {
   if (infectious_asymptomatic.n > 0) {printf("infectious_asymptomatic should be == 0\n"); exit(1); }
+  if (pre_symptomatic.n > 0) {printf("pre_symptomatic should be == 0\n"); exit(1); }
 
+#if 0
   for (int i=0; i < pre_symptomatic.n; i++) {
-	printf("call infect(pre_symptomatic) %d\n", i);
+	//printf("call infect(pre_symptomatic) %d\n", i);
     infect(pre_symptomatic.v[i], PS);
   }
+#endif
     
   //Infectious symptomatic
   for (int i=0; i < infectious_symptomatic.n; i++) {
@@ -162,10 +167,12 @@ void latency()
 	  if (gsl_rng_uniform(random_gsl) < epsilon_symptomatic)
 #endif
 	  {
-	    addToList(&new_pre_symptomatic, i);
-		count_l_presymp += 1;
+	    //addToList(&new_pre_symptomatic, i);
+	    addToList(&new_infectious_symptomatic, i);
+		count_i_symp += 1;
+		//count_l_presymp += 1;
 		printf("... add new_pre_symptomatic\n");
-	    node[id].state = PS;
+	    node[id].state = IS;
 	    i = removeFromList(&latent_symptomatic, i);
 	  } else {
 	     //printf("else in epsilon_S\n");
@@ -178,6 +185,8 @@ void latency()
 void preToI()
 {
   int id;
+
+  if (pre_symptomatic.n > 0) {printf("pre_symptomatic should be == 0\n"); exit(1); }
 
   for (int i=0; i < pre_symptomatic.n; i++) {
       id = pre_symptomatic.v[i];

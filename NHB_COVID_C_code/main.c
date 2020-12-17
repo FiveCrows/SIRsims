@@ -24,7 +24,7 @@ void initialize(int argc, char *argv[])
 
   n_runs = 100;
   n_runs = 10;
-  n_runs = 50;
+  n_runs = 5;
   parameters = 0;
 
   seed = time(NULL);

@@ -28,7 +28,7 @@ void seedInfection()
 
   float rho = 0.001; // infectivity percentage at t=0
   int ninfected = rho * N;
-  printf("ninfected= %d\n", ninfected);
+  printf("N=%d, ninfected= %d\n", N, ninfected);
 
   for (int i=0; i < ninfected; i++) { 
   	seed = p->data[i];
