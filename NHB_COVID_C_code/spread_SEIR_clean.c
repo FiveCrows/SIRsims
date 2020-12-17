@@ -52,15 +52,15 @@ void spread(int run)
   resetNew();
 
   //S to L
-  printf("--> enter infection\n");
+  //printf("--> enter infection\n");
   infection();
   //L to P
-  printf("--> enter latency\n");
+  //printf("--> enter latency\n");
   latency();
   //P to I
-  printf("--> enter preToI\n");
+  //printf("--> enter preToI\n");
   preToI();
-  printf("--> enter isTransition\n");
+  //printf("--> enter isTransition\n");
   IsTransition();
 
 
@@ -104,7 +104,7 @@ void infection()
     
   //Infectious symptomatic
   for (int i=0; i < infectious_symptomatic.n; i++) {
-	printf("call infect(infectious_symptomatic) %d\n", i);
+	//printf("call infect(infectious_symptomatic) %d\n", i);
     infect(infectious_symptomatic.v[i], IS);
   }
 }
@@ -134,12 +134,12 @@ void infect(int source, int type)
 
 	      if (gsl_rng_uniform(random_gsl) < p) {
 		    addToList(&new_latent_asymptomatic, target);
-			printf("... add new latent asymptomatic (%d)\n", count_l_symp);
+			//printf("... add new latent asymptomatic (%d)\n", count_l_symp);
 			count_l_asymp += 1;
 		  } else {
 		    addToList(&new_latent_symptomatic, target);
 			count_l_symp += 1;
-			printf("... add new latent symptomatic (%d)\n", count_l_symp);
+			//printf("... add new latent symptomatic (%d)\n", count_l_symp);
 		  }
 	      
 	      //Update target data
@@ -171,7 +171,7 @@ void latency()
 	    addToList(&new_infectious_symptomatic, i);
 		count_i_symp += 1;
 		//count_l_presymp += 1;
-		printf("... add new_pre_symptomatic\n");
+		//printf("... add new_pre_symptomatic\n");
 	    node[id].state = IS;
 	    i = removeFromList(&latent_symptomatic, i);
 	  } else {
@@ -197,7 +197,7 @@ void preToI()
 #endif
 	    addToList(&new_infectious_symptomatic, id);
 		count_i_symp += 1;
-		printf("... add new infectious_symptomatic (%d)\n", count_i_symp);
+		//printf("... add new infectious_symptomatic (%d)\n", count_i_symp);
 	    node[id].state = IS;
 
 	    i = removeFromList(&pre_symptomatic, i);
@@ -214,7 +214,7 @@ void IsTransition()
     id = infectious_symptomatic.v[i];
     if (gsl_rng_uniform(random_gsl) < mu) { //days to R/Home
       addToList(&new_recovered, id);
-	  printf("... add recovered\n");
+	  //printf("... add recovered\n");
 	  count_recov += 1;;
       node[id].state = R;
       n_active--;

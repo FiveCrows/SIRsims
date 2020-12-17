@@ -13,7 +13,8 @@ void readParameters()
   FILE *f;
   char trash[100];
 
-  sprintf(trash,strcat(folder, "/parameters_%d.txt"), parameters);
+  sprintf(trash, parameter_file, parameters);
+  printf("parameter_file= %s\n", parameter_file);
   f = fopen(trash, "r");
   fscanf(f,"%s %d", trash, &N); //Nodes
   fscanf(f,"%s %lf", trash, &r); //relative inf. of asymptomatic individuals
@@ -64,7 +65,9 @@ void readNetwork()
     }
 
   //f = fopen("Data/network.txt","r");
-  f = fopen("Data_SIR/edges_BA.csv", "r");
+  //f = fopen("Data_SIR/edges_BA.csv", "r");
+  printf("network_file= %s\n", network_file);
+  f = fopen(network_file, "r");
   while(fgets(string,500,f))
     {
       token = strtok(string," ");
@@ -103,7 +106,7 @@ void readNodes()
   char string[500];
   
   //f = fopen("Data/nodes.txt", "r");
-  f = fopen("Data_SIR/nodes.csv","r");
+  f = fopen(node_file, "r");
   while(fgets(string,500,f))
     {
       token = strtok(string," ");

@@ -7,8 +7,14 @@ import csv
 import pandas as pd
 import matplotlib.pyplot as plt
 from collections import defaultdict
+import sys
 
-filenm = "Results/data_baseline_p0.txt"
+# TO EXECUTE CODE
+#  python read_data.py folder_name
+
+args = sys.argv[1:]
+folder = args[0]
+filenm = folder + "/data_baseline_p0.txt"
 
 text = np.loadtxt(filenm)
 df = pd.DataFrame(text)

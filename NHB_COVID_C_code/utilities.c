@@ -57,8 +57,11 @@ void openFiles(char* cum_baseline, char* data_baseline)
 {
   char name_cum[100], name_data[100];
 
-  sprintf(name_cum,"Results/cum_baseline_p%d.txt",parameters);
-  sprintf(name_data,"Results/data_baseline_p%d.txt",parameters);
+  sprintf(name_cum,"%s/cum_baseline_p%d.txt",result_folder, parameters);
+  sprintf(name_data,"%s/data_baseline_p%d.txt",result_folder, parameters);
+
+  //sprintf(name_cum,"Results/cum_baseline_p%d.txt",parameters);
+  //sprintf(name_data,"Results/data_baseline_p%d.txt",parameters);
 
   f_cum = fopen(name_cum,"w");
   f_data = fopen(name_data,"w");

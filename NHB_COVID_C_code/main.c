@@ -35,7 +35,9 @@ void initialize(int argc, char *argv[])
   // executable data_folder result_folder
 
   if (argc != 3) {
-	printf("argc= %d\n", argc);
+	printf("To run the code, \n");
+	printf("  ./executable DataFolder ResultFolder\n");
+	printf("-------------------------------------\n");
 	exit(1);
   }
 
@@ -48,8 +50,15 @@ void initialize(int argc, char *argv[])
 
   //char* filenm = "parameters_0.txt";
   strcpy(parameter_file, result_folder);
-  strcat(parameter_file, "parameters.txt");
+  strcat(parameter_file, "parameters_0.txt");
   printf("parameter_file= %s\n", parameter_file); 
+
+  strcpy(node_file, data_folder);
+  strcat(node_file, "nodes.txt");
+
+  strcpy(network_file, data_folder);
+  strcat(network_file, "network.txt");
+
   readParameters(parameter_file);
   allocateMemory();
   readData();
