@@ -17,7 +17,7 @@ void seedInfection()
   index_node = seed;
 
   node[seed].state = L;
-  int ninfected = 100;
+  int ninfected = 1;
   for (int i=0; i < ninfected; i++) { // rho = 0.001 infectivity percentagte
   	if(gsl_rng_uniform(random_gsl) < p ) //asymptomatic
     	addToList(&latent_asymptomatic,seed);

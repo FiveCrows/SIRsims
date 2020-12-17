@@ -6,6 +6,22 @@
 // There are 4 states: Susceptible, Exposed (latent), Infected, Recovered
 // Recovered means death or cured. 
 
+void count_states()
+{
+  int countS  = 0;
+  int countL  = 0;
+  int countIS = 0;
+  int countR  = 0;
+
+  for(int i=0;i<N;i++) {
+    if (node[i].state == S)  countS++;
+    if (node[i].state == L)  countL++;
+    if (node[i].state == IS) countIS++;
+    if (node[i].state == R)  countR++;
+  }
+  printf("Counts: S,L,IS,R: %d, %d, %d, %d\n", countS, countL, countIS, countR);
+}
+
 void init()
 {
   resetVariables();
@@ -18,6 +34,7 @@ void init()
 void seedInfection()
 {
   int seed;
+  count_states();
 
   // Use a permutation to make sure that there are no duplicates when 
   // choosing more than one initial infected
@@ -35,7 +52,8 @@ void seedInfection()
   for (int i=0; i < ninfected; i++) { 
   	seed = p->data[i];
   	node[seed].state = L;
-    addToList(&latent_symptomatic, seed); // orig (should be new_latent_symptomatic
+	printf("%d, seed= %d\n", i, seed); 
+    addToList(&latent_symptomatic, seed); // orig 
   }
 
   gsl_permutation_free(p);
@@ -52,11 +70,13 @@ void spread(int run)
   resetNew();
 
   // S to L
+  printf("before infection()\n");
+  count_states();
   infection();
   // L to P
   latency();
   // P to I
-  preToI();
+  //preToI();
   // I to R
   IsTransition();
 
@@ -92,12 +112,13 @@ void infection()
   if (infectious_asymptomatic.n > 0) {printf("infectious_asymptomatic should be == 0\n"); exit(1); }
   if (pre_symptomatic.n > 0) {printf("pre_symptomatic should be == 0\n"); exit(1); }
 
-  //Infectious symptomatic
+  //Infectious symptomatic (check the neighbors of all infected)
   for (int i=0; i < infectious_symptomatic.n; i++) {
 	//printf("call infect(infectious_symptomatic) %d\n", i);
     infect(infectious_symptomatic.v[i], IS);
   }
 }
+
 
 void infect(int source, int type)
 {
@@ -107,8 +128,10 @@ void infect(int source, int type)
  
   for (int j=0; j < node[source].k; j++) { // for
       target = node[source].v[j];
+	  printf("j= %d\n", j);
       if (node[target].state == S) {   // == S
 		// There is an implicit dt factor (== 1 day)
+	  printf("  An infected found S\n");
 
 		float a = 1. / beta_normal;
 		//float a = 2.23;
@@ -147,14 +170,14 @@ void infect(int source, int type)
 void latency()
 {
   int id;
- 
-  if (latent_asymptomatic.n > 0) {printf("latent_asymptomatic should be == 0\n"); exit(1); }
 
-	  // prob goes to 1 as eps_S -> 0
-	  printf("prob: %f, n= %d\n", 1.-exp(-epsilon_symptomatic), latent_symptomatic.n);
+  // prob goes to 1 as eps_S -> 0
+  printf("prob: %f, n= %d\n", 1.-exp(-epsilon_symptomatic), latent_symptomatic.n);
 #if 1
   for (int i=0; i < latent_symptomatic.n; i++) {
-      id = latent_symptomatic.v[i];
+      printf("i= %d\n", i);
+      id = latent_symptomatic.v[i];  
+	  //printf("id of latent_symptomatics: %d\n", id);  // looks ok
 #if EXP
 	  if (gsl_rng_uniform(random_gsl) < (1.-exp(-epsilon_symptomatic)))
 #else
@@ -176,28 +199,6 @@ void latency()
 #endif
 }
 
-void preToI()
-{
-  int id;
-
-  if (pre_symptomatic.n > 0) {printf("pre_symptomatic should be == 0\n"); exit(1); }
-
-  for (int i=0; i < pre_symptomatic.n; i++) {
-      id = pre_symptomatic.v[i];
-#if EXP
-      if (gsl_rng_uniform(random_gsl) < (1.-exp(-gammita))) { //onset of symptoms
-#else
-      if (gsl_rng_uniform(random_gsl) < gammita) { //onset of symptoms
-#endif
-	    addToList(&new_infectious_symptomatic, id);
-		count_i_symp += 1;
-		//printf("... add new infectious_symptomatic (%d)\n", count_i_symp);
-	    node[id].state = IS;
-
-	    i = removeFromList(&pre_symptomatic, i);
-	  }
-  }
-}
 
 void IsTransition()
 {
@@ -205,11 +206,13 @@ void IsTransition()
 
   // Modified by GE to implement simple SIR model. No hospitalizations, ICU, etc.
   for (int i=0; i < infectious_symptomatic.n; i++) {
-    id = infectious_symptomatic.v[i];
+    id = infectious_symptomatic.v[i];   // id is always zero. BUG
+	printf("i= %d, id= %d\n", i, id);
     if (gsl_rng_uniform(random_gsl) < mu) { //days to R/Home
       addToList(&new_recovered, id);
 	  //printf("... add recovered\n");
 	  count_recov += 1;;
+      printf("node %d -> R\n", id);  // Always zero. BUG. 
       node[id].state = R;
       n_active--;
       i = removeFromList(&infectious_symptomatic, i);

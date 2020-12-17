@@ -15,8 +15,7 @@ void readParameters(char* filenm)
 
   printf("readParameters, folder= %s\n", folder);
 
-  //sprintf(trash,strcat(folder, "/parameters_%d.txt"), parameters);
-  sprintf(trash,strcat(data_folder, filenm, parameters);
+  sprintf(trash,strcat(data_folder, "/parameters_%d.txt"), parameters);
   f = fopen(trash, "r");
   fscanf(f,"%s %d", trash, &N); //Nodes
   fscanf(f,"%s %lf", trash, &r); //relative inf. of asymptomatic individuals

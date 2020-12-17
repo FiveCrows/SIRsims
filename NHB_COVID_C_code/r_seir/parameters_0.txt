@@ -1,7 +1,7 @@
 N 260542
 r 0.0
 epsilonA-1 0
-epsilonS-1 0.5
+epsilonS-1 0.1
 p 0.00  
 gamma-1 2
 mu-1  5.0
@@ -19,10 +19,11 @@ delta 2
 muH-1 8
 muICU-1 13
 k 0.150000  
-beta 0.20
+beta 0.2
 
 S -> E  (beta = 0.2 / day)  
 E -> I  (epsilon_s = 3 days)
 I -> R  (mu = 5 days)
 Total time: 1/.2 + 3 = 8 days = 1/beta + epsilon_s
 Reduce to 5 days: 1/.2 + 1
+beta 0.20
