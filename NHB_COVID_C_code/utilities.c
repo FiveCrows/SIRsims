@@ -53,7 +53,7 @@ void setBeta()
   printf("beta[PS] = %f\n", beta[PS]);
 }
 
-void openFiles()
+void openFiles(char* cum_baseline, char* data_baseline)
 {
   char name_cum[100], name_data[100];
 

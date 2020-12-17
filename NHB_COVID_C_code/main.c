@@ -30,7 +30,27 @@ void initialize(int argc, char *argv[])
   seed = time(NULL);
   initRandom(seed);
 
-  readParameters();
+  // the Results folder contains parameters.txt, result files
+  // the Data folder contains network data
+  // executable data_folder result_folder
+
+  if (argc != 3) {
+	printf("argc= %d\n", argc);
+	exit(1);
+  }
+
+  strcpy(data_folder, argv[1]);
+  strcat(data_folder, "/");
+  strcpy(result_folder, argv[2]);
+  strcat(result_folder, "/");
+  //printf("result_folder: %s\n", result_folder); 
+  //printf("data_folder: %s\n", data_folder); 
+
+  //char* filenm = "parameters_0.txt";
+  strcpy(parameter_file, result_folder);
+  strcat(parameter_file, "parameters.txt");
+  printf("parameter_file= %s\n", parameter_file); 
+  readParameters(parameter_file);
   allocateMemory();
   readData();
   setBeta();

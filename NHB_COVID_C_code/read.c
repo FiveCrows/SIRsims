@@ -8,14 +8,15 @@ void readData()
   readNodes();
 }
 
-void readParameters()
+void readParameters(char* filenm)
 {
   FILE *f;
   char trash[100];
 
   printf("readParameters, folder= %s\n", folder);
 
-  sprintf(trash,strcat(folder, "/parameters_%d.txt"), parameters);
+  //sprintf(trash,strcat(folder, "/parameters_%d.txt"), parameters);
+  sprintf(trash,strcat(folder, filenm, parameters);
   f = fopen(trash, "r");
   fscanf(f,"%s %d", trash, &N); //Nodes
   fscanf(f,"%s %lf", trash, &r); //relative inf. of asymptomatic individuals
@@ -28,11 +29,11 @@ void readParameters()
   gammita = 1.0/gammita;
   fscanf(f,"%s %lf", trash, &mu); //time to recover
   mu = 1.0/mu;
-  for(int i=0;i<NAGE;i++){ //symptomatic case hospitalization ratio
+  for(int i=0;i<NAGE;i++) { //symptomatic case hospitalization ratio
     fscanf(f,"%s %lf", trash, alpha+i);
     alpha[i] = alpha[i]/100;
   }
-  for(int i=0;i<NAGE;i++){
+  for(int i=0;i<NAGE;i++) {
     fscanf(f,"%s %lf", trash, xi+i); //ICU ratio
     xi[i] = xi[i]/100;
   }

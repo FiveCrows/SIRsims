@@ -65,6 +65,11 @@ Node *node;
 //Various
 int t;
 FILE *f_cum, *f_data;
+char f_cum_file[255], f_data_file[255];
+char data_folder[255], result_folder[255];
+char parameter_file[255];
+char node_file[255];
+char network_file[255];
 //
 
 //main
