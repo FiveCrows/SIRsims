@@ -51,16 +51,13 @@ void spread(int run)
 {  
   resetNew();
 
-  //S to L
-  //printf("--> enter infection\n");
+  // S to L
   infection();
-  //L to P
-  //printf("--> enter latency\n");
+  // L to P
   latency();
-  //P to I
-  //printf("--> enter preToI\n");
+  // P to I
   preToI();
-  //printf("--> enter isTransition\n");
+  // I to R
   IsTransition();
 
 
@@ -95,13 +92,6 @@ void infection()
   if (infectious_asymptomatic.n > 0) {printf("infectious_asymptomatic should be == 0\n"); exit(1); }
   if (pre_symptomatic.n > 0) {printf("pre_symptomatic should be == 0\n"); exit(1); }
 
-#if 0
-  for (int i=0; i < pre_symptomatic.n; i++) {
-	//printf("call infect(pre_symptomatic) %d\n", i);
-    infect(pre_symptomatic.v[i], PS);
-  }
-#endif
-    
   //Infectious symptomatic
   for (int i=0; i < infectious_symptomatic.n; i++) {
 	//printf("call infect(infectious_symptomatic) %d\n", i);
@@ -113,6 +103,7 @@ void infect(int source, int type)
 {
   int target;
   double prob;
+  printf("p= %f\n", p);
  
   for (int j=0; j < node[source].k; j++) { // for
       target = node[source].v[j];
@@ -125,6 +116,7 @@ void infect(int source, int type)
 		float g = gsl_ran_gamma(r_rng, a, b);
 #if EXP
 	    prob = 1.-exp(-beta[type] * node[source].w[j]);
+		printf("infect prob: %f\n", prob); // 0.09
 #else
 	    prob = beta[type] * node[source].w[j];
 #endif
@@ -158,6 +150,8 @@ void latency()
  
   if (latent_asymptomatic.n > 0) {printf("latent_asymptomatic should be == 0\n"); exit(1); }
 
+	  // prob goes to 1 as eps_S -> 0
+	  printf("prob: %f, n= %d\n", 1.-exp(-epsilon_symptomatic), latent_symptomatic.n);
 #if 1
   for (int i=0; i < latent_symptomatic.n; i++) {
       id = latent_symptomatic.v[i];
