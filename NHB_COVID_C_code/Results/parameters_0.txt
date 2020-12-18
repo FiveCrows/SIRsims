@@ -1,7 +1,7 @@
 N 10000
-r 0.5
+r 0.0
 epsilonA-1 0
-epsilonS-1 .1
+epsilonS-1 0.1
 p 0.00
 gamma-1 2
 mu-1 2.5

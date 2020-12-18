@@ -144,7 +144,7 @@ void latency()
       id = latent_symptomatic.v[i];
       if(gsl_rng_uniform(random_gsl)<epsilon_symptomatic)
 	{
-	  addToList(&new_pre_symptomatic,i);
+	  addToList(&new_pre_symptomatic,i);  // Is this an error? 
 	  node[id].state = PS;
 
 	  i = removeFromList(&latent_symptomatic,i);
@@ -200,6 +200,7 @@ void IsTransition()
   for(int i=0;i<infectious_symptomatic.n;i++)
     {
       id = infectious_symptomatic.v[i];
+	  printf("id=infectious_symptomatic.v[i=%d]= %d\n", i, id);
       if(gsl_rng_uniform(random_gsl)<mu) //days to R/Home
 	{
 	  if(node[id].hospitalization==1) //Home
@@ -211,6 +212,7 @@ void IsTransition()
 	    {
 	      addToList(&new_recovered,id);
 	      node[id].state = R;
+	      printf("node[%d] -> R\n", id);
 
 	      n_active--;
 	      printf("n_active= %d\n", n_active);

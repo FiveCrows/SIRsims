@@ -70,18 +70,20 @@ void spread(int run)
   resetNew();
 
   // S to L
-  printf("before infection()\n");
-  count_states();
+  //printf("before infection()\n"); count_states();
   infection();
   // L to P
+  //printf("before latency()\n"); count_states();
   latency();
   // P to I
   //preToI();
   // I to R
+  //printf("before IsTransition()\n"); count_states();
   IsTransition();
 
 
   updateLists();
+  printf("----------------------------------------\n");
   updateTime();
 
   //Write data
@@ -124,14 +126,14 @@ void infect(int source, int type)
 {
   int target;
   double prob;
-  printf("p= %f\n", p);
+  //printf("p= %f\n", p);
  
   for (int j=0; j < node[source].k; j++) { // for
       target = node[source].v[j];
-	  printf("j= %d\n", j);
+	  //printf("j= %d\n", j);
       if (node[target].state == S) {   // == S
 		// There is an implicit dt factor (== 1 day)
-	  printf("  An infected found S\n");
+	    //printf("  An infected found S\n");
 
 		float a = 1. / beta_normal;
 		//float a = 2.23;
@@ -139,7 +141,7 @@ void infect(int source, int type)
 		float g = gsl_ran_gamma(r_rng, a, b);
 #if EXP
 	    prob = 1.-exp(-beta[type] * node[source].w[j]);
-		printf("infect prob: %f\n", prob); // 0.09
+		//printf("infect prob: %f\n", prob); // 0.09
 #else
 	    prob = beta[type] * node[source].w[j];
 #endif
@@ -172,10 +174,10 @@ void latency()
   int id;
 
   // prob goes to 1 as eps_S -> 0
-  printf("prob: %f, n= %d\n", 1.-exp(-epsilon_symptomatic), latent_symptomatic.n);
+  //printf("prob: %f, n= %d\n", 1.-exp(-epsilon_symptomatic), latent_symptomatic.n);
 #if 1
   for (int i=0; i < latent_symptomatic.n; i++) {
-      printf("i= %d\n", i);
+      //printf("i= %d\n", i);
       id = latent_symptomatic.v[i];  
 	  //printf("id of latent_symptomatics: %d\n", id);  // looks ok
 #if EXP
@@ -184,8 +186,8 @@ void latency()
 	  if (gsl_rng_uniform(random_gsl) < epsilon_symptomatic)
 #endif
 	  {
-	    //addToList(&new_pre_symptomatic, i);
-	    addToList(&new_infectious_symptomatic, i);
+	    //addToList(&new_pre_symptomatic, i); // orig
+	    addToList(&new_infectious_symptomatic, id);
 		count_i_symp += 1;
 		//count_l_presymp += 1;
 		//printf("... add new_pre_symptomatic\n");
@@ -207,12 +209,12 @@ void IsTransition()
   // Modified by GE to implement simple SIR model. No hospitalizations, ICU, etc.
   for (int i=0; i < infectious_symptomatic.n; i++) {
     id = infectious_symptomatic.v[i];   // id is always zero. BUG
-	printf("i= %d, id= %d\n", i, id);
+	//printf("id=infectious_symptomatic.v[%d]= %d\n", i, id);
     if (gsl_rng_uniform(random_gsl) < mu) { //days to R/Home
       addToList(&new_recovered, id);
 	  //printf("... add recovered\n");
 	  count_recov += 1;;
-      printf("node %d -> R\n", id);  // Always zero. BUG. 
+      //printf("node %d -> R\n", id);  // Always zero. BUG. 
       node[id].state = R;
       n_active--;
       i = removeFromList(&infectious_symptomatic, i);
@@ -225,7 +227,7 @@ void IsTransition()
 void updateTime()
 { 
   t++;
-  printf("     Update Time, t= %d\n", t);
+  //printf("     Update Time, t= %d\n", t);
 }
 
 void resetVariables()
