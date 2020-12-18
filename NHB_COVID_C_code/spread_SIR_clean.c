@@ -156,7 +156,7 @@ void infect(int source, int type)
 void latency()
 {
   if (latent_asymptomatic.n > 0) {printf("latent_asymptomatic should be == 0\n"); exit(1); }
-  if (latent_symptomatic.n > 0) {printf("latent_symptomatic should be == 0\n"); exit(1); }
+  if (latent_symptomatic.n > 0)  {printf("latent_symptomatic should be == 0\n"); exit(1);  }
 
 #if 0
   int id;

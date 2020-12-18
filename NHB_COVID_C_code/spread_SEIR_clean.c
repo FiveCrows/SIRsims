@@ -1,5 +1,6 @@
 #include "head.h"
 
+
 #define EXP 1
 
 // Implement an SEIR version of this code. 

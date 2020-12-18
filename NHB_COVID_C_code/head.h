@@ -28,6 +28,13 @@ typedef struct List{
   int cum[NAGE];
 } List;
 
+typedef struct TIMES {
+	int id_from;
+	int id_to;
+	int state_from; 
+	int state_to;
+} TIMES;
+
 const gsl_rng_type* T;
 gsl_rng* r_rng;
 

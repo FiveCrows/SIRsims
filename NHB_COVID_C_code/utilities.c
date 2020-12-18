@@ -56,6 +56,7 @@ void setBeta()
 void openFiles(char* cum_baseline, char* data_baseline)
 {
   char name_cum[100], name_data[100];
+  printf("openFiles\n");
 
   sprintf(name_cum,"%s/cum_baseline_p%d.txt",result_folder, parameters);
   sprintf(name_data,"%s/data_baseline_p%d.txt",result_folder, parameters);
