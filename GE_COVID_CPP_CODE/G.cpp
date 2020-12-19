@@ -5,7 +5,7 @@
 using namespace std;
 
 //----------------------------------------------------------------------
-void G::initialize(int argc, char** argv, Files& files, Params& params, Lists& lists, Network& network)
+void G::initialize(int argc, char** argv, Files& files, Params& params, Lists& lists, Network& network, GSL& gsl)
 {
   int seed;
 
@@ -16,7 +16,7 @@ void G::initialize(int argc, char** argv, Files& files, Params& params, Lists& l
   //parameters = 0;
 
   seed = time(NULL);
-  initRandom(seed);
+  initRandom(seed, gsl);
 
   // the Results folder contains parameters.txt, result files
   // the Data folder contains network data
@@ -54,7 +54,7 @@ void G::initialize(int argc, char** argv, Files& files, Params& params, Lists& l
 }
 
 //----------------------------------------------------------------------
-void G::runSimulation(Params& params, Lists& lists)
+void G::runSimulation(Params& params, Lists& lists, Counts& c, Network& n, GSL& gsl, Files& f)
 {
   Counts count;
 
@@ -67,56 +67,340 @@ void G::runSimulation(Params& params, Lists& lists)
   		count.count_i_symp    = 0;
   		count.count_recov     = 0;
 
-        init();
+		 printf("before init\n");
+        init(params, c, n, gsl, lists, f);
+		 printf("after init\n");
 
         while(lists.n_active>0) {
           //printf("runSinm n_active= %d\n", n_active);
-	      spread(run);
+	      spread(run, f, lists, n, params, gsl, c);
 		}
 
   		printf("total number latent symp:  %d\n", count.count_l_symp);
   		printf("total number latent presymp:  %d\n", count.count_l_presymp);
   		printf("total number infectious symp:  %d\n", count.count_i_symp);
   		printf("total number recovered:  %d\n", count.count_recov);
-        results(run);
+        results(run, lists, f);
      }
   }
 }
 //----------------------------------------------------------------------
 //spread
-void G::init(){}
+void G::count_states(Params& params, Counts& c, Network& n)
+{
+  c.countS  = 0;
+  c.countL  = 0;
+  c.countIS = 0;
+  c.countR  = 0;
+
+  for(int i=0;i < params.N; i++) {
+    if (n.node[i].state == S)  c.countS++;
+    if (n.node[i].state == L)  c.countL++;
+    if (n.node[i].state == IS) c.countIS++;
+    if (n.node[i].state == R)  c.countR++;
+  }
+  printf("Counts: S,L,IS,R: %d, %d, %d, %d\n", c.countS, c.countL, c.countIS, c.countR);
+}
 //----------------------------------------------------------------------
-void G::seedInfection(){}
+void G::init(Params& p, Counts& c, Network& n, GSL& gsl, Lists& l, Files& f)
+{
+  resetVariables(l, f);
+  resetNodes(p, n);
+  printf("after resetN\n");
+  
+  //Start
+  seedInfection(p, c, n, gsl, l, f);
+  printf("after seed\n");
+}
 //----------------------------------------------------------------------
-void G::spread(int){}
+void G::seedInfection(Params& par, Counts& c, Network& n, GSL& gsl, Lists& l, Files& f)
+{
+  int seed;
+  count_states(par, c, n);
+  printf("inside seedInf\n");
+
+  // Use a permutation to make sure that there are no duplicates when 
+  // choosing more than one initial infected
+  gsl_permutation* p = gsl_permutation_alloc(par.N);
+  printf("after perm\n");
+  gsl_rng_env_setup();
+  printf("after env\n");
+  gsl.T = gsl_rng_default;
+  printf("after T\n");
+  gsl.r_rng = gsl_rng_alloc(gsl.T); // *****
+  gsl_permutation_init(p);
+  gsl_ran_shuffle(gsl.r_rng, p->data, par.N, sizeof(size_t));
+  printf("after shuffle \n");
+
+  float rho = 0.001; // infectivity percentage at t=0 (SHOULD BE IN PARAMS)
+  int ninfected = rho * par.N;
+  printf("ninfected= %d\n", ninfected);
+
+  for (int i=0; i < ninfected; i++) { 
+  	seed = p->data[i];
+  	n.node[seed].state = L;
+	printf("%d, seed= %d\n", i, seed); 
+    addToList(&l.latent_symptomatic, seed); // orig 
+  }
+
+  gsl_permutation_free(p);
+
+  l.n_active = ninfected;
+  c.count_l_symp += ninfected;
+  printf("added %d latent_symptomatic individuals\n", ninfected);
+
+  f.t = 1;
+}
 //----------------------------------------------------------------------
-void G::infection(){}
+//void G::spread(int){}
+void G::spread(int run, Files& f, Lists& l, Network& net, Params& params, GSL& gsl, Counts& c)
+{  
+  resetNew(l);
+
+  // S to L
+  //printf("before infection()\n"); count_states();
+  infection(l, net, params, gsl, c);
+  // L to P
+  //printf("before latency()\n"); count_states();
+  latency(params, l, gsl, net, c);
+  // P to I
+  //preToI();
+  // I to R
+  //printf("before IsTransition()\n"); count_states();
+  IsTransition(params, l, net, c, gsl);
+
+
+  updateLists(l, net);
+  printf("----------------------------------------\n");
+  updateTime(f);
+
+  //Write data
+  fprintf(f.f_data,"%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
+	l.latent_asymptomatic.n, 
+	l.latent_symptomatic.n, 
+	l.infectious_asymptomatic.n, 
+	l.pre_symptomatic.n, 
+	l.infectious_symptomatic.n, 
+	l.home.n, 
+	l.hospital.n, 
+	l.icu.n, 
+	l.recovered.n, 
+	l.new_latent_asymptomatic.n, 
+	l.new_latent_symptomatic.n, 
+	l.new_infectious_asymptomatic.n, 
+	l.new_pre_symptomatic.n, 
+	l.new_infectious_symptomatic.n, 
+	l.new_home.n, 
+	l.new_hospital.n, 
+	l.new_icu.n, 
+	l.new_recovered.n, 
+	run);
+}
 //----------------------------------------------------------------------
-void G::infect(int, int){}
+void G::infection(Lists& l, Network& net, Params& params, GSL& gsl, Counts& c)
+{
+  if (l.infectious_asymptomatic.n > 0) {printf("infectious_asymptomatic should be == 0\n"); exit(1); }
+  if (l.pre_symptomatic.n > 0) {printf("pre_symptomatic should be == 0\n"); exit(1); }
+
+  //Infectious symptomatic (check the neighbors of all infected)
+  for (int i=0; i < l.infectious_symptomatic.n; i++) {
+	//printf("call infect(infectious_symptomatic) %d\n", i);
+    infect(l.infectious_symptomatic.v[i], IS, net, params, gsl, l, c);
+  }
+}
 //----------------------------------------------------------------------
-void G::latency(){}
+void G::infect(int source, int type, Network& net, Params& params, GSL& gsl, Lists& l, Counts& c)
+{
+  int target;
+  double prob;
+  //printf("p= %f\n", p);
+ 
+  for (int j=0; j < net.node[source].k; j++) { // for
+      target = net.node[source].v[j];
+	  //printf("j= %d\n", j);
+      if (net.node[target].state == S) {   // == S
+		// There is an implicit dt factor (== 1 day)
+	    //printf("  An infected found S\n");
+
+		float a = 1. / params.beta_normal;
+		//float a = 2.23;
+	    float b = 1. / 0.37;
+		float g = gsl_ran_gamma(gsl.r_rng, a, b);
+#if EXP
+	    prob = 1.-exp(-params.beta[type] * net.node[source].w[j]);
+		//printf("infect prob: %f\n", prob); // 0.09
+#else
+	    prob = params.beta[type] * net.node[source].w[j];
+#endif
+	  
+	    if (gsl_rng_uniform(gsl.random_gsl) < prob) {
+	      //Check if asymptomatic
+
+	      if (gsl_rng_uniform(gsl.random_gsl) < params.p) {
+		    addToList(&l.new_latent_asymptomatic, target);
+			//printf("... add new latent asymptomatic (%d)\n", count_l_symp);
+			c.count_l_asymp += 1;
+		  } else {
+		    addToList(&l.new_latent_symptomatic, target);
+			c.count_l_symp += 1;
+			//printf("... add new latent symptomatic (%d)\n", count_l_symp);
+		  }
+	      
+	      //Update target data
+	      net.node[target].state = L;
+
+	      //Various
+	      l.n_active++;
+	    }
+	  } // == S
+  } // for  
+}
+//----------------------------------------------------------------------
+void G::latency(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c)
+{
+  int id;
+
+  // prob goes to 1 as eps_S -> 0
+  //printf("prob: %f, n= %d\n", 1.-exp(-epsilon_symptomatic), latent_symptomatic.n);
+#if 1
+  for (int i=0; i < l.latent_symptomatic.n; i++) {
+      //printf("i= %d\n", i);
+      id = l.latent_symptomatic.v[i];  
+	  //printf("id of latent_symptomatics: %d\n", id);  // looks ok
+#if EXP
+	  if (gsl_rng_uniform(gsl.random_gsl) < (1.-exp(-par.epsilon_symptomatic)))
+#else
+	  if (gsl_rng_uniform(gsl.random_gsl) < par.epsilon_symptomatic)
+#endif
+	  {
+	    //addToList(&new_pre_symptomatic, i); // orig
+	    addToList(&l.new_infectious_symptomatic, id);
+		c.count_i_symp += 1;
+		//count_l_presymp += 1;
+		//printf("... add new_pre_symptomatic\n");
+	    net.node[id].state = IS;
+	    i = removeFromList(&l.latent_symptomatic, i);
+	  } else {
+	     //printf("else in epsilon_S\n");
+		 ;
+	  }
+  }
+#endif
+}
 //----------------------------------------------------------------------
 void G::IaToR(){}
 //----------------------------------------------------------------------
 void G::preToI(){}
 //----------------------------------------------------------------------
-void G::IsTransition(){}
+void G::IsTransition(Params& par, Lists& l, Network& net, Counts& c, GSL& gsl)
+{
+  int id;
+
+  // Modified by GE to implement simple SIR model. No hospitalizations, ICU, etc.
+  for (int i=0; i < l.infectious_symptomatic.n; i++) {
+    id = l.infectious_symptomatic.v[i];   // id is always zero. BUG
+	//printf("id=infectious_symptomatic.v[%d]= %d\n", i, id);
+    if (gsl_rng_uniform(gsl.random_gsl) < par.mu) { //days to R/Home
+      addToList(&l.new_recovered, id);
+	  //printf("... add recovered\n");
+	  c.count_recov += 1;;
+      //printf("node %d -> R\n", id);  // Always zero. BUG. 
+      net.node[id].state = R;
+      l.n_active--;
+      i = removeFromList(&l.infectious_symptomatic, i);
+	}
+  }
+  return;
+}
 //----------------------------------------------------------------------
 void G::homeTransition(){}
 //----------------------------------------------------------------------
 void G::hospitals(){}
 //----------------------------------------------------------------------
-void G::updateTime(){}
+void G::updateTime(Files& f)
+{ 
+  f.t++;
+  //printf("     Update Time, t= %d\n", t);
+}
 //----------------------------------------------------------------------
-void G::resetVariables(){}
+void G::resetVariables(Lists& l, Files& files)
+{  
+  l.latent_asymptomatic.n = 0;
+  l.latent_symptomatic.n = 0;
+  l.infectious_asymptomatic.n = 0;
+  l.pre_symptomatic.n = 0;
+  l.infectious_symptomatic.n = 0;
+  l.home.n = 0;
+  l.hospital.n = 0;
+  l.icu.n = 0;
+  l.recovered.n = 0;
+
+  for(int i=0;i<NAGE;i++)
+    {
+      l.latent_asymptomatic.cum[i] = 0;
+      l.latent_symptomatic.cum[i] = 0;
+      l.infectious_asymptomatic.cum[i] = 0;
+      l.pre_symptomatic.cum[i] = 0;
+      l.infectious_symptomatic.cum[i] = 0;
+      l.home.cum[i] = 0;
+      l.hospital.cum[i] = 0;
+      l.icu.cum[i] = 0;
+      l.recovered.cum[i] = 0;
+    }
+
+  files.t = 0;
+  l.n_active = 0;
+}
 //----------------------------------------------------------------------
-void G::resetNodes(){}
+void G::resetNodes(Params& par, Network& net)
+{
+  for(int i=0; i < par.N; i++)
+    net.node[i].state = S;
+}
 //----------------------------------------------------------------------
-void G::resetNew(){}
+void G::resetNew(Lists& l)
+{
+  l.new_latent_asymptomatic.n = 0;
+  l.new_latent_symptomatic.n = 0;
+  l.new_infectious_asymptomatic.n = 0;
+  l.new_pre_symptomatic.n = 0;
+  l.new_infectious_symptomatic.n = 0;
+  l.new_home.n = 0;
+  l.new_hospital.n = 0;
+  l.new_icu.n = 0;
+  l.new_recovered.n = 0;
+}
 //----------------------------------------------------------------------
-void G::updateLists(){}
+void G::updateLists(Lists& l, Network& n)
+{
+  updateList(&l.latent_asymptomatic, &l.new_latent_asymptomatic, n);//LA
+  updateList(&l.latent_symptomatic, &l.new_latent_symptomatic, n);//LS
+  updateList(&l.infectious_asymptomatic, &l.new_infectious_asymptomatic, n);//IA
+  updateList(&l.pre_symptomatic, &l.new_pre_symptomatic, n);//PS
+  updateList(&l.infectious_symptomatic, &l.new_infectious_symptomatic, n);//IS
+  updateList(&l.home, &l.new_home, n); //Home
+  updateList(&l.hospital, &l.new_hospital, n);//H
+  updateList(&l.icu, &l.new_icu, n);//ICU
+  updateList(&l.recovered, &l.new_recovered, n);//R
+}
+
 //----------------------------------------------------------------------
-void G::results(int){}
+void G::results(int run, Lists& l, Files& f)
+{
+  //Cumulative values
+  for(int i=0;i<NAGE;i++)
+    fprintf(f.f_cum,"%d %d %d %d %d %d %d %d %d %d \n",
+       l.latent_asymptomatic.cum[i],
+       l.latent_symptomatic.cum[i],
+       l.infectious_asymptomatic.cum[i],
+       l.pre_symptomatic.cum[i],
+       l.infectious_symptomatic.cum[i],
+       l.home.cum[i],
+       l.hospital.cum[i],
+       l.icu.cum[i],
+       l.recovered.cum[i],
+       run);
+}
 //----------------------------------------------------------------------
 //G::read
 void G::readData(Params& params, Lists& lists, Network& network, Files& files)
@@ -265,12 +549,12 @@ void G::allocateMemory(Params& p, Lists& l)
   l.new_recovered.v = (int*) malloc(p.N * sizeof * l.new_recovered.v);
 }
 //----------------------------------------------------------------------
-void G::initRandom(int seed)
+void G::initRandom(int seed, GSL& gsl)
 {
-  GSL gsl;
+  //GSL gsl;
   gsl_rng_env_setup();
-  T = gsl_rng_default;
-  gsl.random_gsl = gsl_rng_alloc(T);
+  gsl.T = gsl_rng_default;
+  gsl.random_gsl = gsl_rng_alloc(gsl.T);
   gsl_rng_set(gsl.random_gsl,seed);
 }
 

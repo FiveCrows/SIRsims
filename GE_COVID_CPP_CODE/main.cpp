@@ -11,13 +11,14 @@ G g;
   Params params;
   Files files;
   Lists lists;
+  Counts counts;
   Network network;
   GSL gsl;
 
-  g.initialize(argc,argv, files, params, lists, network);
+  g.initialize(argc,argv, files, params, lists, network, gsl);
 
   g.openFiles(files);
-  g.runSimulation(params, lists);
+  g.runSimulation(params, lists, counts, network, gsl, files);
   g.closeFiles(files);
 
   g.print(t0);

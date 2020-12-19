@@ -1,6 +1,7 @@
 CC= gcc
 GCC= g++
 CPPFLAGS= -Wall -lm -lgsl -lgslcblas -O2 -Wno-unused-result
+CPPFLAGS= -g -Wall -lm -lgsl -lgslcblas -O2 -Wno-unused-result
 CFLAGS= -Wall -std=c99 -lm -lgsl -lgslcblas -O2 -Wno-unused-result
 #CFLAGS= -g -Wall -std=c99 -lm -lgsl -lgslcblas -O0 -Wno-unused-result
 #SOURCES=  main.c read.c utilities.c spread.c
