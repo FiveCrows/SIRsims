@@ -1470,6 +1470,10 @@ class PopulaceGraph:
             # GE changed the function. Do not add weights
             self.graph.add_edges_from(self.environments[environment].edges) 
         self.isBuilt = True
+        print("Finished building network.")
+        print("Graph parameters:")
+        print("  - Node count: ", self.graph.number_of_nodes())
+        print("  - Edge count: ", self.graph.number_of_edges())
 
     # class PopulaceGraph
     def reweight(self, netBuilder, new_prev_adoptions = None):
@@ -1593,6 +1597,9 @@ class PopulaceGraph:
         assert self.graph.number_of_edges() > 0, "nb graph edges should be positive"
 
         self.global_dict = global_dict
+        print("Simulate: Graph parameters:")
+        print("  - Node count: ", self.graph.number_of_nodes)
+        print("  - Edge count: ", self.graph.number_of_edges)
         #global_dict
         #print("enter setupMaskWeights, prevention_adoptions= ", self.prevention_adoptions)
         mask_weight_factor       = self.setupMaskingWeights() 

@@ -1,0 +1,31 @@
+N 260542
+r 0.0
+epsilonA-1 0
+epsilonS-1 0.1
+p 0.00  
+gamma-1 2
+mu-1  5.0
+alpha0 0.
+alpha1 0.
+alpha2 0.
+alpha3 0.
+alpha4 0.
+xi0 0.
+xi1 0.
+xi2 0.
+xi3 0.
+xi4 0.
+delta 2
+muH-1 8
+muICU-1 13
+k 0.150000  
+beta 0.20
+
+---------------------------------------------
+1/R = int beta/mu = 0.2/5 * 5 => R = 5
+ 
+
+S -> I  (beta = 0.2 / day)
+I -> R  (mu = 5 days)
+
+Infection: 5 days

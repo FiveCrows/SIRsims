@@ -1,5 +1,4 @@
 Nov 27 2020:
-Changing the way social distancing is implemented, because as is un-repairably faulty
-distancing_reduction is an edge quality, not a node quality. Therefore, it must be set up
-per environment, per edge
+Changing the way social distancing is implemented, because as is un-repairably faulty distancing_reduction is an edge quality, not a node quality. Therefore, it must be set up per environment, per edge
 git checkout 
+

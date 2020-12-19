@@ -1,0 +1,46 @@
+Infections only decrease. Why?  Fixed. 
+latent_symptomatics are not being produced. Why not? Fixed. 
+
+All P_S should become infected. So the sum over time of P_S curve should equal sum over time of I_S curve. I should verify that.
+
+2020-12-13,1.35pm
+The code enters parameters in units of days, eps for exmple, labelled eps-1.
+Thus the code uses the line  
+    if rng < eps:
+	   add to new list
+	   remove from existing list
+
+However, that means that eps-1  must be >= 1, or else eps is not a probability. That means that I cannot set  the length of any period to be less than a day. There are two solutions: 1) decrase the time unit from 1 day to 1/4 day.  That will make each simulation more expensive. The second approach is to recoginize that \eps*dt is an approximation to (1-exp(-\eps*dt)), which is the probability of infection over an interval dt. This expression is valid regardless of whether \eps*dt is less or greater than unity. As \eps grows beyond unity, the expression in parenthesis goes to unity. 
+
+Here is how one can improve on what the authors did. :They assume a Poisson distribution so for small time intervals, the probability is \lambdadt (dt is time interval). Dt=1 = one day, which is why epsilon^(-1) is measure in days. However, $\lambdadt$ is a Taylor expansion of (1-exp(-\lambda*dt), and in that case, regardless of the value of \epsilon, the probabiliy is between 0 and 1. What the authors did is actually incorrect. Another way of fixing the error is to take 1/4 of a day as the unit time step, so that \epsilon**(-1) would become the average number of (1/4 days)  one remains in the latent state for example. Therefore, if \epsilon used to be 1, it now becomes 4 and the problem goes away. Of course, the simulations become 4 times more expensive. Are you following?
+But honestly, before fixing this issue, one should figure out why the sums of recovered, of latents, or pre-symptomatics are not all equal. Do you agree with me that the sums should be equal (i.e., the area under the curves should be equal?)  How did you like the layout of my plot above?
+----------------------------------------------------------------------
+From the paper: 
+Clustering and superspreading potential of SARS-CoV-2 infections in Hong Kong
+Dillon C. Adam1,2 , Peng Wu! ! 1 ✉ , Jessica Y. Wong1 , Eric H. Y. Lau! ! 1 , Tim K. Tsang1 , Simon Cauchemez! ! 3 , Gabriel M. Leung 1,4 and Benjamin J. Cowling! ! 1,4
+
+Supplementary Table 3
+Gamma(alpha, beta), mean=alpha/beta, var=alpha/beta**2
+alpha: 2.23 (1.86 - 2.89)
+beta: 0.37 (0.3 - 0.47)
+AIC: 721.24
+Serial intervals based on 142 symptomatic transmission pairs in Hong-Kong
+----------------------------------------------------------------------
+2020-12-17
+SIR: 191025
+SEIR: 57956
+SEPIR: 41336
+----------------------------------------------------------------------
+2020-12-17,4.23pm
+./seir when epsilon_s < 1, does not generate new infections beyod the initial ones. WHY NOT ?
+----------------------------------------------------------------------
+2020-12-17,10.45pm
+I fixed an error in the original code. When calling addToList(), the last argument was "i" instead of "id". This is in function "latency()". 
+----------------------------------------------------------------------
+SEIR: 191049  (gamma_S-1=0.01)
+SEIR: 191000  (gamma_S-1=3.01)
+SIR: 190717  
+----------------------------------------------------------------------
+2020-12-18,4.32pm
+- Track/calculate times at which various passages occur. So track (id_from, id_to, state_from, state_to) 
+----------------------------------------------------------------------

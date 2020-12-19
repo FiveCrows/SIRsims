@@ -6,6 +6,16 @@ import os
 
 #def getDegrees(model):
 #    degrees = [len(graph[person]) for person in 
+def filterEnvByType(envs, env_type):
+    '''return all the household, workplace, or school type envs from a list'
+    :envs dict:
+    all the environments
+    :env_type string:
+    the name of the type of environment to search for
+    :return dict:
+    '''
+    #return list(filter(lambda env: env.env_type == env_type, envs.values()))
+    return dict(filter(lambda env: env[1].env_type == env_type, envs.items()))
 
 def plotContactMatrix(model, partitioner, env_indices, title = "untitled", ax = plt):
     '''
@@ -133,8 +143,8 @@ def getR0(self):
 def getDegreeHistogram(model, env_indexes, normalized = True): 
     """
     :param model: PopulaceGraph
-    the PopulaceGraph model to produce histogram for
-    :param normalized, when true the histogram will normalized
+    Produce a histogram of the populace 
+    :param normalized: normalize the histogram if true. 
     """
     degreeCounts = [0] * 100
     for index in env_indexes:
@@ -152,5 +162,20 @@ def getDegreeHistogram(model, env_indexes, normalized = True):
         degreeCounts.pop()
     return degreeHistogram
 
-
-
+def aFormatGraph(model, folder):
+    ageGroups = [[0,5], [5,18], [18,50], [50,65], [65,100]]
+    enumerator = {}
+    try:
+        os.mkdir(folder)
+    except:
+        pass
+    for i, group in enumerate(ageGroups):
+        enumerator.update({j:i for j in range(group[0], group[1])})    
+    open(folder +"/nodes.txt","a").writelines(["{} {}\n".format(item,enumerator[model.populace[item]['age']])  for item in model.graph.nodes()])
+    with  open(folder +"/edges.txt","a") as file:
+        adj = model.graph.adj
+        for edgeA in adj:            
+            for edgeB in adj[edgeA]:
+                file.writelines("{} {} {}/n".format(edgeA,edgeB, adj[edgeA][edgeB]['transmission_weight']))
+                file.writelines("{} {} {}/n".format(edgeB,edgeA, adj[edgeA][edgeB]['transmission_weight']))
+            

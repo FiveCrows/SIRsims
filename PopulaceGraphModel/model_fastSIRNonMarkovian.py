@@ -4,6 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from collections import defaultdict
 import random
+import distributions as dist
+import plot_utils
 
 # Experiment with setting up an array of infectivities and an array of 
 # recoveries. The infectivities beta[] will be a Poisson-Gamma mixture
@@ -86,20 +88,20 @@ def processTransmissionTimes(trans):
 
 # last_time approx 50
 # very small mean(Tg) (=0.002)
-beta = .2   # Transmission (S ->beta -> I) [1/days] (per edge)
+R0 = 2.5
+k = 0.7
+beta = .2 * R0   # Transmission (S ->beta -> I) [1/days] (per edge)
 gamma = .2  # Recovery (I -> R)  [1/days]  (per node)
 
-# last_time approx 389 (independent of graph size (1000, 3000 nodes).)
-# mean(Tg) (=0.02)
-beta = .2   # Transmission (S ->beta -> I) [1/days] (per edge)
-gamma = .2  # Recovery (I -> R)  [1/days]  (per node)
 print("1\/beta = %3.1f days" % (1./beta))
 print("1\/gamma = %3.1f days" % (1./gamma))
 
 # A graph with N nodes has N*(N-1)/2 edges. 
 
-N = 2000  # number of nodes
-G = nx.complete_graph(N)
+N = 100000  # number of nodes
+#G = nx.complete_graph(N)
+#G = nx.erdos_renyi_graph(N, p=0.01, directed=False)
+G = nx.barabasi_albert_graph(N,10)
 #G = nx.erdos_renyi_graph(N, 0.03)
 nb_nodes = G.number_of_nodes()
 
@@ -111,10 +113,6 @@ G = nx.watts_strogatz_graph(n, k, p[, seed])
 G = nx.barabasi_albert_graph(n, m[, seed])
 """
 
-
-# Learn the dir() command
-#print(dir(G))
-
 print("num nodes: ", G.number_of_nodes())
 print("num edges: ", G.number_of_edges())
 
@@ -122,29 +120,13 @@ initial_recovered = []
 
 # Single initial infected. Does not matter which one since the graph 
 # is fully-connected
-initial_infected = [1]
+initial_infected = list(range(1,30))
+print(initial_infected)
 
-tmin, tmax = 0., 10000.
-betas = np.random.gamma(1.0*beta, 1.0*beta, nb_nodes)
-betas = np.random.gamma(0.8*beta, 0.8*beta, nb_nodes)
-alpha, beta = 0.3, 0.7
-print("alpha,beta= ", alpha, beta)
-betas = np.random.gamma(alpha, beta, 10000)
-#print("betas= ", betas)
-print("gamma: mean, var= ", np.mean(betas), np.var(betas))
-# shape/scale: mean: alpha*beta, variance: alpha*beta**2
-print("alpha: shape, beta: scale")
-print("mean: alpha*beta= ", alpha*beta)
-print("var: alpha*beta**2= ", alpha*beta**2)
-
-# sps.gamma is the gamma function
-import scipy.special as sps
-shape, scale = 2, 2
-print("sps.gamma(shape)= ",  sps.gamma(shape))
-s = np.random.gamma(shape, scale, 10000)
-count, bins, ignored = plt.hist(s, 50, density=True)
-y = bins**(shape-1)*(np.exp(-bins/scale) /
-                      (sps.gamma(shape)*scale**shape))
+tmin, tmax = 0., 100000.
+# HOW DO I CHOOSE THE PARAMETERS OF THE GAMMA?
+#gammas = dist.gamma(R0, k, nb_nodes)
+gammas = dist.gamma(beta, k, nb_nodes)
 
 # Mean of gamma should
 # Compose this gamma with Poisson: 
@@ -159,23 +141,42 @@ y = bins**(shape-1)*(np.exp(-bins/scale) /
 # The gamma will be a distribution of rates (beta)
 
 def transTime(nodeA, nodeB, rates):
-    return random.expovariate(rates[nodeA])
+    rate = rates[nodeA]
+    #print("nodeA, nodeB, rate= ", nodeA, nodeB, rate)
+    #print("nodeA= ", nodeA)
+    #return random.expovariate(beta) # (works)
+    if rate > 0:
+        return random.expovariate(rates[nodeA])
+    else:
+        return float('Inf')
 
 def recovTime(nodeA, rate):
-    return random.expovariate(rate)
+    #rate = rates[nodeA]
+    return random.expovariate(gamma) # (works)
+    if rate > 0:
+        return random.expovariate(rate)
+    else:
+        return float('Inf')
+
+
 
 #sim_result = eon.fast_SIR(G, beta, gamma, initial_infecteds=initial_infected, 
 sim_result = eon.fast_nonMarkov_SIR(G, 
         trans_time_fxn = transTime, 
-        trans_time_args = (betas,),
+        trans_time_args = (gammas,),
         rec_time_fxn = recovTime,
         rec_time_args = (gamma,),
-        initial_infecteds=initial_infected, 
+        #initial_infecteds=initial_infected, 
+        rho=0.001,
         initial_recovereds=initial_recovered, 
         #transmission_weight="tw", 
         #recovery_weight="rw",
         return_full_data = True, 
         tmin=tmin, tmax=tmax)
+
+plot_utils.plotPopulaceSIR(sim_result)
+plt.show()
+quit()
 
 print("==> after simResult")
 # All the times for which there is data. Print out to see: floats. 
