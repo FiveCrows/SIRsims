@@ -385,3 +385,4 @@ df1.to_csv('ages_gender_school_workplace.csv')
 plt.savefig("plot_demographics.jpg")
 
 
+g

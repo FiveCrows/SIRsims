@@ -1,6 +1,6 @@
 import networkx as nx
 import EoN as eon
-import numpy as npcd
+import numpy as np
 import matplotlib.pyplot as plt
 
 # Example SIR model using fast_SIR, based on an N to N graph (homogeneous connections. The graph is undirected. Transmission and recovery parameters are constant. 
@@ -57,6 +57,8 @@ for tix in range(0, int(last_time)+2, 1):
     # print("time= ", tix, "  status= ", statuses[tix])
 
 print(statuses[0])
+
+print(sum(1 for x in statuses[2].values() if x == 'I'))
 
 # statuses.keys() tells you the times at which data is saved.
 # statuses[2] is a dictionary of the network at t=2., for example: 
