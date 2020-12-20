@@ -2,6 +2,8 @@
 #include "G.h"
 #include "head.h"
 
+#define EXP 0
+
 using namespace std;
 
 G::G(Params& p, Files& f, Lists& l, Counts& c, Network& n, GSL& gsl) : par(p), files(f), lists(l), net(n), counts(c), gsl(gsl)
@@ -71,12 +73,9 @@ void G::runSimulation(Params& params, Lists& lists, Counts& c, Network& n, GSL& 
   		count.count_i_symp    = 0;
   		count.count_recov     = 0;
 
-		 printf("before init\n");
         init(params, c, n, gsl, lists, f);
-		 printf("after init\n");
 
         while(lists.n_active>0) {
-          //printf("runSinm n_active= %d\n", n_active);
 	      spread(run, f, lists, n, params, gsl, c);
 		}
 
@@ -128,15 +127,11 @@ void G::seedInfection(Params& par, Counts& c, Network& n, GSL& gsl, Lists& l, Fi
   // Use a permutation to make sure that there are no duplicates when 
   // choosing more than one initial infected
   gsl_permutation* p = gsl_permutation_alloc(par.N);
-  printf("after perm\n");
   gsl_rng_env_setup();
-  printf("after env\n");
   gsl.T = gsl_rng_default;
-  printf("after T\n");
   gsl.r_rng = gsl_rng_alloc(gsl.T); // *****
   gsl_permutation_init(p);
   gsl_ran_shuffle(gsl.r_rng, p->data, par.N, sizeof(size_t));
-  printf("after shuffle \n");
 
   float rho = 0.001; // infectivity percentage at t=0 (SHOULD BE IN PARAMS)
   int ninfected = rho * par.N;
@@ -146,7 +141,7 @@ void G::seedInfection(Params& par, Counts& c, Network& n, GSL& gsl, Lists& l, Fi
   	seed = p->data[i];
   	n.node[seed].state = L;
     addToList(&l.latent_symptomatic, seed); // orig 
-    stateTransition(seed, seed, S, L, -1, 0);
+    //stateTransition(seed, seed, S, L, -1, 0);
   }
 
   gsl_permutation_free(p);
@@ -155,14 +150,15 @@ void G::seedInfection(Params& par, Counts& c, Network& n, GSL& gsl, Lists& l, Fi
   c.count_l_symp += ninfected;
   printf("added %d latent_symptomatic individuals\n", ninfected);
 
-  f.t = 1;
+  f.t = par.dt;
 }
 //----------------------------------------------------------------------
 //void G::spread(int){}
 void G::spread(int run, Files& f, Lists& l, Network& net, Params& params, GSL& gsl, Counts& c)
 {  
   resetNew(l);
-  int cur_time = f.t;
+  //int cur_time = f.t;
+  double cur_time = f.t;
 
   // S to L
   //printf("before infection()\n"); count_states();
@@ -179,7 +175,7 @@ void G::spread(int run, Files& f, Lists& l, Network& net, Params& params, GSL& g
 
   updateLists(l, net);
   printf("----------------------------------------\n");
-  updateTime(f);
+  updateTime();
 
   //Write data
   fprintf(f.f_data,"%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
@@ -204,7 +200,7 @@ void G::spread(int run, Files& f, Lists& l, Network& net, Params& params, GSL& g
 	run);
 }
 //----------------------------------------------------------------------
-void G::infection(Lists& l, Network& net, Params& params, GSL& gsl, Counts& c, int cur_time)
+void G::infection(Lists& l, Network& net, Params& params, GSL& gsl, Counts& c, double cur_time)
 {
   if (l.infectious_asymptomatic.n > 0) {printf("infectious_asymptomatic should be == 0\n"); exit(1); }
   if (l.pre_symptomatic.n > 0) {printf("pre_symptomatic should be == 0\n"); exit(1); }
@@ -216,7 +212,7 @@ void G::infection(Lists& l, Network& net, Params& params, GSL& gsl, Counts& c, i
   }
 }
 //----------------------------------------------------------------------
-void G::infect(int source, int type, Network& net, Params& params, GSL& gsl, Lists& l, Counts& c, int cur_time)
+void G::infect(int source, int type, Network& net, Params& params, GSL& gsl, Lists& l, Counts& c, double cur_time)
 {
   int target;
   double prob;
@@ -234,11 +230,11 @@ void G::infect(int source, int type, Network& net, Params& params, GSL& gsl, Lis
 	    float b = 1. / 0.37;
 		float g = gsl_ran_gamma(gsl.r_rng, a, b);
 #if EXP
-	    prob = 1.-exp(-params.beta[type] * net.node[source].w[j]);
-		//printf("infect prob: %f\n", prob); // 0.09
+	    prob = 1.-exp(-params.dt*params.beta[type] * net.node[source].w[j]);
 #else
-	    prob = params.beta[type] * net.node[source].w[j];
+	    prob = params.dt * params.beta[type] * net.node[source].w[j];
 #endif
+		printf("1 params.dt= %f\n", params.dt);
 	  
 	    if (gsl_rng_uniform(gsl.random_gsl) < prob) {
 	      //Check if asymptomatic
@@ -254,7 +250,7 @@ void G::infect(int source, int type, Network& net, Params& params, GSL& gsl, Lis
 
 		  stateTransition(source, target, IS, L, net.node[source].t_IS, cur_time);
 		  // People are susceptible from time 0.
-		  stateTransition(target, target,  S, L, 0, cur_time);
+		  //stateTransition(target, target,  S, L, 0, cur_time);
 
 	      //Update target data
 	      net.node[target].state = L;
@@ -267,7 +263,7 @@ void G::infect(int source, int type, Network& net, Params& params, GSL& gsl, Lis
   } // for  
 }
 //----------------------------------------------------------------------
-void G::latency(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, int cur_time)
+void G::latency(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, double cur_time)
 {
   int id;
 
@@ -275,13 +271,12 @@ void G::latency(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, int cu
   //printf("prob: %f, n= %d\n", 1.-exp(-epsilon_symptomatic), latent_symptomatic.n);
 #if 1
   for (int i=0; i < l.latent_symptomatic.n; i++) {
-      //printf("i= %d\n", i);
       id = l.latent_symptomatic.v[i];  
-	  //printf("id of latent_symptomatics: %d\n", id);  // looks ok
+	printf("2 params.dt= %f\n", par.dt);
 #if EXP
-	  if (gsl_rng_uniform(gsl.random_gsl) < (1.-exp(-par.epsilon_symptomatic)))
+	  if (gsl_rng_uniform(gsl.random_gsl) < (1.-exp(-par.dt*par.epsilon_symptomatic)))
 #else
-	  if (gsl_rng_uniform(gsl.random_gsl) < par.epsilon_symptomatic)
+	  if (gsl_rng_uniform(gsl.random_gsl) < par.dt*par.epsilon_symptomatic)
 #endif
 	  {
 	    addToList(&l.new_infectious_symptomatic, id);
@@ -302,7 +297,7 @@ void G::IaToR(){}
 //----------------------------------------------------------------------
 void G::preToI(){}
 //----------------------------------------------------------------------
-void G::IsTransition(Params& par, Lists& l, Network& net, Counts& c, GSL& gsl, int cur_time)
+void G::IsTransition(Params& par, Lists& l, Network& net, Counts& c, GSL& gsl, double cur_time)
 {
   int id;
 
@@ -310,7 +305,12 @@ void G::IsTransition(Params& par, Lists& l, Network& net, Counts& c, GSL& gsl, i
   // Go from IS to R
   for (int i=0; i < l.infectious_symptomatic.n; i++) {
     id = l.infectious_symptomatic.v[i];  
-    if (gsl_rng_uniform(gsl.random_gsl) < par.mu) { //days to R/Home
+#if EXP
+    double prob = 1. - exp(-par.dt*par.mu);
+#else
+    double prob = par.dt * par.mu;
+#endif
+    if (gsl_rng_uniform(gsl.random_gsl) < prob) { //days to R/Home
       addToList(&l.new_recovered, id);
 	  c.count_recov += 1;;
       net.node[id].state = R;
@@ -328,9 +328,11 @@ void G::homeTransition(){}
 //----------------------------------------------------------------------
 void G::hospitals(){}
 //----------------------------------------------------------------------
-void G::updateTime(Files& f)
+void G::updateTime()
 { 
-  f.t++;
+  files.t += par.dt;
+  printf("t = %f\n", files.t);
+  //f.t++;
   //printf("     Update Time, t= %d\n", t);
 }
 //----------------------------------------------------------------------
@@ -463,6 +465,7 @@ void G::readParameters(char* parameter_file, Params& params)
   params.muICU = 1.0/params.muICU;
   fscanf(f,"%s %lf", trash, &params.k); //k
   fscanf(f,"%s %lf", trash, &params.beta_normal); //infectivity
+  fscanf(f,"%s %lf", trash, &params.dt); //discrete time step
   printf("fscanf, beta_normal= %lf\n", params.beta_normal);
   printf("fscanf, r= %lf\n", params.r);
   fclose(f);
@@ -693,12 +696,12 @@ void G::printTransitionStats()
 	  FILE* fd = fopen("transition_stats.csv", "w");
 	  fprintf(fd, "from_id,to_id,from_state,to_state,from_time,to_time\n");
 	  for (int i=0; i < lg; i++) {
-		 fprintf(fd, "%d, %d, %d, %d, %d, %d\n", l.id_from[i], l.id_to[i], l.state_from[i], l.state_to[i], l.from_time[i], l.to_time[i]);
+		 fprintf(fd, "%d, %d, %d, %d, %f, %f\n", l.id_from[i], l.id_to[i], l.state_from[i], l.state_to[i], l.from_time[i], l.to_time[i]);
 	  }
 	  fclose(fd);
 }
 //----------------------------------------------------------------------
-void G::stateTransition(int source, int target, int from_state, int to_state, int from_time, int to_time)
+void G::stateTransition(int source, int target, int from_state, int to_state, double from_time, double to_time)
 {
 	Lists& l = lists; 
 	l.id_from.push_back(source);
