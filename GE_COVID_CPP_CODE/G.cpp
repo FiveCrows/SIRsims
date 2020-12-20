@@ -2,7 +2,7 @@
 #include "G.h"
 #include "head.h"
 
-#define EXP 0
+#define EXP 1
 
 using namespace std;
 
