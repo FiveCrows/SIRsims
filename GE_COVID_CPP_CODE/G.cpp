@@ -145,8 +145,8 @@ void G::seedInfection(Params& par, Counts& c, Network& n, GSL& gsl, Lists& l, Fi
   for (int i=0; i < ninfected; i++) { 
   	seed = p->data[i];
   	n.node[seed].state = L;
-	printf("%d, seed= %d\n", i, seed); 
     addToList(&l.latent_symptomatic, seed); // orig 
+    stateTransition(seed, seed, S, L, -1, 0);
   }
 
   gsl_permutation_free(p);
@@ -693,7 +693,7 @@ void G::printTransitionStats()
 	  FILE* fd = fopen("transition_stats.csv", "w");
 	  fprintf(fd, "from_id,to_id,from_state,to_state,from_time,to_time\n");
 	  for (int i=0; i < lg; i++) {
-		 fprintf(fd, "%d, %d, %d, %d, %d %d\n", l.id_from[i], l.id_to[i], l.state_from[i], l.state_to[i], l.from_time[i], l.to_time[i]);
+		 fprintf(fd, "%d, %d, %d, %d, %d, %d\n", l.id_from[i], l.id_to[i], l.state_from[i], l.state_to[i], l.from_time[i], l.to_time[i]);
 	  }
 	  fclose(fd);
 }
