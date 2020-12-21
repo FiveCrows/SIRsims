@@ -19,6 +19,7 @@ void G::initialize(int argc, char** argv, Files& files, Params& params, Lists& l
   params.n_runs = 10;
   params.n_runs = 5;
   params.n_runs = 2;
+  params.n_runs = 1;
   //parameters = 0;
 
   seed = time(NULL);
@@ -39,13 +40,10 @@ void G::initialize(int argc, char** argv, Files& files, Params& params, Lists& l
   strcat(files.data_folder, "/");
   strcpy(files.result_folder, argv[2]);
   strcat(files.result_folder, "/");
-  //printf("result_folder: %s\n", result_folder); 
-  //printf("data_folder: %s\n", data_folder); 
 
-  //char* filenm = "parameters_0.txt";
   strcpy(files.parameter_file, files.result_folder);
   strcat(files.parameter_file, "parameters_0.txt");
-  printf("parameter_file= %s\n", files.parameter_file); 
+  //printf("parameter_file= %s\n", files.parameter_file); 
 
   strcpy(files.node_file, files.data_folder);
   strcat(files.node_file, "nodes.txt");
@@ -55,8 +53,10 @@ void G::initialize(int argc, char** argv, Files& files, Params& params, Lists& l
 
   readParameters(files.parameter_file, params);
   allocateMemory(params, lists);
+
   readData(params, lists, network, files);
   setBeta(params);
+  printf("end initialize: params.N= %d\n", params.N);
 }
 
 //----------------------------------------------------------------------
@@ -135,13 +135,12 @@ void G::seedInfection(Params& par, Counts& c, Network& n, GSL& gsl, Lists& l, Fi
 
   float rho = 0.001; // infectivity percentage at t=0 (SHOULD BE IN PARAMS)
   int ninfected = rho * par.N;
-  printf("ninfected= %d\n", ninfected);
+  printf("N= %d, ninfected= %d\n", par.N, ninfected);
 
   for (int i=0; i < ninfected; i++) { 
   	seed = p->data[i];
   	n.node[seed].state = L;
     addToList(&l.latent_symptomatic, seed); // orig 
-    //stateTransition(seed, seed, S, L, -1, 0);
   }
 
   gsl_permutation_free(p);
@@ -157,7 +156,6 @@ void G::seedInfection(Params& par, Counts& c, Network& n, GSL& gsl, Lists& l, Fi
 void G::spread(int run, Files& f, Lists& l, Network& net, Params& params, GSL& gsl, Counts& c)
 {  
   resetNew(l);
-  //int cur_time = f.t;
   double cur_time = f.t;
 
   // S to L
@@ -174,7 +172,7 @@ void G::spread(int run, Files& f, Lists& l, Network& net, Params& params, GSL& g
 
 
   updateLists(l, net);
-  printf("----------------------------------------\n");
+  //printf("----------------------------------------\n");
   updateTime();
 
   //Write data
@@ -216,50 +214,93 @@ void G::infect(int source, int type, Network& net, Params& params, GSL& gsl, Lis
 {
   int target;
   double prob;
-  //printf("p= %f\n", p);
- 
-  for (int j=0; j < net.node[source].k; j++) { // for
-      target = net.node[source].v[j];
-	  //printf("j= %d\n", j);
-      if (net.node[target].state == S) {   // == S
-		// There is an implicit dt factor (== 1 day)
-	    //printf("  An infected found S\n");
+  static int count_success = 0;
+  static int count_total   = 0;
 
+  if (net.node[source].state != IS) { // Code did not exit
+	printf("I expected source state to be IS\n"); exit(1);
+  }
+ 
+  for (int j=0; j < net.node[source].k; j++) {
+      target = net.node[source].v[j];
+	  if (net.node[target].state != S) continue;
+#if 0
+		if (net.node[source].state != IS) {
+			printf("I expected source to be IS\n"); exit(1);
+			// Code did not exit
+		}
+#endif
 		float a = 1. / params.beta_normal;
 		//float a = 2.23;
 	    float b = 1. / 0.37;
-		float g = gsl_ran_gamma(gsl.r_rng, a, b);
+		float g = gsl_ran_gamma(gsl.r_rng, a, b);  // not yet used
+		//printf("weight: %f\n", net.node[source].w[j]);
 #if EXP
-	    prob = 1.-exp(-params.dt*params.beta[type] * net.node[source].w[j]);
+	    prob = 1.-exp(-params.dt * params.beta[type] * net.node[source].w[j]);
 #else
 	    prob = params.dt * params.beta[type] * net.node[source].w[j];
 #endif
-		printf("1 params.dt= %f\n", params.dt);
+		//printf("type= %d, beta= %f\n", type, params.beta[type]); // only single type=4
+
+#if 0
+		double aa[1000000];
+		for (int i=0; i < 1000000; i++) {
+			aa[i] = gsl_rng_uniform(gsl.random_gsl);
+		}
+		double mean=0, var=0;
+		for (int i=0; i < 1000000; i++) {
+			mean += aa[i];
+			var += aa[i]*aa[i];
+		}
+		mean /= 1000000;
+		var = var/1000000. - mean*mean;
+        // Mean should be 0.5, variance should be 1/12
+		printf("mean= %f, var= %f\n", mean, var);
+		exit(1);
+#endif
 	  
+		// BUG? I get an exponential with the wrong mean value.
+	    //printf("prob IS->L: beta= %lf, w= %lf, dt= %lf\n", params.beta[type], net.node[source].w[j], params.dt);
+	    //printf("prob IS->L: beta*w= %lf\n", params.beta[type] , net.node[source].w[j]);
+	    //printf("prob IS->L (beta*w*dt): %f\n", prob);
+	    //printf("prob IS->L (beta*w): %f, inv: %f\n", prob/params.dt, params.dt/prob);
+  		//count_total++;
+	    //printf("unif random: %f\n", gsl_rng_uniform(gsl.random_gsl));
 	    if (gsl_rng_uniform(gsl.random_gsl) < prob) {
 	      //Check if asymptomatic
 
-	      if (gsl_rng_uniform(gsl.random_gsl) < params.p) {
-		    addToList(&l.new_latent_asymptomatic, target);
+		    addToList(&l.new_latent_symptomatic, target);
+			c.count_l_symp += 1;
+  		    //count_success++;
+			//double ratio = (double) count_success / (double) count_total;
+			// Ratio is 100x too small! Strange!!
+			//printf("count_success= %d, count_total= %d\n", count_success, count_total);
+			//printf("ratio: success/total: %f\n", ratio);
 
+		  #if 0
+	      if (gsl_rng_uniform(gsl.random_gsl) < params.p) { // p = 0
+		    addToList(&l.new_latent_asymptomatic, target);
 			c.count_l_asymp += 1;
 		  } else {
 		    addToList(&l.new_latent_symptomatic, target);
 			c.count_l_symp += 1;
+  		    count_success++;
+			double ratio = (double) count_success / (double) count_total;
+			printf("count_success= %d, count_total= %d\n", count_success, count_total);
+			printf("ratio: success/total: %f\n", ratio);
 		  }
+          #endif
 
-		  stateTransition(source, target, IS, L, net.node[source].t_IS, cur_time);
-		  // People are susceptible from time 0.
-		  //stateTransition(target, target,  S, L, 0, cur_time);
-
-	      //Update target data
+		  // Values of time interval distribution are incorrect it seems.
+		  // Chances there is an error in the next line
+	      // Update target data
 	      net.node[target].state = L;
-	      net.node[target].t_L = cur_time;
+	      net.node[target].t_L   = cur_time;
+		  stateTransition(source, target, IS, L, net.node[source].t_IS, net.node[target].t_L);
 
 	      //Various
 	      l.n_active++;
 	    }
-	  } // == S
   } // for  
 }
 //----------------------------------------------------------------------
@@ -268,27 +309,23 @@ void G::latency(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, double
   int id;
 
   // prob goes to 1 as eps_S -> 0
-  //printf("prob: %f, n= %d\n", 1.-exp(-epsilon_symptomatic), latent_symptomatic.n);
 #if 1
   for (int i=0; i < l.latent_symptomatic.n; i++) {
       id = l.latent_symptomatic.v[i];  
-	printf("2 params.dt= %f\n", par.dt);
 #if EXP
-	  if (gsl_rng_uniform(gsl.random_gsl) < (1.-exp(-par.dt*par.epsilon_symptomatic)))
+	  double prob = (1.-exp(-par.dt*par.epsilon_symptomatic));
 #else
-	  if (gsl_rng_uniform(gsl.random_gsl) < par.dt*par.epsilon_symptomatic)
+	  double prob = par.dt*par.epsilon_symptomatic;
 #endif
-	  {
+	  //printf("prob L->IS (epsilon_symptomatic): %f, inv: %f\n", prob/par.dt, par.dt/prob);
+	  if (gsl_rng_uniform(gsl.random_gsl) < prob) {
 	    addToList(&l.new_infectious_symptomatic, id);
 		c.count_i_symp += 1;
 	    net.node[id].state = IS;
 	    net.node[id].t_IS = cur_time;
 	    i = removeFromList(&l.latent_symptomatic, i);
-
 		stateTransition(id, id, L, IS, net.node[id].t_L, cur_time);
-	  } else {
-		 ;
-	  }
+	  } 
   }
 #endif
 }
@@ -310,11 +347,12 @@ void G::IsTransition(Params& par, Lists& l, Network& net, Counts& c, GSL& gsl, d
 #else
     double prob = par.dt * par.mu;
 #endif
+	//printf("prob IS->R (mu): %f, inv: %f\n", prob/par.dt, par.dt/prob);
     if (gsl_rng_uniform(gsl.random_gsl) < prob) { //days to R/Home
       addToList(&l.new_recovered, id);
-	  c.count_recov += 1;;
+	  c.count_recov      += 1;
       net.node[id].state = R;
-	  net.node[id].t_R = cur_time;
+	  net.node[id].t_R   = cur_time;
       l.n_active--;
       i = removeFromList(&l.infectious_symptomatic, i);
 
@@ -331,7 +369,7 @@ void G::hospitals(){}
 void G::updateTime()
 { 
   files.t += par.dt;
-  printf("t = %f\n", files.t);
+  //printf("t = %f\n", files.t);
   //f.t++;
   //printf("     Update Time, t= %d\n", t);
 }
@@ -425,6 +463,7 @@ void G::results(int run, Lists& l, Files& f)
 //G::read
 void G::readData(Params& params, Lists& lists, Network& network, Files& files)
 {
+  // Change params.N according to node file
   readNetwork(params, lists, network, files);
   readNodes(params, files, network);
 }
@@ -478,7 +517,11 @@ void G::readNetwork(Params& params, Lists& lists, Network& network, Files& files
   FILE *f;
   char *token;
   char string[500];
-  
+
+  FILE* fd = fopen(files.node_file, "r");
+  fscanf(fd, "%d", &params.N);
+  printf("params.N= %d\n", params.N);
+
   network.node = (Node*) malloc(params.N * sizeof * network.node);
   //node = new [N] Node; 
   for(int i=0;i<params.N;i++)
@@ -486,15 +529,18 @@ void G::readNetwork(Params& params, Lists& lists, Network& network, Files& files
       network.node[i].k = 0;
       network.node[i].v = (int*) malloc(sizeof * network.node[i].v);
       network.node[i].w = (double*) malloc(sizeof * network.node[i].w);
-      network.node[i].t_L  = -1;
-      network.node[i].t_IS = -1;
-      network.node[i].t_R  = -1;
+      network.node[i].t_L  = 0.;
+      network.node[i].t_IS = 0.;
+      network.node[i].t_R  = 0.;
     }
 
   //f = fopen("Data/network.txt","r");
   //f = fopen("Data_SIR/edges_BA.csv", "r");
-  printf("network_file= %s\n", files.network_file);
+  //printf("network_file= %s\n", files.network_file);
   f = fopen(files.network_file, "r");
+  int nb_edges;
+  fscanf(f, "%d\n", &nb_edges);
+
   while(fgets(string,500,f))
     {
       token = strtok(string," ");
@@ -521,7 +567,7 @@ void G::readNetwork(Params& params, Lists& lists, Network& network, Files& files
         network.node[t].w[network.node[t].k-1] = w;
 	  }
     }
-  printf("exit while\n");
+  //printf("exit while\n");
   fclose(f);
 }
 
@@ -532,9 +578,17 @@ void G::readNodes(Params& params, Files& files, Network& network)
   FILE *f;
   char *token;
   char string[500];
-  
-  //f = fopen("Data/nodes.txt", "r");
+  int nb_nodes;
+
   f = fopen(files.node_file, "r");
+  fscanf(f, "%d\n", &nb_nodes);
+
+  if (params.N != nb_nodes) {
+      printf("nb_nodes not equal to params.N. Fix error\n");
+	  exit(1);
+  }
+  int N = 0;
+
   while(fgets(string,500,f))
     {
       token = strtok(string," ");
@@ -543,7 +597,9 @@ void G::readNodes(Params& params, Files& files, Network& network)
       age = atoi(token);
 
       network.node[s].age = age;
+	  N++;
     }
+
   fclose(f);
 }
 //----------------------------------------------------------------------
@@ -608,15 +664,15 @@ void G::setBeta(Params& p)
   for(int i=0; i < NCOMPARTMENTS; i++)
     p.beta[i] = 0;
 
-  printf("r= %f\n", p.r);
-  printf("beta_normal= %f\n", p.beta_normal);
+  //printf("r= %f\n", p.r);
+  //printf("beta_normal= %f\n", p.beta_normal);
   p.beta[IA] = p.r * p.beta_normal;
   p.beta[IS] = p.beta_normal;
   p.beta[PS] = beta_pre;
   p.beta[PS] = 0.0;  // I want infected under these conditions
-  printf("beta[IA] = %f\n", p.beta[IA]);
+  //printf("beta[IA] = %f\n", p.beta[IA]);
   printf("beta[IS] = %f\n", p.beta[IS]);
-  printf("beta[PS] = %f\n", p.beta[PS]);
+  //printf("beta[PS] = %f\n", p.beta[PS]);
 }
 
 //----------------------------------------------------------------------
