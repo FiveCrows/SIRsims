@@ -1,0 +1,31 @@
+N 50000
+r 0.0
+epsilonA-1 0
+epsilonS-1 5.
+p 0.00  
+gamma-1 2
+mu-1  5.0
+alpha0 0.
+alpha1 0.
+alpha2 0.
+alpha3 0.
+alpha4 0.
+xi0 0.
+xi1 0.
+xi2 0.
+xi3 0.
+xi4 0.
+delta 2
+muH-1 8
+muICU-1 13
+k 0.150000  
+beta 0.1
+dt .1
+
+S -> E  (beta = 0.2 / day)  
+E -> I  (epsilon_s = 3 days)
+I -> R  (mu = 5 days)
+Total time: 1/.2 + 3 = 8 days = 1/beta + epsilon_s
+Reduce to 5 days: 1/.2 + 1
+beta 0.20
+N 260542

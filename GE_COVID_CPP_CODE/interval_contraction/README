@@ -1,0 +1,23 @@
+Author: Gordon Erlebacher
+Date:  2020-12-21,10.45pm
+
+Experiments on interval contraction. 
+
+1) generate 200 graphs (100 of degree 2 and 100 of degree 10).
+  mkdir graphs
+  cd graphs
+  run graphs.py
+  cd ..
+
+2) run simulations on all the graphs
+  python run_simulations
+
+3) run statistics on all the simulations
+  python run_stats.py
+
+# this generates the pandas file degrees_mean_var.csv with 
+# columns  "run,degree,label,mean,var"
+
+4) calculate averages for IS_L
+  python mean_testing.py
+  # Data output to the console
