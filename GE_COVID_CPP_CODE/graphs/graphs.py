@@ -16,6 +16,10 @@ import os, sys
 skip_properties = True
 
 def printGraph(G, folder, degree):
+    print("printGraph")
+    print("nb edges: %d" % G.number_of_edges())
+    print("nb nodes: %d" % G.number_of_nodes())
+
     nb_nodes = G.number_of_nodes()
     nb_edges = G.number_of_edges()
     # Do not include nb edges because it can change for fixed nb nodes and degree
@@ -69,20 +73,24 @@ def graphProperties(G, msg, skip=True):
 
 nb_nodes = 10000
 for degree in [2, 5, 10, 20]:
-    nb_edges = 10*nb_nodes
+    # The degree is not constant
+    nb_edges = degree*nb_nodes
+
+    """
     G = nx.gnm_random_graph(nb_nodes, nb_edges)
     graphProperties(G, "Gnm Random Graph")
-    printGraph(G, "random_graph", degree)
+    printGraph(G, "gnm_random_graph", degree)
 
     G = nx.random_regular_graph(degree, nb_nodes)
     graphProperties(G, "Random Regular Graph")
-    printGraph(G, "random_regular", degree)
+    printGraph(G, "random_regular_graph", degree)
 
     # The degree distribution is close to what is specified. Not exact. But fast. 
     degree_seq = [degree] * nb_nodes
     G = nx.expected_degree_graph(degree_seq)
     graphProperties(G, "Expected Degree Graph")
-    printGraph(G, "expected_degree", degree)
+    printGraph(G, "expected_degree_graph", degree)
+    """
 
     # Multigraph
     degree_seq = [degree] * nb_nodes
@@ -91,6 +99,6 @@ for degree in [2, 5, 10, 20]:
     #G.remove_edges_from(nx.selfloop_edges(G))  # remove self-loops
     #print(G.number_of_nodes(), G.number_of_edges())
     graphProperties(G, "Configuration Model")
-    printGraph(G, "config_model", degree)
+    printGraph(G, "config_model_graph", degree)
 
 

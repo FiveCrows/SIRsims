@@ -26,3 +26,4 @@ for source_folder in list(dirs):
     stats.processTransmissionTimes(L_IS, "L_IS", plot_data=False)
     stats.processTransmissionTimes(IS_R, "IS_R", plot_data=False)
     stats.processTransmissionTimes(IS_L, "IS_L", plot_data=False)
+    stats.individualReproductionNumber(IS_L)

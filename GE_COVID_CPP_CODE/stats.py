@@ -86,19 +86,19 @@ def individualReproductionNumber(df):
 
     # Average R0 across time
     R0 = np.mean(list(Rd.values()))
-    print("average R0: ", R0)
+    varR0 = np.var(list(Rd.values()))
+    print("average R0: %f, var R0: %f" % (R0, varR0))
 
     hist = defaultdict(int)
     for v in Rd.values():
         hist[v] += 1
     hist = np.asarray(sorted(hist.items()))
-    print("Rd Distribution: \n", hist)
-    print(hist)
+    #print("Rd Distribution: \n", hist)
+    #print(hist)
 
-    plt.hist(Rd.values())
-    plt.xlim(0,30)
-
-    plt.show()
+    #plt.hist(Rd.values())
+    #plt.xlim(0,30)
+    #plt.show()
 
 #---------------------------------------------
 def processTransmissionTimes(df, label, plot_data=False):
@@ -126,6 +126,9 @@ def processTransmissionTimes(df, label, plot_data=False):
         plot = plt.hist(times, bins=200)
         plt.xlim(0,20)
         return plot
+    else:
+        return label, np.mean(times), np.var(times)
+
 
 #---------------------------------------------
 def processTransmissionTimes_2nd_method(df):
@@ -160,7 +163,7 @@ if __name__ == "__main__":
     processTransmissionTimes_2nd_method(df)
 
     degreeDistribution()
-    individualReproductionNumber(df)
+    individualReproductionNumber(IS_L)
 
     print("Distribution: from Infected to Latent")
     plt.subplots(2,2)

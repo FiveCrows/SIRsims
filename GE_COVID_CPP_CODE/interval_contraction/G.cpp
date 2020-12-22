@@ -241,6 +241,7 @@ void G::infect(int source, int type, Network& net, Params& params, GSL& gsl, Lis
 	    prob = params.dt * params.beta[type] * net.node[source].w[j];
 #endif
 		//printf("type= %d, beta= %f\n", type, params.beta[type]); // only single type=4
+		printf("prob(beta*w)= %f\n", prob);
 
 #if 0
 		double aa[1000000];

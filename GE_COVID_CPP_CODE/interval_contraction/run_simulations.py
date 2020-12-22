@@ -6,11 +6,18 @@ folders = []
 dirs = list(os.scandir("graphs"))
 print(dirs)
 
+nb_to_run = 10
+count = 0
+
+processed_dirs = []
 
 for source_folder in list(dirs):
-    if os.path.isfile(source_folder):
+    if count > nb_to_run: break
+    if os.path.isfile(source_folder.path):
         print("%s, Not a folder" % source_folder.path)
         continue
+    processed_dirs.append(source_folder.path)
+    count += 1
     dest_folder = "r_seir" + "/" + source_folder.path
     os.makedirs(dest_folder, exist_ok=True)
     shutil.copy("r_seir/parameters_0.txt", dest_folder)
@@ -23,5 +30,6 @@ for source_folder in list(dirs):
     os.remove("output.txt")
     os.remove("transition_stats.csv")
 
-print("Processed: ", dirs)
+print("-----------------------------------------------")
+print("Processed: ", processed_dirs)
 print("Created output.txt and transition_stats.csv in subfolders")
