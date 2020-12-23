@@ -4,10 +4,12 @@
 
 # Use Leon County Graph as well as synthetic graphs
 
+import glob
 import pandas as pd
 import numpy as np
 from collections import defaultdict
 import matplotlib.pyplot as plt
+#import read_data as rd
 
 
 
@@ -103,7 +105,6 @@ def individualReproductionNumber(df):
 #---------------------------------------------
 def processTransmissionTimes(df, label, plot_data=False):
 
-    keep = df['from_time'] < 10
     from_time = df['from_time'].values
     to_time   = df['to_time'].values
     #from_id   = df['from_id'].values
@@ -128,6 +129,56 @@ def processTransmissionTimes(df, label, plot_data=False):
         return plot
     else:
         return label, np.mean(times), np.var(times)
+
+#----------------------------------------------------------------------
+def processTransmissionTimesInTime(df, label, plot_data=False):
+    # Compute mean time between IS and L in different time intervals T=[t,t+1day]
+    # Collect the nodes that become latent within T, and use these to compute the 
+    # mean generation time. 
+
+    from_time = df['from_time'].values
+    to_time   = df['to_time'].values
+
+    # Add a column to identify the day corresponding to from_time
+    df1 = df.copy()
+    df1['from_day'] = [int(i) for i in from_time]
+    df1['time_interval'] = to_time - from_time
+    days = df1.groupby('from_day').agg({'time_interval': ['mean','count']})
+    print("days: ", days.columns)
+
+    # calculate prevalance: number of infected each day
+    print(df1[['from_id', 'from_state', 'from_time']])
+    print(df1.columns)
+    print( df1.groupby(['from_id', 'from_state']).get_group((0, 4)) ); #quit()
+    df2 = df1.groupby(['from_id', 'from_state']).mean()
+    print(df2)
+
+    # Compute incidence: number of new cases each day
+    df3 = df2.groupby('from_day').count().reset_index() # return days to colset
+    print(df3)
+    print(df3.reset_index())
+    #print(df2[['from_id', 'from_state', 'from_time']])
+
+    # df3['to_id'] is now the incidence of infected
+    # To get the cumulative sum cannot be done from here. 
+
+
+    if plot_data:
+        fig, ax = plt.subplots()
+        ax.plot(days['time_interval', 'mean'], color='r')
+        ax.set_xlabel("Days")
+        ax.set_ylabel("Mean Interval L-IS (days)", color='r', fontsize=14)
+        ax2 = ax.twinx()
+        ax2.plot(days['time_interval', 'count'], color='b')
+        ax2.set_ylabel("Nb of intervals used", color='b', fontsize=14)
+        # all columns have same value
+        ax2.plot(df3['from_day'], df3['to_id'], color='cyan', label='incidence') 
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
+
+    print(days); quit()
+
 
 
 #---------------------------------------------
@@ -156,8 +207,13 @@ def processTransmissionTimes_2nd_method(df):
 
 #----------------------------------------------------------------------
 if __name__ == "__main__":
-    filenm = 'transition_stats.csv'
+    filenm = glob.glob('r_seir/graphs/*_20/transition_stats.csv')[0]
+    data_file = glob.glob('r_seir/graphs/*_20/data_baseline_p0.txt')[0]
+    print(filenm)
     df, IS_L, IS_R, L_IS = getDataframe(filenm)
+
+    processTransmissionTimesInTime(IS_L, "IS_L", plot_data=True)
+    quit()
 
     processTransmissionTimes(L_IS, "L_IS", plot_data=False)
     processTransmissionTimes_2nd_method(df)

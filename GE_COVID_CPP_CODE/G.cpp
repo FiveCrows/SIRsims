@@ -135,6 +135,7 @@ void G::seedInfection(Params& par, Counts& c, Network& n, GSL& gsl, Lists& l, Fi
 
   float rho = 0.001; // infectivity percentage at t=0 (SHOULD BE IN PARAMS)
   int ninfected = rho * par.N;
+  ninfected = 1;
   printf("N= %d, ninfected= %d\n", par.N, ninfected);
 
   for (int i=0; i < ninfected; i++) { 
