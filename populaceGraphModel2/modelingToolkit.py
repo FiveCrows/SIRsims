@@ -480,10 +480,10 @@ class PopulaceGraph:
         '''
         #load synthetic data from file
         pickleDict = (pickle.load(file))
-        self.partitioner = pickleDict.pop(partitioner)
-        self.populace = pickleDict.pop(populace)
-        self.pops_by_category = pickleDict.pop(pops_by_category)
-        self.environments = pickleDict.pop(environments)
+        self.partitioner = pickleDict.pop('partitioner')
+        self.populace = pickleDict.pop('populace')
+        self.pops_by_category = pickleDict.pop('pops_by_category')
+        self.environments = pickleDict.pop('environments')
         self.__dict__.update(pickleDict)
         
         #make a default dict, to handle none case
