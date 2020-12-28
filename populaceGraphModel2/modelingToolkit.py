@@ -9,301 +9,10 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 import math
+import synthModule
 from scipy.interpolate import interp1d
 from scipy.stats import bernoulli
-
-
-class Environment:
-    """
-    Objects to the carry details for every home
-    """
-
-
-    def __init__(self, attributes, members):
-        """
-        :param index: int
-        an identifier
-        :param members: list
-        a list of people who attend the environment
-        :param type: string
-        either 'household', 'school', or 'workplace'
-        :param latitude: float
-        :param longitude: float
-        """
-        
-        # these will be defined elsewhere, but I include them here for typehinting
-        self.populace
-        self.enviroments
-
-        self.__dict__.update(attributes)
-        self.members = members  # list of keys (integers), probably people
-        self.population = len(members)
-        self.num_mask_types = 1
-        # self.distancing = distancing
-        self.total_weight = 0
-        self.edges = []
-        #booleans to keep track of build process
-        self.hasEdges = False
-        self.isWeighted = False
-        #creates a dict linking each member of the environment with each prevention
-        """
-        :param attributes: dict
-        a lattitude, a longitude, an index
-                          
-        :param members: list
-        the people who attend the environment 
-        """
-
-        self.__dict__.update(attributes)
-        self.members = members
-
-    #-----------------------------------
-    def drawPreventions(self, adoptions, populace):
-        # populace[0]: list of properties of one person
-        #print("populace: ", populace[0]); quit()
-        """
-        picks masks and distancing parameters
-        :param adoptions: dict
-        the adoptions for each prevention, with keys for environment type, to prevention type to adoption
-        :param populace: dict
-        the populace dict is needed to know which mask everybody is using, if necessary
-
-        :return:
-        """
-
-        myadoptions = adoptions[self.env_type]  # self.env_type: household, school, workplace
-        #----------------
-        num_edges  = len(self.edges)
-        num_social = int(num_edges * myadoptions["distancing"])
-
-        #print("x num_edges= ", num_edges)
-        #print("x num_social= ", num_social)
-
-        # NOT a good approach when man businesses have only a single employee
-        # But then there are no edges in the business, so there will be no effect. 
-        distancing_adoption = [1] * num_social + [0] * (num_edges - num_social)
-        random.shuffle(distancing_adoption)
-        # class Environment
-        #print(type(self.edges), type(distancing_adoption))
-        #print(len(self.edges), len(distancing_adoption))
-        #print("self.edges= ", self.edges)
-        #print("distancing_adoption= ", distancing_adoption)
-        self.distancing_adoption = dict(zip(self.edges, distancing_adoption))
-        
-
-        #assign distancers per environment
-        num_distancers = int(self.population * myadoptions["distancing"])
-        distancing_adoption = [1] * num_distancers + [0] * (self.population - num_distancers)
-        random.shuffle(distancing_adoption)
-
-        # number of people with masks
-        num_masks = int(self.population * myadoptions["masking"])
-        #print("self.population= ", self.population)
-        #print("num_masks= ", num_masks)
-
-        mask_adoption = [1] * num_masks + [0] * (self.population - num_masks)
-        random.shuffle(mask_adoption)
-
-
-        # mask_adoption: 0 or 1 for each member within a structured environment (workplace or school)
-        self.mask_adoption = dict(zip(self.members, mask_adoption))
-        # distancing_adoption: 0 or 1 for each member within a structured environment (workplace or school)
-
-
-
-    # class Environment
-    def addEdge(self, nodeA, nodeB):
-        '''
-        This helper function  not only makes it easier to track
-        variables like the total weight and edges for the whole graph, it can be useful for debugging
-        :param nodeA: int
-         Index of the node for one side of the edge
-        :param nodeB: int
-        Index of the node for the other side
-        :param weight: double
-         the weight for the edge
-        '''
-
-        #self.total_weight += weight
-        # NOT SURE how weight is used. 
-        #self.edges.append([nodeA, nodeB, weight])
-        self.edges.append((nodeA, nodeB))
-
-
-    def network(self, netBuilder):
-        netBuilder.buildDenseNet(self)
-
-
-    def clearNet(self):
-        self.edges = []
-        self.total_weight = 0
-
-class Household(Environment):
-    env_type = 'household'
-
-class StructuredEnvironment(Environment):
-    """
-    These environments are extended with a contact matrix and partition
-    """
-
-    def __init__(self, attributes, members, populace, contact_matrix, partitioner, preventions = None):
-        """
-        :param index: int
-        to index the specific environment
-        :param members: list
-        a list of people who attend the environment
-        :param type: string
-        either 'household', 'school', or 'workplace'
-        :param preventions: dict
-        keys should be 'household', 'school', or 'workplace'. Each should map to another dict,
-        with keys for 'masking', and 'distancing', which should map to an int in range[0:1] that represents
-        the prevelance of the prevention strategy in the environment
-        :param populace: dict
-
-        :param contact_matrix: 2d array
-        :param partitioner: Partitioner
-        for creating a partition
-        """
-        super().__init__(attributes, members, )
-        self.partitioner = partitioner
-        self.contact_matrix = contact_matrix
-        self.id_to_partition = dict.fromkeys(members)
-
-        #self.total_matrix_contact = contact_matrix.sum()
-        self.partition = partitioner.partitionGroup(members, populace)
-        for set in self.partition:
-            for person in self.partition[set]:
-                self.id_to_partition[person] = (set)
-
-    def returnReciprocatedCM(self):
-        '''
-        :return: this function  averages to returs a modified version of the contact matrix where
-        CM_[i,j]*N[i]= CM_[j,i]*N[j]
-        '''
-
-        cm = self.contact_matrix
-        dim = cm.shape
-        rm = np.zeros(dim)
-        set_sizes = [len(self.partition[i]) for i in self.partition]
-
-        for i in range(dim[0]):
-            for j in range(dim[1]):
-                if set_sizes[i] != 0:
-                    rm[i,j] = (cm[i,j]*set_sizes[i]+cm[j,i]*set_sizes[j])/(2*set_sizes[i])
-        return rm
-
-    def network(self, netBuilder):
-        netBuilder.buildStructuredNet(self)
-
-class Workplace(StructuredEnvironment):
-    env_type = 'workplace'
-
-class School(StructuredEnvironment):
-    env_type = 'school'
-
-
-
-
-class Partitioner:
-    """
-    Objects of this class can be used to split a list of people into disjoint sets
-        :param attribute: string
-        The attribute by which to partition must match one of the attributes in 'populace'
-
-        :param enumerator: dict
-        The enumerator should map each possible values for the given attribute to the index of a partition set
-
-        :param labels: list
-        A list of names for plotting with partitioned sets
-
-        :function partitionGroup
-
-        """
-    @staticmethod
-    def agePartitionerA():
-        """
-        returns a useful partitioner object fore ages
-        """
-        enumerator = {i:i//5 for i in range(75)}
-        enumerator.update({i:15 for i in range(75,100)})
-        names = ["{}:{}".format(5 * i, 5 * (i + 1)) for i in range(15)]
-        return(Partitioner('age', enumerator, names))
-        
-
-        pass
-    def __init__(self, attribute, enumerator, labels=None):
-        """
-        :param attribute: string
-        The attribute by which to partition must match one of the attributes in 'populace'
-
-        :param enumerator: dict
-        The enumerator should map each possible values for the given attribute to the index of a partition set
-
-        :param labels: list
-        A list of names for plotting with partitioned sets
-        """
-
-        self.enumerator = enumerator
-        self.attribute = attribute
-        self.labels = labels
-        self.attribute_values = dict.fromkeys(set(enumerator.values()))
-        self.num_sets = (len(np.unique(list(enumerator.values()))))
-
-    def partitionGroup(self, members, populace):
-        """
-        This function maps each partition sets to the subset of members who belong to it
-
-        :param members: list
-        A list of indexes for the peaple to partition, if 'All' will use all members in populace
-        :param populace:
-        A dict associating people to a list of their attributes is required for applying the enumerator
-        :return: dict
-        """
-        partitioned_members = {i: [] for i in range(self.num_sets)}
-
-        for person in members:
-            # determine the number for which group the person belongs in, depending on their attribute
-            group = self.enumerator[populace[person][self.attribute]]
-            # add person to  to dict in group
-            partitioned_members[group].append(person)
-        return partitioned_members
-
-    def placeGroup(self, members, populace):
-        """
-        this function maps each member to the partition set they belong in
-        :param members: list
-        A list of indexes for the peaple to partition, if 'All' will use all members in populace
-        :param populace:
-        A dict associating people to a list of their attributes is required for applying the enumerator
-        :return: dict
-        """
-        placements = {member: self.enumerator[populace[member][self.attribute]] for member in members}
-        return placements
-
-    def placeAndPartition(self, members, populace):
-        """
-        This function maps each partition sets to the subset of members who belong to it
-
-        :param members: list
-        A list of indexes for the peaple to partition, if 'All' will use all members in populace
-        :param populace:
-        A dict associating people to a list of their attributes is required for applying the enumerator
-        :return: dict
-        """
-        partitioned_members = {i: [] for i in range(self.num_sets)}
-        placements = {}
-        for person in members:
-            # determine the number for which group the person belongs in, depending on their attribute
-            group = self.enumerator[populace[person][self.attribute]]
-            # add person to  to dict in group
-            partitioned_members[group].append(person)
-            placements[person] = group
-        return placements, partitioned_members
-
-
-###############################
-# define different environment types, with inheritence
-################################3
+from collections import defaultdict
 
 
 class NetBuilder:
@@ -484,7 +193,7 @@ class NetBuilder:
             CM[np.where(CM < 0.)] = 0.
         """
 
-        assert isinstance(environment, StructuredEnvironment), "must be a structured environment"
+        #assert isinstance(environment, StructuredEnvironment), "must be a structured environment"
         #a list of the number of people in each partition set
         p_n      = [len(p_sets[i]) for i in p_sets]
         num_sets = len(p_sets)
@@ -753,10 +462,11 @@ class PopulaceGraph:
         self.preventions = None
 
         if slim == True:
-            pop_file = open("./LeonCountyData/slimmedLeon.pkl", 'rb')
-        else:
-            pop_file = open("./LeonCountyData/leon.pkl", 'rb')
-        self.loadPopulace(pop_file)
+            file = open("./LeonCountyData/slimmedLeon.pkl", 'rb')            
+        else:            
+            file = open("./LeonCountyData/leon.pkl", 'rb')
+
+        self.loadPopulace(file)
 
         # pick who masks and distances, in each environment
         # One has a list of people in each environment
@@ -768,20 +478,27 @@ class PopulaceGraph:
         this function takes a pickled dict and loads all key:pair as object variables
         :param file: a file object to reference the pickle         
         '''
-
-        self.__dict__.update(pickle.load(file))
+        #load synthetic data from file
+        pickleDict = (pickle.load(file))
+        self.partitioner = pickleDict.pop(partitioner)
+        self.populace = pickleDict.pop(populace)
+        self.pops_by_category = pickleDict.pop(pops_by_category)
+        self.environments = pickleDict.pop(environments)
+        self.__dict__.update(pickleDict)
         
+        #make a default dict, to handle none case
         self.population = len(self.populace)
         self.schools = self.pops_by_category["school_id"]
-        self.workplaces = self.pops_by_category["work_id"]        
+        self.workplaces = self.pops_by_category["work_id"]
         #add direct reference to env objects in populace
-        #None is temporarily added for cases there is no school or workplace id
+        #None is temporarily added for cases where there is no school or workplace id
         self.environments[None] = None
-        names = zip(['sp_hh_id', 'work_id', 'school_id'], ['household', 'workplace', 'school'])
-        for namePair in names:            
-            list(map(lambda x: x.update({namePair[1]: self.environments[x[namePair[0]]]}), self.populace))
-        #None must be removed because school doesn't actually network
-        self.environments.pop(None)
+#outdated code, may be replaced later but not likely        
+#        names = zip(['sp_hh_id', 'work_id', 'school_id'], ['household', 'workplace', 'school'])
+#        for namePair in names:            
+#            list(map(lambda x: x.update({namePair[1]: self.environments[x[namePair[0]]]}), self.populace))
+        #None must be removed because None can't be networked later
+#        self.environments.pop(None)
 
     #-------------------------------------------------
     def printEnvironments(self):

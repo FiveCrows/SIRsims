@@ -2,3 +2,25 @@ Nov 27 2020:
 Changing the way social distancing is implemented, because as is un-repairably faulty distancing_reduction is an edge quality, not a node quality. Therefore, it must be set up per environment, per edge
 git checkout 
 
+replacing person dicts with objects to get typechecking 
+
+created partitioners.py to store partitioning infrastructure. Overengineered? perhaps, but here is why
+an enumerator for age, fine,  but using an enumerator to partition income
+just seemed silly and inefficient. So I edited it to take lambda functions and bin lists 
+but the lambda functions wouldn't pickle. 
+so I created an inheritence structure so that whatever partitioner is desired can be easily created and implemented, 
+all after quite an incessant argument about the best data structure for this problem  I had with me amigo. 
+The biggest downside is that the docstrings don't inherit. 
+
+the populace is now a numpy records list. This has a few advantages:
+records are easily referenced, which means now instead of needing to pass a list of indexes to represent a set of people, 
+and storing a reference to the entire populace, everywhere, it is only necessary to pass references to the members. 
+this cleans the syntax up a bit. 
+the partition now lists record references to each bin 
+The record list can be easily converted back to a dataframe for grouping. 
+However, pops_by_category is still done by index,  This is because for some reason every other method is very slow
+for such a large population, it can be very cumbersome to produce a list with each person for each attribute
+not sure the issue, was hell to try and debug, but whatever.... 
+
+
+

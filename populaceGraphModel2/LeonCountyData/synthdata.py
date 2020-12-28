@@ -1,5 +1,6 @@
 convertSex=lambda x: 1 if x=='F' else 0 #Sex: M=0, F=1
 convertCol=lambda y: None if y.decode('UTF-8')=="X" else int(y.decode('UTF-8'))  #Other columns: X=None
+
 class Person:
     def __init__(self,attrs: list):
         '''
