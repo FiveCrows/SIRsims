@@ -6,3 +6,6 @@ This will be followed by a Julia version, perhaps developed in class this Spring
   It is not clear how small dt must be to get accuracy to within 5%. 
   Approximating 1-exp(-beta*dt) by beta*dt is one source of approximation, 
   but is not clear whether the exponential form leads to errors and this must be tested. 
+
+2020-12-24,5.17pm
+- Add plots of R (individual Reproduction number) as a function of time in stats.py

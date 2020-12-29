@@ -1036,7 +1036,7 @@ class PopulaceGraph:
         :param prevention_adoptations: dict
         to associate a rate for mask and distancing practices to each environment type
         :param prevention_efficacies: list
-         efficetiveness from 0 to 1 100% effective of the masking and distancing, and the std for these per unit
+        efficetiveness from 0 to 1 100% effective of the masking and distancing, and the std for these per unit
         :return:
         '''
         self.prevention_adoptions = prevention_adoptions

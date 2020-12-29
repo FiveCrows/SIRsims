@@ -35,7 +35,8 @@ env_type_scalars = {"household": 1, "school": 1.0, "workplace": 1.0}
 
 
 model = PopulaceGraph(partitioner, prevention_adoptions, prevention_efficacies, slim=slim, timestamp=timestamp)
-netBuilder = NetBuilder(env_type_scalars, prevention_efficacies, cv_dict={})
+#netBuilder = NetBuilder(env_type_scalars, prevention_efficacies, cv_dict={})
+netBuilder = NetBuilder(env_type_scalars, prevention_efficacies) #, cv_dict={})
 model.buildNetworks(netBuilder)
 
 h_sizes = [0]*13
@@ -116,9 +117,9 @@ for d in degrees:
 df = pd.DataFrame({'degree': degrees, 'school': deg_sch, 'workplace':deg_wrk, 'household':deg_hm, 'all':deg_all})
 print(df)
 
-sns.barplot('degree', 'workplace', data=df, color='red', alpha=0.5, label='Workplace') #palette="Reds")
-sns.barplot('degree', 'school', data=df, color='blue', alpha=0.5, edgecolor='blue', label='School') #palette="Blues", alpha=0.7)
-ax = sns.barplot('degree', 'household', data=df, lw=0, color='green', alpha=0.5, edgecolor='green', label='Household') #palette="Reds")
+sns.barplot(x='degree', y='workplace', data=df, color='red', alpha=0.5, label='Workplace') #palette="Reds")
+sns.barplot(x='degree', y='school', data=df, color='blue', alpha=0.5, edgecolor='blue', label='School') #palette="Blues", alpha=0.7)
+ax = sns.barplot(x='degree', y='household', data=df, lw=0, color='green', alpha=0.5, edgecolor='green', label='Household') #palette="Reds")
 
 ax.set_xticks(np.linspace(0, 40, 21, dtype='int'))
 #ax.set_xlim(0, 36)
@@ -129,13 +130,13 @@ plt.savefig("plot_degree_histograms.pdf")
 
 # plot of degree for full graph
 #df = pd.DataFrame({'degree': degrees, 'all': deg_all, 'workplace':deg_wrk, 'household':deg_hm})
-ax = sns.barplot('degree', 'all', data=df, color='black', alpha=0.2, label='Full Graph') #palette="Reds")
+ax = sns.barplot(x='degree', y='all', data=df, color='black', alpha=0.2, label='Full Graph') #palette="Reds")
 
 lw = 1.5
-ax = sns.barplot('degree', 'school', data=df, lw=lw, facecolor=(1,1,1,0), edgecolor='blue') #palette="Reds")
-ax = sns.barplot('degree', 'workplace', data=df, lw=lw, facecolor=(1,1,1,0), edgecolor='red') #palette="Reds")
-ax = sns.barplot('degree', 'household', data=df, lw=lw, facecolor=(1,1,1,0), edgecolor='green') #palette="Reds")
-ax = sns.barplot('degree', 'all', data=df, lw=lw, facecolor=(1,1,1,0), edgecolor='black') #palette="Reds")
+ax = sns.barplot(x='degree', y='school', data=df, lw=lw, facecolor=(1,1,1,0), edgecolor='blue') #palette="Reds")
+ax = sns.barplot(x='degree', y='workplace', data=df, lw=lw, facecolor=(1,1,1,0), edgecolor='red') #palette="Reds")
+ax = sns.barplot(x='degree', y='household', data=df, lw=lw, facecolor=(1,1,1,0), edgecolor='green') #palette="Reds")
+ax = sns.barplot(x='degree', y='all', data=df, lw=lw, facecolor=(1,1,1,0), edgecolor='black') #palette="Reds")
 
 ax.set_xticks(np.linspace(0, 40, 21, dtype='int'))
 plt.legend()

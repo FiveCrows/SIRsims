@@ -35,11 +35,27 @@ def setupDataframe(filenm):
         "new_hostp",
         "new_icu",
         "new_recov",
-        "run",]  # there are 100 runs
+        "run",
+        "t",  # time
+        ]  # there are 100 runs
     return df
 
+def get_SEIR(by, group, delta_t, plot_data=False):
+    # Different groups have different lengths
+    # return EIR states. 
+    df = by.get_group(group)
+    infected_s      = df["i_sympt"];
+    pre_sympt       = df["pre_sympt"]
+    lat_sympt       = df["l_sympt"]
+    infected_total  = infected_s + lat_sympt + pre_sympt  
+    recov           = df["recov"]
 
-def plot_group(by, group):
+    dt = 0.1  # might change
+
+    return [lat_sympt, infected_s, recov]
+
+
+def plot_group(by, group, plot_data=False):
     # Different groups have different lengths
     df = by.get_group(group)
     infected_s      = df["i_sympt"];
