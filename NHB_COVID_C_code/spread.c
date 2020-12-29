@@ -18,7 +18,7 @@ void seedInfection()
 
   node[seed].state = L;
   int ninfected = 1;
-  for (int i=0; i < ninfected; i++) { // rho = 0.001 infectivity percentagte
+  for (int i=0; i < ninfected; i++) { // rho = 0.001 infectivity percentage
   	if(gsl_rng_uniform(random_gsl) < p ) //asymptomatic
     	addToList(&latent_asymptomatic,seed);
   	else
@@ -144,7 +144,7 @@ void latency()
       id = latent_symptomatic.v[i];
       if(gsl_rng_uniform(random_gsl)<epsilon_symptomatic)
 	{
-	  addToList(&new_pre_symptomatic,i);  // Is this an error? 
+	  addToList(&new_pre_symptomatic,id);  // i -> id Fixed bug
 	  node[id].state = PS;
 
 	  i = removeFromList(&latent_symptomatic,i);

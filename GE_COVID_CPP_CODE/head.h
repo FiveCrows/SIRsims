@@ -24,7 +24,7 @@ typedef struct Node{
   int k;
   int *v;
   double *w;
-  // Times patient enters the Latent, Sympt Infected and Recovered states
+  // Times patient enters the Latent, Sympt Infected and Recovered states (GE)
   double t_L, t_IS, t_R;
 } Node;
 
@@ -64,6 +64,8 @@ typedef struct Counts {
 #define H 6
 #define ICU 7
 #define R 8
+// Potentially infected
+#define PotL 10
 
 typedef struct GSL {
 	//Random numbers

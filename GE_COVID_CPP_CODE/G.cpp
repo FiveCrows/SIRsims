@@ -2,7 +2,9 @@
 #include "G.h"
 #include "head.h"
 
-#define EXP 1
+#define EXP 1       // Exponential distribution of infection times
+#define CONST_INFECTION_TIME 0   // constant recovery time
+#define INFECTION_TIME 3.
 
 using namespace std;
 
@@ -135,7 +137,7 @@ void G::seedInfection(Params& par, Counts& c, Network& n, GSL& gsl, Lists& l, Fi
 
   float rho = 0.001; // infectivity percentage at t=0 (SHOULD BE IN PARAMS)
   int ninfected = rho * par.N;
-  ninfected = 1;
+  //ninfected = 1;
   printf("N= %d, ninfected= %d\n", par.N, ninfected);
 
   for (int i=0; i < ninfected; i++) { 
@@ -177,7 +179,7 @@ void G::spread(int run, Files& f, Lists& l, Network& net, Params& params, GSL& g
   updateTime();
 
   //Write data
-  fprintf(f.f_data,"%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
+  fprintf(f.f_data,"%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %f\n",
 	l.latent_asymptomatic.n, 
 	l.latent_symptomatic.n, 
 	l.infectious_asymptomatic.n, 
@@ -196,7 +198,9 @@ void G::spread(int run, Files& f, Lists& l, Network& net, Params& params, GSL& g
 	l.new_hospital.n, 
 	l.new_icu.n, 
 	l.new_recovered.n, 
-	run);
+	run,
+    f.t
+	);
 }
 //----------------------------------------------------------------------
 void G::infection(Lists& l, Network& net, Params& params, GSL& gsl, Counts& c, double cur_time)
@@ -224,7 +228,18 @@ void G::infect(int source, int type, Network& net, Params& params, GSL& gsl, Lis
  
   for (int j=0; j < net.node[source].k; j++) {
       target = net.node[source].v[j];
-	  if (net.node[target].state != S) continue;
+	  // Added if branch for tracking potential infected perform more detailed 
+	  // measurements of generation time contraction
+#if EXP
+	    prob = 1.-exp(-params.dt * params.beta[type] * net.node[source].w[j]);
+#else
+	    prob = params.dt * params.beta[type] * net.node[source].w[j];
+#endif
+	  if (net.node[target].state != S) {
+	      if (gsl_rng_uniform(gsl.random_gsl) < prob) {
+		  	stateTransition(source, target, IS, PotL, net.node[source].t_IS, cur_time);
+		  }
+	  } else {
 #if 0
 		if (net.node[source].state != IS) {
 			printf("I expected source to be IS\n"); exit(1);
@@ -232,51 +247,12 @@ void G::infect(int source, int type, Network& net, Params& params, GSL& gsl, Lis
 		}
 #endif
 		float a = 1. / params.beta_normal;
-		//float a = 2.23;
 	    float b = 1. / 0.37;
 		float g = gsl_ran_gamma(gsl.r_rng, a, b);  // not yet used
-		//printf("weight: %f\n", net.node[source].w[j]);
-#if EXP
-	    prob = 1.-exp(-params.dt * params.beta[type] * net.node[source].w[j]);
-#else
-	    prob = params.dt * params.beta[type] * net.node[source].w[j];
-#endif
-		//printf("type= %d, beta= %f\n", type, params.beta[type]); // only single type=4
-
-#if 0
-		double aa[1000000];
-		for (int i=0; i < 1000000; i++) {
-			aa[i] = gsl_rng_uniform(gsl.random_gsl);
-		}
-		double mean=0, var=0;
-		for (int i=0; i < 1000000; i++) {
-			mean += aa[i];
-			var += aa[i]*aa[i];
-		}
-		mean /= 1000000;
-		var = var/1000000. - mean*mean;
-        // Mean should be 0.5, variance should be 1/12
-		printf("mean= %f, var= %f\n", mean, var);
-		exit(1);
-#endif
-	  
-		// BUG? I get an exponential with the wrong mean value.
-	    //printf("prob IS->L: beta= %lf, w= %lf, dt= %lf\n", params.beta[type], net.node[source].w[j], params.dt);
-	    //printf("prob IS->L: beta*w= %lf\n", params.beta[type] , net.node[source].w[j]);
-	    //printf("prob IS->L (beta*w*dt): %f\n", prob);
-	    //printf("prob IS->L (beta*w): %f, inv: %f\n", prob/params.dt, params.dt/prob);
-  		//count_total++;
-	    //printf("unif random: %f\n", gsl_rng_uniform(gsl.random_gsl));
 	    if (gsl_rng_uniform(gsl.random_gsl) < prob) {
-	      //Check if asymptomatic
 
 		    addToList(&l.new_latent_symptomatic, target);
 			c.count_l_symp += 1;
-  		    //count_success++;
-			//double ratio = (double) count_success / (double) count_total;
-			// Ratio is 100x too small! Strange!!
-			//printf("count_success= %d, count_total= %d\n", count_success, count_total);
-			//printf("ratio: success/total: %f\n", ratio);
 
 		  #if 0
 	      if (gsl_rng_uniform(gsl.random_gsl) < params.p) { // p = 0
@@ -302,6 +278,7 @@ void G::infect(int source, int type, Network& net, Params& params, GSL& gsl, Lis
 	      //Various
 	      l.n_active++;
 	    }
+	  } // check whether state is S
   } // for  
 }
 //----------------------------------------------------------------------
@@ -326,7 +303,7 @@ void G::latency(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, double
 	    net.node[id].t_IS = cur_time;
 	    i = removeFromList(&l.latent_symptomatic, i);
 		stateTransition(id, id, L, IS, net.node[id].t_L, cur_time);
-	  } 
+	  }
   }
 #endif
 }
@@ -343,17 +320,20 @@ void G::IsTransition(Params& par, Lists& l, Network& net, Counts& c, GSL& gsl, d
   // Go from IS to R
   for (int i=0; i < l.infectious_symptomatic.n; i++) {
     id = l.infectious_symptomatic.v[i];  
-#if EXP
-    double prob = 1. - exp(-par.dt*par.mu);
+#if CONST_INFECTION_TIME
+	if ((cur_time-net.node[id].t_IS) >= INFECTION_TIME) {
 #else
+ #if EXP
+    double prob = 1. - exp(-par.dt*par.mu);
+ #else
     double prob = par.dt * par.mu;
-#endif
-	//printf("prob IS->R (mu): %f, inv: %f\n", prob/par.dt, par.dt/prob);
+ #endif
     if (gsl_rng_uniform(gsl.random_gsl) < prob) { //days to R/Home
+#endif
       addToList(&l.new_recovered, id);
 	  c.count_recov      += 1;
-      net.node[id].state = R;
-	  net.node[id].t_R   = cur_time;
+      net.node[id].state  = R;
+	  net.node[id].t_R    = cur_time;
       l.n_active--;
       i = removeFromList(&l.infectious_symptomatic, i);
 
