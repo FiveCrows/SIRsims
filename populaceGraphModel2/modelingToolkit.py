@@ -9,7 +9,7 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 import math
-import synthModule
+from  synthModule import *
 from scipy.interpolate import interp1d
 from scipy.stats import bernoulli
 from collections import defaultdict
