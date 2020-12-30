@@ -5,7 +5,10 @@ Scripting and simulating models
 modelingToolkit.py contains the classes necessary to construct an Environmental-PopulaceGraph model. 
 The main class from modelingToolkit is the PopulaceGraph class. 
 In order for a PopulaceGraph model to be constructed, it must be able to load pickle files, leon.pkl or slimmedLeon.pkl, within the folder LeonCountyData.
-Since these files are large, they are not, by default, members of leon.pkl
+Since these files are large, they are not in the github repository
+#############
+To generate these pickle files file aggregate.py must be run first
+###############
 This file has all the contact matrices, people, and environments organized for quick processing. 
 
 In order to quickly load a set of default parameters for the model, the defaultParameters json can be used. 

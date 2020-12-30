@@ -237,7 +237,10 @@ class NetBuilder:
                         num_edges = max_edges
                 if num_edges == 0:
                     continue
-
+                expected_degree = num_edges/p_n[i]
+                if expected_degree>10:
+                    print(expected_degree)
+                
                 #to  compensate by scaling the weights up a bit
                 #residual_scalar = total_edges * contactFraction / num_edges
                 #if residual_scalar>2 and sizeA>3:

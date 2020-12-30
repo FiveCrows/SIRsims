@@ -22,7 +22,7 @@ households = filterEnvByType(envs,'household')
 #plot a distribution of incomes
 
 hh_incomes = [hh.hh_income for hh in households.values()]
-personal_incomes = [person['household'].hh_income for person in model.populace]
+personal_incomes = [person['household'].income for person in model.populace]
 
 personal_incomes = [households[pers['sp_hh_id']].hh_income for pers in model.populace]
 sns.distplot(hh_incomes, kde = True, axlabel = 'income',label = 'household_incomes')
