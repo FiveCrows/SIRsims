@@ -6,4 +6,6 @@ multHist.py: generates 4 plots: Household size, school size, log-log workplace s
 
 
 
-
+2020-12-29
+- in ge_modelingToolkit2.py, create a dense network for the workplace/schools if nb members <= 10. 
+  Bryan was creating a stratified network for all sizes. The 10 is hardcoded. 
