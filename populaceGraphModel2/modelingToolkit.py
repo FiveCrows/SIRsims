@@ -83,6 +83,7 @@ class NetBuilder:
         n_B = len(setB)
         if setA == setB:
             pos_edges = n_A * (n_A - 1) / 2
+            #if pos_edges == num_edges:
         else:
             pos_edges = n_A * n_B
 
@@ -99,7 +100,7 @@ class NetBuilder:
                 edge_dict[B, A] = 1
         list = edge_dict.keys()        
         return list
-
+    
 
     # for clusterRandGraph
     def buildBipartiteNet(self, environment, members_A, members_B, edge_count, weight_scalar = 1, p_random = 0.2):
@@ -126,8 +127,8 @@ class NetBuilder:
 
         size_A = len(A)
         size_B = len(B)
-
-        if len(members_A)*len(members_B) < edge_count:
+        max_edges = len(members_A)*len(members_B)
+        if  max_edges < edge_count:
             print("warning, not enough possible edges for cluterBipartite")
 
         #distance between edge groups
@@ -150,8 +151,10 @@ class NetBuilder:
                 else:
                     remainder +=1
 
-
-        eList = self.genRandEdgeList(members_A, members_B, remainder)
+        if edge_count == max_edges:
+            eList = list(itertools.product(members_A, members_B))
+        else:
+            eList = self.genRandEdgeList(members_A, members_B, remainder)
         for edge in eList:
             #weight = self.getWeight(edge[0], edge[1], environment)
             weight = 1.0 # GE
@@ -168,7 +171,7 @@ class NetBuilder:
         the environment to add edges for
 
         :param avg_degree: int or double
-         if avg_
+        if avg_
         degree is not None, then the contact matrix should scaled such that the average degree
 
         :param topology: string
@@ -228,8 +231,7 @@ class NetBuilder:
                     # GE: should divide by 2. This is undirected graph
                     max_edges = p_n[i] * (p_n[i]-1)/2
                     if max_edges <= num_edges:
-                        self.buildDenseNet(environment)
-                        continue
+                        num_edges = max_edges                        
                 else:
                     num_edges = int(total_edges*contactFraction*2)
                     max_edges = p_n[i] * p_n[j]
@@ -245,6 +247,7 @@ class NetBuilder:
                 #residual_scalar = total_edges * contactFraction / num_edges
                 #if residual_scalar>2 and sizeA>3:
                     #print("error in environment # {}, it's contacts count for i,j = {} is {}but there are only {} people in that set".format(environment.index, index_i, CM[index_i,index_j], len(environment.partitioned_members[index_i])))
+
                 edgeList = self.genRandEdgeList(p_sets[i], p_sets[j], num_edges)
                 for edge in edgeList:
                     self.addEdge(edge[0], edge[1], environment)

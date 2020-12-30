@@ -162,6 +162,16 @@ def getDegreeHistogram(model, env_indexes, normalized = True):
         degreeCounts.pop()
     return degreeHistogram
 
+def getMaxDegreeNodes(model, env_indexes):
+    degrees = {}
+    for index in env_indexes:
+        env = model.environments[index]
+        people = env.members
+        graph = model.graph.subgraph(people)
+        deg_seq = sorted([d for n, d in graph.degree()], reverse = True)        
+        degrees[index] = max(deg_seq)
+    return degrees
+    
 def aFormatGraph(model, folder):
     ageGroups = [[0,5], [5,18], [18,50], [50,65], [65,100]]
     enumerator = {}

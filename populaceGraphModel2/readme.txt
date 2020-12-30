@@ -7,7 +7,7 @@ The main class from modelingToolkit is the PopulaceGraph class.
 In order for a PopulaceGraph model to be constructed, it must be able to load pickle files, leon.pkl or slimmedLeon.pkl, within the folder LeonCountyData.
 Since these files are large, they are not in the github repository
 #############
-To generate these pickle files file aggregate.py must be run first
+To generate these pickle files file LeonCountyData/aggregate.py must be run first
 ###############
 This file has all the contact matrices, people, and environments organized for quick processing. 
 

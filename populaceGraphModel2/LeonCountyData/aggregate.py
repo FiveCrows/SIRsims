@@ -22,7 +22,7 @@ def buildPkl(slim):
     with open(currentdir+"/people_list_serialized.pkl", 'rb') as file:
         rawPopulace = pickle.load(file)
     if slim == True:        
-        populace = random.choices(list(rawPopulace.values()), k = int(0.9*len(rawPopulace)))
+        populace = random.choices(list(rawPopulace.values()), k = int(0.1*len(rawPopulace)))
         print("WARNING! slim = True, 90% of people are filtered out")
     else:
         populace = list(rawPopulace.values())
