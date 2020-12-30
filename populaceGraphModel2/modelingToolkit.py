@@ -492,7 +492,7 @@ class PopulaceGraph:
         self.workplaces = self.pops_by_category["work_id"]
         #add direct reference to env objects in populace
         #None is temporarily added for cases where there is no school or workplace id
-        self.environments[None] = None
+        #self.environments[None] = None
 #outdated code, may be replaced later but not likely        
 #        names = zip(['sp_hh_id', 'work_id', 'school_id'], ['household', 'workplace', 'school'])
 #        for namePair in names:            

@@ -37,7 +37,7 @@ class Partitioner():
         binList = self.binMembers(members)
         partition = {i:[] for i in range(len(self.bins))}
         for i, bin_num in enumerate(binList):
-            partition[bin_num -1].append(members[i])        
+            partition[bin_num -1].append(members[i][0])        
         return dict(zip([member.sp_id for member in members], binList)), partition        
     
 

@@ -14,20 +14,20 @@ globals().update(json.load(open('defaultParameters')))
 model = PopulaceGraph(slim = False)
 netBuilder = NetBuilder()
 model.networkEnvs(netBuilder)
-#model.weightNetwork(env_type_scalars, prevention_adoptions, prevention_efficacies)
+model.weightNetwork(env_type_scalars, prevention_adoptions, prevention_efficacies)
 
 #get and plot a distribution of incomes for each household 
-#envs = model.environments
-#households = filterEnvByType(envs,'household')
+envs = model.environments
+households = filterEnvByType(envs,'household')
 #plot a distribution of incomes
 
-#hh_incomes = [hh.hh_income for hh in households.values()]
-#personal_incomes = [person['household'].hh_income for person in model.populace]
+hh_incomes = [hh.hh_income for hh in households.values()]
+personal_incomes = [person['household'].hh_income for person in model.populace]
 
-#personal_incomes = [households[pers['sp_hh_id']].hh_income for pers in model.populace]
-#sns.distplot(hh_incomes, kde = True, axlabel = 'income',label = 'household_incomes')
-#sns.distplot(personal_incomes, kde = True, axlabel = 'person_incomes')
-#plt.show()
+personal_incomes = [households[pers['sp_hh_id']].hh_income for pers in model.populace]
+sns.distplot(hh_incomes, kde = True, axlabel = 'income',label = 'household_incomes')
+sns.distplot(personal_incomes, kde = True, axlabel = 'person_incomes')
+plt.show()
 
 #construct an enumerator such that each partition gets an even number of members for income
 #number of partitions to have for incomes

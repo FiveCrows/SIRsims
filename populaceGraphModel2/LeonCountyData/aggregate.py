@@ -48,7 +48,7 @@ def buildPkl(slim):
     
     attributes = attributes[:-1]
     pops_by_category = {category: {} for category in attributes}
-    #how to sort by df
+    #how to sort by df, slow
     #pops_by_category = {category: populace_df.groupby(category)['sp_id'].apply(list) for category in attributes}
     quickPopList = [(vars(rawPopulace[key])) for key in rawPopulace] 
     print("ok, here") # .transpose()
@@ -59,6 +59,7 @@ def buildPkl(slim):
                 pops_by_category[category][person[category]].append(index)
             except:
                 pops_by_category[category][person[category]] = [index]
+    
     #for people as objects
     #for person in populace:
     #    for category in attributes:
@@ -87,7 +88,7 @@ def buildPkl(slim):
         #get member records from pops_by_category indexes            
         try:
             
-            members = [populace[i] for i in pops_by_category['sp_hh_id'][hh.sp_id]]                        
+            members =  pops_by_category['sp_hh_id'][hh.sp_id]                    
         except:
             members = []            
 
@@ -142,7 +143,7 @@ def buildPkl(slim):
             environment.zipcode = int(environment.zipcode)
         except:
             environment.zipcode = None
-
+    
 
     #store file
     if slim == False:

@@ -53,7 +53,10 @@ class Environment:
         self.zipcode = attributes.pop('zipcode')        
         self.__dict__.update(attributes)
 
-        self.members = members  # list of keys (integers), probably people
+        try: #assuming members are passed as records
+            self.members = [member[0] for member in members]        
+        except:
+            self.members = members
         self.population = len(members)
         self.num_mask_types = 1
         # self.distancing = distancing
@@ -64,8 +67,7 @@ class Environment:
         self.isWeighted = False
         #creates a dict linking each member of the environment with each prevention
 
-        self.__dict__.update(attributes)
-        self.members = members
+        self.__dict__.update(attributes)        
 
     #-----------------------------------
     def drawPreventions(self, adoptions, populace):
