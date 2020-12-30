@@ -39,6 +39,14 @@ model = PopulaceGraph(partitioner, prevention_adoptions, prevention_efficacies, 
 netBuilder = NetBuilder(env_type_scalars, prevention_efficacies) #, cv_dict={})
 model.buildNetworks(netBuilder)
 
+
+
+# GET THE GRAPH
+G = model.graph
+print("nb edges in graph: ", G.number_of_edges())
+print("nb nodes in graph: ", G.number_of_nodes())
+quit()
+
 h_sizes = [0]*13
 s_sizes = [0]*35
 w_sizes = [0]*10
@@ -61,6 +69,8 @@ def edgeHistogram(edge_list):
 
 envs = {'household':[], 'school':[], 'workplace':[]}
 envs_hist = {'household':[], 'school':[], 'workplace':[], 'all':[]}
+
+# COMPUTE THE HISTOGRAMS
 
 for index in model.environments:
     env = model.environments[index]

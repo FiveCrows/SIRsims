@@ -127,7 +127,7 @@ class Environment:
         self.isWeighted = False
         #creates a dict linking each member of the environment with each prevention
 
-    #-----------------------------------
+    
     def drawPreventions(self, adoptions, populace):
         # populace[0]: list of properties of one person
         #print("populace: ", populace[0]); quit()
@@ -206,9 +206,9 @@ class Environment:
     '''
 
 
-    # class Environment
     def addEdge(self, nodeA, nodeB): #, weight):
         '''
+        Add an edge to the self environment
         This helper function  not only makes it easier to track
         variables like the total weight and edges for the whole graph, it can be useful for debugging
         :param nodeA: int
@@ -222,7 +222,8 @@ class Environment:
         self.edges.append((nodeA, nodeB))
 
     def network(self, netBuilder):
-        netBuilder.buildDenseNet(self)
+        print("class Environment::network() ==> call buildDenseNet")
+        netBuilder.buildDenseNet(self)  # pass the env to the function
 
     def clearNet(self):
         self.edges = []
@@ -281,6 +282,7 @@ class StructuredEnvironment(Environment):
         return rm
 
     def network(self, netBuilder):
+        print("class StructuredEnvironment::network() ==> call buildStructuredNet")
         netBuilder.buildStructuredNet(self)
 
 
@@ -347,6 +349,7 @@ class NetBuilder:
         :return edge_list: ebunch
         returns a list of weighted edges in form (nodeA, nobeB, weight)
         """
+        print("class NetBuilder => buildDenseNet, env size: ", len(environment.members), environment.env_type)
 
         if subgroup == None:
             members = environment.members
@@ -363,6 +366,8 @@ class NetBuilder:
                 else:
                     environment.addEdge(nodeB, nodeA)
 
+        print("   nb edges added: ", len(environment.edges))
+
 
     def genRandEdgeList(self, setA, setB, n_edges):
         if n_edges == 0:
@@ -372,21 +377,16 @@ class NetBuilder:
         n_B = len(setB)
         if setA == setB:
             pos_edges = n_A * (n_A - 1) / 2
-            same_sets = True
         else:
             pos_edges = n_A * n_B
-            same_sets = False
 
         #        p_duplicate = n_edges/pos_edges
         #        if p_duplicate< 0.001:
         #            list = [(random.choice(setA),random.choice(setB)) for i in range(n_edges)]
         #        else:
         edge_dict = {}
-        count = 0
         while len(edge_dict) < n_edges:
             A, B = random.choice(setA), random.choice(setB)
-            if (n_edges < 3 and count < 5): 
-                count += 1
             if A < B:
                 edge_dict[A, B] = 1
             elif B < A:
@@ -409,6 +409,9 @@ class NetBuilder:
         the rate at which random edges need to be added
         :return:
         """
+
+        print("NetBuilder => buildDenseNet, env size: ", len(environment.members), environment.env_type)
+
         #reorder groups by size
         A = min(members_A, members_B, key = len)
         if A == members_A:
@@ -465,23 +468,36 @@ class NetBuilder:
         :return:
         """
 
+        print("NetBuilder => buildStructuredNet, env size: ", len(environment.members), environment.env_type)
+
+        ### Added by G. Erlebacher, 2020-12-29
+        ### if nb members in the environment <= 10, call buildDenseNet
+        if len(environment.members) <= 10:
+            print("   dense network")
+            self.buildDenseNet(environment)
+            return
+
         #to clean up code just a little
         p_sets = environment.partition
         CM = environment.returnReciprocatedCM()
 
         assert isinstance(environment, StructuredEnvironment), "must be a structured environment"
-        #a list of the number of people in each partition set
+        # a list of the number of people in each partition set
         p_n      = [len(p_sets[i]) for i in p_sets]
-        num_sets = len(p_sets)
+        num_sets = len(p_sets)  # 16 age group
         #get total contact, keeping in mind the contact matrix elements are divided by num people in group
+
+        # Total number of contacts (sum of the degrees of all the nodes)
         total_contact = 0
         for i, row in enumerate(CM):
-                total_contact += sum(row)*p_n[i]
+            total_contact += sum(row)*p_n[i]
+
         #default_weight = total_contact/totalEdges
+        # avg_degree: avergage degree per node in the population
         if avg_degree == None:
             avg_degree = total_contact/environment.population
 
-        if avg_degree ==0: return
+        if avg_degree == 0: return
 
         #print('by the sum of the CM, avg_degree should be : {}'.format(avg_degree ))
         #determine total edges needed for entire network. There are two connections per edge)
@@ -494,7 +510,7 @@ class NetBuilder:
                 if p_n[j] == 0:
                     continue
                 #get the fraction of contact that should occur between sets i and j
-                contactFraction = CM[i, j]*p_n[i]/(total_contact)
+                contactFraction = CM[i, j]*p_n[i] / total_contact
                 if contactFraction == 0:
                     continue
                 #make sure there are enough people to fit num_edges
@@ -527,6 +543,11 @@ class NetBuilder:
                 if edgediff > 0:
                     print("error!")
                     quit()
+        print(" nb edges added: ", len(environment.edges))
+        print(" total_contact= ", total_contact)
+        print(" total_edges= ", total_edges)
+        print(" Error: ", (len(environment.edges)-total_contact/2)/total_contact)
+        #quit()
 
     def setEnvScalars(self, env_scalars):
         self.env_scalars = env_scalars
@@ -541,6 +562,7 @@ class NetBuilder:
         self.prevention_adoptions = prevention_adoptions
 
 
+    '''
     # class NetBuilder
     def getWeight(self, personA, personB, environment):
         print("getWeight should not be called"); quit()
@@ -592,8 +614,10 @@ class NetBuilder:
         # apply spread to mask effectiveness if requested
 
         return weight
+    '''
 
-#A work in progress
+'''
+#A work in progress (NOT USED)
 class StrogatzNetBuilder(NetBuilder):
     # NOT USED
 
@@ -756,6 +780,7 @@ class StrogatzNetBuilder(NetBuilder):
                 # Adding A to B's friends
                 # try:
                 # attachments[""]
+'''
 
 
 class PopulaceGraph:
@@ -1475,6 +1500,7 @@ class PopulaceGraph:
         print("  - Node count: ", self.graph.number_of_nodes())
         print("  - Edge count: ", self.graph.number_of_edges())
 
+    '''
     # class PopulaceGraph
     def reweight(self, netBuilder, new_prev_adoptions = None):
         print("Reweight should not be called"); quit()
@@ -1489,6 +1515,7 @@ class PopulaceGraph:
         #choose new preventions if requested
         for env in self.environments:
             self.environments[env].reweight(netBuilder, new_prev_adoptions)
+    '''
 
     #merge environments, written for plotting and exploration
     def returnMergedEnvironments(self, env_indexes, partitioner = None):
