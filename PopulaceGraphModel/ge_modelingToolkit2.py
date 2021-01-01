@@ -1625,8 +1625,8 @@ class PopulaceGraph:
 
         self.global_dict = global_dict
         print("Simulate: Graph parameters:")
-        print("  - Node count: ", self.graph.number_of_nodes)
-        print("  - Edge count: ", self.graph.number_of_edges)
+        print("  - Node count: ", self.graph.number_of_nodes())
+        print("  - Edge count: ", self.graph.number_of_edges())
         #global_dict
         #print("enter setupMaskWeights, prevention_adoptions= ", self.prevention_adoptions)
         mask_weight_factor       = self.setupMaskingWeights() 
