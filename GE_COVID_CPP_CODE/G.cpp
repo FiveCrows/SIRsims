@@ -49,9 +49,14 @@ void G::initialize(int argc, char** argv, Files& files, Params& params, Lists& l
 
   strcpy(files.node_file, files.data_folder);
   strcat(files.node_file, "nodes.txt");
+  printf("**** node_file: %s\n", files.node_file);
 
   strcpy(files.network_file, files.data_folder);
   strcat(files.network_file, "network.txt");
+  printf("**** network_file: %s\n", files.network_file);
+
+  strcpy(files.vaccination_file, files.data_folder);
+  strcat(files.vaccination_file, "vaccines.csv");
 
   readParameters(files.parameter_file, params);
   allocateMemory(params, lists);
@@ -64,16 +69,14 @@ void G::initialize(int argc, char** argv, Files& files, Params& params, Lists& l
 //----------------------------------------------------------------------
 void G::runSimulation(Params& params, Lists& lists, Counts& c, Network& n, GSL& gsl, Files& f)
 {
-  Counts count;
-
   for (int run=0; run < params.n_runs; run++) {
      printf("run= %d\n", run);
      {
-  		count.count_l_asymp   = 0;
-  		count.count_l_symp    = 0;
-  		count.count_l_presymp = 0;
-  		count.count_i_symp    = 0;
-  		count.count_recov     = 0;
+  		c.count_l_asymp   = 0;
+  		c.count_l_symp    = 0;
+  		c.count_l_presymp = 0;
+  		c.count_i_symp    = 0;
+  		c.count_recov     = 0;
 
         init(params, c, n, gsl, lists, f);
 
@@ -81,10 +84,10 @@ void G::runSimulation(Params& params, Lists& lists, Counts& c, Network& n, GSL& 
 	      spread(run, f, lists, n, params, gsl, c);
 		}
 
-  		printf("total number latent symp:  %d\n", count.count_l_symp);
-  		printf("total number latent presymp:  %d\n", count.count_l_presymp);
-  		printf("total number infectious symp:  %d\n", count.count_i_symp);
-  		printf("total number recovered:  %d\n", count.count_recov);
+  		printf("total number latent symp:  %d\n", c.count_l_symp);
+  		printf("total number latent presymp:  %d\n", c.count_l_presymp);
+  		printf("total number infectious symp:  %d\n", c.count_i_symp);
+  		printf("total number recovered:  %d\n", c.count_recov);
         results(run, lists, f);
 
 		printTransitionStats();
@@ -162,15 +165,15 @@ void G::spread(int run, Files& f, Lists& l, Network& net, Params& params, GSL& g
   double cur_time = f.t;
 
   // S to L
-  //printf("before infection()\n"); count_states();
+  printf("before infection()\n"); count_states(params, c, net);
   infection(l, net, params, gsl, c, cur_time);
   // L to P
-  //printf("before latency()\n"); count_states();
+  printf("before latency()\n"); count_states(params, c, net);
   latency(params, l, gsl, net, c, cur_time);
   // P to I
   //preToI();
   // I to R
-  //printf("before IsTransition()\n"); count_states();
+  printf("before IsTransition()\n"); count_states(params, c, net);
   IsTransition(params, l, net, c, gsl, cur_time);
 
 
@@ -220,12 +223,13 @@ void G::infect(int source, int type, Network& net, Params& params, GSL& gsl, Lis
   int target;
   double prob;
   static int count_success = 0;
-  static int count_total   = 0;
+  //static int count_total   = 0;
 
   if (net.node[source].state != IS) { // Code did not exit
 	printf("I expected source state to be IS\n"); exit(1);
   }
  
+  printf("infect,source= %d,  ...k= %d\n", source, net.node[source].k);  //all zero
   for (int j=0; j < net.node[source].k; j++) {
       target = net.node[source].v[j];
 	  // Added if branch for tracking potential infected perform more detailed 
@@ -245,10 +249,11 @@ void G::infect(int source, int type, Network& net, Params& params, GSL& gsl, Lis
 			printf("I expected source to be IS\n"); exit(1);
 			// Code did not exit
 		}
-#endif
 		float a = 1. / params.beta_normal;
 	    float b = 1. / 0.37;
 		float g = gsl_ran_gamma(gsl.r_rng, a, b);  // not yet used
+#endif
+		printf("infect: prob= %f\n", prob);
 	    if (gsl_rng_uniform(gsl.random_gsl) < prob) {
 
 		    addToList(&l.new_latent_symptomatic, target);
@@ -445,8 +450,12 @@ void G::results(int run, Lists& l, Files& f)
 void G::readData(Params& params, Lists& lists, Network& network, Files& files)
 {
   // Change params.N according to node file
+  printf("readNetwork\n");
   readNetwork(params, lists, network, files);
+  printf("readNodes\n");
   readNodes(params, files, network);
+  printf("readVaccinations\n");
+  //readVaccinations(params, files, network);
 }
 //----------------------------------------------------------------------
 void G::readParameters(char* parameter_file, Params& params)
@@ -496,15 +505,13 @@ void G::readNetwork(Params& params, Lists& lists, Network& network, Files& files
   int s, t;
   double w;
   FILE *f;
-  char *token;
-  char string[500];
 
   FILE* fd = fopen(files.node_file, "r");
   fscanf(fd, "%d", &params.N);
   printf("params.N= %d\n", params.N);
 
   network.node = (Node*) malloc(params.N * sizeof * network.node);
-  //node = new [N] Node; 
+
   for(int i=0;i<params.N;i++)
     {
       network.node[i].k = 0;
@@ -515,22 +522,17 @@ void G::readNetwork(Params& params, Lists& lists, Network& network, Files& files
       network.node[i].t_R  = 0.;
     }
 
-  //f = fopen("Data/network.txt","r");
-  //f = fopen("Data_SIR/edges_BA.csv", "r");
-  //printf("network_file= %s\n", files.network_file);
+  printf("files.network_file= %s\n", files.network_file);
+  printf("files.node_file= %s\n", files.node_file);
+
   f = fopen(files.network_file, "r");
   int nb_edges;
-  fscanf(f, "%d\n", &nb_edges);
+  fscanf(f, "%d", &nb_edges);
+  printf("nb_edges= %d\n", nb_edges);
 
-  while(fgets(string,500,f))
-    {
-      token = strtok(string," ");
-      s = atoi(token);
-      token = strtok(NULL," ");
-      t = atoi(token);
-      token = strtok(NULL,"\n");
-      w = atof(token);
-
+  for (int i=0; i < nb_edges; i++) {
+	  fscanf(f, "%d%d%lf", &s, &t, &w);
+	  printf("s,t,w= %d, %d, %f\n", s, t, w);
       network.node[s].k++;
       //Update size of vectors
       network.node[s].v = (int*) realloc(network.node[s].v, network.node[s].k * sizeof *network.node[s].v);
@@ -548,38 +550,67 @@ void G::readNetwork(Params& params, Lists& lists, Network& network, Files& files
         network.node[t].w[network.node[t].k-1] = w;
 	  }
     }
-  //printf("exit while\n");
   fclose(f);
+
+  for (int i=0; i < params.N; i++) {
+	 printf("node.k= %d, %d\n", i, network.node[i].k);
+  }
+  exit(1);
 }
 
 //----------------------------------------------------------------------
 void G::readNodes(Params& params, Files& files, Network& network)
 {
-  int s, age;
+  int age;
   FILE *f;
-  char *token;
-  char string[500];
   int nb_nodes;
 
   f = fopen(files.node_file, "r");
-  fscanf(f, "%d\n", &nb_nodes);
+  fscanf(f, "%d", &nb_nodes);   // WHY is \n required? (only eats up spaces)
 
   if (params.N != nb_nodes) {
       printf("nb_nodes not equal to params.N. Fix error\n");
 	  exit(1);
   }
+
   int N = 0;
+  int node;
 
-  while(fgets(string,500,f))
-    {
-      token = strtok(string," ");
-      s = atoi(token);
-      token = strtok(NULL,"\n");
-      age = atoi(token);
+  for (int i=0; i < nb_nodes; i++) {
+    fscanf(f, "%d%d", &node, &age);
+	network.node[node].age = age;
+	N++;
+  }
 
-      network.node[s].age = age;
-	  N++;
-    }
+  fclose(f);
+}
+//----------------------------------------------------------------------
+void G::readVaccinations(Params& params, Files& files, Network& network)
+{
+  FILE *f;
+  int nb_nodes;
+
+  f = fopen(files.vaccination_file, "r");
+  fscanf(f, "%d", &nb_nodes);
+
+  if (params.N != nb_nodes) {
+      printf("nb_nodes (%d) not equal to params.N (%d). Fix error\n", nb_nodes, params.N);
+	  exit(1);
+  }
+ 
+  int node;
+  int* vaccinated = new int [nb_nodes];
+  float efficacy;
+
+  for (int i=0; i < nb_nodes; i++) {
+	  fscanf(f, "%d%d%f", &node, &vaccinated[i], &efficacy);
+	  printf("node, vaccinated, efficiency: %d, %d, %f\n", node, vaccinated, efficacy);
+	  network.node[i].state = R;
+  }
+
+  delete [] vaccinated;
+
+  // Set the vaccinated people to recovered
 
   fclose(f);
 }

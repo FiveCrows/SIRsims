@@ -1,0 +1,4 @@
+Create an input file to specify vaccines. 
+Case 1: specify number of people to vaccinate. These people will be recovered at t=0. 
+  - randomly assign vaccinations to people. 
+  - create an input file with two columns: (node, vaccine 1/0)

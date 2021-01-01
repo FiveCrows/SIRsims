@@ -108,6 +108,7 @@ typedef struct Files {
 	char parameter_file[255];
 	char node_file[255];
 	char network_file[255];
+	char vaccination_file[255];
 } Files;
 
 #endif
