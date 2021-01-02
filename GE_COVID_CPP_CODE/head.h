@@ -47,10 +47,14 @@ typedef struct Counts {
 	int count_l_presymp;
 	int count_i_symp;
 	int count_recov;
+	int count_vacc1;
+	int count_vacc2;
   	int countS;
   	int countL;
   	int countIS;
   	int countR;
+  	int countV1;
+  	int countV2;
 
 } Counts;
 
@@ -67,8 +71,8 @@ typedef struct Counts {
 // Potentially infected
 #define PotL 10
 // People Vaccinated get one of the following two states
-#define VACC1 11
-#define VACC2 12
+#define V1 11
+#define V2 12
 
 typedef struct GSL {
 	//Random numbers

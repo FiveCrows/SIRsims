@@ -77,6 +77,8 @@ void G::runSimulation(Params& params, Lists& lists, Counts& c, Network& n, GSL& 
   		c.count_l_presymp = 0;
   		c.count_i_symp    = 0;
   		c.count_recov     = 0;
+  		c.count_vacc1     = 0;
+  		c.count_vacc2     = 0;
 
         init(params, c, n, gsl, lists, f);
 
@@ -88,6 +90,8 @@ void G::runSimulation(Params& params, Lists& lists, Counts& c, Network& n, GSL& 
   		printf("total number latent presymp:  %d\n", c.count_l_presymp);
   		printf("total number infectious symp:  %d\n", c.count_i_symp);
   		printf("total number recovered:  %d\n", c.count_recov);
+  		printf("total number vacc 1:  %d\n", c.count_vacc1);
+  		printf("total number vacc 2:  %d\n", c.count_vacc2);
         results(run, lists, f);
 
 		printTransitionStats();
@@ -102,14 +106,19 @@ void G::count_states(Params& params, Counts& c, Network& n)
   c.countL  = 0;
   c.countIS = 0;
   c.countR  = 0;
+  c.countV1 = 0;
+  c.countV2 = 0;
 
   for(int i=0;i < params.N; i++) {
     if (n.node[i].state == S)  c.countS++;
     if (n.node[i].state == L)  c.countL++;
     if (n.node[i].state == IS) c.countIS++;
     if (n.node[i].state == R)  c.countR++;
+    if (n.node[i].state == V1)  c.countV1++;
+    if (n.node[i].state == V2)  c.countV2++;
   }
   printf("Counts: S,L,IS,R: %d, %d, %d, %d\n", c.countS, c.countL, c.countIS, c.countR);
+  printf("Counts: V1,V2: %d, %d\n", c.countV1, c.countV2);
 }
 //----------------------------------------------------------------------
 void G::init(Params& p, Counts& c, Network& n, GSL& gsl, Lists& l, Files& f)
