@@ -42,7 +42,7 @@ public:
 	void readParameters(char* filenm, Params&);
 	void readNetwork(Params&, Lists&, Network&, Files&);
 	void readNodes(Params&, Files&, Network&);
-	void readVaccinations(Params&, Files&, Network&);
+	void readVaccinations(Params&, Files&, Network&, Lists&);
 	//utilities
 	void allocateMemory(Params&, Lists&);
 	void initRandom(int, GSL&);

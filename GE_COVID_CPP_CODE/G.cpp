@@ -128,6 +128,16 @@ void G::seedInfection(Params& par, Counts& c, Network& n, GSL& gsl, Lists& l, Fi
   int seed;
   count_states(par, c, n);
   printf("inside seedInf\n");
+  int nb_vaccinated = l.people_vaccinated.size();
+  //for (int i=0; i < 100; i++) {
+     //printf("person %d is vaccinated\n");
+  //}
+
+  // set Recovered to those vaccinated
+  for (int i=0; i < nb_vaccinated; i++) {
+	    int person_vaccinated = l.people_vaccinated[i];
+	  	n.node[person_vaccinated].state = R;
+  }
 
   // Use a permutation to make sure that there are no duplicates when 
   // choosing more than one initial infected
@@ -149,6 +159,13 @@ void G::seedInfection(Params& par, Counts& c, Network& n, GSL& gsl, Lists& l, Fi
     addToList(&l.latent_symptomatic, seed); // orig 
   }
 
+  // Count number in recovered state
+  int count = 0;
+  for (int i=0; i < par.N; i++) {
+      if (n.node[i].state == R) { count++; }
+  }
+  printf("nb recovered: %d\n", count);
+
   gsl_permutation_free(p);
 
   l.n_active = ninfected;
@@ -165,15 +182,15 @@ void G::spread(int run, Files& f, Lists& l, Network& net, Params& params, GSL& g
   double cur_time = f.t;
 
   // S to L
-  printf("before infection()\n"); count_states(params, c, net);
+  //printf("before infection()\n"); count_states(params, c, net);
   infection(l, net, params, gsl, c, cur_time);
   // L to P
-  printf("before latency()\n"); count_states(params, c, net);
+  //printf("before latency()\n"); count_states(params, c, net);
   latency(params, l, gsl, net, c, cur_time);
   // P to I
   //preToI();
   // I to R
-  printf("before IsTransition()\n"); count_states(params, c, net);
+  //printf("before IsTransition()\n"); count_states(params, c, net);
   IsTransition(params, l, net, c, gsl, cur_time);
 
 
@@ -229,7 +246,7 @@ void G::infect(int source, int type, Network& net, Params& params, GSL& gsl, Lis
 	printf("I expected source state to be IS\n"); exit(1);
   }
  
-  printf("infect,source= %d,  ...k= %d\n", source, net.node[source].k);  //all zero
+  //printf("infect,source= %d,  ...k= %d\n", source, net.node[source].k);  //all zero
   for (int j=0; j < net.node[source].k; j++) {
       target = net.node[source].v[j];
 	  // Added if branch for tracking potential infected perform more detailed 
@@ -253,7 +270,7 @@ void G::infect(int source, int type, Network& net, Params& params, GSL& gsl, Lis
 	    float b = 1. / 0.37;
 		float g = gsl_ran_gamma(gsl.r_rng, a, b);  // not yet used
 #endif
-		printf("infect: prob= %f\n", prob);
+		//printf("infect: prob= %f\n", prob);
 	    if (gsl_rng_uniform(gsl.random_gsl) < prob) {
 
 		    addToList(&l.new_latent_symptomatic, target);
@@ -455,7 +472,7 @@ void G::readData(Params& params, Lists& lists, Network& network, Files& files)
   printf("readNodes\n");
   readNodes(params, files, network);
   printf("readVaccinations\n");
-  //readVaccinations(params, files, network);
+  readVaccinations(params, files, network, lists);
 }
 //----------------------------------------------------------------------
 void G::readParameters(char* parameter_file, Params& params)
@@ -532,7 +549,7 @@ void G::readNetwork(Params& params, Lists& lists, Network& network, Files& files
 
   for (int i=0; i < nb_edges; i++) {
 	  fscanf(f, "%d%d%lf", &s, &t, &w);
-	  printf("s,t,w= %d, %d, %f\n", s, t, w);
+	  //printf("s,t,w= %d, %d, %f\n", s, t, w);
       network.node[s].k++;
       //Update size of vectors
       network.node[s].v = (int*) realloc(network.node[s].v, network.node[s].k * sizeof *network.node[s].v);
@@ -551,11 +568,6 @@ void G::readNetwork(Params& params, Lists& lists, Network& network, Files& files
 	  }
     }
   fclose(f);
-
-  for (int i=0; i < params.N; i++) {
-	 printf("node.k= %d, %d\n", i, network.node[i].k);
-  }
-  exit(1);
 }
 
 //----------------------------------------------------------------------
@@ -585,7 +597,7 @@ void G::readNodes(Params& params, Files& files, Network& network)
   fclose(f);
 }
 //----------------------------------------------------------------------
-void G::readVaccinations(Params& params, Files& files, Network& network)
+void G::readVaccinations(Params& params, Files& files, Network& network, Lists& l)
 {
   FILE *f;
   int nb_nodes;
@@ -604,8 +616,11 @@ void G::readVaccinations(Params& params, Files& files, Network& network)
 
   for (int i=0; i < nb_nodes; i++) {
 	  fscanf(f, "%d%d%f", &node, &vaccinated[i], &efficacy);
-	  printf("node, vaccinated, efficiency: %d, %d, %f\n", node, vaccinated, efficacy);
-	  network.node[i].state = R;
+	  if (vaccinated[i] == 1) {
+		l.people_vaccinated.push_back(i);
+		printf("readVaccinations: vaccinate person %d\n", i);
+	  }
+	  //printf("node, vaccinated, efficiency: %d, %d, %f\n", node, vaccinated, efficacy);
   }
 
   delete [] vaccinated;

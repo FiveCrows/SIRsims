@@ -90,6 +90,7 @@ typedef struct Lists {
 	// Added by GE
 	std::vector<int> id_from, id_to, state_from, state_to; //, from_time, to_time;
 	std::vector<float> from_time, to_time;
+    std::vector<int> people_vaccinated;
 } Lists;
 
 //Network
