@@ -135,27 +135,70 @@ void G::init(Params& p, Counts& c, Network& n, GSL& gsl, Lists& l, Files& f)
 void G::seedInfection(Params& par, Counts& c, Network& n, GSL& gsl, Lists& l, Files& f)
 {
   int seed;
-  count_states(par, c, n);
-  printf("inside seedInf\n");
-  int nb_vaccinated = l.people_vaccinated.size();
-  //for (int i=0; i < 100; i++) {
-     //printf("person %d is vaccinated\n");
-  //}
-
-  // set Recovered to those vaccinated
-  for (int i=0; i < nb_vaccinated; i++) {
-	    int person_vaccinated = l.people_vaccinated[i];
-	  	n.node[person_vaccinated].state = R;
-  }
-
+  int id;
+ 
   // Use a permutation to make sure that there are no duplicates when 
   // choosing more than one initial infected
   gsl_permutation* p = gsl_permutation_alloc(par.N);
   gsl_rng_env_setup();
   gsl.T = gsl_rng_default;
   gsl.r_rng = gsl_rng_alloc(gsl.T); // *****
+  // Set up a random seed
+  gsl_rng_set(gsl.r_rng, time(NULL));
   gsl_permutation_init(p);
+  // MAKE SURE par.N is correct
   gsl_ran_shuffle(gsl.r_rng, p->data, par.N, sizeof(size_t));
+
+
+// Initialize Susceptibles. List not needed if there are no vaccinations
+  for (int i=0; i < par.N; i++) {
+	 id = p->data[i];  // susceptibles are permuted randomly
+     n.node[i].state = S;
+     // Ideally, I should shuffle the list
+     addToList(&l.susceptible, id); 
+  }
+
+  count_states(par, c, n);
+  printf("inside seedInf\n\n\n");
+
+  int nb_vaccinated = l.people_vaccinated.size();
+
+  int cnt=0;
+  int maxN = l.susceptible.n;
+  printf("maxN= %d\n", maxN);
+  //for (int i=0; i < l.susceptible.n; i++) {
+  for (int i=0; i < maxN; i++) {
+    cnt++;
+	id = l.susceptible.v[i];
+    printf("loop index: i= %d, id= %d\n", i, id);
+	printf("list size: %d\n", l.susceptible.n);
+    printf("l.susceptible.n= %d\n", l.susceptible.n);
+  	i = removeFromList(&l.susceptible, id);
+	printf("return from removeFromList: i= %d\n", i);
+	printf("count= %d\n", cnt);
+	//if (cnt >= 5) break;
+  }
+  exit(0);
+
+  //for (int i=0; i < 100; i++) {
+     //printf("person %d is vaccinated\n");
+	 
+  // Set up vaccinated people at initial time (optional)
+#ifdef SETUPVACC
+  for (int i=0; i < nb_vaccinated; i++) {
+	    int person_vaccinated = l.people_vaccinated[i];
+	  	n.node[person_vaccinated].state = V1;
+		n.node[person_vaccinated].t_V1 = 0.;
+	    i = removeFromList(&l.susceptible, i);
+        addToList(&l.vacc1, i); // orig 
+  }
+#endif
+
+  // set Recovered to those vaccinated
+  for (int i=0; i < nb_vaccinated; i++) {
+	    int person_vaccinated = l.people_vaccinated[i];
+	  	n.node[person_vaccinated].state = R;
+  }
 
   float rho = 0.001; // infectivity percentage at t=0 (SHOULD BE IN PARAMS)
   int ninfected = rho * par.N;
@@ -167,6 +210,7 @@ void G::seedInfection(Params& par, Counts& c, Network& n, GSL& gsl, Lists& l, Fi
   	n.node[seed].state = L;
     addToList(&l.latent_symptomatic, seed); // orig 
   }
+ 
 
   // Count number in recovered state
   int count = 0;
@@ -180,6 +224,7 @@ void G::seedInfection(Params& par, Counts& c, Network& n, GSL& gsl, Lists& l, Fi
   l.n_active = ninfected;
   c.count_l_symp += ninfected;
   printf("added %d latent_symptomatic individuals\n", ninfected);
+
 
   f.t = par.dt;
 }
@@ -208,7 +253,7 @@ void G::spread(int run, Files& f, Lists& l, Network& net, Params& params, GSL& g
   updateTime();
 
   //Write data
-  fprintf(f.f_data,"%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %f\n",
+  fprintf(f.f_data,"%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %f\n",
 	l.susceptible.n, 
 	l.latent_asymptomatic.n, 
 	l.latent_symptomatic.n, 
@@ -251,7 +296,7 @@ void G::infect(int source, int type, Network& net, Params& params, GSL& gsl, Lis
 {
   int target;
   double prob;
-  static int count_success = 0;
+  //static int count_success = 0;
   //static int count_total   = 0;
 
   if (net.node[source].state != IS) { // Code did not exit
@@ -472,7 +517,7 @@ void G::results(int run, Lists& l, Files& f)
 {
   //Cumulative values
   for(int i=0;i<NAGE;i++)
-    fprintf(f.f_cum,"%d %d %d %d %d %d %d %d %d %d \n",
+    fprintf(f.f_cum,"%d %d %d %d %d %d %d %d %d %d %d %d\n",
        l.latent_asymptomatic.cum[i],
        l.latent_symptomatic.cum[i],
        l.infectious_asymptomatic.cum[i],
@@ -626,6 +671,10 @@ void G::readNodes(Params& params, Files& files, Network& network)
 	N++;
   }
 
+  printf("params.N= %d, N= %d (should be identical)\n", params.N, N);
+  params.N = N;
+  printf("params.N= %d, N= %d (should be identical)\n", params.N, N);
+
   fclose(f);
 }
 //----------------------------------------------------------------------
@@ -668,7 +717,7 @@ void G::allocateMemory(Params& p, Lists& l)
   //Spreading
   // Memory: 4.4Mbytes for these lists for Leon County, including vaccines
   printf("memory: %lu bytes\n", p.N * sizeof(*l.latent_asymptomatic.v) * 11 * 2);
-  printf("sizeof(int*)= %d\n", sizeof(int*));
+  printf("sizeof(int*)= %ld\n", sizeof(int*));
   l.susceptible.v = (int*) malloc(p.N * sizeof * l.susceptible.v);
   l.latent_asymptomatic.v = (int*) malloc(p.N * sizeof * l.latent_asymptomatic.v);
   l.latent_symptomatic.v = (int*) malloc(p.N * sizeof * l.latent_symptomatic.v);
