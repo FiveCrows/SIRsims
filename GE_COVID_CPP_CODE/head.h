@@ -25,7 +25,7 @@ typedef struct Node{
   int *v;
   double *w;
   // Times patient enters the Latent, Sympt Infected and Recovered states (GE)
-  double t_L, t_IS, t_R;
+  double t_L, t_IS, t_R, t_V1, t_V2;
 } Node;
 
 typedef struct List {
@@ -80,13 +80,16 @@ typedef struct Params {
 	double r, epsilon_asymptomatic, epsilon_symptomatic, p, gammita, mu, delta, muH, muICU, k, beta_normal;
 	double alpha[NAGE], xi[NAGE], beta[NCOMPARTMENTS];
 	double dt;
+	double vacc1_rate;    //  nb 1st vaccinations per day
+	double vacc2_rate;    //  nb 2nd vaccinations per day
+	double dt_btw_vacc;  //  Time between vacc1 and vacc2
 } Params;
 
 //Spreading
 typedef struct Lists {
 	int n_active, index_node;
-	List latent_asymptomatic, latent_symptomatic, infectious_asymptomatic, pre_symptomatic, infectious_symptomatic, home, hospital, icu, recovered;
-	List new_latent_asymptomatic, new_latent_symptomatic, new_infectious_asymptomatic, new_pre_symptomatic, new_infectious_symptomatic, new_home, new_hospital, new_icu, new_recovered;
+	List latent_asymptomatic, latent_symptomatic, infectious_asymptomatic, pre_symptomatic, infectious_symptomatic, home, hospital, icu, recovered, vacc1, vacc2;
+	List new_latent_asymptomatic, new_latent_symptomatic, new_infectious_asymptomatic, new_pre_symptomatic, new_infectious_symptomatic, new_home, new_hospital, new_icu, new_recovered, new_vacc1, new_vacc2;
 	// Added by GE
 	std::vector<int> id_from, id_to, state_from, state_to; //, from_time, to_time;
 	std::vector<float> from_time, to_time;

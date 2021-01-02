@@ -514,6 +514,12 @@ void G::readParameters(char* parameter_file, Params& params)
   fscanf(f,"%s %lf", trash, &params.dt); //discrete time step
   printf("fscanf, beta_normal= %lf\n", params.beta_normal);
   printf("fscanf, r= %lf\n", params.r);
+
+  fscanf(f,"%s %lf", trash, &params.vacc1_rate); // nb first doses per day (Poisson)
+  fscanf(f,"%s %lf", trash, &params.vacc2_rate); // nb second doses per day (Poisson)
+  fscanf(f,"%s %lf", trash, &params.dt_btw_vacc); // constant time between the two vaccine doses
+  params.vacc1_rate = 1. / params.vacc1_rate;
+  params.vacc2_rate = 1. / params.vacc2_rate;
   fclose(f);
 }
 //----------------------------------------------------------------------
@@ -537,6 +543,8 @@ void G::readNetwork(Params& params, Lists& lists, Network& network, Files& files
       network.node[i].t_L  = 0.;
       network.node[i].t_IS = 0.;
       network.node[i].t_R  = 0.;
+      network.node[i].t_V1  = -1.;  // uninitialized if negative
+      network.node[i].t_V2  = -1.;
     }
 
   printf("files.network_file= %s\n", files.network_file);
@@ -634,6 +642,9 @@ void G::readVaccinations(Params& params, Files& files, Network& network, Lists& 
 void G::allocateMemory(Params& p, Lists& l)
 {
   //Spreading
+  // Memory: 4.4Mbytes for these lists for Leon County, including vaccines
+  printf("memory: %lu bytes\n", p.N * sizeof(*l.latent_asymptomatic.v) * 11 * 2);
+  printf("sizeof(int*)= %d\n", sizeof(int*));
   l.latent_asymptomatic.v = (int*) malloc(p.N * sizeof * l.latent_asymptomatic.v);
   l.latent_symptomatic.v = (int*) malloc(p.N * sizeof * l.latent_symptomatic.v);
   l.infectious_asymptomatic.v = (int*) malloc(p.N * sizeof * l.infectious_asymptomatic.v);
@@ -643,6 +654,8 @@ void G::allocateMemory(Params& p, Lists& l)
   l.hospital.v = (int*) malloc(p.N * sizeof * l.hospital.v);
   l.icu.v = (int*) malloc(p.N * sizeof * l.icu.v);
   l.recovered.v = (int*) malloc(p.N * sizeof * l.recovered.v);
+  l.vacc1.v = (int*) malloc(p.N * sizeof * l.vacc1.v);
+  l.vacc2.v = (int*) malloc(p.N * sizeof * l.vacc2.v);
   
   //New spreading
   l.new_latent_asymptomatic.v = (int*) malloc(p.N * sizeof * l.new_latent_asymptomatic.v);
@@ -654,6 +667,8 @@ void G::allocateMemory(Params& p, Lists& l)
   l.new_hospital.v = (int*) malloc(p.N * sizeof * l.new_hospital.v);
   l.new_icu.v = (int*) malloc(p.N * sizeof * l.new_icu.v);
   l.new_recovered.v = (int*) malloc(p.N * sizeof * l.new_recovered.v);
+  l.new_vacc1.v = (int*) malloc(p.N * sizeof * l.new_vacc1.v);
+  l.new_vacc2.v = (int*) malloc(p.N * sizeof * l.new_vacc2.v);
 }
 //----------------------------------------------------------------------
 void G::initRandom(int seed, GSL& gsl)
@@ -757,6 +772,8 @@ void G::freeMemory(Params& p, Network& network, Lists& l, GSL& gsl)
   free(l.hospital.v);
   free(l.icu.v);
   free(l.recovered.v);
+  free(l.vacc1.v);
+  free(l.vacc2.v);
 
   free(l.new_latent_asymptomatic.v);
   free(l.new_latent_symptomatic.v);
@@ -767,6 +784,8 @@ void G::freeMemory(Params& p, Network& network, Lists& l, GSL& gsl)
   free(l.new_hospital.v);
   free(l.new_icu.v);
   free(l.new_recovered.v);
+  free(l.new_vacc1.v);
+  free(l.new_vacc2.v);
          
   gsl_rng_free(gsl.random_gsl);
 }
