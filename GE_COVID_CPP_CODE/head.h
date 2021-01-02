@@ -66,6 +66,9 @@ typedef struct Counts {
 #define R 8
 // Potentially infected
 #define PotL 10
+// People Vaccinated get one of the following two states
+#define VACC1 11
+#define VACC2 12
 
 typedef struct GSL {
 	//Random numbers
@@ -88,6 +91,7 @@ typedef struct Params {
 //Spreading
 typedef struct Lists {
 	int n_active, index_node;
+	List susceptible;
 	List latent_asymptomatic, latent_symptomatic, infectious_asymptomatic, pre_symptomatic, infectious_symptomatic, home, hospital, icu, recovered, vacc1, vacc2;
 	List new_latent_asymptomatic, new_latent_symptomatic, new_infectious_asymptomatic, new_pre_symptomatic, new_infectious_symptomatic, new_home, new_hospital, new_icu, new_recovered, new_vacc1, new_vacc2;
 	// Added by GE

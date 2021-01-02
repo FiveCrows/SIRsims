@@ -200,6 +200,7 @@ void G::spread(int run, Files& f, Lists& l, Network& net, Params& params, GSL& g
 
   //Write data
   fprintf(f.f_data,"%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %f\n",
+	l.susceptible.n, 
 	l.latent_asymptomatic.n, 
 	l.latent_symptomatic.n, 
 	l.infectious_asymptomatic.n, 
@@ -221,6 +222,8 @@ void G::spread(int run, Files& f, Lists& l, Network& net, Params& params, GSL& g
 	run,
     f.t
 	);
+	//l.new_vacc1.n, 
+	//l.new_vacc2.n, 
 }
 //----------------------------------------------------------------------
 void G::infection(Lists& l, Network& net, Params& params, GSL& gsl, Counts& c, double cur_time)
@@ -379,6 +382,7 @@ void G::updateTime()
 //----------------------------------------------------------------------
 void G::resetVariables(Lists& l, Files& files)
 {  
+  l.susceptible.n = 0;
   l.latent_asymptomatic.n = 0;
   l.latent_symptomatic.n = 0;
   l.infectious_asymptomatic.n = 0;
@@ -388,9 +392,12 @@ void G::resetVariables(Lists& l, Files& files)
   l.hospital.n = 0;
   l.icu.n = 0;
   l.recovered.n = 0;
+  l.vacc1.n = 0;
+  l.vacc2.n = 0;
 
   for(int i=0;i<NAGE;i++)
     {
+      l.susceptible.cum[i] = 0;
       l.latent_asymptomatic.cum[i] = 0;
       l.latent_symptomatic.cum[i] = 0;
       l.infectious_asymptomatic.cum[i] = 0;
@@ -400,6 +407,8 @@ void G::resetVariables(Lists& l, Files& files)
       l.hospital.cum[i] = 0;
       l.icu.cum[i] = 0;
       l.recovered.cum[i] = 0;
+	  l.vacc1.cum[i] = 0;
+	  l.vacc2.cum[i] = 0;
     }
 
   files.t = 0;
@@ -430,6 +439,8 @@ void G::resetNew(Lists& l)
   l.new_hospital.n = 0;
   l.new_icu.n = 0;
   l.new_recovered.n = 0;
+  l.new_vacc1.n = 0;
+  l.new_vacc2.n = 0;
 }
 //----------------------------------------------------------------------
 void G::updateLists(Lists& l, Network& n)
@@ -443,6 +454,8 @@ void G::updateLists(Lists& l, Network& n)
   updateList(&l.hospital, &l.new_hospital, n);//H
   updateList(&l.icu, &l.new_icu, n);//ICU
   updateList(&l.recovered, &l.new_recovered, n);//R
+  updateList(&l.vacc1, &l.new_vacc1, n);//VACC1
+  updateList(&l.vacc2, &l.new_vacc2, n);//VACC2
 }
 
 //----------------------------------------------------------------------
@@ -460,6 +473,8 @@ void G::results(int run, Lists& l, Files& f)
        l.hospital.cum[i],
        l.icu.cum[i],
        l.recovered.cum[i],
+       l.vacc1.cum[i],
+       l.vacc2.cum[i],
        run);
 }
 //----------------------------------------------------------------------
@@ -472,7 +487,7 @@ void G::readData(Params& params, Lists& lists, Network& network, Files& files)
   printf("readNodes\n");
   readNodes(params, files, network);
   printf("readVaccinations\n");
-  readVaccinations(params, files, network, lists);
+  //readVaccinations(params, files, network, lists);
 }
 //----------------------------------------------------------------------
 void G::readParameters(char* parameter_file, Params& params)
@@ -645,6 +660,7 @@ void G::allocateMemory(Params& p, Lists& l)
   // Memory: 4.4Mbytes for these lists for Leon County, including vaccines
   printf("memory: %lu bytes\n", p.N * sizeof(*l.latent_asymptomatic.v) * 11 * 2);
   printf("sizeof(int*)= %d\n", sizeof(int*));
+  l.susceptible.v = (int*) malloc(p.N * sizeof * l.susceptible.v);
   l.latent_asymptomatic.v = (int*) malloc(p.N * sizeof * l.latent_asymptomatic.v);
   l.latent_symptomatic.v = (int*) malloc(p.N * sizeof * l.latent_symptomatic.v);
   l.infectious_asymptomatic.v = (int*) malloc(p.N * sizeof * l.infectious_asymptomatic.v);
@@ -763,6 +779,7 @@ void G::freeMemory(Params& p, Network& network, Lists& l, GSL& gsl)
     }
   free(network.node);
 
+  free(l.susceptible.v);
   free(l.latent_asymptomatic.v);
   free(l.latent_symptomatic.v);
   free(l.infectious_asymptomatic.v);
