@@ -95,7 +95,7 @@ typedef struct Params {
 //Spreading
 typedef struct Lists {
 	int n_active, index_node;
-	List susceptible;
+	List susceptible; // Not clear whether necessary
 	List latent_asymptomatic, latent_symptomatic, infectious_asymptomatic, pre_symptomatic, infectious_symptomatic, home, hospital, icu, recovered, vacc1, vacc2;
 	List new_latent_asymptomatic, new_latent_symptomatic, new_infectious_asymptomatic, new_pre_symptomatic, new_infectious_symptomatic, new_home, new_hospital, new_icu, new_recovered, new_vacc1, new_vacc2;
 	// Added by GE
@@ -107,6 +107,7 @@ typedef struct Lists {
 //Network
 typedef struct Network {
 	Node *node;
+	int start_search; // node to start search from to vaccinate
 } Network;
 
 typedef struct Files {

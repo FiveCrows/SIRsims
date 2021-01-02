@@ -9,3 +9,32 @@ This will be followed by a Julia version, perhaps developed in class this Spring
 
 2020-12-24,5.17pm
 - Add plots of R (individual Reproduction number) as a function of time in stats.py
+
+--------------------------------------------
+260 people initially infected. 
+Random vaccination of susceptible people. 
+
+1 vaccination daily 
+No vaccinations (85): 
+nb recovered: 189531
+
+100 vaccinations daily: 
+nb recovered: 188609
+nb vaccinations: 7000 (almost no effect)
+
+1000 vaccinations daily: 
+total number recovered:  180754 (70% of pop)
+total number vacc 1:  70752 (27% of pop)
+
+10000 vaccinations daily: 
+total number recovered:  108747 (41% of pop)
+total number vacc 1:  151795 (58% of population)
+Execution time 6 seconds
+
+20000 vaccinations daily: 
+total number recovered:  51159 (20% of pop)
+nb vaccinated_1: 209383 (80% of pop)
+Execution time 6 seconds
+
+So to be more realistic, I should make vaccines 70% effective (regarding transmission rate), and allocate the second dose a fixe time after the first dose, and make the second dose 95% effective. For now, every iteration, I allocate a number of vaccines specified by a Poisson distribution with a mean set to a mean rate that is input into the parameters_0.txt file.
+----------------------------------------------------------------------

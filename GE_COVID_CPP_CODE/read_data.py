@@ -17,6 +17,7 @@ def setupDataframe(filenm):
     text = np.loadtxt(filenm)
     df = pd.DataFrame(text)
     df.columns = [
+        "l_suscept", 
         "l_asymp", 
         "l_sympt", 
         "i_asymp",
@@ -35,6 +36,8 @@ def setupDataframe(filenm):
         "new_hostp",
         "new_icu",
         "new_recov",
+        "new_vacc1",
+        "new_vacc2",
         "run",
         "t",  # time
         ]  # there are 100 runs
