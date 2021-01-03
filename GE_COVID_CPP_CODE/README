@@ -38,3 +38,17 @@ Execution time 6 seconds
 
 So to be more realistic, I should make vaccines 70% effective (regarding transmission rate), and allocate the second dose a fixe time after the first dose, and make the second dose 95% effective. For now, every iteration, I allocate a number of vaccines specified by a Poisson distribution with a mean set to a mean rate that is input into the parameters_0.txt file.
 ----------------------------------------------------------------------
+2021-01-02,8.30pm
+Implemented Vaccines. Give vaccine at a fixed rate over time. 1st dose, 2nd dose. 
+For now, effect is 100%. 2nd dose has no effect. V1 state has no transmissibility. 
+
+What is \beta and what is \gamma. 
+\beta is transmissibility (infectiousness). It affects the degree to which I can transmit the disease to 
+somebody else. The vaccine will decrease \beta. Will make me less infectuous. That would decrease \beta. Thus, 
+the probability of infecting somebody else is decreased. 
+The vaccine will also make me less likely to catch the disease by boosting my immune system. That means that each 
+person should have an "antigen" parameter in [0,1]. 
+----------------------------------------------------------------------
+a 
+For 
+----------------------------------------------------------------------

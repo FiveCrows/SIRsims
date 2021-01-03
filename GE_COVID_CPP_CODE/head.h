@@ -14,7 +14,7 @@
 #define NAGE 5
 #define NCOMPARTMENTS 9
 
-typedef struct Node{
+typedef struct Node {
   //Info
   int age;
   //Infection
@@ -23,9 +23,11 @@ typedef struct Node{
   //Connections
   int k;
   int *v;
-  double *w;
+  float *w;
+  float vacc_infect;  // Vaccine doses reduce infectiousness of others
+  float vacc_suscept; // Vaccine doses increase my resistance to the virus
   // Times patient enters the Latent, Sympt Infected and Recovered states (GE)
-  double t_L, t_IS, t_R, t_V1, t_V2;
+  float t_L, t_IS, t_R, t_V1, t_V2;
 } Node;
 
 typedef struct List {
@@ -84,12 +86,12 @@ typedef struct GSL {
 //Parameters
 typedef struct Params {
 	int N, n_runs, parameters;
-	double r, epsilon_asymptomatic, epsilon_symptomatic, p, gammita, mu, delta, muH, muICU, k, beta_normal;
-	double alpha[NAGE], xi[NAGE], beta[NCOMPARTMENTS];
-	double dt;
-	double vacc1_rate;    //  nb 1st vaccinations per day
-	double vacc2_rate;    //  nb 2nd vaccinations per day
-	double dt_btw_vacc;  //  Time between vacc1 and vacc2
+	float r, epsilon_asymptomatic, epsilon_symptomatic, p, gammita, mu, delta, muH, muICU, k, beta_normal;
+	float alpha[NAGE], xi[NAGE], beta[NCOMPARTMENTS];
+	float dt;
+	float vacc1_rate;    //  nb 1st vaccinations per day
+	float vacc2_rate;    //  nb 2nd vaccinations per day
+	float dt_btw_vacc;  //  Time between vacc1 and vacc2
 } Params;
 
 //Spreading
@@ -112,7 +114,7 @@ typedef struct Network {
 
 typedef struct Files {
 	//Various
-	double t;
+	float t;
 	//int t;
 	FILE *f_cum, *f_data;
 	char f_cum_file[255], f_data_file[255];

@@ -372,8 +372,6 @@ void G::infect(int source, int type, Network& net, Params& params, GSL& gsl, Lis
 //----------------------------------------------------------------------
 void G::vaccinations(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, double cur_time)
 {
-  int id;
-
   // SOME KIND OF ERROR. MUST LOOK CAREFULLY AT DEFINITIOSN OF RATES
   // Poisson  Pois(lambda), mean(lambda). So lambda is in number/time=rate
   int n_to_vaccinate = gsl_ran_poisson(gsl.r_rng, par.vacc1_rate*par.dt);
@@ -594,39 +592,39 @@ void G::readParameters(char* parameter_file, Params& params)
   printf("parameter_file= %s\n", parameter_file);
   f = fopen(trash, "r");
   fscanf(f,"%s %d", trash, &params.N); //Nodes
-  fscanf(f,"%s %lf", trash, &params.r); //relative inf. of asymptomatic individuals
-  fscanf(f,"%s %lf", trash, &params.epsilon_asymptomatic); //asymptomatic latent period-1
+  fscanf(f,"%s %f", trash, &params.r); //relative inf. of asymptomatic individuals
+  fscanf(f,"%s %f", trash, &params.epsilon_asymptomatic); //asymptomatic latent period-1
   params.epsilon_asymptomatic = 1.0/params.epsilon_asymptomatic;
-  fscanf(f,"%s %lf", trash, &params.epsilon_symptomatic); //symptomatic latent period-1
+  fscanf(f,"%s %f", trash, &params.epsilon_symptomatic); //symptomatic latent period-1
   params.epsilon_symptomatic = 1.0/params.epsilon_symptomatic;
-  fscanf(f,"%s %lf", trash, &params.p); //proportion of asymptomatic
-  fscanf(f,"%s %lf", trash, &params.gammita); //pre-symptomatic period
+  fscanf(f,"%s %f", trash, &params.p); //proportion of asymptomatic
+  fscanf(f,"%s %f", trash, &params.gammita); //pre-symptomatic period
   params.gammita = 1.0/params.gammita;
-  fscanf(f,"%s %lf", trash, &params.mu); //time to recover
+  fscanf(f,"%s %f", trash, &params.mu); //time to recover
   params.mu = 1.0/params.mu;
   for(int i=0;i<NAGE;i++){ //symptomatic case hospitalization ratio
-    fscanf(f,"%s %lf", trash, params.alpha+i);
+    fscanf(f,"%s %f", trash, params.alpha+i);
     params.alpha[i] = params.alpha[i]/100;
   }
   for(int i=0;i<NAGE;i++){
-    fscanf(f,"%s %lf", trash, params.xi+i); //ICU ratio
+    fscanf(f,"%s %f", trash, params.xi+i); //ICU ratio
     params.xi[i] = params.xi[i]/100;
   }
-  fscanf(f,"%s %lf", trash, &params.delta); //time to hospital
+  fscanf(f,"%s %f", trash, &params.delta); //time to hospital
   params.delta = 1.0/params.delta;
-  fscanf(f,"%s %lf", trash, &params.muH); //recovery in hospital
+  fscanf(f,"%s %f", trash, &params.muH); //recovery in hospital
   params.muH = 1.0/params.muH;
-  fscanf(f,"%s %lf", trash, &params.muICU); //recovery in ICU
+  fscanf(f,"%s %f", trash, &params.muICU); //recovery in ICU
   params.muICU = 1.0/params.muICU;
-  fscanf(f,"%s %lf", trash, &params.k); //k
-  fscanf(f,"%s %lf", trash, &params.beta_normal); //infectivity
-  fscanf(f,"%s %lf", trash, &params.dt); //discrete time step
+  fscanf(f,"%s %f", trash, &params.k); //k
+  fscanf(f,"%s %f", trash, &params.beta_normal); //infectivity
+  fscanf(f,"%s %f", trash, &params.dt); //discrete time step
   printf("fscanf, beta_normal= %lf\n", params.beta_normal);
   printf("fscanf, r= %lf\n", params.r);
 
-  fscanf(f,"%s %lf", trash, &params.vacc1_rate); // nb first doses per day (Poisson)
-  fscanf(f,"%s %lf", trash, &params.vacc2_rate); // nb second doses per day (Poisson)
-  fscanf(f,"%s %lf", trash, &params.dt_btw_vacc); // constant time between the two vaccine doses
+  fscanf(f,"%s %f", trash, &params.vacc1_rate); // nb first doses per day (Poisson)
+  fscanf(f,"%s %f", trash, &params.vacc2_rate); // nb second doses per day (Poisson)
+  fscanf(f,"%s %f", trash, &params.dt_btw_vacc); // constant time between the two vaccine doses
   //params.vacc1_rate = 1. / params.vacc1_rate;
   //params.vacc2_rate = 1. / params.vacc2_rate;
   fclose(f);
@@ -671,7 +669,7 @@ void G::readNetwork(Params& params, Lists& lists, Network& network, Files& files
     {
       network.node[i].k = 0;
       network.node[i].v = (int*) malloc(sizeof * network.node[i].v);
-      network.node[i].w = (double*) malloc(sizeof * network.node[i].w);
+      network.node[i].w = (float*) malloc(sizeof * network.node[i].w);
       network.node[i].t_L  = 0.;
       network.node[i].t_IS = 0.;
       network.node[i].t_R  = 0.;
@@ -693,7 +691,7 @@ void G::readNetwork(Params& params, Lists& lists, Network& network, Files& files
       network.node[s].k++;
       //Update size of vectors
       network.node[s].v = (int*) realloc(network.node[s].v, network.node[s].k * sizeof *network.node[s].v);
-      network.node[s].w = (double*) realloc(network.node[s].w, network.node[s].k * sizeof *network.node[s].w);
+      network.node[s].w = (float*) realloc(network.node[s].w, network.node[s].k * sizeof *network.node[s].w);
       //Write data
       network.node[s].v[network.node[s].k-1] = t;
       network.node[s].w[network.node[s].k-1] = w;
@@ -703,7 +701,7 @@ void G::readNetwork(Params& params, Lists& lists, Network& network, Files& files
 	  if (t != s) {
 		network.node[t].k++;
       	network.node[t].v = (int*) realloc(network.node[t].v, network.node[t].k * sizeof *network.node[t].v);
-        network.node[t].w = (double*) realloc(network.node[t].w, network.node[t].k * sizeof *network.node[t].w);
+        network.node[t].w = (float*) realloc(network.node[t].w, network.node[t].k * sizeof *network.node[t].w);
         network.node[t].v[network.node[t].k-1] = s;
         network.node[t].w[network.node[t].k-1] = w;
 	  }
