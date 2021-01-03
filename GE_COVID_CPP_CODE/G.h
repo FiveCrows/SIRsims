@@ -24,7 +24,8 @@ public:
 	void seedInfection(Params&, Counts&, Network&, GSL&, Lists&, Files&);
 	void spread(int, Files&, Lists&, Network&, Params&, GSL&, Counts&);
     void vaccinations(Params&, Lists&, GSL&, Network&, Counts&, double cur_time);
-	void vaccinateNextBatch(Network&, Lists&, Counts&, Params&, int n);
+    void secondVaccination(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, double cur_time);
+	void vaccinateNextBatch(Network&, Lists&, Counts&, Params&, int n, double cur_time);
 	void infection(Lists&, Network&, Params&, GSL&, Counts&, double cur_time);
 	void infect(int, int, Network&, Params&, GSL&, Lists&, Counts&, double cur_time);
 	void latency(Params& par, Lists&, GSL&, Network&, Counts&, double cur_time);

@@ -241,6 +241,9 @@ void G::spread(int run, Files& f, Lists& l, Network& net, Params& params, GSL& g
   // S to V1
   vaccinations(params, l, gsl, net, c, cur_time);
 
+  // Transition from first to second batch
+  secondVaccination(par, l, gsl, net, c, cur_time);
+
   // S to L
   //printf("before infection()\n"); count_states(params, c, net);
   infection(l, net, params, gsl, c, cur_time);
@@ -374,22 +377,25 @@ void G::vaccinations(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, d
   // SOME KIND OF ERROR. MUST LOOK CAREFULLY AT DEFINITIOSN OF RATES
   // Poisson  Pois(lambda), mean(lambda). So lambda is in number/time=rate
   int n_to_vaccinate = gsl_ran_poisson(gsl.r_rng, par.vacc1_rate*par.dt);
-  vaccinateNextBatch(net, l, c, par, n_to_vaccinate);
-
-  // Go through the list of susceptibles and vaccinate this number of people
-  //int n_left = l.susceptible.n;
-  //n_to_vaccinate = n_left < n_to_vaccinate ? n_left : n_to_vaccinate;
-  //printf("nb to vaccinate: %d\n", n_to_vaccinate);
-
-  //for (int i=0; i < n_to_vaccinate; i++) {
-	    //int id = l.susceptible.v[i];
-	  	//net.node[id].state = V1;
-		//net.node[id].t_V1 = cur_time;
-		//c.count_vacc1++;
-	    //int j = removeFromList(&l.susceptible, i);  // NOT SURE OF THIS
-        //addToList(&l.vacc1, id); 
-  //}
-  //printf("nb susceptibles left: %d\n", l.susceptible.n);
+  vaccinateNextBatch(net, l, c, par, n_to_vaccinate, cur_time);
+}
+//-------------------------------------------------------------------------------
+void G::secondVaccination(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, double cur_time)
+{
+	for (int i=0; i < l.vacc1.n; i++) {
+		float time_since = cur_time - net.node[l.vacc1.v[i]].t_V1;
+		int id = l.vacc1.v[i];
+		if (time_since >= par.dt_btw_vacc) {
+			addToList(&l.new_vacc2, id);
+		    c.count_vacc2 += 1;
+	        net.node[id].state = V2;
+	        net.node[id].t_V2 = cur_time;
+			i = removeFromList(&l.vacc1, i);
+		    stateTransition(id, id, V1, V2, net.node[id].t_V1, cur_time);
+		}
+	}
+    printf("vacc1.n= %d, vacc2.n= %d\n", l.vacc1.n, l.vacc2.n);
+    printf("new_vacc1.n= %d, new_vacc2.n= %d\n", l.new_vacc1.n, l.new_vacc2.n);
 }
 //----------------------------------------------------------------------
 void G::latency(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, double cur_time)
@@ -626,7 +632,7 @@ void G::readParameters(char* parameter_file, Params& params)
   fclose(f);
 }
 //----------------------------------------------------------------------
-void G::vaccinateNextBatch(Network& net, Lists& l, Counts& c, Params& par, int n) {
+void G::vaccinateNextBatch(Network& net, Lists& l, Counts& c, Params& par, int n, double cur_time) {
 // Vaccinate n susceptibles (state == S)
 
 	int count = 0;
@@ -636,8 +642,10 @@ void G::vaccinateNextBatch(Network& net, Lists& l, Counts& c, Params& par, int n
 			count++;
 		    c.count_vacc1++;
 			net.node[id].state = V1;
+			net.node[id].t_V1 = cur_time;
 			// Add to V1 list
-			addToList(&l.vacc1, id);
+			addToList(&l.new_vacc1, id);
+		    stateTransition(id, id, S, V1, 0., cur_time); 
 		}
 		if (count >= n) break;
 	}

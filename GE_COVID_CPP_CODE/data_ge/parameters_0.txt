@@ -21,7 +21,7 @@ muICU-1 13
 k 0.150000  
 beta 0.2
 dt .1
-vac1_rate 20000  # nb 1st vaccinations per day
+vac1_rate 5000  # nb 1st vaccinations per day
 vac2_rate 100  # nb 2nd vaccinations per day
 dt_btw_vacc 30   # Time between vacc1 and vacc2
 
@@ -36,5 +36,5 @@ N 260542
 epsilonS-1 3.
 vac1_rate-1 0.01 # nb 1st vaccinations per day
 vac2_rate-1 0.01 # nb 2nd vaccinations per day
-dt_btw_vacc 30   # Time between vacc1 and vacc2
+dt_btw_vacc 10   # Time between vacc1 and vacc2
 vac1_rate 1  # nb 1st vaccinations per day
