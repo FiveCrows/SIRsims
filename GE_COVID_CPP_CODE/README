@@ -40,7 +40,8 @@ So to be more realistic, I should make vaccines 70% effective (regarding transmi
 ----------------------------------------------------------------------
 2021-01-02,8.30pm
 Implemented Vaccines. Give vaccine at a fixed rate over time. 1st dose, 2nd dose. 
-For now, effect is 100%. 2nd dose has no effect. V1 state has no transmissibility. 
+For now, effect is 100%. 2nd dose has no effect. V1 state has no transmissibility. V1 state is equivalent to 
+recovered state. 
 
 What is \beta and what is \gamma. 
 \beta is transmissibility (infectiousness). It affects the degree to which I can transmit the disease to 
@@ -49,6 +50,11 @@ the probability of infecting somebody else is decreased.
 The vaccine will also make me less likely to catch the disease by boosting my immune system. That means that each 
 person should have an "antigen" parameter in [0,1]. 
 ----------------------------------------------------------------------
-a 
-For 
+More realistic simulation of vaccines: simply reduce transmissibility of vaccine.
+If a vaccine if 50% effective, that would mean that beta is divided by two. 
+If a vaccine if 95% effect, that would mean that beta is what? 
+----------------------------------------------------------------------
+2021-01-03,9.42am
+Improved on inputting data (read parameter files). Created functions getFloat() and getInt(). 
+This allows me to add a comment to lines in the file. 
 ----------------------------------------------------------------------

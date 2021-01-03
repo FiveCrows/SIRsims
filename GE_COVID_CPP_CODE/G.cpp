@@ -591,42 +591,45 @@ void G::readParameters(char* parameter_file, Params& params)
   sprintf(trash, parameter_file, parameters);
   printf("parameter_file= %s\n", parameter_file);
   f = fopen(trash, "r");
-  fscanf(f,"%s %d", trash, &params.N); //Nodes
-  fscanf(f,"%s %f", trash, &params.r); //relative inf. of asymptomatic individuals
-  fscanf(f,"%s %f", trash, &params.epsilon_asymptomatic); //asymptomatic latent period-1
-  params.epsilon_asymptomatic = 1.0/params.epsilon_asymptomatic;
-  fscanf(f,"%s %f", trash, &params.epsilon_symptomatic); //symptomatic latent period-1
-  params.epsilon_symptomatic = 1.0/params.epsilon_symptomatic;
-  fscanf(f,"%s %f", trash, &params.p); //proportion of asymptomatic
-  fscanf(f,"%s %f", trash, &params.gammita); //pre-symptomatic period
-  params.gammita = 1.0/params.gammita;
-  fscanf(f,"%s %f", trash, &params.mu); //time to recover
-  params.mu = 1.0/params.mu;
-  for(int i=0;i<NAGE;i++){ //symptomatic case hospitalization ratio
-    fscanf(f,"%s %f", trash, params.alpha+i);
-    params.alpha[i] = params.alpha[i]/100;
-  }
-  for(int i=0;i<NAGE;i++){
-    fscanf(f,"%s %f", trash, params.xi+i); //ICU ratio
-    params.xi[i] = params.xi[i]/100;
-  }
-  fscanf(f,"%s %f", trash, &params.delta); //time to hospital
-  params.delta = 1.0/params.delta;
-  fscanf(f,"%s %f", trash, &params.muH); //recovery in hospital
-  params.muH = 1.0/params.muH;
-  fscanf(f,"%s %f", trash, &params.muICU); //recovery in ICU
-  params.muICU = 1.0/params.muICU;
-  fscanf(f,"%s %f", trash, &params.k); //k
-  fscanf(f,"%s %f", trash, &params.beta_normal); //infectivity
-  fscanf(f,"%s %f", trash, &params.dt); //discrete time step
-  printf("fscanf, beta_normal= %lf\n", params.beta_normal);
-  printf("fscanf, r= %lf\n", params.r);
 
-  fscanf(f,"%s %f", trash, &params.vacc1_rate); // nb first doses per day (Poisson)
-  fscanf(f,"%s %f", trash, &params.vacc2_rate); // nb second doses per day (Poisson)
-  fscanf(f,"%s %f", trash, &params.dt_btw_vacc); // constant time between the two vaccine doses
-  //params.vacc1_rate = 1. / params.vacc1_rate;
-  //params.vacc2_rate = 1. / params.vacc2_rate;
+  params.N 					  = readInt(f);
+  params.r 					  = readFloat(f);
+  params.epsilon_asymptomatic = readFloat(f);
+  params.epsilon_symptomatic  = readFloat(f); //symptomatic latent period-1
+  params.p                    = readFloat(f); //proportion of asymptomatic
+  params.gammita              = readFloat(f);
+  params.mu                   = readFloat(f);
+
+  for(int i=0; i < NAGE; i++){ //symptomatic case hospitalization ratio
+    params.alpha[i] = readFloat(f) ;
+  }
+  for(int i=0; i < NAGE; i++) {
+	params.xi[i]    = readFloat(f);
+  }
+
+  params.delta       = readFloat(f);
+  params.muH         = readFloat(f);
+  params.muICU       = readFloat(f);
+  params.k           = readFloat(f);
+  params.beta_normal = readFloat(f);
+  params.dt          = readFloat(f);
+  params.vacc1_rate  = readFloat(f);
+  params.vacc2_rate  = readFloat(f);
+  params.dt_btw_vacc = readFloat(f);
+
+  params.epsilon_asymptomatic = 1.0/params.epsilon_asymptomatic;
+  params.epsilon_symptomatic  = 1.0/params.epsilon_symptomatic;
+  params.delta   = 1.0/params.delta;
+  params.muH     = 1.0/params.muH;
+  params.muICU   = 1.0/params.muICU;
+  params.gammita = 1.0/params.gammita;
+  params.mu      = 1.0/params.mu;
+
+  for(int i=0; i < NAGE; i++) {
+    params.alpha[i] = params.alpha[i]/100;
+    params.xi[i]    = params.xi[i]/100;
+  }
+
   fclose(f);
 }
 //----------------------------------------------------------------------
@@ -930,13 +933,14 @@ void G::printTransitionStats()
 {
 	Lists& l = lists;
 
-	  int lg = l.id_from.size();
-	  FILE* fd = fopen("transition_stats.csv", "w");
-	  fprintf(fd, "from_id,to_id,from_state,to_state,from_time,to_time\n");
-	  for (int i=0; i < lg; i++) {
-		 fprintf(fd, "%d, %d, %d, %d, %f, %f\n", l.id_from[i], l.id_to[i], l.state_from[i], l.state_to[i], l.from_time[i], l.to_time[i]);
-	  }
-	  fclose(fd);
+	int lg = l.id_from.size();
+	FILE* fd = fopen("transition_stats.csv", "w");
+	fprintf(fd, "from_id,to_id,from_state,to_state,from_time,to_time\n");
+
+	for (int i=0; i < lg; i++) {
+		fprintf(fd, "%d, %d, %d, %d, %f, %f\n", l.id_from[i], l.id_to[i], l.state_from[i], l.state_to[i], l.from_time[i], l.to_time[i]);
+	}
+	fclose(fd);
 }
 //----------------------------------------------------------------------
 void G::stateTransition(int source, int target, int from_state, int to_state, double from_time, double to_time)
@@ -948,5 +952,27 @@ void G::stateTransition(int source, int target, int from_state, int to_state, do
 	l.state_to.push_back(to_state);
 	l.from_time.push_back(from_time);
 	l.to_time.push_back(to_time);
+}
+//----------------------------------------------------------------------
+float G::readFloat(FILE* fd)
+{
+	char junk[500], junk1[500];
+	float f;
+	junk[0] = '\0'; 
+	junk1[0] = '\0';
+	fscanf(fd, "%s%f%[^\n]s", junk, &f, junk1);
+	printf("==> %s, %f, %s\n", junk, f, junk1);
+	return f;
+}
+//----------------------------------------------------------------------
+float G::readInt(FILE* fd)
+{
+	char junk[500], junk1[500];
+	int i;
+	junk[0] = '\0'; 
+	junk1[0] = '\0';
+	fscanf(fd, "%s%d%[^\n]s", junk, &i, junk1);
+	printf("%s, %d, %s\n", junk, i, junk1);
+	return i;
 }
 //----------------------------------------------------------------------

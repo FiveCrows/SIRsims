@@ -59,6 +59,8 @@ public:
 	void freeMemory(Params& p, Network& network, Lists& l, GSL&);
 	void printTransitionStats();
 	void stateTransition(int source, int target, int from_state, int to_state, double from_time, double to_time);
+	float readInt(FILE*);
+	float readFloat(FILE*);
 };
 	
 #endif

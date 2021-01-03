@@ -1,11 +1,11 @@
-N 260542
-r 0.0
+N 260542  # population size
+r 0.0     
 epsilonA-1 0
 epsilonS-1 0.01
 p 0.00  
 gamma-1 20
 mu-1  5.0
-alpha0 0.
+alpha0 0.  # age something
 alpha1 0.
 alpha2 0.
 alpha3 0.
@@ -16,13 +16,15 @@ xi2 0.
 xi3 0.
 xi4 0.
 delta 2
-muH-1 8
-muICU-1 13
+muH-1 8   # Hospitalization rate
+muICU-1 13  # ICU rate
 k 0.150000  
-beta 0.2
-dt .1
-vac1_rate 5000  # nb 1st vaccinations per day
-vac2_rate 100  # nb 2nd vaccinations per day
+beta 0.2  # Transmission rate
+dt .1    # Discrete time interval
+vac1_rate 5     # nb 1st vaccinations per day
+vac2_rate 100   # nb 2nd vaccinations per day
+vac1_effect 0.6   # Effective on x% [0,1] of the vaccinated
+vac2_effect 0.95  # Effective on x% [0,1] of the vaccinated
 dt_btw_vacc 30   # Time between vacc1 and vacc2
 
 
