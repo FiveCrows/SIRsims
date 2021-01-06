@@ -10,3 +10,4 @@ Exceptions:
 - The zip code data for October 10th, 2020 was never uploaded (checked October 11th, 2020 10:01 am and the last update time was October 9th, 2020)
 - The zip code data for November 25th, 2020 - November 26th, 2020 was never uploaded (checked November 26th, 2020 9:25 pm and the last update time was November 24th, 2020)
 - The zip code data for December 25th, 2020 was never uploaded (checked December 26th, 2020 6:23 pm and the last update time was December 24th, 2020)
+- The zip code data for January 1st, 2021 - January 2nd, 2021 was never uploaded (checked January 2nd, 2021 11:25 pm and the last update time was December 31st, 2020)
