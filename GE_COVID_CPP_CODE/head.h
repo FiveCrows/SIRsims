@@ -14,6 +14,7 @@
 #define NAGE 5
 #define NCOMPARTMENTS 9
 
+// Nodes refer to people in no particular order
 typedef struct Node {
   //Info
   int age;
@@ -24,6 +25,16 @@ typedef struct Node {
   int k;
   int *v;
   float *w;
+  int is_vacc;      // 0,1 whether vaccinated or not
+
+  // individual transmissibility (could be a function of time)
+  // Leaky Vaccine (partially effective all all vaccinated people)
+  // Hard Vaccine: Those vaccinated are immediately R. (equivalent to beta=infinity)
+  // Assume that the vaccine is immediately effective
+  // beta_is = params.beta * (1.-vacc1_effectiveness)
+  // beta_is = params.beta * (1.-vacc2_effectiveness)
+  float beta_IS;    
+
   float vacc_infect;  // Vaccine doses reduce infectiousness of others
   float vacc_suscept; // Vaccine doses increase my resistance to the virus
   // Times patient enters the Latent, Sympt Infected and Recovered states (GE)
@@ -91,6 +102,8 @@ typedef struct Params {
 	float dt;
 	float vacc1_rate;    //  nb 1st vaccinations per day
 	float vacc2_rate;    //  nb 2nd vaccinations per day
+	float vacc1_effectiveness; //  % of people for whom 1st shot of the vaccine works as expected
+	float vacc2_effectiveness; //  % of people for whom 2nd shot of the vaccine works as expected
 	float dt_btw_vacc;  //  Time between vacc1 and vacc2
 } Params;
 
@@ -104,6 +117,7 @@ typedef struct Lists {
 	std::vector<int> id_from, id_to, state_from, state_to; //, from_time, to_time;
 	std::vector<float> from_time, to_time;
     std::vector<int> people_vaccinated;
+	std::vector<int> permuted_nodes;  // randomized population
 } Lists;
 
 //Network

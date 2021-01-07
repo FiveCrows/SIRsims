@@ -58,3 +58,12 @@ If a vaccine if 95% effect, that would mean that beta is what?
 Improved on inputting data (read parameter files). Created functions getFloat() and getInt(). 
 This allows me to add a comment to lines in the file. 
 ----------------------------------------------------------------------
+
+2021-01-06
+0/day,     tot IS: 189765
+10000/day, tot IS: 165179, c1=0.99
+20000/day, tot IS: 122910, c1=0.99
+25000/day, tot IS: 86274, c1=0.99
+25000/day, tot IS: 117782, c1=0.90
+25000/day, tot IS: 121286, c1=0.85
+25000/day, tot IS: 151862, c1=0.70

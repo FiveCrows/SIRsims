@@ -1,6 +1,6 @@
 GCC= g++
 CPPFLAGS= -Wall -lm -lgsl -lgslcblas -O2 -Wno-unused-result
-CPPFLAGS= -g -Wall -lm -lgsl -lgslcblas -O2 -Wno-unused-result
+#CPPFLAGS= -g -Wall -lm -lgsl -lgslcblas -O2 -Wno-unused-result
 SOURCES_ORIG=  main.c read.c utilities.c spread.c
 SOURCES_SIR=  main.c read_SIR.c utilities.c spread_SIR_clean.c
 SOURCES_SEPIR= main.c read_SIR.c utilities.c spread_SEPIR_clean.c

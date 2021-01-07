@@ -21,11 +21,11 @@ muICU-1 13  # ICU rate
 k 0.150000  
 beta 0.2  # Transmission rate
 dt .1    # Discrete time interval
-vac1_rate 5     # nb 1st vaccinations per day
-vac2_rate 100   # nb 2nd vaccinations per day
-vac1_effect 0.6   # Effective on x% [0,1] of the vaccinated
-vac2_effect 0.95  # Effective on x% [0,1] of the vaccinated
-dt_btw_vacc 30   # Time between vacc1 and vacc2
+vac1_rate 10000  # nb 1st vaccinations per day
+vac2_rate 000   # nb 2nd vaccinations per day
+vac1_effectiveness 0.99   # Effective on x% [0,1] of the vaccinated
+vac2_effectiveness 0.95  # Effective on x% [0,1] of the vaccinated
+dt_btw_vacc 21   # Time between vacc1 and vacc2
 
 
 S -> E  (beta = 0.2 / day)  
@@ -40,3 +40,14 @@ vac1_rate-1 0.01 # nb 1st vaccinations per day
 vac2_rate-1 0.01 # nb 2nd vaccinations per day
 dt_btw_vacc 10   # Time between vacc1 and vacc2
 vac1_rate 1  # nb 1st vaccinations per day
+// If vaccine1 is 60% effective, vac1_effectiveness=c1 in [0,1]. In that case, transmissibility is reduced: 
+//     beta1 --> beta * (1-c1). 
+// If vaccine2 is 95% effective, 
+//     beta2 --> beta * (1-c2)
+// Effectiveness is measured relative to having no vaccines. 
+// In reality, c1 and c2 should vary linearly from 0 to its current value. 
+
+
+// In other words, if the vaccine is 100% effective, c=1 and beta -> 0. 
+
+

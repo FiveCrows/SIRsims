@@ -157,6 +157,8 @@ void G::seedInfection(Params& par, Counts& c, Network& n, GSL& gsl, Lists& l, Fi
   for (int i=0; i < par.N; i++) {
 	 // susceptibles have been subject to a random permution 
 	 id = p->data[i];  
+	 // Nodes in randomized order to randomize batch vaccinations
+	 l.permuted_nodes.push_back(p->data[i]);
      n.node[i].state = S;
      addToList(&l.susceptible, id); 
   }
@@ -164,7 +166,7 @@ void G::seedInfection(Params& par, Counts& c, Network& n, GSL& gsl, Lists& l, Fi
   count_states(par, c, n);
   printf("inside seedInf\n\n\n");
 
-#if 0
+#ifdef SETUPVACC
   int nb_vaccinated = l.people_vaccinated.size();
   int maxN = l.susceptible.n;
 
@@ -183,7 +185,7 @@ void G::seedInfection(Params& par, Counts& c, Network& n, GSL& gsl, Lists& l, Fi
   // MIGHT HAVE TO FIX THIS
   for (int i=0; i < nb_vaccinated; i++) {
 	    int id = l.people_vaccinated[i];
-	  	n.node[id].state = V1;
+	  	//n.node[id].state = V1;
 		n.node[id].t_V1 = 0.;
 		// I should remove the correct person from the list of susceptibles
 		// Not correct. Only works if loop above is over the same list one
@@ -206,7 +208,7 @@ void G::seedInfection(Params& par, Counts& c, Network& n, GSL& gsl, Lists& l, Fi
   printf("N= %d, ninfected= %d\n", par.N, ninfected);
 
   for (int i=0; i < ninfected; i++) { 
-  	seed = p->data[i];
+  	seed = p->data[i];  // randomized infections
   	n.node[seed].state = L;
     addToList(&l.latent_symptomatic, seed); // orig 
 	// Not sure. 
@@ -221,12 +223,11 @@ void G::seedInfection(Params& par, Counts& c, Network& n, GSL& gsl, Lists& l, Fi
   }
   printf("nb recovered: %d\n", count);
 
-  gsl_permutation_free(p);
+  gsl_permutation_free(p);  // free storage
 
   l.n_active = ninfected;
   c.count_l_symp += ninfected;
   printf("added %d latent_symptomatic individuals\n", ninfected);
-
 
   f.t = par.dt;
 }
@@ -311,16 +312,19 @@ void G::infect(int source, int type, Network& net, Params& params, GSL& gsl, Lis
   if (net.node[source].state != IS) { // Code did not exit
 	printf("I expected source state to be IS instead of %d\n", net.node[source].state); exit(1);
   }
- 
+
   //printf("infect,source= %d,  ...k= %d\n", source, net.node[source].k);  //all zero
-  for (int j=0; j < net.node[source].k; j++) {
-      target = net.node[source].v[j];
+  for (int j=0; j < net.node[source].k; j++) {  
+      target = net.node[source].v[j]; // neighbor j of source
 	  // Added if branch for tracking potential infected perform more detailed 
 	  // measurements of generation time contraction
+	  float beta = net.node[source].beta_IS * net.node[source].w[j];;
+	  prob = params.dt * beta;
+	  //printf("beta= %f, %f\n", beta, net.node[source].beta_IS);
+	  //printf("prob= %f\n", prob);
+
 #if EXP
-	    prob = 1.-exp(-params.dt * params.beta[type] * net.node[source].w[j]);
-#else
-	    prob = params.dt * params.beta[type] * net.node[source].w[j];
+	    prob = 1.-exp(-prob);   // == prob as prob -> zero
 #endif
 	  if (net.node[target].state != S) {
 	      if (gsl_rng_uniform(gsl.random_gsl) < prob) {
@@ -372,10 +376,64 @@ void G::infect(int source, int type, Network& net, Params& params, GSL& gsl, Lis
 //----------------------------------------------------------------------
 void G::vaccinations(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, double cur_time)
 {
-  // SOME KIND OF ERROR. MUST LOOK CAREFULLY AT DEFINITIOSN OF RATES
+  // SOME KIND OF ERROR. MUST LOOK CAREFULLY AT DEFINITIONS OF RATES
   // Poisson  Pois(lambda), mean(lambda). So lambda is in number/time=rate
+	printf("par.vacc1_rate= %f\n", par.vacc1_rate);
   int n_to_vaccinate = gsl_ran_poisson(gsl.r_rng, par.vacc1_rate*par.dt);
-  vaccinateNextBatch(net, l, c, par, n_to_vaccinate, cur_time);
+	printf("Pois, n_to_vaccinate: %d\n", n_to_vaccinate);
+  vaccinateNextBatch(net, l, c, par, gsl, n_to_vaccinate, cur_time);
+}
+//----------------------------------------------------------------------
+void G::vaccinateNextBatch(Network& net, Lists& l, Counts& c, Params& par, GSL& gsl, int n, double cur_time) {
+// Vaccinate n susceptibles (state == S)
+
+	if (net.start_search == par.N) return;
+
+	int count = 0;
+	for (int i=net.start_search; i < par.N; i++) {
+		int id = l.permuted_nodes[i];  // This allows vaccinations in randomized order
+		if (net.node[id].state == S) {
+			net.start_search++;
+			count++;
+		    c.count_vacc1++;
+			//net.node[id].state = V1;
+			net.node[id].is_vacc = 1;
+			net.node[id].t_V1 = cur_time;
+			// constant in time
+	        net.node[id].beta_IS = par.beta[IS] * (1.-par.vacc1_effectiveness); 
+	        //printf("vacc beta_IS= %f\n", net.node[id].beta_IS);
+
+			// Probability of vaccine effectivness
+			// if effectiveness is 1., else branch is always true
+	        float prob = par.dt * par.vacc1_effectiveness;
+	        if (gsl_rng_uniform(gsl.random_gsl) < prob) {
+        		net.node[id].vacc_infect  = 0.;  // transmission rate to others 
+        		net.node[id].vacc_suscept = 0.;  // susceptibility to infection
+			} else {
+        		net.node[id].vacc_infect  = 1.;  // transmission rate to others 
+        		net.node[id].vacc_suscept = 1.;  // susceptibility to infection
+			}
+
+			//net.node[id].vacc_infect = 
+        	//net.node[i].vacc_infect  = 1.0;
+			//net.node[i].vacc_suscept = 1.0;
+        	//vac1_effect 0.6   # Effective on x% [0,1] of the vaccinated
+			// Add to V1 list
+			addToList(&l.new_vacc1, id);
+		    stateTransition(id, id, S, V1, 0., cur_time); 
+		}
+		if (count >= n) break;
+	}
+	if (count < n) {
+		printf("Insufficient Susceptibles to Vaccinate\n");
+	}
+	printf("nb vaccinated_1: %d\n", l.vacc1.n);
+	printf("start_search= %d\n", net.start_search);
+	printf("n= %d\n", n);
+	printf("count= %d\n", count);
+
+	// Once n is zero, 
+	//exit(1);
 }
 //-------------------------------------------------------------------------------
 void G::secondVaccination(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, double cur_time)
@@ -386,8 +444,8 @@ void G::secondVaccination(Params& par, Lists& l, GSL& gsl, Network &net, Counts&
 		if (time_since >= par.dt_btw_vacc) {
 			addToList(&l.new_vacc2, id);
 		    c.count_vacc2 += 1;
-	        net.node[id].state = V2;
 	        net.node[id].t_V2 = cur_time;
+	        net.node[id].beta_IS = par.beta[IS] * (1.-par.vacc2_effectiveness); 
 			i = removeFromList(&l.vacc1, i);
 		    stateTransition(id, id, V1, V2, net.node[id].t_V1, cur_time);
 		}
@@ -484,8 +542,8 @@ void G::resetVariables(Lists& l, Files& files)
   l.vacc1.n = 0;
   l.vacc2.n = 0;
 
-  for(int i=0;i<NAGE;i++)
-    {
+  for(int i=0; i < NAGE; i++)
+  {
       l.susceptible.cum[i] = 0;
       l.latent_asymptomatic.cum[i] = 0;
       l.latent_symptomatic.cum[i] = 0;
@@ -498,7 +556,7 @@ void G::resetVariables(Lists& l, Files& files)
       l.recovered.cum[i] = 0;
 	  l.vacc1.cum[i] = 0;
 	  l.vacc2.cum[i] = 0;
-    }
+  }
 
   files.t = 0;
   l.n_active = 0;
@@ -513,10 +571,15 @@ void G::resetVariables(Lists& l, Files& files)
 //----------------------------------------------------------------------
 void G::resetNodes(Params& par, Network& net)
 {
-  for(int i=0; i < par.N; i++)
-    net.node[i].state = S;
+    for(int i=0; i < par.N; i++) {
+        net.node[i].state = S;
+		net.node[i].is_vacc = 0;
+		net.node[i].beta_IS = par.beta[IS]; 
+        net.node[i].vacc_infect  = 1.0;
+        net.node[i].vacc_suscept = 1.0;
+    }
 
-  net.start_search = 0;
+    net.start_search = 0;
 }
 //----------------------------------------------------------------------
 void G::resetNew(Lists& l)
@@ -607,15 +670,18 @@ void G::readParameters(char* parameter_file, Params& params)
 	params.xi[i]    = readFloat(f);
   }
 
-  params.delta       = readFloat(f);
-  params.muH         = readFloat(f);
-  params.muICU       = readFloat(f);
-  params.k           = readFloat(f);
-  params.beta_normal = readFloat(f);
-  params.dt          = readFloat(f);
-  params.vacc1_rate  = readFloat(f);
-  params.vacc2_rate  = readFloat(f);
-  params.dt_btw_vacc = readFloat(f);
+  params.delta        = readFloat(f);
+  params.muH          = readFloat(f);
+  params.muICU        = readFloat(f);
+  params.k            = readFloat(f);
+  params.beta_normal  = readFloat(f);
+  params.dt           = readFloat(f);
+  params.vacc1_rate   = readFloat(f);
+  params.vacc2_rate   = readFloat(f);
+  params.vacc1_effectiveness = readFloat(f);
+  params.vacc2_effectiveness = readFloat(f);
+  params.vacc2_rate   = readFloat(f);
+  params.dt_btw_vacc  = readFloat(f);
 
   params.epsilon_asymptomatic = 1.0/params.epsilon_asymptomatic;
   params.epsilon_symptomatic  = 1.0/params.epsilon_symptomatic;
@@ -631,29 +697,6 @@ void G::readParameters(char* parameter_file, Params& params)
   }
 
   fclose(f);
-}
-//----------------------------------------------------------------------
-void G::vaccinateNextBatch(Network& net, Lists& l, Counts& c, Params& par, int n, double cur_time) {
-// Vaccinate n susceptibles (state == S)
-
-	int count = 0;
-	for (int id=net.start_search; id < par.N; id++) {
-		if (net.node[id].state == S) {
-			net.start_search++;
-			count++;
-		    c.count_vacc1++;
-			net.node[id].state = V1;
-			net.node[id].t_V1 = cur_time;
-			// Add to V1 list
-			addToList(&l.new_vacc1, id);
-		    stateTransition(id, id, S, V1, 0., cur_time); 
-		}
-		if (count >= n) break;
-	}
-	if (count < n) {
-		printf("Insufficient Susceptibles to Vaccinate\n");
-	}
-	printf("nb vaccinated_1: %d\n", l.vacc1.n);
 }
 //----------------------------------------------------------------------
 void G::readNetwork(Params& params, Lists& lists, Network& network, Files& files)
@@ -715,6 +758,8 @@ void G::readNetwork(Params& params, Lists& lists, Network& network, Files& files
 //----------------------------------------------------------------------
 void G::readNodes(Params& params, Files& files, Network& network)
 {
+  // Ideally, the graph nodes should be randomized before reading them. 
+  // Randomization is difficult after read-in
   int age;
   FILE *f;
   int nb_nodes;
@@ -851,7 +896,7 @@ void G::setBeta(Params& p)
   p.beta[PS] = beta_pre;
   p.beta[PS] = 0.0;  // I want infected under these conditions
   //printf("beta[IA] = %f\n", p.beta[IA]);
-  printf("beta[IS] = %f\n", p.beta[IS]);
+  //printf("beta[IS] = %f\n", p.beta[IS]);
   //printf("beta[PS] = %f\n", p.beta[PS]);
 }
 
