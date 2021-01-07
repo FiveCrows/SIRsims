@@ -97,7 +97,8 @@ typedef struct GSL {
 //Parameters
 typedef struct Params {
 	int N, n_runs, parameters;
-	float r, epsilon_asymptomatic, epsilon_symptomatic, p, gammita, mu, delta, muH, muICU, k, beta_normal;
+	float r, epsilon_asymptomatic, epsilon_symptomatic, 
+	float p, gammita, mu, delta, muH, muICU, k, beta_normal;
 	float alpha[NAGE], xi[NAGE], beta[NCOMPARTMENTS];
 	float dt;
 	float vacc1_rate;    //  nb 1st vaccinations per day
