@@ -71,21 +71,6 @@ typedef struct Counts {
 
 } Counts;
 
-//States
-#define S 0
-#define L 1
-#define IA 2
-#define PS 3
-#define IS 4
-#define HOME 5
-#define H 6
-#define ICU 7
-#define R 8
-// Potentially infected
-#define PotL 10
-// People Vaccinated get one of the following two states
-#define V1 11
-#define V2 12
 
 typedef struct GSL {
 	//Random numbers
@@ -97,7 +82,7 @@ typedef struct GSL {
 //Parameters
 typedef struct Params {
 	int N, n_runs, parameters;
-	float r, epsilon_asymptomatic, epsilon_symptomatic, 
+	float r, epsilon_asymptomatic, epsilon_symptomatic; 
 	float p, gammita, mu, delta, muH, muICU, k, beta_normal;
 	float alpha[NAGE], xi[NAGE], beta[NCOMPARTMENTS];
 	float dt;

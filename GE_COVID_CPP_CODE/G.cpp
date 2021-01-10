@@ -1,6 +1,10 @@
+#include <iostream>
 #include "stdlib.h"
 #include "G.h"
-#include "head.h"
+// contains states R,S,L,... that are also defined in earlier
+// include files. So must be called last
+#include "cxxopts.hpp"
+#include "states.h"
 
 #define EXP 1       // Exponential distribution of infection times
 #define CONST_INFECTION_TIME 0   // constant recovery time
@@ -33,21 +37,32 @@ void G::initialize(int argc, char** argv, Files& files, Params& params, Lists& l
   // the Results folder contains parameters.txt, result files
   // the Data folder contains network data
   // executable data_folder result_folder
+ 
+  // reading the parameter file comes before argument parsing. Therefore, 
+  // I am hardcoding the name of the parameter file
+  strcpy(files.parameter_file, "data_ge/");
+  strcat(files.parameter_file, "parameters_0.txt");
+  readParameters(files.parameter_file, params);
+  parse(argc, argv, params);
 
+#if 0
   if (argc != 3) {
 	printf("To run the code, \n");
 	printf("  ./executable DataFolder ResultFolder\n");
 	printf("-------------------------------------\n");
 	exit(1);
   }
+#endif
 
-  strcpy(files.data_folder, argv[1]);
+  //strcpy(files.data_folder, argv[1]);
+  strcpy(files.data_folder, "data_ge");
   strcat(files.data_folder, "/");
-  strcpy(files.result_folder, argv[2]);
+  //strcpy(files.result_folder, argv[2]);
+  strcpy(files.result_folder, "data_ge/results/");
   strcat(files.result_folder, "/");
 
-  strcpy(files.parameter_file, files.result_folder);
-  strcat(files.parameter_file, "parameters_0.txt");
+  //strcpy(files.parameter_file, files.result_folder);
+  //strcat(files.parameter_file, "parameters_0.txt");
   //printf("parameter_file= %s\n", files.parameter_file); 
 
   strcpy(files.node_file, files.data_folder);
@@ -61,7 +76,6 @@ void G::initialize(int argc, char** argv, Files& files, Params& params, Lists& l
   strcpy(files.vaccination_file, files.data_folder);
   strcat(files.vaccination_file, "vaccines.csv");
 
-  readParameters(files.parameter_file, params);
   allocateMemory(params, lists);
 
   readData(params, lists, network, files);
@@ -1021,3 +1035,60 @@ float G::readInt(FILE* fd)
 	return i;
 }
 //----------------------------------------------------------------------
+void G::parse(int argc, char** argv, Params& par)
+{
+	try {
+        cxxopts::Options options(argv[0], " - example command line options");
+        options
+          .positional_help("[optional args]")
+          .show_positional_help();
+    
+        options
+          //.allow_unrecognised_options()
+          .add_options()
+		  ("N", "Number of nodes", cxxopts::value<int>())
+		  ("gamma", "Average recovery time", cxxopts::value<float>())
+		  ("mu", " Average latent time", cxxopts::value<float>())
+		  ("betaIS", " Transmissibility rate", cxxopts::value<float>())
+		  ("dt", " Time step", cxxopts::value<float>())
+		  ("vac1_rate", " Rate of 1st vaccine dose", cxxopts::value<int>())
+		  ("vac2_rate", " Rate of 2nd vaccine dose", cxxopts::value<int>())
+		  ("vac1_eff", " First vaccine dose efficacy [0-1]", cxxopts::value<float>())
+		  ("vac2_eff", " Second vaccine dose efficacy [0-1]", cxxopts::value<float>())
+		  ("dt_btw_vacc", " Time between 1st and 2nd vaccine doses", cxxopts::value<float>())
+          ("help", "Print help")
+        ;
+
+    	auto res = options.parse(argc, argv);
+
+		if (res.count("N") == 1)
+			par.N = res["N"].as<float>();
+		if (res.count("gamma") == 1)
+			par.gammita = res["gamma"].as<float>();
+		if (res.count("mu") == 1)
+			par.mu = res["mu"].as<float>();
+		if (res.count("betaIS") == 1)
+			par.beta_normal = res["betaIS"].as<float>();
+		if (res.count("dt") == 1)
+			par.dt = res["dt"].as<float>();
+		if (res.count("vac1_rate") == 1)
+			par.vacc1_rate = res["vac1_rate"].as<float>();
+		if (res.count("vac2_rate") == 1)
+			par.vacc2_rate = res["vac2_rate"].as<float>();
+		if (res.count("vac1_eff") == 1)
+			par.vacc1_effectiveness = res["vac1_eff"].as<float>();
+		if (res.count("vac2_eff") == 1)
+			par.vacc2_effectiveness = res["vac2_eff"].as<float>();
+		if (res.count("dt_btw_vacc") == 1)
+			par.dt_btw_vacc = res["dt_btw_vacc"].as<float>();
+
+    //auto arguments = res.arguments();
+    } catch(const cxxopts::OptionException& e) {
+    		printf("error parson options\n");
+    		std::cout << "error parsing options: " << e.what() << std::endl;
+    		exit(1);
+	}
+	
+	return;
+}
+
