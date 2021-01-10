@@ -696,6 +696,7 @@ void G::readParameters(char* parameter_file, Params& params)
   params.vacc2_effectiveness = readFloat(f);
   params.vacc2_rate   = readFloat(f);
   params.dt_btw_vacc  = readFloat(f);
+  printf("read dt_btw_vacc: %f\n", params.dt_btw_vacc);
 
   params.epsilon_asymptomatic = 1.0/params.epsilon_asymptomatic;
   params.epsilon_symptomatic  = 1.0/params.epsilon_symptomatic;
@@ -1020,7 +1021,7 @@ float G::readFloat(FILE* fd)
 	junk[0] = '\0'; 
 	junk1[0] = '\0';
 	fscanf(fd, "%s%f%[^\n]s", junk, &f, junk1);
-	printf("==> %s, %f, %s\n", junk, f, junk1);
+	printf("==> readFloat: %s, %f, %s\n", junk, f, junk1);
 	return f;
 }
 //----------------------------------------------------------------------
@@ -1032,6 +1033,7 @@ float G::readInt(FILE* fd)
 	junk1[0] = '\0';
 	fscanf(fd, "%s%d%[^\n]s", junk, &i, junk1);
 	printf("%s, %d, %s\n", junk, i, junk1);
+	printf("==> readFloat: %s, %d, %s\n", junk, i, junk1);
 	return i;
 }
 //----------------------------------------------------------------------
@@ -1062,7 +1064,7 @@ void G::parse(int argc, char** argv, Params& par)
     	auto res = options.parse(argc, argv);
 
 		if (res.count("N") == 1)
-			par.N = res["N"].as<float>();
+			par.N = res["N"].as<int>();
 		if (res.count("gamma") == 1)
 			par.gammita = res["gamma"].as<float>();
 		if (res.count("mu") == 1)
@@ -1072,9 +1074,9 @@ void G::parse(int argc, char** argv, Params& par)
 		if (res.count("dt") == 1)
 			par.dt = res["dt"].as<float>();
 		if (res.count("vac1_rate") == 1)
-			par.vacc1_rate = res["vac1_rate"].as<float>();
+			par.vacc1_rate = res["vac1_rate"].as<int>();
 		if (res.count("vac2_rate") == 1)
-			par.vacc2_rate = res["vac2_rate"].as<float>();
+			par.vacc2_rate = res["vac2_rate"].as<int>();
 		if (res.count("vac1_eff") == 1)
 			par.vacc1_effectiveness = res["vac1_eff"].as<float>();
 		if (res.count("vac2_eff") == 1)
@@ -1084,7 +1086,7 @@ void G::parse(int argc, char** argv, Params& par)
 
     //auto arguments = res.arguments();
     } catch(const cxxopts::OptionException& e) {
-    		printf("error parson options\n");
+    		printf("error parse on options\n");
     		std::cout << "error parsing options: " << e.what() << std::endl;
     		exit(1);
 	}
