@@ -392,9 +392,9 @@ void G::vaccinations(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, d
 {
   // SOME KIND OF ERROR. MUST LOOK CAREFULLY AT DEFINITIONS OF RATES
   // Poisson  Pois(lambda), mean(lambda). So lambda is in number/time=rate
-	printf("par.vacc1_rate= %f\n", par.vacc1_rate);
+	//printf("par.vacc1_rate= %f\n", par.vacc1_rate);
   int n_to_vaccinate = gsl_ran_poisson(gsl.r_rng, par.vacc1_rate*par.dt);
-	printf("Pois, n_to_vaccinate: %d\n", n_to_vaccinate);
+	//printf("Pois, n_to_vaccinate: %d\n", n_to_vaccinate);
   vaccinateNextBatch(net, l, c, par, gsl, n_to_vaccinate, cur_time);
 }
 //----------------------------------------------------------------------
@@ -441,10 +441,10 @@ void G::vaccinateNextBatch(Network& net, Lists& l, Counts& c, Params& par, GSL& 
 	if (count < n) {
 		printf("Insufficient Susceptibles to Vaccinate\n");
 	}
-	printf("nb vaccinated_1: %d\n", l.vacc1.n);
-	printf("start_search= %d\n", net.start_search);
-	printf("n= %d\n", n);
-	printf("count= %d\n", count);
+	//printf("nb vaccinated_1: %d\n", l.vacc1.n);
+	//printf("start_search= %d\n", net.start_search);
+	//printf("n= %d\n", n);
+	//printf("count= %d\n", count);
 
 	// Once n is zero, 
 	//exit(1);
@@ -464,8 +464,8 @@ void G::secondVaccination(Params& par, Lists& l, GSL& gsl, Network &net, Counts&
 		    stateTransition(id, id, V1, V2, net.node[id].t_V1, cur_time);
 		}
 	}
-    printf("vacc1.n= %d, vacc2.n= %d\n", l.vacc1.n, l.vacc2.n);
-    printf("new_vacc1.n= %d, new_vacc2.n= %d\n", l.new_vacc1.n, l.new_vacc2.n);
+    //printf("vacc1.n= %d, vacc2.n= %d\n", l.vacc1.n, l.vacc2.n);
+    //printf("new_vacc1.n= %d, new_vacc2.n= %d\n", l.new_vacc1.n, l.new_vacc2.n);
 }
 //----------------------------------------------------------------------
 void G::latency(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, double cur_time)
