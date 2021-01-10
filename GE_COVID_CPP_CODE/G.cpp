@@ -1075,6 +1075,7 @@ void G::parse(int argc, char** argv, Params& par)
 			par.dt = res["dt"].as<float>();
 		if (res.count("vac1_rate") == 1)
 			par.vacc1_rate = res["vac1_rate"].as<int>();
+			printf("===> par.vacc1_rate= %f\n", par.vacc1_rate);
 		if (res.count("vac2_rate") == 1)
 			par.vacc2_rate = res["vac2_rate"].as<int>();
 		if (res.count("vac1_eff") == 1)

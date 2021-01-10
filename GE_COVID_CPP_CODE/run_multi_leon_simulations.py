@@ -11,6 +11,8 @@ timestamp = datetime.now().strftime("%m_%d_%H_%M_%S")
 folders = []
 global_dict = {}
 
+run = 3    # <<<< Set to create a new run
+
 #dirs = list(os.scandir("graphs"))
 #dirs = ["data_ge"]
 #print(dirs)
@@ -18,7 +20,7 @@ global_dict = {}
 def setupGlobalDict():
     source_folder = "data_ge/"
     base_dest_folder = source_folder + "/results/"  # no final slash
-    dest_folder = source_folder + "/run1/"  # no final slash
+    dest_folder = source_folder + "/run%03d/" % run  # no final slash
     script_file = "run_leon_simulations.py"
     param_file = "data_ge/parameters_0.txt"
     state_transition_file = "transition_stats.csv"
@@ -36,14 +38,17 @@ def setupGlobalDict():
 
 def storeFiles(global_dict):
     sfolder = global_dict["source_folder"]
+    print("sfolder= ", sfolder)
     # dest folder per run
     dfolder = global_dict["dest_folder"] + "results_run%03d/" % global_dict["run"] 
+    print("dfolder= ", dfolder)
     os.makedirs(dfolder, exist_ok=True)
     shutil.copy(global_dict["param_file"], dfolder)
     shutil.copy("vaccines.csv", sfolder)  # might not exist
     state_transition_file = global_dict["state_transition_file"]
     print("state_tran= ", state_transition_file)
     shutil.copy(global_dict["source_folder"]+"/parameters_0.txt", dfolder)
+    print("base_dst_folder= ", global_dict["base_dest_folder"]+"/data_baseline_p0.txt")
     shutil.copy(global_dict["base_dest_folder"]+"/data_baseline_p0.txt", dfolder)
     shutil.copy(global_dict["base_dest_folder"]+"/cum_baseline_p0.txt", dfolder)
     shutil.copy(state_transition_file, dfolder)
@@ -65,10 +70,13 @@ def run_simulation(global_dict):
     rpf.readParamFile(global_dict["param_file"], global_dict)
 
     v1rs = [0, 100, 500, 1000, 5000, 10000, 15000, 20000]
+    v1rs = [0, 1000, 10000, 20000]
     for run, vac1_rate in enumerate(v1rs):
+        dfolder = global_dict["dest_folder"] + "results_run%03d/" % run
+        os.makedirs(dfolder, exist_ok=True)  # necessary
         print("-----------------------------------------------")
-        global_dict["vac1_rate"] = vac1_rate
         global_dict["run"] = run
+        global_dict["vac1_rate"] = vac1_rate
         args = f"--vac1_rate={vac1_rate}"
         try:
             dfolder = global_dict["dest_folder"] + "results_run%03d/" % run   # dest folder 
@@ -84,7 +92,6 @@ def run_simulation(global_dict):
             break
         print("global_dict= ", global_dict)
         print("-----------------------------------------------")
-        quit()
 
 if __name__ == "__main__":
     global_dict = setupGlobalDict()
