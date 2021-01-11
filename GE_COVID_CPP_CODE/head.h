@@ -117,6 +117,7 @@ typedef struct Network {
 typedef struct Files {
 	//Various
 	float t;
+	int it;  // integer count
 	//int t;
 	FILE *f_cum, *f_data;
 	char f_cum_file[255], f_data_file[255];

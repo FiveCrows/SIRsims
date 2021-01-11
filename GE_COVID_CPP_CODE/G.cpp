@@ -173,6 +173,9 @@ void G::seedInfection(Params& par, Counts& c, Network& n, GSL& gsl, Lists& l, Fi
 {
   int seed;
   int id;
+
+  f.t = 0.0;
+  f.it = 0;
  
   // Use a permutation to make sure that there are no duplicates when 
   // choosing more than one initial infected
@@ -197,7 +200,6 @@ void G::seedInfection(Params& par, Counts& c, Network& n, GSL& gsl, Lists& l, Fi
      addToList(&l.susceptible, id); 
   }
 
-  countStates(par, c, n, f);
   printf("inside seedInf\n\n\n");
 
 #ifdef SETUPVACC
@@ -227,7 +229,6 @@ void G::seedInfection(Params& par, Counts& c, Network& n, GSL& gsl, Lists& l, Fi
 	    //int j = removeFromList(&l.susceptible, i);
         //addToList(&l.vacc1, j); 
   }
-  countStates(par, c, n, f);
 
   // set Recovered to those vaccinated
   for (int i=0; i < nb_vaccinated; i++) {
@@ -263,7 +264,10 @@ void G::seedInfection(Params& par, Counts& c, Network& n, GSL& gsl, Lists& l, Fi
   c.count_l_symp += ninfected;
   printf("added %d latent_symptomatic individuals\n", ninfected);
 
-  f.t = par.dt;
+  // Assumes that dt = 0.1. Print every 10 time steps.
+  if (f.it % 10 == 0) {
+  	countStates(par, c, n, f);
+  }
 }
 //----------------------------------------------------------------------
 //void G::spread(int){}
@@ -291,9 +295,7 @@ void G::spread(int run, Files& f, Lists& l, Network& net, Params& params, GSL& g
   //printf("before IsTransition()\n"); countStates(params, c, net);
   IsTransition(params, l, net, c, gsl, cur_time);
 
-  if (abs(f.t-(int)(f.t+1.e-5)) < 1.e-5) {
-      countStates(par, c, net, f);
-  }
+  countStates(par, c, net, f);  // Might be too much cost
 
   updateLists(l, net);
   //printf("----------------------------------------\n");
@@ -568,9 +570,7 @@ void G::hospitals(){}
 void G::updateTime()
 { 
   files.t += par.dt;
-  //printf("t = %f\n", files.t);
-  //f.t++;
-  //printf("     Update Time, t= %d\n", t);
+  files.it++;
 }
 //----------------------------------------------------------------------
 void G::resetVariables(Lists& l, Files& files)

@@ -1,3 +1,9 @@
+# plot a range of runs in different subplots. 
+# plot I,L,R curves as a function of latent period.
+# Make sure the plot extents are constant. 
+# time: [0-80]
+# fraction (y): 0-1
+
 import numpy as np
 import glob
 import os, sys, shutil
@@ -134,6 +140,9 @@ def plot_infections_by_degree(delta_time, ax, folder, global_dict):
     ti = df["time"].values
     ax.plot(ti, V1/N, color=col, lw=1, ls='--')
     ax.plot(ti, V2/N, color=col, lw=1, ls='--')
+    ax.set_xlim(0,80)
+    ax.set_ylim(0,1)
+    ax.grid(True)
     ax.legend(title="Daily vacc rate\n(1st dose)", loc='upper right')
     eps_S = global_dict["epsilonS-1"]
     ax.set_title(f"I, L, R, curves (latent period:{eps_S} days\n(frac of tot pop size)")
@@ -159,7 +168,6 @@ if __name__ == "__main__":
     # This script presumes a loop over a degrees list (hardcoded in the various methods)
 
     base_run_folder = "run%03d" % run_index    # <<<< MUST BE SET
-
     base_folder = "data_ge/%s/results_run%03d" 
     runs = range(4)
 
@@ -172,13 +180,18 @@ if __name__ == "__main__":
     dirs = list(os.scandir("graphs"))
     
     dt = 0.1  # time step in units of days
-    r, c = 3,2
+    r, c = 2,2
     fig, axes = plt.subplots(r, c, figsize=(10,10))
-    axes = np.asarray(axes)
+    axes = np.asarray(axes).reshape(-1)
     print("=========> axes= ", axes)
     print("folders= ", folders)
 
-    for run in runs:
+    for ic,case in enumerate([4,7,6,5]):
+      base_run_folder = "run%03d" % case    # <<<< MUST BE SET
+      base_folder = "data_ge/%s/results_run%03d" 
+      ax = axes[ic]
+      base_run = case
+      for run in runs:
         print(run)
         folder = base_folder % (base_run_folder, run)
         with open(folder + "/global_dict.pkl", "rb") as f:
@@ -186,10 +199,7 @@ if __name__ == "__main__":
         global_dict['colors'] = cols
         global_dict['color'] = cols[run]
         global_dict['run'] = run
-        #plot_individual_R(axes[0,0], folder, global_dict)
-        plot_infections_by_degree(dt, axes[0,1], folder, global_dict)
-        #plot_latent_by_degree(dt, axes[1,0], folder, global_dict)
-        #plot_generation_times('is_l', axes[2,0], axes[2,1], axes[1,1], folder, global_dict)
+        plot_infections_by_degree(dt, ax, folder, global_dict)
 
     plt.tight_layout()
     plt.savefig('plot_individual_R.pdf')

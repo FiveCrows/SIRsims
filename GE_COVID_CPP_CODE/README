@@ -76,6 +76,8 @@ Use of handles for fancy legends in read_data.py
 ----------------------------------------------------------------------
 data_ge/run004/: epsilon_S-1=0.1 days, dt_btw_vac=28days, effectively: 0.6/0.95
 data_ge/run005/: epsilon_S-1=3.0 days, dt_btw_vac=28days, effectively: 0.6/0.95
+data_ge/run006/: epsilon_S-1=1.5 days, dt_btw_vac=28days, effectively: 0.6/0.95
+data_ge/run007/: epsilon_S-1=0.5 days, dt_btw_vac=28days, effectively: 0.6/0.95
 ----------------------------------------------------------------------
 2021-01-10,6.37pm
 I need to collect data from my output file. 

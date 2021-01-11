@@ -11,7 +11,7 @@ timestamp = datetime.now().strftime("%m_%d_%H_%M_%S")
 folders = []
 global_dict = {}
 
-run = 5    # <<<< Set to create a new run
+run = 7    # <<<< Set to create a new run
 
 #dirs = list(os.scandir("graphs"))
 #dirs = ["data_ge"]
