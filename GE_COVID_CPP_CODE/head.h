@@ -68,7 +68,9 @@ typedef struct Counts {
   	int countR;
   	int countV1;
   	int countV2;
-
+	std::vector<int> cvacc1, cvacc2;
+	std::vector<int> cS, cL, cIS, cR;
+	std::vector<float> times;
 } Counts;
 
 

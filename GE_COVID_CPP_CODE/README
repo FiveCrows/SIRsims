@@ -72,3 +72,18 @@ beta*(1-c1). Dose 2 has efficacy c2). Beta -> beta*(1-c2).
 Recovery time is not impacted. In reality, recovery time should probably
 be reduced (so infectuosity is reduced).
 ----------------------------------------------------------------------
+Use of handles for fancy legends in read_data.py
+----------------------------------------------------------------------
+data_ge/run004/: epsilon_S-1=0.1 days, dt_btw_vac=28days, effectively: 0.6/0.95
+data_ge/run005/: epsilon_S-1=3.0 days, dt_btw_vac=28days, effectively: 0.6/0.95
+----------------------------------------------------------------------
+2021-01-10,6.37pm
+I need to collect data from my output file. 
+----------------------------------------------------------------------
+2021-01-10,9.23pm
+There must be an error since my code tells me the entire population was vaccinated. 
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+----------------------------------------------------------------------

@@ -112,30 +112,50 @@ void G::runSimulation(Params& params, Lists& lists, Counts& c, Network& n, GSL& 
         results(run, lists, f);
 
 		printTransitionStats();
+		writeStates(c);
      }
   }
 }
 //----------------------------------------------------------------------
 //spread
-void G::count_states(Params& params, Counts& c, Network& n)
+void G::countStates(Params& params, Counts& c, Network& n, Files& f)
 {
   c.countS  = 0;
   c.countL  = 0;
   c.countIS = 0;
   c.countR  = 0;
-  c.countV1 = 0;
-  c.countV2 = 0;
 
   for(int i=0;i < params.N; i++) {
     if (n.node[i].state == S)  c.countS++;
     if (n.node[i].state == L)  c.countL++;
     if (n.node[i].state == IS) c.countIS++;
     if (n.node[i].state == R)  c.countR++;
-    if (n.node[i].state == V1)  c.countV1++;
-    if (n.node[i].state == V2)  c.countV2++;
   }
-  printf("Counts: S,L,IS,R: %d, %d, %d, %d\n", c.countS, c.countL, c.countIS, c.countR);
-  printf("Counts: V1,V2: %d, %d\n", c.countV1, c.countV2);
+
+  c.cS.push_back(c.countS);
+  c.cL.push_back(c.countL);
+  c.cIS.push_back(c.countIS);
+  c.cR.push_back(c.countR);
+  c.cvacc1.push_back(c.count_vacc1);
+  c.cvacc2.push_back(c.count_vacc2);
+  c.times.push_back(f.t);
+
+  printf("time= %f\n", f.t);
+  printf("Counts: t,S,L,IS,R,V1,V2: %3.1f, %d, %d, %d, %d, %d, %d\n", f.t, c.countS, c.countL, c.countIS, c.countR, c.count_vacc1, c.count_vacc2);
+}
+//----------------------------------------------------------------------
+void G::writeStates(Counts& c)
+{
+	FILE* fd = fopen("counts.csv", "w");
+
+	int sz = c.cvacc1.size();
+	fprintf(fd, "time,S,L,IS,R,vacc1,vacc2\n");
+
+	for (int i=0; i < sz; i++) {
+		fprintf(fd, "%4.2f,%d,%d,%d,%d,%d,%d\n", 
+		  c.times[i], c.cS[i], c.cL[i], c.cIS[i], c.cR[i], c.cvacc1[i], c.cvacc2[i]);
+	}
+	fclose(fd);
 }
 //----------------------------------------------------------------------
 void G::init(Params& p, Counts& c, Network& n, GSL& gsl, Lists& l, Files& f)
@@ -177,7 +197,7 @@ void G::seedInfection(Params& par, Counts& c, Network& n, GSL& gsl, Lists& l, Fi
      addToList(&l.susceptible, id); 
   }
 
-  count_states(par, c, n);
+  countStates(par, c, n, f);
   printf("inside seedInf\n\n\n");
 
 #ifdef SETUPVACC
@@ -207,7 +227,7 @@ void G::seedInfection(Params& par, Counts& c, Network& n, GSL& gsl, Lists& l, Fi
 	    //int j = removeFromList(&l.susceptible, i);
         //addToList(&l.vacc1, j); 
   }
-  count_states(par, c, n);
+  countStates(par, c, n, f);
 
   // set Recovered to those vaccinated
   for (int i=0; i < nb_vaccinated; i++) {
@@ -250,7 +270,7 @@ void G::seedInfection(Params& par, Counts& c, Network& n, GSL& gsl, Lists& l, Fi
 void G::spread(int run, Files& f, Lists& l, Network& net, Params& params, GSL& gsl, Counts& c)
 {  
   resetNew(l);
-  double cur_time = f.t;
+  float cur_time = f.t;
 
   // Vaccinate people at specified daily rate
   // S to V1
@@ -260,17 +280,20 @@ void G::spread(int run, Files& f, Lists& l, Network& net, Params& params, GSL& g
   secondVaccination(par, l, gsl, net, c, cur_time);
 
   // S to L
-  //printf("before infection()\n"); count_states(params, c, net);
+  //printf("before infection()\n"); countStates(params, c, net);
   infection(l, net, params, gsl, c, cur_time);
   // L to P
-  //printf("before latency()\n"); count_states(params, c, net);
+  //printf("before latency()\n"); countStates(params, c, net);
   latency(params, l, gsl, net, c, cur_time);
   // P to I
   //preToI();
   // I to R
-  //printf("before IsTransition()\n"); count_states(params, c, net);
+  //printf("before IsTransition()\n"); countStates(params, c, net);
   IsTransition(params, l, net, c, gsl, cur_time);
 
+  if (abs(f.t-(int)(f.t+1.e-5)) < 1.e-5) {
+      countStates(par, c, net, f);
+  }
 
   updateLists(l, net);
   //printf("----------------------------------------\n");
@@ -304,7 +327,7 @@ void G::spread(int run, Files& f, Lists& l, Network& net, Params& params, GSL& g
 	);
 }
 //----------------------------------------------------------------------
-void G::infection(Lists& l, Network& net, Params& params, GSL& gsl, Counts& c, double cur_time)
+void G::infection(Lists& l, Network& net, Params& params, GSL& gsl, Counts& c, float cur_time)
 {
   if (l.infectious_asymptomatic.n > 0) {printf("infectious_asymptomatic should be == 0\n"); exit(1); }
   if (l.pre_symptomatic.n > 0) {printf("pre_symptomatic should be == 0\n"); exit(1); }
@@ -316,7 +339,7 @@ void G::infection(Lists& l, Network& net, Params& params, GSL& gsl, Counts& c, d
   }
 }
 //----------------------------------------------------------------------
-void G::infect(int source, int type, Network& net, Params& params, GSL& gsl, Lists& l, Counts& c, double cur_time)
+void G::infect(int source, int type, Network& net, Params& params, GSL& gsl, Lists& l, Counts& c, float cur_time)
 {
   int target;
   double prob;
@@ -388,7 +411,7 @@ void G::infect(int source, int type, Network& net, Params& params, GSL& gsl, Lis
   } // for  
 }
 //----------------------------------------------------------------------
-void G::vaccinations(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, double cur_time)
+void G::vaccinations(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, float cur_time)
 {
   // SOME KIND OF ERROR. MUST LOOK CAREFULLY AT DEFINITIONS OF RATES
   // Poisson  Pois(lambda), mean(lambda). So lambda is in number/time=rate
@@ -398,15 +421,24 @@ void G::vaccinations(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, d
   vaccinateNextBatch(net, l, c, par, gsl, n_to_vaccinate, cur_time);
 }
 //----------------------------------------------------------------------
-void G::vaccinateNextBatch(Network& net, Lists& l, Counts& c, Params& par, GSL& gsl, int n, double cur_time) {
+void G::vaccinateNextBatch(Network& net, Lists& l, Counts& c, Params& par, GSL& gsl, int n, float cur_time) {
 // Vaccinate n susceptibles (state == S)
 
 	if (net.start_search == par.N) return;
 
+	// Count the number of of Susceptables 
+#if 0
+	int nb_S = 0;
+	for (int i=net.start_search; i < par.N; i++) {
+		if (net.node[i].state == S) nb_S++;
+	}
+	printf("vaccinateNextBatch, tot nb S: %d\n", nb_S);
+#endif
+
 	int count = 0;
 	for (int i=net.start_search; i < par.N; i++) {
 		int id = l.permuted_nodes[i];  // This allows vaccinations in randomized order
-		if (net.node[id].state == S) {
+		if (net.node[id].state == S && net.node[id].is_vacc == 0) {
 			net.start_search++;
 			count++;
 		    c.count_vacc1++;
@@ -450,7 +482,7 @@ void G::vaccinateNextBatch(Network& net, Lists& l, Counts& c, Params& par, GSL& 
 	//exit(1);
 }
 //-------------------------------------------------------------------------------
-void G::secondVaccination(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, double cur_time)
+void G::secondVaccination(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, float cur_time)
 {
 	for (int i=0; i < l.vacc1.n; i++) {
 		float time_since = cur_time - net.node[l.vacc1.v[i]].t_V1;
@@ -468,7 +500,7 @@ void G::secondVaccination(Params& par, Lists& l, GSL& gsl, Network &net, Counts&
     //printf("new_vacc1.n= %d, new_vacc2.n= %d\n", l.new_vacc1.n, l.new_vacc2.n);
 }
 //----------------------------------------------------------------------
-void G::latency(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, double cur_time)
+void G::latency(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, float cur_time)
 {
   int id;
 
@@ -498,7 +530,7 @@ void G::IaToR(){}
 //----------------------------------------------------------------------
 void G::preToI(){}
 //----------------------------------------------------------------------
-void G::IsTransition(Params& par, Lists& l, Network& net, Counts& c, GSL& gsl, double cur_time)
+void G::IsTransition(Params& par, Lists& l, Network& net, Counts& c, GSL& gsl, float cur_time)
 {
   int id;
 
@@ -1003,7 +1035,7 @@ void G::printTransitionStats()
 	fclose(fd);
 }
 //----------------------------------------------------------------------
-void G::stateTransition(int source, int target, int from_state, int to_state, double from_time, double to_time)
+void G::stateTransition(int source, int target, int from_state, int to_state, float from_time, float to_time)
 {
 	Lists& l = lists; 
 	l.id_from.push_back(source);

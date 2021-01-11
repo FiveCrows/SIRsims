@@ -11,7 +11,7 @@ timestamp = datetime.now().strftime("%m_%d_%H_%M_%S")
 folders = []
 global_dict = {}
 
-run = 3    # <<<< Set to create a new run
+run = 5    # <<<< Set to create a new run
 
 #dirs = list(os.scandir("graphs"))
 #dirs = ["data_ge"]
@@ -33,29 +33,45 @@ def setupGlobalDict():
     global_dict["script_file"]   = script_file
     global_dict["timestamp"]     = timestamp
     global_dict["param_file"]    = param_file
-    global_dict["state_transition_file"] = state_transition_file
+    global_dict["state_transition_file"] = "transition_stats.csv"
+    global_dict["counts_file"]   = "counts.csv"
     return global_dict
 
 def storeFiles(global_dict):
-    sfolder = global_dict["source_folder"]
+    gd = global_dict
+    sfolder = gd["source_folder"]
     print("sfolder= ", sfolder)
     # dest folder per run
-    dfolder = global_dict["dest_folder"] + "results_run%03d/" % global_dict["run"] 
+    dfolder = gd["dest_folder"] + "results_run%03d/" % gd["run"] 
     print("dfolder= ", dfolder)
     os.makedirs(dfolder, exist_ok=True)
-    shutil.copy(global_dict["param_file"], dfolder)
+    shutil.copy(gd["param_file"], dfolder)
     shutil.copy("vaccines.csv", sfolder)  # might not exist
-    state_transition_file = global_dict["state_transition_file"]
+    state_transition_file = gd["state_transition_file"]
     print("state_tran= ", state_transition_file)
-    shutil.copy(global_dict["source_folder"]+"/parameters_0.txt", dfolder)
-    print("base_dst_folder= ", global_dict["base_dest_folder"]+"/data_baseline_p0.txt")
-    shutil.copy(global_dict["base_dest_folder"]+"/data_baseline_p0.txt", dfolder)
-    shutil.copy(global_dict["base_dest_folder"]+"/cum_baseline_p0.txt", dfolder)
+    shutil.copy(gd["source_folder"]+"/parameters_0.txt", dfolder)
+    print("base_dst_folder= ", gd["base_dest_folder"]+"/data_baseline_p0.txt")
+    shutil.copy(gd["base_dest_folder"]+"/data_baseline_p0.txt", dfolder)
+    shutil.copy(gd["base_dest_folder"]+"/cum_baseline_p0.txt", dfolder)
     shutil.copy(state_transition_file, dfolder)
-    #os.remove(global_dict["output_file"])
-    os.remove(global_dict["base_dest_folder"]+"/data_baseline_p0.txt")
-    os.remove(global_dict["base_dest_folder"]+"/cum_baseline_p0.txt")
+    shutil.copy(gd["counts_file"], dfolder)
+    #os.remove(gd["output_file"])
+    os.remove(gd["base_dest_folder"]+"/data_baseline_p0.txt")
+    os.remove(gd["base_dest_folder"]+"/cum_baseline_p0.txt")
     os.remove(state_transition_file)
+    os.remove(gd["counts_file"])
+
+    src_code_folder = global_dict["dest_folder"] + "/src"
+    os.makedirs(src_code_folder, exist_ok=True)
+    shutil.copy("G.cpp", src_code_folder)
+    shutil.copy("G.h", src_code_folder)
+    shutil.copy("head.h", src_code_folder)
+    shutil.copy("run_multi_leon_simulations.py", src_code_folder)
+    shutil.copy("run_multi_stats.py", src_code_folder)
+    shutil.copy("stats.py", src_code_folder)
+    shutil.copy("read_data.py", src_code_folder)
+    shutil.copy("read_parameter_file.py", src_code_folder)
+    shutil.copy("Makefile", src_code_folder)
 
     with open(dfolder+"global_dict.pkl", "wb") as f:
         pickle.dump(global_dict, f)

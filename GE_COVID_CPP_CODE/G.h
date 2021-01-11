@@ -19,19 +19,20 @@ public:
 	void initialize(int, char**, Files& files, Params& params, Lists& lists, Network& network, GSL& gsl);
 	void runSimulation(Params&, Lists&, Counts&, Network&, GSL&, Files&);
 	//spread
-	void count_states(Params&, Counts&, Network&);
+	void countStates(Params&, Counts&, Network&, Files&);
+    void writeStates(Counts&);
 	void init(Params&, Counts&, Network&, GSL&, Lists&, Files&);
 	void seedInfection(Params&, Counts&, Network&, GSL&, Lists&, Files&);
 	void spread(int, Files&, Lists&, Network&, Params&, GSL&, Counts&);
-    void vaccinations(Params&, Lists&, GSL&, Network&, Counts&, double cur_time);
-    void secondVaccination(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, double cur_time);
-	void vaccinateNextBatch(Network&, Lists&, Counts&, Params&, GSL&, int n, double cur_time);
-	void infection(Lists&, Network&, Params&, GSL&, Counts&, double cur_time);
-	void infect(int, int, Network&, Params&, GSL&, Lists&, Counts&, double cur_time);
-	void latency(Params& par, Lists&, GSL&, Network&, Counts&, double cur_time);
+    void vaccinations(Params&, Lists&, GSL&, Network&, Counts&, float cur_time);
+    void secondVaccination(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, float cur_time);
+	void vaccinateNextBatch(Network&, Lists&, Counts&, Params&, GSL&, int n, float cur_time);
+	void infection(Lists&, Network&, Params&, GSL&, Counts&, float cur_time);
+	void infect(int, int, Network&, Params&, GSL&, Lists&, Counts&, float cur_time);
+	void latency(Params& par, Lists&, GSL&, Network&, Counts&, float cur_time);
 	void IaToR();
 	void preToI();
-	void IsTransition(Params&, Lists&, Network&, Counts&, GSL&, double cur_time);
+	void IsTransition(Params&, Lists&, Network&, Counts&, GSL&, float cur_time);
 	void homeTransition();
 	void hospitals();
 	void updateTime();
@@ -58,7 +59,7 @@ public:
 	void print(int);
 	void freeMemory(Params& p, Network& network, Lists& l, GSL&);
 	void printTransitionStats();
-	void stateTransition(int source, int target, int from_state, int to_state, double from_time, double to_time);
+	void stateTransition(int source, int target, int from_state, int to_state, float from_time, float to_time);
 	float readInt(FILE*);
 	float readFloat(FILE*);
 	void parse(int, char**, Params&);
