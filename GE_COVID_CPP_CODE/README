@@ -78,12 +78,36 @@ data_ge/run004/: epsilon_S-1=0.1 days, dt_btw_vac=28days, effectively: 0.6/0.95
 data_ge/run005/: epsilon_S-1=3.0 days, dt_btw_vac=28days, effectively: 0.6/0.95
 data_ge/run006/: epsilon_S-1=1.5 days, dt_btw_vac=28days, effectively: 0.6/0.95
 data_ge/run007/: epsilon_S-1=0.5 days, dt_btw_vac=28days, effectively: 0.6/0.95
+
+Simulations with shorter recovery times. The recovery rates are divided by (1-vac_recov_eff)
+for first and second doses, and the vaccine recovery effectiveness is set equal to 
+the vaccine effectiveness. Transmissions are multiplied by (1-eff), while recovery rates 
+are divided by (1-eff). I do not know whether this is correct, or whether it should be
+sqrt((1-eff). 
+
+data_ge/run008/: epsilon_S-1=0.1 days, dt_btw_vac=28days, effectively: 0.6/0.95
+data_ge/run009/: epsilon_S-1=0.5 days, dt_btw_vac=28days, effectively: 0.6/0.95
+data_ge/run010/: epsilon_S-1=1.5 days, dt_btw_vac=28days, effectively: 0.6/0.95
+data_ge/run011/: epsilon_S-1=3.0 days, dt_btw_vac=28days, effectively: 0.6/0.95
 ----------------------------------------------------------------------
 2021-01-10,6.37pm
 I need to collect data from my output file. 
 ----------------------------------------------------------------------
 2021-01-10,9.23pm
 There must be an error since my code tells me the entire population was vaccinated. 
+----------------------------------------------------------------------
+2021-01-11
+Other experiment to perform: 
+- limit the maximum number of people receiving the vaccine.
+- take reduced recovery time into account. So as vaccine efficiency c is 
+  increased from 0, I multiply beta by (1-c), and divide mu by (1-c). 
+  R = beta / mu is multiplied by (1-c)^2. 
+- Note: we are only vaccinating Susceptibles. But in reality, we could 
+  vaccinate Latent states since it is not know whether this person is infected
+  or not. 
+- There is no point infecting a R individual, since that person has antibodies that should protect the individual for a few months, which is on the order of the 90 days it takes for the infection to burn itself out without behavioral changes (masking, social distancing)
+----------------------------------------------------------------------
+----------------------------------------------------------------------
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------

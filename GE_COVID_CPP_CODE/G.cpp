@@ -162,11 +162,9 @@ void G::init(Params& p, Counts& c, Network& n, GSL& gsl, Lists& l, Files& f)
 {
   resetVariables(l, f);
   resetNodes(p, n);
-  printf("after resetN\n");
   
   //Start
   seedInfection(p, c, n, gsl, l, f);
-  printf("after seed\n");
 }
 //----------------------------------------------------------------------
 void G::seedInfection(Params& par, Counts& c, Network& n, GSL& gsl, Lists& l, Files& f)
@@ -427,6 +425,7 @@ void G::vaccinateNextBatch(Network& net, Lists& l, Counts& c, Params& par, GSL& 
 // Vaccinate n susceptibles (state == S)
 
 	if (net.start_search == par.N) return;
+	if (c.count_vacc1 == par.max_nb_avail_doses) return;
 
 	// Count the number of of Susceptables 
 #if 0
@@ -449,7 +448,9 @@ void G::vaccinateNextBatch(Network& net, Lists& l, Counts& c, Params& par, GSL& 
 			net.node[id].t_V1 = cur_time;
 			// constant in time
 	        net.node[id].beta_IS = par.beta[IS] * (1.-par.vacc1_effectiveness); 
-	        //printf("vacc beta_IS= %f\n", net.node[id].beta_IS);
+
+			// perhaps have a new entry in the data file for par.vacc1_recov_eff?
+	        net.node[id].mu   = par.mu / (1.-par.vacc1_recov_eff); 
 
 			// Probability of vaccine effectivness
 			// if effectiveness is 1., else branch is always true
@@ -486,6 +487,8 @@ void G::vaccinateNextBatch(Network& net, Lists& l, Counts& c, Params& par, GSL& 
 //-------------------------------------------------------------------------------
 void G::secondVaccination(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, float cur_time)
 {
+  if (par.nb_doses == 1) return;
+
 	for (int i=0; i < l.vacc1.n; i++) {
 		float time_since = cur_time - net.node[l.vacc1.v[i]].t_V1;
 		int id = l.vacc1.v[i];
@@ -494,6 +497,10 @@ void G::secondVaccination(Params& par, Lists& l, GSL& gsl, Network &net, Counts&
 		    c.count_vacc2 += 1;
 	        net.node[id].t_V2 = cur_time;
 	        net.node[id].beta_IS = par.beta[IS] * (1.-par.vacc2_effectiveness); 
+			// perhaps have a new entry in the data file for par.vacc1_recov_eff?
+			// as recovery effectiveness goes to one, the recovery rate to infinity, so the 
+			// recovery time goes to zero, so infection time goes to zero. 
+	        net.node[id].mu   = par.mu / (1.-par.vacc2_recov_eff); 
 			i = removeFromList(&l.vacc1, i);
 		    stateTransition(id, id, V1, V2, net.node[id].t_V1, cur_time);
 		}
@@ -544,9 +551,9 @@ void G::IsTransition(Params& par, Lists& l, Network& net, Counts& c, GSL& gsl, f
 	if ((cur_time-net.node[id].t_IS) >= INFECTION_TIME) {
 #else
  #if EXP
-    double prob = 1. - exp(-par.dt*par.mu);
+    double prob = 1. - exp(-par.dt*net.node[id].mu);
  #else
-    double prob = par.dt * par.mu;
+    double prob = par.dt * par.mu * net.node[id].mu;
  #endif
     if (gsl_rng_uniform(gsl.random_gsl) < prob) { //days to R/Home
 #endif
@@ -621,6 +628,7 @@ void G::resetNodes(Params& par, Network& net)
         net.node[i].state = S;
 		net.node[i].is_vacc = 0;
 		net.node[i].beta_IS = par.beta[IS]; 
+		net.node[i].mu = par.mu;
         net.node[i].vacc_infect  = 1.0;
         net.node[i].vacc_suscept = 1.0;
     }
@@ -726,6 +734,15 @@ void G::readParameters(char* parameter_file, Params& params)
   params.vacc2_rate   = readFloat(f);
   params.vacc1_effectiveness = readFloat(f);
   params.vacc2_effectiveness = readFloat(f);
+
+  // By default, same as vaccine effectiveness
+  // The vaccine will shorten the time to recovery
+  // Limit to 0.99 since one has to divide by recovery rate by (1-vacc1_recov_eff)
+  params.vacc1_recov_eff = params.vacc1_effectiveness < 0.99 ? 
+  		params.vacc1_effectiveness : 0.99;
+  params.vacc2_recov_eff = params.vacc2_effectiveness < 0.99 ? 
+  		params.vacc1_effectiveness : 0.99;
+
   params.vacc2_rate   = readFloat(f);
   params.dt_btw_vacc  = readFloat(f);
   printf("read dt_btw_vacc: %f\n", params.dt_btw_vacc);
@@ -736,7 +753,7 @@ void G::readParameters(char* parameter_file, Params& params)
   params.muH     = 1.0/params.muH;
   params.muICU   = 1.0/params.muICU;
   params.gammita = 1.0/params.gammita;
-  params.mu      = 1.0/params.mu;
+  params.mu      = 1.0/params.mu;  // mu is now a rate
 
   for(int i=0; i < NAGE; i++) {
     params.alpha[i] = params.alpha[i]/100;
@@ -1090,17 +1107,23 @@ void G::parse(int argc, char** argv, Params& par)
 		  ("vac1_eff", " First vaccine dose efficacy [0-1]", cxxopts::value<float>())
 		  ("vac2_eff", " Second vaccine dose efficacy [0-1]", cxxopts::value<float>())
 		  ("dt_btw_vacc", " Time between 1st and 2nd vaccine doses", cxxopts::value<float>())
+		  ("max_nb_avail_doses", " Maximum number of vaccine doses", cxxopts::value<int>()->default_value("-1"))
+		  ("nb_doses", " number of vaccine doses (1/2)", cxxopts::value<int>()->default_value("2"))
           ("help", "Print help")
         ;
 
     	auto res = options.parse(argc, argv);
-
+  
+		if (res.count("help")) {
+      		std::cout << options.help({"", "Group"}) << std::endl;
+      		exit(0);
+    	}
 		if (res.count("N") == 1)
 			par.N = res["N"].as<int>();
 		if (res.count("gamma") == 1)
 			par.gammita = res["gamma"].as<float>();
 		if (res.count("mu") == 1)
-			par.mu = res["mu"].as<float>();
+			par.mu = res["mu"].as<float>(); // rate
 		if (res.count("betaIS") == 1)
 			par.beta_normal = res["betaIS"].as<float>();
 		if (res.count("dt") == 1)
@@ -1116,6 +1139,11 @@ void G::parse(int argc, char** argv, Params& par)
 			par.vacc2_effectiveness = res["vac2_eff"].as<float>();
 		if (res.count("dt_btw_vacc") == 1)
 			par.dt_btw_vacc = res["dt_btw_vacc"].as<float>();
+		if (res.count("max_nb_avail_doses") == 1)
+			par.max_nb_avail_doses = res["max_nb_avail_doses"].as<int>();
+			if (par.max_nb_avail_doses == -1) par.max_nb_avail_doses = par.N;
+		if (res.count("nb_doses") == 1)
+			par.nb_doses = res["nb_doses"].as<int>();
 
     //auto arguments = res.arguments();
     } catch(const cxxopts::OptionException& e) {

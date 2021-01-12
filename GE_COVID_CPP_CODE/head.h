@@ -34,6 +34,7 @@ typedef struct Node {
   // beta_is = params.beta * (1.-vacc1_effectiveness)
   // beta_is = params.beta * (1.-vacc2_effectiveness)
   float beta_IS;    
+  float mu; // individual recovery
 
   float vacc_infect;  // Vaccine doses reduce infectiousness of others
   float vacc_suscept; // Vaccine doses increase my resistance to the virus
@@ -92,7 +93,12 @@ typedef struct Params {
 	float vacc2_rate;    //  nb 2nd vaccinations per day
 	float vacc1_effectiveness; //  % of people for whom 1st shot of the vaccine works as expected
 	float vacc2_effectiveness; //  % of people for whom 2nd shot of the vaccine works as expected
-	float dt_btw_vacc;  //  Time between vacc1 and vacc2
+	// By default the same as the effectiveness (effect on transmissibility)
+	float vacc1_recov_eff; //  reduction in recovery time due to vaccine shot
+	float vacc2_recov_eff; //  reduction in recovery time due to vaccine shot
+	float dt_btw_vacc; // Time between vacc1 and vacc2
+	int max_nb_avail_doses;  // maximum number of available doses
+	int nb_doses;      // 1 or 2 depending on the vaccine or experiment peformed
 } Params;
 
 //Spreading

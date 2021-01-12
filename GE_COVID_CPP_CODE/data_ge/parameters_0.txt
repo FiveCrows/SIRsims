@@ -1,7 +1,7 @@
 N 260542  # population size
 r 0.0     
 epsilonA-1 0
-epsilonS-1 0.5 #
+epsilonS-1 3.0 #
 p 0.00  
 gamma-1 20
 mu-1  5.0
@@ -51,4 +51,8 @@ vac1_rate 1  # nb 1st vaccinations per day
 
 // In other words, if the vaccine is 100% effective, c=1 and beta -> 0. 
 
+# Additional parameters only from the command line
+max_nb_vaccines 100000 # if -1, assume it is infinite
+nb_doses 2  # nb of doses: (1/2)
+dt_btw_vacc 30   # Time between vacc1 and vacc2
 

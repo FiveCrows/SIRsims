@@ -186,11 +186,13 @@ if __name__ == "__main__":
     print("=========> axes= ", axes)
     print("folders= ", folders)
 
-    for ic,case in enumerate([4,7,6,5]):
+    #for ic,case in enumerate([4,7,6,5]):
+    for ic,case in enumerate([8,9,10,11]):
       base_run_folder = "run%03d" % case    # <<<< MUST BE SET
       base_folder = "data_ge/%s/results_run%03d" 
       ax = axes[ic]
       base_run = case
+
       for run in runs:
         print(run)
         folder = base_folder % (base_run_folder, run)
