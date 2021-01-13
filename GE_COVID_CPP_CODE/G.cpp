@@ -10,8 +10,12 @@
 #define CONST_INFECTION_TIME 0   // constant recovery time
 #define INFECTION_TIME 3.
 
+#define VACCINATE_LATENT 
+//#undef VACCINATE_LATENT 
+
 #define SETUPVACC
 #undef SETUPVACC
+
 
 using namespace std;
 
@@ -421,6 +425,53 @@ void G::vaccinations(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, f
   vaccinateNextBatch(net, l, c, par, gsl, n_to_vaccinate, cur_time);
 }
 //----------------------------------------------------------------------
+// Same as vaccinateNextBatch, but vaccinate a S/L neighbor of the person chosen
+void G::vaccinateAquaintance(Network& net, Lists& l, Counts& c, Params& par, GSL& gsl, int n, float cur_time) {
+	if (net.start_search == par.N) return;
+	if (c.count_vacc1 == par.max_nb_avail_doses) return;
+
+	int count = 0;
+	for (int i=net.start_search; i < par.N; i++) {
+		int id = l.permuted_nodes[i];  // This allows vaccinations in randomized order
+		// Both Latent (no visible symptoms) and Susceptibles can be infected
+		int state = net.node[id].state;
+#ifdef VACCINATE_LATENT
+		if ((state == S || state == L) && net.node[id].is_vacc == 0) {
+#else
+		if (net.node[id].state == S && net.node[id].is_vacc == 0) {
+#endif
+			net.start_search++;
+			count++;
+		    c.count_vacc1++;
+			net.node[id].is_vacc = 1;
+			net.node[id].t_V1 = cur_time;
+			// constant in time
+	        net.node[id].beta_IS = par.beta[IS] * (1.-par.vacc1_eff); 
+
+			// perhaps have a new entry in the data file for par.vacc1_recov_eff?
+	        net.node[id].mu   = par.mu / (1.-par.vacc1_recov_eff); 
+
+			// Probability of vaccine effectivness
+			// if effectiveness is 1., else branch is always true
+	        float prob = par.dt * par.vacc1_eff;
+	        if (gsl_rng_uniform(gsl.random_gsl) < prob) {
+        		net.node[id].vacc_infect  = 0.;  // transmission rate to others 
+        		net.node[id].vacc_suscept = 0.;  // susceptibility to infection
+			} else {
+        		net.node[id].vacc_infect  = 1.;  // transmission rate to others 
+        		net.node[id].vacc_suscept = 1.;  // susceptibility to infection
+			}
+
+			addToList(&l.new_vacc1, id);
+		    stateTransition(id, id, S, V1, 0., cur_time); 
+		}
+		if (count >= n) break;
+	}
+	if (count < n) {
+		printf("Insufficient Susceptibles to Vaccinate\n");
+	}
+}
+//----------------------------------------------------------------------
 void G::vaccinateNextBatch(Network& net, Lists& l, Counts& c, Params& par, GSL& gsl, int n, float cur_time) {
 // Vaccinate n susceptibles (state == S)
 
@@ -439,7 +490,13 @@ void G::vaccinateNextBatch(Network& net, Lists& l, Counts& c, Params& par, GSL& 
 	int count = 0;
 	for (int i=net.start_search; i < par.N; i++) {
 		int id = l.permuted_nodes[i];  // This allows vaccinations in randomized order
+		// Both Latent (no visible symptoms) and Susceptibles can be infected
+		int state = net.node[id].state;
+#ifdef VACCINATE_LATENT
+		if ((state == S || state == L) && net.node[id].is_vacc == 0) {
+#else
 		if (net.node[id].state == S && net.node[id].is_vacc == 0) {
+#endif
 			net.start_search++;
 			count++;
 		    c.count_vacc1++;
@@ -447,14 +504,14 @@ void G::vaccinateNextBatch(Network& net, Lists& l, Counts& c, Params& par, GSL& 
 			net.node[id].is_vacc = 1;
 			net.node[id].t_V1 = cur_time;
 			// constant in time
-	        net.node[id].beta_IS = par.beta[IS] * (1.-par.vacc1_effectiveness); 
+	        net.node[id].beta_IS = par.beta[IS] * (1.-par.vacc1_eff); 
 
 			// perhaps have a new entry in the data file for par.vacc1_recov_eff?
 	        net.node[id].mu   = par.mu / (1.-par.vacc1_recov_eff); 
 
 			// Probability of vaccine effectivness
 			// if effectiveness is 1., else branch is always true
-	        float prob = par.dt * par.vacc1_effectiveness;
+	        float prob = par.dt * par.vacc1_eff;
 	        if (gsl_rng_uniform(gsl.random_gsl) < prob) {
         		net.node[id].vacc_infect  = 0.;  // transmission rate to others 
         		net.node[id].vacc_suscept = 0.;  // susceptibility to infection
@@ -466,7 +523,7 @@ void G::vaccinateNextBatch(Network& net, Lists& l, Counts& c, Params& par, GSL& 
 			//net.node[id].vacc_infect = 
         	//net.node[i].vacc_infect  = 1.0;
 			//net.node[i].vacc_suscept = 1.0;
-        	//vac1_effect 0.6   # Effective on x% [0,1] of the vaccinated
+        	//vacc1_effect 0.6   # Effective on x% [0,1] of the vaccinated
 			// Add to V1 list
 			addToList(&l.new_vacc1, id);
 		    stateTransition(id, id, S, V1, 0., cur_time); 
@@ -496,7 +553,7 @@ void G::secondVaccination(Params& par, Lists& l, GSL& gsl, Network &net, Counts&
 			addToList(&l.new_vacc2, id);
 		    c.count_vacc2 += 1;
 	        net.node[id].t_V2 = cur_time;
-	        net.node[id].beta_IS = par.beta[IS] * (1.-par.vacc2_effectiveness); 
+	        net.node[id].beta_IS = par.beta[IS] * (1.-par.vacc2_eff); 
 			// perhaps have a new entry in the data file for par.vacc1_recov_eff?
 			// as recovery effectiveness goes to one, the recovery rate to infinity, so the 
 			// recovery time goes to zero, so infection time goes to zero. 
@@ -732,16 +789,16 @@ void G::readParameters(char* parameter_file, Params& params)
   params.dt           = readFloat(f);
   params.vacc1_rate   = readFloat(f);
   params.vacc2_rate   = readFloat(f);
-  params.vacc1_effectiveness = readFloat(f);
-  params.vacc2_effectiveness = readFloat(f);
+  params.vacc1_eff = readFloat(f);
+  params.vacc2_eff = readFloat(f);
 
   // By default, same as vaccine effectiveness
   // The vaccine will shorten the time to recovery
   // Limit to 0.99 since one has to divide by recovery rate by (1-vacc1_recov_eff)
-  params.vacc1_recov_eff = params.vacc1_effectiveness < 0.99 ? 
-  		params.vacc1_effectiveness : 0.99;
-  params.vacc2_recov_eff = params.vacc2_effectiveness < 0.99 ? 
-  		params.vacc1_effectiveness : 0.99;
+  params.vacc1_recov_eff = params.vacc1_eff < 0.99 ? 
+  		params.vacc1_eff : 0.99;
+  params.vacc2_recov_eff = params.vacc2_eff < 0.99 ? 
+  		params.vacc1_eff : 0.99;
 
   params.vacc2_rate   = readFloat(f);
   params.dt_btw_vacc  = readFloat(f);
@@ -1102,13 +1159,14 @@ void G::parse(int argc, char** argv, Params& par)
 		  ("mu", " Average latent time", cxxopts::value<float>())
 		  ("betaIS", " Transmissibility rate", cxxopts::value<float>())
 		  ("dt", " Time step", cxxopts::value<float>())
-		  ("vac1_rate", " Rate of 1st vaccine dose", cxxopts::value<int>())
-		  ("vac2_rate", " Rate of 2nd vaccine dose", cxxopts::value<int>())
-		  ("vac1_eff", " First vaccine dose efficacy [0-1]", cxxopts::value<float>())
-		  ("vac2_eff", " Second vaccine dose efficacy [0-1]", cxxopts::value<float>())
+		  ("vacc1_rate", " Rate of 1st vaccine dose", cxxopts::value<int>())
+		  ("vacc2_rate", " Rate of 2nd vaccine dose", cxxopts::value<int>())
+		  ("vacc1_eff", " First vaccine dose efficacy [0-1]", cxxopts::value<float>())
+		  ("vacc2_eff", " Second vaccine dose efficacy [0-1]", cxxopts::value<float>())
 		  ("dt_btw_vacc", " Time between 1st and 2nd vaccine doses", cxxopts::value<float>())
 		  ("max_nb_avail_doses", " Maximum number of vaccine doses", cxxopts::value<int>()->default_value("-1"))
-		  ("nb_doses", " number of vaccine doses (1/2)", cxxopts::value<int>()->default_value("2"))
+		  ("nb_doses", " Number of vaccine doses (1/2)", cxxopts::value<int>()->default_value("2"))
+		  ("epsilonSinv", " Average latent interval", cxxopts::value<float>())
           ("help", "Print help")
         ;
 
@@ -1118,32 +1176,59 @@ void G::parse(int argc, char** argv, Params& par)
       		std::cout << options.help({"", "Group"}) << std::endl;
       		exit(0);
     	}
-		if (res.count("N") == 1)
+		if (res.count("N") == 1) {
 			par.N = res["N"].as<int>();
-		if (res.count("gamma") == 1)
-			par.gammita = res["gamma"].as<float>();
-		if (res.count("mu") == 1)
+		    printf("arg: par.N= %d\n", par.N);
+	    }
+		if (res.count("gammita") == 1) {
+			par.gammita = res["gammita"].as<float>();
+		    printf("arg: par.gammita= %f\n", par.gammita);
+	    }
+		if (res.count("mu") == 1) {
 			par.mu = res["mu"].as<float>(); // rate
-		if (res.count("betaIS") == 1)
+		    printf("arg: par.mu= %f\n", par.mu);
+	    }
+		if (res.count("betaIS") == 1) {
 			par.beta_normal = res["betaIS"].as<float>();
-		if (res.count("dt") == 1)
+		    printf("arg: par.beta_normal= %f\n", par.beta_normal);
+	    }
+		if (res.count("dt") == 1) {
 			par.dt = res["dt"].as<float>();
-		if (res.count("vac1_rate") == 1)
-			par.vacc1_rate = res["vac1_rate"].as<int>();
-			printf("===> par.vacc1_rate= %f\n", par.vacc1_rate);
-		if (res.count("vac2_rate") == 1)
-			par.vacc2_rate = res["vac2_rate"].as<int>();
-		if (res.count("vac1_eff") == 1)
-			par.vacc1_effectiveness = res["vac1_eff"].as<float>();
-		if (res.count("vac2_eff") == 1)
-			par.vacc2_effectiveness = res["vac2_eff"].as<float>();
-		if (res.count("dt_btw_vacc") == 1)
+		    printf("arg: par.dt= %f\n", par.dt);
+	    }
+		if (res.count("vacc1_rate") == 1) {
+			par.vacc1_rate = res["vacc1_rate"].as<float>();
+		    printf("arg: par.vacc1_rate= %f\n", par.vacc1_rate);
+	    }
+		if (res.count("vacc2_rate") == 1) {
+			par.vacc2_rate = res["vacc2_rate"].as<float>();
+		    printf("arg: par.vacc2_rate= %f\n", par.vacc2_rate);
+	    }
+		if (res.count("vacc1_eff") == 1) {
+			par.vacc1_eff = res["vacc1_eff"].as<float>();
+		    printf("arg: par.vacc1_eff= %f\n", par.vacc1_eff);
+	    }
+		if (res.count("vacc2_eff") == 1) {
+			par.vacc2_eff = res["vacc2_eff"].as<float>();
+		    printf("arg: par.vacc2_eff= %f\n", par.vacc2_eff);
+	    }
+		if (res.count("dt_btw_vacc") == 1) {
 			par.dt_btw_vacc = res["dt_btw_vacc"].as<float>();
-		if (res.count("max_nb_avail_doses") == 1)
+		    printf("arg: par.dt_btw_vacc= %f\n", par.dt_btw_vacc);
+	    }
+		if (res.count("max_nb_avail_doses") == 1) {
 			par.max_nb_avail_doses = res["max_nb_avail_doses"].as<int>();
 			if (par.max_nb_avail_doses == -1) par.max_nb_avail_doses = par.N;
-		if (res.count("nb_doses") == 1)
+		    printf("arg: par.max_nb_avail_doses= %d\n", par.max_nb_avail_doses);
+	    }
+		if (res.count("nb_doses") == 1) {
 			par.nb_doses = res["nb_doses"].as<int>();
+		    printf("arg: par.nb_doses= %d\n", par.nb_doses);
+	    }
+		if (res.count("epsilonS-1") == 1) {
+			par.epsilon_symptomatic = 1. / res["epsilonS-1"].as<float>();
+		    printf("arg: par.epsilon_symptomatic= %f\n", par.epsilon_symptomatic);
+	    }
 
     //auto arguments = res.arguments();
     } catch(const cxxopts::OptionException& e) {

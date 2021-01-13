@@ -28,6 +28,7 @@ vac2_effectiveness 0.95  # Effective on x% [0,1] of the vaccinated
 dt_btw_vacc 28   # Time between vacc1 and vacc2
 EOF
 
+#--------------------------------------------------
 # Additional Information
 S -> E  (beta = 0.2 / day)  
 E -> I  (epsilon_s = 3 days)

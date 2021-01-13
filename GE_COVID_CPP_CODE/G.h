@@ -27,6 +27,7 @@ public:
     void vaccinations(Params&, Lists&, GSL&, Network&, Counts&, float cur_time);
     void secondVaccination(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, float cur_time);
 	void vaccinateNextBatch(Network&, Lists&, Counts&, Params&, GSL&, int n, float cur_time);
+    void vaccinateAquaintance(Network&, Lists&, Counts&, Params&, GSL&, int, float cur_time);
 	void infection(Lists&, Network&, Params&, GSL&, Counts&, float cur_time);
 	void infect(int, int, Network&, Params&, GSL&, Lists&, Counts&, float cur_time);
 	void latency(Params& par, Lists&, GSL&, Network&, Counts&, float cur_time);

@@ -91,8 +91,8 @@ typedef struct Params {
 	float dt;
 	float vacc1_rate;    //  nb 1st vaccinations per day
 	float vacc2_rate;    //  nb 2nd vaccinations per day
-	float vacc1_effectiveness; //  % of people for whom 1st shot of the vaccine works as expected
-	float vacc2_effectiveness; //  % of people for whom 2nd shot of the vaccine works as expected
+	float vacc1_eff; //  % of people for whom 1st shot of the vaccine works as expected
+	float vacc2_eff; //  % of people for whom 2nd shot of the vaccine works as expected
 	// By default the same as the effectiveness (effect on transmissibility)
 	float vacc1_recov_eff; //  reduction in recovery time due to vaccine shot
 	float vacc2_recov_eff; //  reduction in recovery time due to vaccine shot

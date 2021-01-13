@@ -10,7 +10,7 @@ import stats
 import read_data as rd
 
 #----------------------------------------------------------------
-run_index = 8    # <<<< Set to create a new run
+run_index = 12    # <<<< Set to create a new run
 #----------------------------------------------------------------
 
 # Run this file on a multiple simulation outputs without pandas
@@ -158,9 +158,9 @@ if __name__ == "__main__":
 
     # This script presumes a loop over a degrees list (hardcoded in the various methods)
 
-    base_run_folder = "run%03d" % run_index    # <<<< MUST BE SET
+    base_run_folder = "run%05d" % run_index    # <<<< MUST BE SET
 
-    base_folder = "data_ge/%s/results_run%03d" 
+    base_folder = "data_ge/%s/results_run%04d" 
     runs = range(4)
 
     # one color per case
