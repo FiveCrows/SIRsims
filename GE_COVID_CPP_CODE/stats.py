@@ -46,8 +46,8 @@ def getDataframe(filenm):
     IS_R = by.get_group((IS, R))  # same ids
     L_IS = by.get_group((L, IS))  # same ids
     IS_PotL = by.get_group((IS, PotL))
-    print("len(IS_L): ", IS_L.shape)
-    print("len(IS_PotL): ", IS_PotL.shape)
+    #print("len(IS_L): ", IS_L.shape)
+    #print("len(IS_PotL): ", IS_PotL.shape)
     return df, IS_L, IS_R, L_IS, IS_PotL
 
 # Compute generation distributions

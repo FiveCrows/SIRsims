@@ -12,7 +12,7 @@ timestamp = datetime.now().strftime("%m_%d_%H_%M_%S")
 folders = []
 global_dict = {}
 
-run = 12    # <<<< Set to create a new run
+run = 14    # <<<< Set to create a new run
 
 #----------------------------------------------------------
 # Code posted at
@@ -86,6 +86,7 @@ def storeFiles(global_dict):
     shutil.copy("read_data.py", src_code_folder)
     shutil.copy("read_parameter_file.py", src_code_folder)
     shutil.copy("Makefile", src_code_folder)
+    shutil.copy("breakup_transition.py", gd['dest_folder'])
 
     with open(dfolder+"global_dict.pkl", "wb") as f:
         pickle.dump(global_dict, f)
@@ -100,12 +101,16 @@ def run_simulation(global_dict, run):
     ## Make sure the key is in global_dict (so I need a function)
     ## The keys of search_params should be command line arguments
     search_params = {}
-    search_params['vacc1_rate'] = [1000, 10000]
-    search_params['max_nb_avail_doses'] = [20000, 100000]
-    search_params['epsilonSinv'] = [0.5, 3.]
+    search_params['vacc1_rate'] = [10000, 20000]
+    search_params['max_nb_avail_doses'] = [50000, 100000, 20000]
+    search_params['epsilonSinv'] = [3.0]
     out_dicts = dict_product(search_params)
+    global_dict["nb_repeat_runs"] = 5   # <<<<<<<<<<<<<<<<< Usually set to 1
 
-    for run, dct in enumerate(out_dicts):
+    for top_level_run, dct in enumerate(out_dicts):
+      repeat_runs = global_dict["nb_repeat_runs"]
+      for repeat_run in range(repeat_runs):
+        run = top_level_run * repeat_runs + repeat_run
         global_dict["leaf_folder"] = "results_run%04d/" % run
         dfolder = global_dict["dest_folder"] + global_dict["leaf_folder"]
         os.makedirs(dfolder, exist_ok=True)  # necessary
@@ -132,6 +137,11 @@ def run_simulation(global_dict, run):
             break
         print("global_dict= ", global_dict)
         print("-----------------------------------------------")
+
+        # preprocess transition files
+        # Transition files can be deleted, in principle
+        cmd = f"pushd {global_dict['dest_folder']}; python breakup_transition.py; popd"
+        os.system(cmd)
 
 #----------------------------------------------------------------
 if __name__ == "__main__":
