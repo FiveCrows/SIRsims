@@ -31,12 +31,6 @@ def dict_product(dicts):
 #----------------------------------------------------------
 
 
-search_params = {}
-search_params['vacc1_rate'] = [1000, 5000, 10000]
-search_params['max_nb_avail_doses'] = [10000, 50000, 100000]
-search_params['epsilonSinv'] = [0.5, 3.]
-
-
 def setupGlobalDict(run):
     source_folder = "data_ge/"
     base_dest_folder = source_folder + "/results/"  # no final slash
@@ -106,8 +100,8 @@ def run_simulation(global_dict, run):
     ## Make sure the key is in global_dict (so I need a function)
     ## The keys of search_params should be command line arguments
     search_params = {}
-    search_params['vacc1_rate'] = [1000, 5000, 10000]
-    search_params['max_nb_avail_doses'] = [10000, 50000, 100000]
+    search_params['vacc1_rate'] = [1000, 10000]
+    search_params['max_nb_avail_doses'] = [20000, 100000]
     search_params['epsilonSinv'] = [0.5, 3.]
     out_dicts = dict_product(search_params)
 
