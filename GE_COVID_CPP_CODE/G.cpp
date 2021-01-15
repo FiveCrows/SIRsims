@@ -428,7 +428,7 @@ void G::vaccinations(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, f
 // Same as vaccinateNextBatch, but vaccinate a S/L neighbor of the person chosen
 void G::vaccinateAquaintance(Network& net, Lists& l, Counts& c, Params& par, GSL& gsl, int n, float cur_time) {
 	if (net.start_search == par.N) return;
-	if (c.count_vacc1 == par.max_nb_avail_doses) return;
+	if (c.count_vacc1 > par.max_nb_avail_doses) return;
 
 	int count = 0;
 	for (int i=net.start_search; i < par.N; i++) {
@@ -476,9 +476,14 @@ void G::vaccinateNextBatch(Network& net, Lists& l, Counts& c, Params& par, GSL& 
 // Vaccinate n susceptibles (state == S)
 
 	if (net.start_search == par.N) return;
-	if (c.count_vacc1 == par.max_nb_avail_doses) return;
+	printf("top of NextBatch: %d/%d\n", c.count_vacc1, par.max_nb_avail_doses);
+	if (c.count_vacc1 > par.max_nb_avail_doses) {
+		printf("c.count_vacc1 > par.max_nb_avail_doses\n");
+		return;
+	}
+	printf("continue processing NextBatch\n");
 
-	// Count the number of of Susceptables 
+	// Count the number of of Susceptibles 
 #if 0
 	int nb_S = 0;
 	for (int i=net.start_search; i < par.N; i++) {
@@ -1218,7 +1223,8 @@ void G::parse(int argc, char** argv, Params& par)
 	    }
 		if (res.count("max_nb_avail_doses") == 1) {
 			par.max_nb_avail_doses = res["max_nb_avail_doses"].as<int>();
-			if (par.max_nb_avail_doses == -1) par.max_nb_avail_doses = par.N;
+			// Multiply by two since there are a max of 2 doses per individual
+			if (par.max_nb_avail_doses == -1) par.max_nb_avail_doses = 2*par.N;
 		    printf("arg: par.max_nb_avail_doses= %d\n", par.max_nb_avail_doses);
 	    }
 		if (res.count("nb_doses") == 1) {

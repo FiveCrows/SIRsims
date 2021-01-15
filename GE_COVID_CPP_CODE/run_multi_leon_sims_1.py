@@ -7,12 +7,12 @@ import pickle
 import itertools
 
 from datetime import datetime
-timestamp = datetime.now().strftime("%m_%d_%H_%M_%S")
 
-folders = []
-global_dict = {}
-
-run = 14    # <<<< Set to create a new run
+"""
+# Global Parameters to adjust at the bottom of this file
+    project_nb = 15    # <<<< Set to create a new run
+    nb_repeat_runs = 1   # <<<< Set to create a new run
+"""
 
 #----------------------------------------------------------
 # Code posted at
@@ -31,10 +31,11 @@ def dict_product(dicts):
 #----------------------------------------------------------
 
 
-def setupGlobalDict(run):
+def setupGlobalDict(project_nb):
+    global_dict = {}
     source_folder = "data_ge/"
     base_dest_folder = source_folder + "/results/"  # no final slash
-    dest_folder = source_folder + "/run%05d/" % run  # no final slash 
+    dest_folder = source_folder + "/project%05d/" % project_nb  # no final slash 
     script_file = "run_leon_simulations.py"
     param_file = "data_ge/parameters_0.txt"
     state_transition_file = "transition_stats.csv"
@@ -67,6 +68,8 @@ def storeFiles(global_dict):
     print("base_dst_folder= ", gd["base_dest_folder"]+"/data_baseline_p0.txt")
     shutil.copy(gd["base_dest_folder"]+"/data_baseline_p0.txt", dfolder)
     shutil.copy(gd["base_dest_folder"]+"/cum_baseline_p0.txt", dfolder)
+    print("== list files")
+    os.system("ls *.csv")
     shutil.copy(state_transition_file, dfolder)
     shutil.copy(gd["counts_file"], dfolder)
     #os.remove(gd["output_file"])
@@ -87,12 +90,11 @@ def storeFiles(global_dict):
     shutil.copy("read_parameter_file.py", src_code_folder)
     shutil.copy("Makefile", src_code_folder)
     shutil.copy("breakup_transition.py", gd['dest_folder'])
+    print("copy breakup_transition to ", gd['dest_folder'])
 
-    with open(dfolder+"global_dict.pkl", "wb") as f:
-        pickle.dump(global_dict, f)
 
 #--------------------------------------------------------
-def run_simulation(global_dict, run):
+def run_simulation(global_dict, project_nb):
     dest_folder = global_dict["dest_folder"]
     output_file = global_dict["output_file"]
     os.makedirs(dest_folder, exist_ok=True)
@@ -102,20 +104,43 @@ def run_simulation(global_dict, run):
     ## The keys of search_params should be command line arguments
     search_params = {}
     search_params['vacc1_rate'] = [10000, 20000]
-    search_params['max_nb_avail_doses'] = [50000, 100000, 20000]
+    search_params['max_nb_avail_doses'] = [50000, 100000, 200000]
     search_params['epsilonSinv'] = [3.0]
     out_dicts = dict_product(search_params)
-    global_dict["nb_repeat_runs"] = 5   # <<<<<<<<<<<<<<<<< Usually set to 1
 
+    #----------------------------------------------------------
+    nb_repeat_runs = global_dict["nb_repeat_runs"]
+
+    # ATTENTION: Cannot print out_dicts, since it is an iterator
+    # This problem might not happen in Julia
+    """
     for top_level_run, dct in enumerate(out_dicts):
-      repeat_runs = global_dict["nb_repeat_runs"]
-      for repeat_run in range(repeat_runs):
-        run = top_level_run * repeat_runs + repeat_run
+     for repeat_run in range(nb_repeat_runs):
+      print("repeat_run= ", repeat_run)
+      print(dct)
+      #for top_level_run, dct in enumerate([3,4,5,6,8]): #out_dicts):
+      print("top_level_run: %d, repeat_run: %d" % (top_level_run, repeat_run))
+    quit()
+    """
+
+    # I cannot execute out_dicts anywhere but in an outer list
+    for top_level_run, dct in enumerate(out_dicts):
+      for repeat_run in range(nb_repeat_runs):
+        print("-----------------------------------------------")
+        global_dict["top_level_run"] = top_level_run
+        run = top_level_run * nb_repeat_runs + repeat_run
+        global_dict["run"] = run
         global_dict["leaf_folder"] = "results_run%04d/" % run
+        global_dict["repeat_run"] = repeat_run
         dfolder = global_dict["dest_folder"] + global_dict["leaf_folder"]
         os.makedirs(dfolder, exist_ok=True)  # necessary
-        print("-----------------------------------------------")
-        global_dict["run"] = run
+
+        print("repeat_run= ", repeat_run)
+        print("nb_repeat_runs= ", nb_repeat_runs)
+        print("top_level_run= ", top_level_run)
+        print("run= ", run)
+        print("dct= ", dct)
+
         args = []
         for k,v in dct.items():
             global_dict[k] = v
@@ -128,6 +153,7 @@ def run_simulation(global_dict, run):
             dfolder = global_dict["dest_folder"] + global_dict["leaf_folder"] 
             cmd = "./seir %s >& %s" % (args, dfolder + global_dict["output_file"])
             global_dict["cmd"] = cmd
+            print("global_dict: ", global_dict)
             print("command: ", cmd)
             os.system(cmd)
             storeFiles(global_dict)
@@ -135,15 +161,31 @@ def run_simulation(global_dict, run):
             print("An error occurred during execution")
             traceback.print_exc()
             break
-        print("global_dict= ", global_dict)
+
+        print("--> end loop, repeat_run= ", repeat_run)
+        print("--> end loop, nb_repeat_runs= ", nb_repeat_runs)
+        print("end loop, top_level_run= ", top_level_run)
+        print("dfolder= ", dfolder)
+
+        with open(dfolder+"global_dict.pkl", "wb") as f:
+            pickle.dump(global_dict, f)
         print("-----------------------------------------------")
 
-        # preprocess transition files
-        # Transition files can be deleted, in principle
-        cmd = f"pushd {global_dict['dest_folder']}; python breakup_transition.py; popd"
-        os.system(cmd)
+    # preprocess transition files
+    # Transition files can be deleted, in principle
+    cmd = f"pushd {global_dict['dest_folder']}; python breakup_transition.py; popd"
+    print("cmd= ", cmd)
+    os.system(cmd)
 
 #----------------------------------------------------------------
 if __name__ == "__main__":
-    global_dict = setupGlobalDict(run)
-    run_simulation(global_dict, run)
+    timestamp = datetime.now().strftime("%m_%d_%H_%M_%S")
+    project_nb = 15    # <<<< Set to create a new run
+    nb_repeat_runs = 3   # <<<< Set to create a new run
+    
+    global_dict = setupGlobalDict(project_nb)
+    print("after setup")
+    global_dict['nb_repeat_runs'] = nb_repeat_runs
+    global_dict['project_nb'] = project_nb
+
+    run_simulation(global_dict, project_nb)
