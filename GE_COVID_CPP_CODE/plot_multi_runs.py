@@ -16,7 +16,7 @@ import stats
 import read_data as rd
 
 #----------------------------------------------------------------
-run_index = 7    # <<<< Set to create a new run
+run_index = [12]    # <<<< Set to create a new run
 #----------------------------------------------------------------
 
 # Run this file on a multiple simulation outputs without pandas
@@ -115,7 +115,9 @@ def plot_infections_by_degree(delta_time, ax, folder, global_dict):
     if 1:
         col = global_dict['color']
         run = global_dict['run']
-        vac1_rate = global_dict['vac1_rate']
+        vacc1_rate = global_dict['vacc1_rate']
+        max_nb_avail_doses = global_dict["max_nb_avail_doses"]
+        epsilonSinv = global_dict["epsilonSinv"]
         filenm = glob.glob(folder + "/data_baseline_p0.txt")[0]
         print("filenm= ", filenm)
         df = rd.setupDataframe(filenm)
@@ -127,7 +129,7 @@ def plot_infections_by_degree(delta_time, ax, folder, global_dict):
         lw = 0.5
         #ax.plot(times, infected/N, color=col, lw=lw, label=f"{vac1_rate}")
         #ax.plot(times, latent/N, color=col, lw=lw) # label="Latent")
-        ax.plot(times, (infected+latent)/N, color=col, lw=lw, label=f"{vac1_rate}") #, label="IS+L")
+        ax.plot(times, (infected+latent)/N, color=col, lw=lw, label=f"{vacc1_rate},{max_nb_avail_doses},{epsilonSinv}")
         ax.plot(times, recov/N, color=col, lw=lw) #, label="R")
 
     # plot vaccinated
@@ -143,7 +145,9 @@ def plot_infections_by_degree(delta_time, ax, folder, global_dict):
     ax.set_xlim(0,80)
     ax.set_ylim(0,1)
     ax.grid(True)
-    ax.legend(title="Daily vacc rate\n(1st dose)", loc='upper right')
+    ax.legend(fontsize=8, title="Daily vacc rate (dose 1)\n \
+             max nb avail doses\n \
+             latent time", loc='upper right')
     eps_S = global_dict["epsilonS-1"]
     ax.set_title(f"I, L, R, curves (latent period:{eps_S} days\n(frac of tot pop size)")
     ax.set_xlabel("Time")
@@ -167,12 +171,13 @@ if __name__ == "__main__":
 
     # This script presumes a loop over a degrees list (hardcoded in the various methods)
 
-    base_run_folder = "run%03d" % run_index    # <<<< MUST BE SET
+    #base_run_folder = "run%03d" % run_index    # <<<< MUST BE SET
     base_folder = "data_ge/%s/results_run%03d" 
-    runs = range(4)
+    #runs = range(4)
+    runs = range(8)
 
     # one color per case
-    cols = ['r', 'g', 'b', 'c', 'm', 'orange']
+    cols = ['r', 'g', 'b', 'c', 'm', 'orange', 'black']
 
     # Store the plots in variables. Rearrange later if possible.
 
@@ -187,20 +192,25 @@ if __name__ == "__main__":
     print("folders= ", folders)
 
     #for ic,case in enumerate([4,7,6,5]):
-    for ic,case in enumerate([8,9,10,11]):
-      base_run_folder = "run%03d" % case    # <<<< MUST BE SET
-      base_folder = "data_ge/%s/results_run%03d" 
+    #for ic,case in enumerate([8,9,10,11]):
+    for ic,case in enumerate(run_index):
+      #base_run_folder = "run%03d" % case    # <<<< MUST BE SET
+      #base_folder = "data_ge/%s/results_run%03d" 
       ax = axes[ic]
-      base_run = case
+      #base_run = case
 
       for run in runs:
         print(run)
-        folder = base_folder % (base_run_folder, run)
+        #folder = base_folder % (base_run_folder, run)
+        folder = "data_ge/" + "run%05d" % case + "/" + "results_run%04d" % run 
         with open(folder + "/global_dict.pkl", "rb") as f:
             global_dict = pickle.load(f)
         global_dict['colors'] = cols
-        global_dict['color'] = cols[run]
+        global_dict['color'] = cols[run % len(cols)]
         global_dict['run'] = run
+        print("vacc1_rate: ", global_dict["vacc1_rate"])
+        print("max_nb_avail_doses: ", global_dict["max_nb_avail_doses"])
+        print("epsilonSinv: ", global_dict["epsilonSinv"])
         plot_infections_by_degree(dt, ax, folder, global_dict)
 
     plt.tight_layout()
