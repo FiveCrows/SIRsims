@@ -182,7 +182,6 @@ class StructuredEnvironment(Environment):
         :param partitioner: Partitioner
         for creating a partition
         """
-        super().__init__(attributes, members)
         self.partitioner = partitioner
         self.contact_matrix = contact_matrix
         #self.total_matrix_contact = contact_matrix.sum()

@@ -48,7 +48,7 @@ def getContactMatrix(model, partitioner, env_indices):
     for index in env_indices:
         env = model.environments[index]
         #assigns each person to a set
-        placements, partition = partitioner.placeAndPartition(env.members, model.populace)
+        placements, partition = partitioner.partitionGroup(env.member_records)
         setSizes += np.array([len(partition[index]) for index in partition])
         for edge in env.edges:
             cm[placements[edge[0]], placements[edge[1]]] += 1

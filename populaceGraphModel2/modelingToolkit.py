@@ -56,7 +56,7 @@ class NetBuilder:
         :param subgroup: list
         may be used if one intends to add edges for only members of the environments subgroup
         :param weight_scalar: double
-         may be used if one wants the weights scaled larger/smaller than normal
+        may be used if one wants the weights scaled larger/smaller than normal
 
         :return edge_list: ebunch
         returns a list of weighted edges in form (nodeA, nobeB, weight)
@@ -267,17 +267,17 @@ class StrogatzNetBuilder(NetBuilder):
 
     def netStrogatz(self, environment,  num_edges, weight_scalar = 1, subgroup = None, rewire_p = 0.1):
         """
-         netStrogatz creates a strogatz net in the given environment
+        netStrogatz creates a strogatz net in the given environment
 
-         :param environment: Environment object,
+        :param environment: Environment object,
         where to add edges
-         :param num_edges: int
-         the number of edges to add to the environment
-         :param subgroup: list
-         optional in case only edges for select members of the environment are wanted
-         :param rewire_p:
-         the portion of edges to be included into the net by random
-         :return:
+        :param num_edges: int
+        the number of edges to add to the environment
+        :param subgroup: list
+        optional in case only edges for select members of the environment are wanted
+        :param rewire_p:
+        the portion of edges to be included into the net by random
+        :return:
         """
 
         if subgroup == None:
@@ -491,7 +491,10 @@ class PopulaceGraph:
         self.pops_by_category = pickleDict.pop('pops_by_category')
         self.environments = pickleDict.pop('environments')
         self.__dict__.update(pickleDict)
-        
+
+        #reference records to each environment:        
+        for env in self.environments.values():
+            env.member_records = self.populace[env.members]
         #make a default dict, to handle none case
         self.population = len(self.populace)
         self.schools = self.pops_by_category["school_id"]
