@@ -18,6 +18,10 @@ using namespace std;
 #define SETUPVACC
 #undef SETUPVACC
 
+// define VARBETA to enable time-dependent transmissibility
+#define VARBETA
+#undef VARBETA
+
 
 using namespace std;
 
@@ -524,11 +528,14 @@ void G::infect(int source, int type, Network& net, Params& params, GSL& gsl, Lis
       target = net.node[source].v[j]; // neighbor j of source
 	  // Added if branch for tracking potential infected perform more detailed 
 	  // measurements of generation time contraction
-	  //float beta = net.node[source].beta_IS * net.node[source].w[j];
+#ifdef VARBETA
 	  Node& node = net.node[source];
 	  // transmission distribution is not a function of the individual. So superspreading is not modeled. 
 	  // Furthermore, the distribution is not exponential (that is more realistic)
 	  float beta = par.R0 * getBetaISt(node) * node.w[j];
+#else
+	  float beta = net.node[source].beta_IS * net.node[source].w[j];
+#endif
 	  prob = params.dt * beta;
 	  //printf("beta= %f, %f\n", beta, net.node[source].beta_IS);
 	  //printf("prob= %f\n", prob);
