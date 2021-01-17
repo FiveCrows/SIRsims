@@ -189,7 +189,7 @@ if __name__ == "__main__":
     search_params['epsilonSinv'] = [0.5, 2., 4.0]
     search_params['muSinv'] = [3.0, 5.0]
     search_params['R0'] = [2., 2.5, 3.0]
-    run_description = "betaISt, mu=5d, repeat=2, vary R0, vacc1_rate, max_nb_avail_doses, mu. Beta changes in time."}
+    run_description = "betaISt, mu=5d, repeat=2, vary R0, vacc1_rate, max_nb_avail_doses, mu. Beta changes in time."
     #===== END SET UP PARAMETERS ============
     
     global_dict = setupGlobalDict(project_nb)
