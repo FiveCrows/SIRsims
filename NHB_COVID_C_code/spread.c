@@ -1,5 +1,7 @@
 #include "head.h"
 
+// Model consistent with paper of Ferretti (2020), which does not include hospitalization
+
 void init()
 {
   resetVariables();
@@ -80,7 +82,7 @@ void spread(int run)
 
 void infection()
 {
-  //Infectious asymptomatic
+  //Infectious asymptomatic  
   for(int i=0;i<infectious_asymptomatic.n;i++)
     infect(infectious_asymptomatic.v[i],IA);
 
@@ -100,6 +102,9 @@ void infect(int source, int type)
 
   for(int j=0;j<node[source].k;j++)
     {
+	  // Infect neighbors of source if they are susceptible
+	  // Transition from S -> L
+	  // The L state is not infectiuous. it is an Exposed state. 
       target = node[source].v[j];
       if(node[target].state==S)
 	{
@@ -126,6 +131,11 @@ void infect(int source, int type)
 void latency()
 {
   int id;
+  // The initial state is a mixture of Latent symptomatic and asymptomatic
+  // Scan each of these lists separately
+  // Latent Asymptomatic (non-infectious) become infectious asymptomatic (infectious)
+  // Latent Symptomatic (non-infectious) become pre-symptomatic (for at least dt)
+  //     In reality, why can't a latent symptomatic become infectious symptomatic right away? 
 
   for(int i=0;i<latent_asymptomatic.n;i++)
     {
@@ -156,6 +166,8 @@ void IaToR()
 {
   int id;
 
+  // Infectious asymptomatic eventually recover at rate mu per day
+
   for(int i=0;i<infectious_asymptomatic.n;i++)
     {
       id = infectious_asymptomatic.v[i];
@@ -174,6 +186,9 @@ void IaToR()
 void preToI()
 {
   int id;
+
+  // Scan the infectious pre-symptomatic, which become infectious symptomatic
+  // at rate gammita per day
 
   for(int i=0;i<pre_symptomatic.n;i++)
     {
@@ -196,6 +211,8 @@ void preToI()
 void IsTransition()
 {
   int id;
+
+  // Infectious symptomatic will recover at rate mu per day
 
   for(int i=0;i<infectious_symptomatic.n;i++)
     {

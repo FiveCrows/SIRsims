@@ -1,6 +1,7 @@
 # Distributions useful for Covid modeling
 
 import numpy as np
+import scipy.special as sp
 
 # Experiment with creating a negative binomial of mean R0 and variance
 # R0 * (1 + k*R0)
@@ -31,3 +32,22 @@ def negativeBinomial(R0, k, n):
     r = k 
     neg_bins = np.random.negative_binomial(r, p, n)
     return neg_bins
+
+def weibull(shape, scale, n):
+    wei = scale * np.random.weibull(shape, size=n)
+    return wei
+
+
+if __name__ == "__main__":
+    shape = 2.826
+    scale = 5.665
+    wei = weibull(shape, scale, 100000)
+    mean = np.mean(wei)
+    var = np.var(wei)
+    std = np.std(wei)
+    print("mean,var,std= ", mean, var, std)
+    # Compute theoretical mean
+    mean = scale * sp.gamma(1.+1/shape)
+    var = scale**2 *(sp.gamma(1.+2./shape) - (sp.gamma(1.+1./shape))**2)
+    print("theor mean: ", mean)
+    print("theor var: ", var)

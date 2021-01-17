@@ -5,6 +5,8 @@
 // include files. So must be called last
 #include "cxxopts.hpp"
 #include "states.h"
+#include <vector>
+using namespace std;
 
 #define EXP 1       // Exponential distribution of infection times
 #define CONST_INFECTION_TIME 0   // constant recovery time
@@ -331,90 +333,6 @@ void G::spread(int run, Files& f, Lists& l, Network& net, Params& params, GSL& g
 	);
 }
 //----------------------------------------------------------------------
-void G::infection(Lists& l, Network& net, Params& params, GSL& gsl, Counts& c, float cur_time)
-{
-  if (l.infectious_asymptomatic.n > 0) {printf("infectious_asymptomatic should be == 0\n"); exit(1); }
-  if (l.pre_symptomatic.n > 0) {printf("pre_symptomatic should be == 0\n"); exit(1); }
-
-  //Infectious symptomatic (check the neighbors of all infected)
-  for (int i=0; i < l.infectious_symptomatic.n; i++) {
-	//printf("call infect(infectious_symptomatic) %d\n", i);
-    infect(l.infectious_symptomatic.v[i], IS, net, params, gsl, l, c, cur_time);
-  }
-}
-//----------------------------------------------------------------------
-void G::infect(int source, int type, Network& net, Params& params, GSL& gsl, Lists& l, Counts& c, float cur_time)
-{
-  int target;
-  double prob;
-  //static int count_success = 0;
-  //static int count_total   = 0;
-
-  if (net.node[source].state != IS) { // Code did not exit
-	printf("I expected source state to be IS instead of %d\n", net.node[source].state); exit(1);
-  }
-
-  //printf("infect,source= %d,  ...k= %d\n", source, net.node[source].k);  //all zero
-  for (int j=0; j < net.node[source].k; j++) {  
-      target = net.node[source].v[j]; // neighbor j of source
-	  // Added if branch for tracking potential infected perform more detailed 
-	  // measurements of generation time contraction
-	  float beta = net.node[source].beta_IS * net.node[source].w[j];;
-	  prob = params.dt * beta;
-	  //printf("beta= %f, %f\n", beta, net.node[source].beta_IS);
-	  //printf("prob= %f\n", prob);
-
-#if EXP
-	    prob = 1.-exp(-prob);   // == prob as prob -> zero
-#endif
-	  if (net.node[target].state != S) {
-	      if (gsl_rng_uniform(gsl.random_gsl) < prob) {
-		  	stateTransition(source, target, IS, PotL, net.node[source].t_IS, cur_time);
-		  }
-	  } else {
-#if 0
-		if (net.node[source].state != IS) {
-			printf("I expected source to be IS\n"); exit(1);
-			// Code did not exit
-		}
-		float a = 1. / params.beta_normal;
-	    float b = 1. / 0.37;
-		float g = gsl_ran_gamma(gsl.r_rng, a, b);  // not yet used
-#endif
-		//printf("infect: prob= %f\n", prob);
-	    if (gsl_rng_uniform(gsl.random_gsl) < prob) {
-
-		    addToList(&l.new_latent_symptomatic, target);
-			c.count_l_symp += 1;
-
-		  #if 0
-	      if (gsl_rng_uniform(gsl.random_gsl) < params.p) { // p = 0
-		    addToList(&l.new_latent_asymptomatic, target);
-			c.count_l_asymp += 1;
-		  } else {
-		    addToList(&l.new_latent_symptomatic, target);
-			c.count_l_symp += 1;
-  		    count_success++;
-			double ratio = (double) count_success / (double) count_total;
-			printf("count_success= %d, count_total= %d\n", count_success, count_total);
-			printf("ratio: success/total: %f\n", ratio);
-		  }
-          #endif
-
-		  // Values of time interval distribution are incorrect it seems.
-		  // Chances there is an error in the next line
-	      // Update target data
-	      net.node[target].state = L;
-	      net.node[target].t_L   = cur_time;
-		  stateTransition(source, target, IS, L, net.node[source].t_IS, net.node[target].t_L);
-
-	      //Various
-	      l.n_active++;
-	    }
-	  } // check whether state is S
-  } // for  
-}
-//----------------------------------------------------------------------
 void G::vaccinations(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, float cur_time)
 {
   // SOME KIND OF ERROR. MUST LOOK CAREFULLY AT DEFINITIONS OF RATES
@@ -449,6 +367,7 @@ void G::vaccinateAquaintance(Network& net, Lists& l, Counts& c, Params& par, GSL
 	        net.node[id].beta_IS = par.beta[IS] * (1.-par.vacc1_eff); 
 
 			// perhaps have a new entry in the data file for par.vacc1_recov_eff?
+			// mu is a rate in [1/days]
 	        net.node[id].mu   = par.mu / (1.-par.vacc1_recov_eff); 
 
 			// Probability of vaccine effectivness
@@ -509,9 +428,11 @@ void G::vaccinateNextBatch(Network& net, Lists& l, Counts& c, Params& par, GSL& 
 			net.node[id].is_vacc = 1;
 			net.node[id].t_V1 = cur_time;
 			// constant in time
+
+			// Higher vaccine effectiveness decreases the transmission rate
 	        net.node[id].beta_IS = par.beta[IS] * (1.-par.vacc1_eff); 
 
-			// perhaps have a new entry in the data file for par.vacc1_recov_eff?
+			// Higher vaccine effectiveness increases the recovery rate
 	        net.node[id].mu   = par.mu / (1.-par.vacc1_recov_eff); 
 
 			// Probability of vaccine effectivness
@@ -558,10 +479,15 @@ void G::secondVaccination(Params& par, Lists& l, GSL& gsl, Network &net, Counts&
 			addToList(&l.new_vacc2, id);
 		    c.count_vacc2 += 1;
 	        net.node[id].t_V2 = cur_time;
+	
+			// Higher vaccine effectiveness decreases the transmission rate
 	        net.node[id].beta_IS = par.beta[IS] * (1.-par.vacc2_eff); 
+
 			// perhaps have a new entry in the data file for par.vacc1_recov_eff?
 			// as recovery effectiveness goes to one, the recovery rate to infinity, so the 
 			// recovery time goes to zero, so infection time goes to zero. 
+
+			// Higher vaccine effectiveness increases the recovery rate
 	        net.node[id].mu   = par.mu / (1.-par.vacc2_recov_eff); 
 			i = removeFromList(&l.vacc1, i);
 		    stateTransition(id, id, V1, V2, net.node[id].t_V1, cur_time);
@@ -571,11 +497,99 @@ void G::secondVaccination(Params& par, Lists& l, GSL& gsl, Network &net, Counts&
     //printf("new_vacc1.n= %d, new_vacc2.n= %d\n", l.new_vacc1.n, l.new_vacc2.n);
 }
 //----------------------------------------------------------------------
+void G::infection(Lists& l, Network& net, Params& params, GSL& gsl, Counts& c, float cur_time)
+{
+  if (l.infectious_asymptomatic.n > 0) {printf("infectious_asymptomatic should be == 0\n"); exit(1); }
+  if (l.pre_symptomatic.n > 0) {printf("pre_symptomatic should be == 0\n"); exit(1); }
+
+  // Loop through the infectious symptomatic (check the neighbors of all infected)
+  for (int i=0; i < l.infectious_symptomatic.n; i++) {
+    infect(l.infectious_symptomatic.v[i], IS, net, params, gsl, l, c, cur_time);
+  }
+}
+//----------------------------------------------------------------------
+void G::infect(int source, int type, Network& net, Params& params, GSL& gsl, Lists& l, Counts& c, float cur_time)
+{
+  int target;
+  double prob;
+  //static int count_success = 0;
+  //static int count_total   = 0;
+
+  if (net.node[source].state != IS) { // Code did not exit
+	printf("I expected source state to be IS instead of %d\n", net.node[source].state); exit(1);
+  }
+
+  // Loop through neighboards of IS
+  for (int j=0; j < net.node[source].k; j++) {  
+      target = net.node[source].v[j]; // neighbor j of source
+	  // Added if branch for tracking potential infected perform more detailed 
+	  // measurements of generation time contraction
+	  //float beta = net.node[source].beta_IS * net.node[source].w[j];
+	  Node& node = net.node[source];
+	  // transmission distribution is not a function of the individual. So superspreading is not modeled. 
+	  // Furthermore, the distribution is not exponential (that is more realistic)
+	  float beta = par.R0 * getBetaISt(node) * node.w[j];
+	  prob = params.dt * beta;
+	  //printf("beta= %f, %f\n", beta, net.node[source].beta_IS);
+	  //printf("prob= %f\n", prob);
+
+#if EXP
+	    prob = 1.-exp(-prob);   // == prob as prob -> zero
+#endif
+	  // If the target is to be infected, there are two cases: 
+	  // Either it is already infected, so I record the "potential infection"
+	  if (net.node[target].state != S) {
+		  // 
+	      if (gsl_rng_uniform(gsl.random_gsl) < prob) {
+		  	stateTransition(source, target, IS, PotL, net.node[source].t_IS, cur_time);
+		  }
+	  } 
+	  // Or it is not yet infected 
+	  else {
+		// Check whether infection occurs based on betaISt or beta
+		// Convert S to L  (infected, not infectious)
+	    if (gsl_rng_uniform(gsl.random_gsl) < prob) {
+
+		    addToList(&l.new_latent_symptomatic, target);
+			c.count_l_symp += 1;
+
+		  #if 0
+	      if (gsl_rng_uniform(gsl.random_gsl) < params.p) { // p = 0
+		    addToList(&l.new_latent_asymptomatic, target);
+			c.count_l_asymp += 1;
+		  } else {
+		    addToList(&l.new_latent_symptomatic, target);
+			c.count_l_symp += 1;
+  		    count_success++;
+			double ratio = (double) count_success / (double) count_total;
+			printf("count_success= %d, count_total= %d\n", count_success, count_total);
+			printf("ratio: success/total: %f\n", ratio);
+		  }
+          #endif
+
+		  // Values of time interval distribution are incorrect it seems.
+		  // Chances there is an error in the next line
+	      // Update target data
+	      net.node[target].state = L;
+	      net.node[target].t_L   = cur_time;
+		  Node& ns = net.node[source];
+		  Node& nt = net.node[target];
+		  stateTransition(source, target, IS, L, ns.t_IS, nt.t_L);
+		  stateTransition(source, target, L, L, ns.t_L, nt.t_L);  // Generation time
+
+	      //Various
+	      l.n_active++;
+	    }
+	  } // check whether state is S
+  } // for  
+}
+//----------------------------------------------------------------------
 void G::latency(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, float cur_time)
 {
   int id;
 
-  // prob goes to 1 as eps_S -> 0
+  // Transition from L to IS at rate epsilon_symptomatic
+  // Must stay in L state at for a time of at least dt, even if prob=1
 #if 1
   for (int i=0; i < l.latent_symptomatic.n; i++) {
       id = l.latent_symptomatic.v[i];  
@@ -584,7 +598,6 @@ void G::latency(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, float 
 #else
 	  double prob = par.dt*par.epsilon_symptomatic;
 #endif
-	  //printf("prob L->IS (epsilon_symptomatic): %f, inv: %f\n", prob/par.dt, par.dt/prob);
 	  if (gsl_rng_uniform(gsl.random_gsl) < prob) {
 	    addToList(&l.new_infectious_symptomatic, id);
 		c.count_i_symp += 1;
@@ -606,7 +619,11 @@ void G::IsTransition(Params& par, Lists& l, Network& net, Counts& c, GSL& gsl, f
   int id;
 
   // Modified by GE to implement simple SIR model. No hospitalizations, ICU, etc.
-  // Go from IS to R
+  // Transition from IS to R at rate mu*dt
+  // Perhaps it is the infectious that should be a negative Binomial? It is the infectious time that partially 
+  // dictates R0.
+  // Is there a distribution of recovery times? 
+
   for (int i=0; i < l.infectious_symptomatic.n; i++) {
     id = l.infectious_symptomatic.v[i];  
 #if CONST_INFECTION_TIME
@@ -682,6 +699,25 @@ void G::resetVariables(Lists& l, Files& files)
   l.state_to.resize(0);
   l.from_time.resize(0);
   l.to_time.resize(0);
+
+  // Transmission profile
+  // We will use a Weibull Distribution with scale 5.665 and shape 2.826, 
+  // from the paper by Ferretti (2020), "Quantifying SARS-COV-2" transmission 
+  // suggests epidemic control with digital contact tracing."
+  par.betaISt.resize(3000);
+  double shape = 2.826;
+  double scale = 5.665;
+  double sum = 0.0;
+
+  // 3000 is overkill, but it allows me to avoid an if statement in getBetISt()
+  for (int i=0; i < 3000; i++) {
+	 double t = i * par.dt;
+     par.betaISt[i] = gsl_ran_weibull_pdf(t, scale, shape);
+     printf("beta: %f\n", par.betaISt[i]);
+     sum += par.betaISt[i];
+	 printf("beta[%f]= %f\n", i*par.dt, par.betaISt[i]);
+  }
+  printf("integral of betaISt= %f\n", sum*par.dt);
 }
 //----------------------------------------------------------------------
 void G::resetNodes(Params& par, Network& net)
@@ -845,6 +881,7 @@ void G::readNetwork(Params& params, Lists& lists, Network& network, Files& files
       network.node[i].t_L  = 0.;
       network.node[i].t_IS = 0.;
       network.node[i].t_R  = 0.;
+      network.node[i].ti_L = 0;
       network.node[i].t_V1  = -1.;  // uninitialized if negative
       network.node[i].t_V2  = -1.;
     }
@@ -1160,8 +1197,8 @@ void G::parse(int argc, char** argv, Params& par)
           //.allow_unrecognised_options()
           .add_options()
 		  ("N", "Number of nodes", cxxopts::value<int>())
-		  ("gamma", "Average recovery time", cxxopts::value<float>())
-		  ("mu", " Average latent time", cxxopts::value<float>())
+		  ("gammainv", "Has to do with presymtomatic beta [days]", cxxopts::value<float>())
+		  ("muinv", " Average recovery time [days]", cxxopts::value<float>())
 		  ("betaIS", " Transmissibility rate", cxxopts::value<float>())
 		  ("dt", " Time step", cxxopts::value<float>())
 		  ("vacc1_rate", " Rate of 1st vaccine dose", cxxopts::value<float>())
@@ -1171,7 +1208,8 @@ void G::parse(int argc, char** argv, Params& par)
 		  ("dt_btw_vacc", " Time between 1st and 2nd vaccine doses", cxxopts::value<float>())
 		  ("max_nb_avail_doses", " Maximum number of vaccine doses", cxxopts::value<int>()->default_value("-1"))
 		  ("nb_doses", " Number of vaccine doses (1/2)", cxxopts::value<int>()->default_value("2"))
-		  ("epsilonSinv", " Average latent interval", cxxopts::value<float>())
+		  ("epsilonSinv", "Average latent interval [days]", cxxopts::value<float>())
+		  ("R0", "Initial R0 in the absence of behavior change", cxxopts::value<float>())
           ("help", "Print help")
         ;
 
@@ -1185,13 +1223,13 @@ void G::parse(int argc, char** argv, Params& par)
 			par.N = res["N"].as<int>();
 		    printf("arg: par.N= %d\n", par.N);
 	    }
-		if (res.count("gammita") == 1) {
-			par.gammita = res["gammita"].as<float>();
-		    printf("arg: par.gammita= %f\n", par.gammita);
+		if (res.count("gammitainv") == 1) {
+			par.gammita = 1. / res["gammita"].as<float>();
+		    printf("arg: par.gammita= %f [1/days]\n", par.gammita);
 	    }
 		if (res.count("mu") == 1) {
-			par.mu = res["mu"].as<float>(); // rate
-		    printf("arg: par.mu= %f\n", par.mu);
+			par.mu = 1. / res["muinv"].as<float>(); // rate
+		    printf("arg: par.mu= %f [1/days]\n", par.mu);
 	    }
 		if (res.count("betaIS") == 1) {
 			par.beta_normal = res["betaIS"].as<float>();
@@ -1231,9 +1269,14 @@ void G::parse(int argc, char** argv, Params& par)
 			par.nb_doses = res["nb_doses"].as<int>();
 		    printf("arg: par.nb_doses= %d\n", par.nb_doses);
 	    }
-		if (res.count("epsilonS-1") == 1) {
-			par.epsilon_symptomatic = 1. / res["epsilonS-1"].as<float>();
-		    printf("arg: par.epsilon_symptomatic= %f\n", par.epsilon_symptomatic);
+		if (res.count("R0") == 1) {
+			par.R0 = res["R0"].as<float>();
+		    printf("arg: par.nb_doses= %f\n", par.R0);
+	    }
+		if (res.count("epsilonSinv") == 1) {
+			par.epsilon_symptomatic = 1. / res["epsilonSinv"].as<float>();
+		    printf("arg: epsilonS-1= %f days\n", 1. / par.epsilon_symptomatic);
+		    printf("arg: par.epsilon_symptomatic= %f [1/days]\n", par.epsilon_symptomatic);
 	    }
 
     //auto arguments = res.arguments();
@@ -1245,4 +1288,27 @@ void G::parse(int argc, char** argv, Params& par)
 	
 	return;
 }
-
+//----------------------------------------------------------------------
+double G::getBetaISt(Node& node)
+// return \beta(\tau, t) = \beta(tau)
+{
+	// No bounds checking. There is enough space reserved in par.betaISt.
+	int dti = files.it - node.ti_L;
+	return par.betaISt[dti];
+}
+//----------------------------------------------------------------------
+void G::weibull(vector<double>& samples, GSL& gsl, double shape, double scale, int n)
+{
+	for (int i=0; i < n; i++) {
+    	samples[i] = gsl_ran_weibull(gsl.r_rng, scale, shape);
+	}
+}
+//----------------------------------------------------------------------
+void G::lognormal(vector<double>& samples, GSL& gsl, double mu, double sigma2, int n)
+// See Wikipedia article
+{
+	for (int i=0; i < n; i++) {
+    	samples[i] = gsl_ran_lognormal(gsl.r_rng, mu, sigma2);
+	}
+}
+//----------------------------------------------------------------------

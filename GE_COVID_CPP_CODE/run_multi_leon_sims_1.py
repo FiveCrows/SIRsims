@@ -88,6 +88,7 @@ def storeFiles(global_dict):
     shutil.copy("stats.py", src_code_folder)
     shutil.copy("read_data.py", src_code_folder)
     shutil.copy("read_parameter_file.py", src_code_folder)
+    shutil.copy("timings.py", src_code_folder)
     shutil.copy("Makefile", src_code_folder)
     shutil.copy("breakup_transition.py", gd['dest_folder'])
     print("copy breakup_transition to ", gd['dest_folder'])
@@ -102,10 +103,7 @@ def run_simulation(global_dict, project_nb):
 
     ## Make sure the key is in global_dict (so I need a function)
     ## The keys of search_params should be command line arguments
-    search_params = {}
-    search_params['vacc1_rate'] = [10000, 20000]
-    search_params['max_nb_avail_doses'] = [50000, 100000, 200000]
-    search_params['epsilonSinv'] = [3.0]
+    search_params = global_dict["search_params"]
     out_dicts = dict_product(search_params)
 
     #----------------------------------------------------------
@@ -156,6 +154,7 @@ def run_simulation(global_dict, project_nb):
             print("global_dict: ", global_dict)
             print("command: ", cmd)
             os.system(cmd)
+            quit()
             storeFiles(global_dict)
         except: 
             print("An error occurred during execution")
@@ -180,12 +179,23 @@ def run_simulation(global_dict, project_nb):
 #----------------------------------------------------------------
 if __name__ == "__main__":
     timestamp = datetime.now().strftime("%m_%d_%H_%M_%S")
-    project_nb = 15    # <<<< Set to create a new run
-    nb_repeat_runs = 3   # <<<< Set to create a new run
+
+    #===== SET UP PARAMETERS ============
+    project_nb = 16    # <<<< Set to create a new run
+    nb_repeat_runs = 2   # <<<< Set to create a new run
+    search_params = {}
+    search_params['vacc1_rate'] = [5000 ,10000, 20000]
+    search_params['max_nb_avail_doses'] = [50000, 100000, 200000]
+    search_params['epsilonSinv'] = [0.5, 2., 4.0]
+    search_params['muSinv'] = [3.0, 5.0]
+    search_params['R0'] = [2., 2.5, 3.0]
+    run_description = "betaISt, mu=5d, repeat=2, vary R0, vacc1_rate, max_nb_avail_doses, mu. Beta changes in time."}
+    #===== END SET UP PARAMETERS ============
     
     global_dict = setupGlobalDict(project_nb)
-    print("after setup")
     global_dict['nb_repeat_runs'] = nb_repeat_runs
     global_dict['project_nb'] = project_nb
+    global_dict['search_params'] = search_params
+    global_dict['run_description'] = run_description
 
     run_simulation(global_dict, project_nb)

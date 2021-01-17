@@ -14,7 +14,7 @@ from timings import *
 
 
 #----------------------------------------------------------------
-run_index = [14]    # <<<< Process one or multiple runs
+run_index = [15]    # <<<< Process one or multiple runs
 #----------------------------------------------------------------
 
 # Run this file on a multiple simulation outputs without pandas
@@ -73,6 +73,8 @@ def plot_individual_R(ax, axc, folder, global_dict):
     ax.set_xlabel('Days')
     ax.set_ylabel('Avg Indiv. R(t)')
     ax.set_title('Individual R')
+    ax.set_xlim(0,100)
+    ax.set_ylim(0,8)
     ax.grid(True)
     #leg_text = "Daily vacc rate (dose 1)\nmax nb avail doses\nlatent time"
     #ax.legend(fontsize=6, title=leg_text, loc='upper right')
@@ -80,6 +82,7 @@ def plot_individual_R(ax, axc, folder, global_dict):
     axc.set_xlabel('Days')
     axc.set_ylabel('Avg Indiv. R count')
     axc.set_title('Nb of samples of indiv R(t)')
+    axc.set_xlim(0,100)
     axc.grid(True)
     return h, hc  # handles
 
@@ -122,6 +125,12 @@ def plot_generation_times_2(ax1, ax2, ax3, folder, global_dict): #, IS_L, IS_R, 
     ax1.grid(True)
     ax2.grid(True)
     ax3.grid(True)
+    ax1.set_xlim(0,100)
+    ax2.set_xlim(0,100)
+    ax3.set_xlim(0,100)
+    ax1.set_ylim(0,7)
+    ax2.set_ylim(0,7)
+    ax3.set_ylim(0,10)
     #ax3.set_title("Time interval pot_real IS-L")
 
     """
@@ -149,6 +158,7 @@ def plot_infections_by_degree(delta_time, ax, axv, folder, global_dict):
         ax.plot(times, infected/N, color=col, lw=lw) #, label=f"{vacc1_rate}") 
         ax.plot(times, recov/N, color=col, lw=lw, alpha=alpha) #, label="R")
         ax.grid(True)
+        ax.set_xlim(0,100)
         eps_S = global_dict["epsilonS-1"]
         ax.set_title(f"Frac Infected (latent period:{eps_S} days\n(frac of tot pop size)")
 
@@ -166,6 +176,7 @@ def plot_infections_by_degree(delta_time, ax, axv, folder, global_dict):
     axv.grid(True)
     axv.set_title(f"Number of people vaccinated\n1st and 2nd dose")
     axv.set_xlabel("Time")
+    axv.set_xlim(0,100)
 
 def plot_latent_by_degree(delta_time, ax, folders, global_dict):
     if 1:
@@ -186,6 +197,7 @@ def plot_latent_by_degree(delta_time, ax, folders, global_dict):
         latent, infected, recov = rd.get_SEIR(by, run0, delta_t=0.1, plot_data=False)
         times = delta_time * np.asarray(range(len(latent)))
         ax.plot(times, latent/N, color=col, lw=lw, alpha=alpha)
+    ax.set_xlim(0,100)
     ax.set_title("Fraction Latent")
     ax.grid(True)
 

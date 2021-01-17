@@ -79,6 +79,13 @@ void negativeBinomial(vector<double>& samples, gsl_rng* r_rng, double R0, double
     	samples[i] = gsl_ran_negative_binomial(r_rng, p, r);
 	}
 }
+
+void weibull(vector<double>& samples, gsl_rng* r_rng, double shape, double scale, int n)
+{
+	for (int i=0; i < n; i++) {
+    	samples[i] = gsl_ran_weibull(r_rng, scale, shape);
+	}
+}
 //------------------------------------------------------
 int main()
 {
@@ -136,4 +143,9 @@ Sample Poisson with this R\n\
 
 	poisson(samples, r_rng, samples, N);
 	mean_var("gamma-poisson", samples, N);
-}
+
+	double shape = 2.;
+	double scale = 3.;
+	weibull(samples, r_rng, shape, scale, N);
+	mean_var("weibull", samples, N);
+

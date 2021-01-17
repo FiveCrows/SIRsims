@@ -1,6 +1,7 @@
 #ifndef _G_H_
 #define _G_H_
 
+#include <vector>
 #include "head.h"
 
 class G {
@@ -64,6 +65,9 @@ public:
 	float readInt(FILE*);
 	float readFloat(FILE*);
 	void parse(int, char**, Params&);
+    double getBetaISt(Node&);
+	void weibull(std::vector<double>& samples, GSL&, double shape, double scale, int n);
+	void lognormal(std::vector<double>& samples, GSL& gsl, double mu, double sigma2, int n);
 };
 	
 #endif

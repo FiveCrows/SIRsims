@@ -95,15 +95,20 @@ run00012/
     search_params['max_nb_avail_doses'] = [10000, 50000, 100000]
     search_params['epsilonSinv'] = [0.5, 3.]
 
- 2021-01-14, data_ge/run014/: 
+ 2021-01-14, data_ge/project00015/: 
     Each run is repeated 5 times. 
     search_params['vacc1_rate'] = [10000, 20000]
     search_params = {}
     search_params['vacc1_rate'] = [10000, 20000]
     search_params['max_nb_avail_doses'] = [50000, 100000, 20000]
-    search_params['epsilonSinv'] = [3.0]
+    search_params['epsilonSinv'] = [5.0]
     out_dicts = dict_product(search_params)
-    global_dict["nb_repeat_runs"] = 5
+    global_dict["nb_repeat_runs"] = 3
+
+ 2021-01-17, data_ge/project00016/: 
+    run_description = "betaISt, mu=5d, repeat=2, vary R0, vacc1_rate, max_nb_avail_doses, mu. Beta changes in time."}
+	Objective: Understand the effect of time-varying beta(t). It is not clear how recovery time figures into this. I guess that as long as recovery is not complete, transmission follows its course. When beta is constant over a longer period, there are more infections, unless there are no more neighbors to infect (that is different than homogeneous mixing.
+
 ----------------------------------------------------------------------
 2021-01-10,6.37pm
 I need to collect data from my output file. 
@@ -122,6 +127,9 @@ Other experiment to perform:
   or not. 
 - There is no point infecting a R individual, since that person has antibodies that should protect the individual for a few months, which is on the order of the 90 days it takes for the infection to burn itself out without behavioral changes (masking, social distancing)
 ----------------------------------------------------------------------
+2021-01-16
+- run16: trying to incorportate time-dependent beta. But so far, my code produces only a few hundred infected. The approach 
+  I am using is not correct. I am multiplying \beta_0 (constant = 0.2) by beta(tau) at each time step i*dt. Somehow, I am not sure. 
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------

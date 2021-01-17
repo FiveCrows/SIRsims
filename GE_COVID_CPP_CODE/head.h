@@ -40,6 +40,7 @@ typedef struct Node {
   float vacc_suscept; // Vaccine doses increase my resistance to the virus
   // Times patient enters the Latent, Sympt Infected and Recovered states (GE)
   float t_L, t_IS, t_R, t_V1, t_V2;
+  int ti_L;  // integer time for infection (enter the latent stage)
 } Node;
 
 typedef struct List {
@@ -99,6 +100,8 @@ typedef struct Params {
 	float dt_btw_vacc; // Time between vacc1 and vacc2
 	int max_nb_avail_doses;  // maximum number of available doses
 	int nb_doses;      // 1 or 2 depending on the vaccine or experiment peformed
+	std::vector<double> betaISt;  // Time-dependent profile for beta. Hardcoded for now. 
+	float R0;  // Initial R0 in the absence of social behavioral due to COVID-2.
 } Params;
 
 //Spreading
