@@ -109,6 +109,20 @@ run00012/
     run_description = "betaISt, mu=5d, repeat=2, vary R0, vacc1_rate, max_nb_avail_doses, mu. Beta changes in time."}
 	Objective: Understand the effect of time-varying beta(t). It is not clear how recovery time figures into this. I guess that as long as recovery is not complete, transmission follows its course. When beta is constant over a longer period, there are more infections, unless there are no more neighbors to infect (that is different than homogeneous mixing.
 
+  2021-01-17,1.30pm, data_ge/project00017/:
+    run_description = "Project17: Fixed beta, muinv=5d, repeat=2, vary R0, vacc1_rate, max_nb_avail_doses, mu. All other parameter are identical to Project16, each case is run only once since we are exploring parameter space."
+	Code appears to take about 2x time time. 
+    search_params['vacc1_rate'] = [5000 ,10000, 20000]
+    search_params['max_nb_avail_doses'] = [50000, 100000, 200000]
+    search_params['epsilonSinv'] = [0.5, 2., 4.0]
+    search_params['muinv'] = [3.0, 5.0]
+    search_params['R0'] = [2., 2.5, 3.0]
+    run_description = "Project17: Fixed beta, muinv=5d, repeat=2, vary R0, vacc1_rate, max_nb_avail_doses, mu. All other parameter are identical to Project16, each case is run only once since we are exploring parameter space."
+
+ 2021-01-17,1.32pm, data_ge/project00018/:
+   Objective: try to have a different beta profile per person. That means adding parameters 
+   for person for the scale and shape. Start with using the shape and scale used now.
+   The execution time does not seem to be affected.
 ----------------------------------------------------------------------
 2021-01-10,6.37pm
 I need to collect data from my output file. 
@@ -131,6 +145,16 @@ Other experiment to perform:
 - run16: trying to incorportate time-dependent beta. But so far, my code produces only a few hundred infected. The approach 
   I am using is not correct. I am multiplying \beta_0 (constant = 0.2) by beta(tau) at each time step i*dt. Somehow, I am not sure. 
 ----------------------------------------------------------------------
+2021-01-17,12.49pm
+- Had a conversation with Derek. Discussed primarily the infectious profile. 
+- How should recovery be treated? 
+  - how did people treat recovery in the SIR population models that have time-dependent infectiousness? 
+  - We could arbitrarily define recovery as when beta(t) (prob of infecting somebody in during a single day) is less than some prescribed tolerance \alpha, which could be an input parameter. Some value of \alpha might match the results of using a constant \beta over a fixed recovery time. Note that integral(beta) over recovery time is T_R * beta which should give individual R. I am not convinced my parameters are chosen properly. 
+  - with beta(t), I use beta(tau) = w(tau) * R0 (see Ferretti)
+  - Ferretti defines beta(t) as the sum of three terms (asymptomatic, presymptomatic, symptomatic, environment). So one can compute R_0 as the sum of four terms. 
+  - Question: when environment factors are taken into account, how could we make these four quantities functions of time? 
+  - Regarding vaccination: I could vaccinate when beta(t) is below a fixed threshold (this could define boundary between presymptomatic and symptomatic if we do not know s(\tau), the probably of being presymptomatic. 
+  - Another question: should we consider the latent phase (the exposed state of SEIR)? Based on the beta(tau) curves, the latent phase is very small. 
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------

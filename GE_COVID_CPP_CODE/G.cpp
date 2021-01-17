@@ -15,12 +15,19 @@ using namespace std;
 #define VACCINATE_LATENT 
 //#undef VACCINATE_LATENT 
 
+// If defined, setup up vaccinated people before the simulation begins. 
+// Set these vaccinated people to the R state
 #define SETUPVACC
 #undef SETUPVACC
 
+
 // define VARBETA to enable time-dependent transmissibility
 #define VARBETA
-#undef VARBETA
+//#undef VARBETA
+
+// If VARBETA is defined, compute each infectivity profile on the fly
+// otherwise, use a precomputed infectivity profile.
+#define INDIV_VAR
 
 
 using namespace std;
@@ -219,13 +226,7 @@ void G::seedInfection(Params& par, Counts& c, Network& n, GSL& gsl, Lists& l, Fi
 	id = l.susceptible.v[i];
   	int j = removeFromList(&l.susceptible, id);
   }
-#endif
 
-  //for (int i=0; i < 100; i++) {
-     //printf("person %d is vaccinated\n");
-	 
-  // Set up vaccinated people at initial time (optional)
-#ifdef SETUPVACC
   // MIGHT HAVE TO FIX THIS
   for (int i=0; i < nb_vaccinated; i++) {
 	    int id = l.people_vaccinated[i];
@@ -532,13 +533,19 @@ void G::infect(int source, int type, Network& net, Params& params, GSL& gsl, Lis
 	  Node& node = net.node[source];
 	  // transmission distribution is not a function of the individual. So superspreading is not modeled. 
 	  // Furthermore, the distribution is not exponential (that is more realistic)
+#ifdef INDIV_VAR
+     double shape = 2.826;
+     double scale = 5.665;
+	 double t = (files.it - node.ti_L) * par.dt;
+     double betaISt = gsl_ran_weibull_pdf(t, scale, shape);
+	 float beta = par.R0 * betaISt * node.w[j];
+#else
 	  float beta = par.R0 * getBetaISt(node) * node.w[j];
+#endif
 #else
 	  float beta = net.node[source].beta_IS * net.node[source].w[j];
 #endif
 	  prob = params.dt * beta;
-	  //printf("beta= %f, %f\n", beta, net.node[source].beta_IS);
-	  //printf("prob= %f\n", prob);
 
 #if EXP
 	    prob = 1.-exp(-prob);   // == prob as prob -> zero

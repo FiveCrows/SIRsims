@@ -181,7 +181,7 @@ if __name__ == "__main__":
     timestamp = datetime.now().strftime("%m_%d_%H_%M_%S")
 
     #===== SET UP PARAMETERS ============
-    project_nb = 17    # <<<< Set to create a new run
+    project_nb = 18    # <<<< Set to create a new run
     nb_repeat_runs = 1   # <<<< Set to create a new run
     search_params = {}
     search_params['vacc1_rate'] = [5000 ,10000, 20000]
@@ -189,7 +189,7 @@ if __name__ == "__main__":
     search_params['epsilonSinv'] = [0.5, 2., 4.0]
     search_params['muinv'] = [3.0, 5.0]
     search_params['R0'] = [2., 2.5, 3.0]
-    run_description = "Project17: Fixed beta, muinv=5d, repeat=2, vary R0, vacc1_rate, max_nb_avail_doses, mu. All other parameter are identical to Project16, each case is run only once since we are exploring parameter space."
+    run_description = f"Project{project_nb}: Variable beta, muinv=5d, repeat=2, vary R0, vacc1_rate, max_nb_avail_doses, mu. All other parameter are identical to Project16, each case is run only once since we are exploring parameter space. Pdfs are calculated on the fly rather than precomputed, in preparation for varibility and allowance for superspeading."
     #===== END SET UP PARAMETERS ============
     
     global_dict = setupGlobalDict(project_nb)

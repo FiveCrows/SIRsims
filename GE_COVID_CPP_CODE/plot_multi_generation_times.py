@@ -14,7 +14,7 @@ from timings import *
 
 
 #----------------------------------------------------------------
-run_index = [15]    # <<<< Process one or multiple runs
+run_index = [16]    # <<<< Process one or multiple runs
 #----------------------------------------------------------------
 
 # Run this file on a multiple simulation outputs without pandas
@@ -186,12 +186,12 @@ def plot_latent_by_degree(delta_time, ax, folders, global_dict):
         N = global_dict['N']  
         run = global_dict['run']
         run0 = 0
-        print("run= ", run)
-        print("-- folders= ", folders)
+        #print("run= ", run)
+        #print("-- folders= ", folders)
         filenm = glob.glob(folders + "/data_baseline_p0.txt")[0]
         df = rd.setupDataframe(filenm)
-        print(df.columns)
-        print("df= ", df['run'])
+        #print(df.columns)
+        #print("df= ", df['run'])
         by = df.groupby("run")
         # run0 is last column of the data file (not used)
         latent, infected, recov = rd.get_SEIR(by, run0, delta_t=0.1, plot_data=False)
@@ -225,9 +225,9 @@ if __name__ == "__main__":
       nb_folders = len(folders)
 
       for run in range(nb_folders):
-        print("--> run: ", run)
+        #print("--> run: ", run)
         folder = "data_ge/" + "project%05d" % case + "/" + "results_run%04d" % run 
-        print("folder1: ", folder)
+        #print("folder1: ", folder)
         with open(folder + "/global_dict.pkl", "rb") as f:
             global_dict = pickle.load(f)
         global_dict['colors'] = cols
@@ -236,18 +236,18 @@ if __name__ == "__main__":
         except:
           global_dict['color'] = 'b'
         global_dict['run'] = run
-        print(global_dict)
-        print("top_level_run: ", global_dict["top_level_run"])
+        #print(global_dict)
+        #print("top_level_run: ", global_dict["top_level_run"])
         # Should automate next three lines
-        print("vacc1_rate: ", global_dict["vacc1_rate"])
-        print("max_nb_avail_doses: ", global_dict["max_nb_avail_doses"])
-        print("epsilonSinv: ", global_dict["epsilonSinv"])
+        #print("vacc1_rate: ", global_dict["vacc1_rate"])
+        #print("max_nb_avail_doses: ", global_dict["max_nb_avail_doses"])
+        #print("epsilonSinv: ", global_dict["epsilonSinv"])
 
         # Individual R and counts of individuals infected (symptomatic) each day (incidence)
         h, hc = plot_individual_R(axes[0,0], axes[1,0], folder, global_dict)
         hd[global_dict['top_level_run']] = h
         hdc[global_dict['top_level_run']] = hc
-        print("hd= ", hd)
+        #print("hd= ", hd)
 
         plot_infections_by_degree(dt, axes[0,1], axes[1,1], folder, global_dict)
         plot_latent_by_degree(dt, axes[2,0], folder, global_dict)
@@ -262,5 +262,5 @@ if __name__ == "__main__":
     lg.get_title().set_fontsize(str(fsz))
     lgc.get_title().set_fontsize(str(fsz))
     plt.tight_layout()
-    plt.savefig('plot_multi_generation_times.pdf')
+    plt.savefig(f'plot_multi_generation_times_project{case}.pdf')
 
