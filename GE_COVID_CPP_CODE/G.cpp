@@ -9,8 +9,9 @@
 using namespace std;
 
 #define EXP 1       // Exponential distribution of infection times
-#define CONST_INFECTION_TIME 0   // constant recovery time
-#define INFECTION_TIME 3.
+#define CONST_INFECTION_TIME    // constant recovery time
+
+#define INFECTION_TIME 8
 
 #define VACCINATE_LATENT 
 //#undef VACCINATE_LATENT 
@@ -534,10 +535,8 @@ void G::infect(int source, int type, Network& net, Params& params, GSL& gsl, Lis
 	  // transmission distribution is not a function of the individual. So superspreading is not modeled. 
 	  // Furthermore, the distribution is not exponential (that is more realistic)
 #ifdef INDIV_VAR
-     double shape = 2.826;
-     double scale = 5.665;
 	 double t = (files.it - node.ti_L) * par.dt;
-     double betaISt = gsl_ran_weibull_pdf(t, scale, shape);
+     double betaISt = gsl_ran_weibull_pdf(t, params.beta_scale, params.beta_shape);
 	 float beta = par.R0 * betaISt * node.w[j];
 #else
 	  float beta = par.R0 * getBetaISt(node) * node.w[j];
@@ -640,7 +639,7 @@ void G::IsTransition(Params& par, Lists& l, Network& net, Counts& c, GSL& gsl, f
 
   for (int i=0; i < l.infectious_symptomatic.n; i++) {
     id = l.infectious_symptomatic.v[i];  
-#if CONST_INFECTION_TIME
+#ifdef CONST_INFECTION_TIME
 	if ((cur_time-net.node[id].t_IS) >= INFECTION_TIME) {
 #else
  #if EXP
@@ -1224,6 +1223,8 @@ void G::parse(int argc, char** argv, Params& par)
 		  ("nb_doses", " Number of vaccine doses (1/2)", cxxopts::value<int>()->default_value("2"))
 		  ("epsilonSinv", "Average latent interval [days]", cxxopts::value<float>())
 		  ("R0", "Initial R0 in the absence of behavior change", cxxopts::value<float>())
+		  ("beta_shape", "Shape parameter for infectivity profile", cxxopts::value<float>()->default_value("2.826"))
+		  ("beta_scale", "Scale parameter for infectivity profile", cxxopts::value<float>()->default_value("5.665"))
           ("help", "Print help")
         ;
 
@@ -1291,6 +1292,14 @@ void G::parse(int argc, char** argv, Params& par)
 			par.epsilon_symptomatic = 1. / res["epsilonSinv"].as<float>();
 		    printf("arg: epsilonS-1= %f days\n", 1. / par.epsilon_symptomatic);
 		    printf("arg: par.epsilon_symptomatic= %f [1/days]\n", par.epsilon_symptomatic);
+	    }
+		if (res.count("beta_shape") == 1) {
+			par.beta_shape = res["beta_shape"].as<float>();
+		    printf("arg: beta_shape= %f\n", par.beta_shape);
+		}
+		if (res.count("beta_scale") == 1) {
+			par.beta_scale = res["beta_scale"].as<float>();
+		    printf("arg: beta_scale= %f\n", par.beta_scale);
 	    }
 
     //auto arguments = res.arguments();

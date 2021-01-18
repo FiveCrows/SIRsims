@@ -52,28 +52,29 @@ def plot_individual_R(ax, axc, folder, global_dict):
         R_avg = pd.read_csv(f"{folder}/R_avg.csv")
         ravg_l.append({'t': R_avg['from_day'], 'R': R_avg['R_avg'], 'count': R_avg['R_count']})
     
-    vacc1_rate = global_dict['vacc1_rate']
-    max_nb_avail_doses = global_dict["max_nb_avail_doses"]
-    epsilonSinv = global_dict["epsilonSinv"]
+    R0 = global_dict['R0']
+    beta_shape = global_dict["beta_shape"]
+    beta_scale = global_dict["beta_scale"]
+    label=f"{R0},{beta_shape},{beta_scale}"
+
     lw = 0.5
 
 
     col = global_dict['color']
+    ltype = global_dict['ltype']
     alpha=0.7
+    marker = global_dict['marker']
+    xlim = 40.0
 
     for i, r in enumerate(ravg_l):
-        h, = ax.plot(r['t'], r['R'], '-', lw=lw, color=col, alpha=alpha,
-                 label=f"{vacc1_rate},{max_nb_avail_doses},{epsilonSinv}")
-        hc, = axc.plot(r['t'], r['count'], '-', lw=lw, color=col, alpha=alpha,
-                 label=f"{vacc1_rate},{max_nb_avail_doses},{epsilonSinv}")
-
-    print("plot_individualR, col= %s, repeat: %d, vacc1_rate: %f, max_nb_avail_doses: %d, run: %d, repeat_run: %d" % (col, global_dict["repeat_run"], global_dict["vacc1_rate"], global_dict["max_nb_avail_doses"], global_dict["run"], global_dict["repeat_run"]))
+        h, = ax.plot(r['t'], r['R'], '-', lw=lw, ls=ltype, color=col, marker=marker, ms=0.5, alpha=alpha, label=label)
+        hc, = axc.plot(r['t'], r['count'], '-', lw=lw, ls=ltype, color=col, marker=marker, ms=0.5, alpha=alpha, label=label)
 
     ax.axhline(y=1.0)
     ax.set_xlabel('Days')
     ax.set_ylabel('Avg Indiv. R(t)')
     ax.set_title('Individual R')
-    ax.set_xlim(0,100)
+    ax.set_xlim(0,xlim)
     ax.set_ylim(0,8)
     ax.grid(True)
     #leg_text = "Daily vacc rate (dose 1)\nmax nb avail doses\nlatent time"
@@ -82,7 +83,7 @@ def plot_individual_R(ax, axc, folder, global_dict):
     axc.set_xlabel('Days')
     axc.set_ylabel('Avg Indiv. R count')
     axc.set_title('Nb of samples of indiv R(t)')
-    axc.set_xlim(0,100)
+    axc.set_xlim(0,xlim)
     axc.grid(True)
     return h, hc  # handles
 
@@ -91,53 +92,50 @@ def plot_individual_R(ax, axc, folder, global_dict):
 def plot_generation_times_2(ax1, ax2, ax3, folder, global_dict): #, IS_L, IS_R, L_IS):
     isl_avg = []
     ili_avg = []
-    isr_avg = []
+    ill_avg = []
     ispot_avg = []
     if 1:
         #filenm = glob.glob(f"{folder}/transition_stats.csv")[0]
         IS_L = pd.read_csv(f"{folder}/IS_L.csv")
-        IS_R = pd.read_csv(f"{folder}/IS_R.csv")
+        IL_L = pd.read_csv(f"{folder}/L_L.csv")
         L_IS = pd.read_csv(f"{folder}/L_IS.csv")
         isl_avg.append({'t': IS_L['from_day'], 'time_interval' : IS_L['time_interval_mean']})
-        isr_avg.append({'t': IS_R['from_day'], 'time_interval' : IS_R['time_interval_mean']})
+        ill_avg.append({'t': IL_L['from_day'], 'time_interval' : IL_L['time_interval_mean']})
         ili_avg.append({'t': L_IS['from_day'], 'time_interval' : L_IS['time_interval_mean']})
 
     col = global_dict['color']
+    marker = global_dict['marker']
     lw = 0.5
     alpha = 0.7
-    vacc1_rate = global_dict['vacc1_rate']
-    max_nb_avail_doses = global_dict["max_nb_avail_doses"]
-    epsilonSinv = global_dict["epsilonSinv"]
+    xlim = 40.0
+    R0 = global_dict['R0']
+    lstyle = global_dict['ltype']
+    beta_shape = global_dict["beta_shape"]
+    beta_scale = global_dict["beta_scale"]
+    label=f"{R0},{beta_shape},{beta_scale}"
 
     for i,r in enumerate(isl_avg):
-        ax1.plot(r['t'], r['time_interval'], color=col, lw=lw, alpha=alpha,
-                label=f"{vacc1_rate},{max_nb_avail_doses},{epsilonSinv}")
+        ax1.plot(r['t'], r['time_interval'], color=col, lw=lw, ls=lstyle, alpha=alpha, marker=marker, ms=0.5, label=label)
 
-    for i,r in enumerate(isr_avg):
-        ax2.plot(r['t'], r['time_interval'], color=col, lw=lw, alpha=alpha)
+    for i,r in enumerate(ill_avg):
+        ax2.plot(r['t'], r['time_interval'], color=col, lw=lw, ls=lstyle, marker=marker, ms=0.5, alpha=alpha)
 
     for i,r in enumerate(ili_avg):
-        ax3.plot(r['t'], r['time_interval'], color=col, lw=lw, alpha=alpha)
+        ax3.plot(r['t'], r['time_interval'], color=col, lw=lw, ls=lstyle, marker=marker, ms=0.5, alpha=alpha)
 
     ax1.set_title("Time interval IS-L")
-    ax2.set_title("Time interval IS-R")
+    ax2.set_title("Generation time L-L")
     ax3.set_title("Time interval IL_I")
     ax1.grid(True)
     ax2.grid(True)
     ax3.grid(True)
-    ax1.set_xlim(0,100)
-    ax2.set_xlim(0,100)
-    ax3.set_xlim(0,100)
+    ax1.set_xlim(0,xlim)
+    ax2.set_xlim(0,xlim)
+    ax3.set_xlim(0,xlim)
     ax1.set_ylim(0,7)
     ax2.set_ylim(0,7)
     ax3.set_ylim(0,10)
     #ax3.set_title("Time interval pot_real IS-L")
-
-    """
-    lg = ax1.legend(fontsize=6, title="Daily vacc rate (dose 1)\n \
-             max nb avail doses\n \
-             latent time", loc='upper right')
-    """
 
 #----------------------------------------------------------
 def plot_infections_by_degree(delta_time, ax, axv, folder, global_dict):
@@ -155,10 +153,14 @@ def plot_infections_by_degree(delta_time, ax, axv, folder, global_dict):
         #N = 260542  # hardcoded. BAD
         lw = 0.5
         alpha = 0.7
-        ax.plot(times, infected/N, color=col, lw=lw) #, label=f"{vacc1_rate}") 
-        ax.plot(times, recov/N, color=col, lw=lw, alpha=alpha) #, label="R")
+        xlim = 40.
+        marker = global_dict['marker']
+        ax.plot(times, infected/N, color=col, lw=lw, marker=marker, ms=0.5, markevery=10, alpha=alpha) #, label=f"{vacc1_rate}") 
+        ax.plot(times, recov/N, color=col, lw=lw, marker=marker, ms=0.5, markevery=10, alpha=alpha) #, label="R")
+        print("times= ", times)
+        quit()
         ax.grid(True)
-        ax.set_xlim(0,100)
+        ax.set_xlim(0,xlim)
         eps_S = global_dict["epsilonS-1"]
         ax.set_title(f"Frac Infected (latent period:{eps_S} days\n(frac of tot pop size)")
 
@@ -172,11 +174,11 @@ def plot_infections_by_degree(delta_time, ax, axv, folder, global_dict):
     ti = df["time"].values
     axv.plot(ti, V1, color=col, lw=1, ls='--', alpha=alpha)
     axv.plot(ti, V2, color=col, lw=1, ls='--', alpha=alpha)
-    axv.legend(title="Daily vacc rate\n(1st dose)", loc='upper right')
+    axv.legend(title="R0, beta_shape$, beta_scale$", loc='upper right')
     axv.grid(True)
-    axv.set_title(f"Number of people vaccinated\n1st and 2nd dose")
+    axv.set_title("Impact of infectivity profile")
     axv.set_xlabel("Time")
-    axv.set_xlim(0,100)
+    axv.set_xlim(0,xlim)
 
 def plot_latent_by_degree(delta_time, ax, folders, global_dict):
     if 1:
@@ -185,6 +187,8 @@ def plot_latent_by_degree(delta_time, ax, folders, global_dict):
         col = global_dict['color']
         N = global_dict['N']  
         run = global_dict['run']
+        marker = global_dict['marker']
+        xlim = 40.
         run0 = 0
         #print("run= ", run)
         #print("-- folders= ", folders)
@@ -196,8 +200,8 @@ def plot_latent_by_degree(delta_time, ax, folders, global_dict):
         # run0 is last column of the data file (not used)
         latent, infected, recov = rd.get_SEIR(by, run0, delta_t=0.1, plot_data=False)
         times = delta_time * np.asarray(range(len(latent)))
-        ax.plot(times, latent/N, color=col, lw=lw, alpha=alpha)
-    ax.set_xlim(0,100)
+        ax.plot(times, latent/N, color=col, lw=lw, marker=marker, ms=0.5, markevery=10, alpha=alpha)
+    ax.set_xlim(0,xlim)
     ax.set_title("Fraction Latent")
     ax.grid(True)
 
@@ -233,21 +237,22 @@ if __name__ == "__main__":
         global_dict['colors'] = cols
         try:
           global_dict['color'] = cols[global_dict['top_level_run'] % len(cols)]
+          if global_dict['beta_scale'] == 3.0: global_dict['color'] = 'r'
+          if global_dict['beta_scale'] == 5.0: global_dict['color'] = 'g'
+          if global_dict['beta_scale'] == 7.0: global_dict['color'] = 'b'
+          if global_dict['beta_shape'] == 2.0: global_dict['ltype'] = '-'
+          if global_dict['beta_shape'] == 5.0: global_dict['ltype'] = '-.'
+          if global_dict['R0'] == 2.0: global_dict['marker'] = 'o'
+          if global_dict['R0'] == 2.5: global_dict['marker'] = '^'
+          if global_dict['R0'] == 3.0: global_dict['marker'] = '>'
         except:
           global_dict['color'] = 'b'
         global_dict['run'] = run
-        #print(global_dict)
-        #print("top_level_run: ", global_dict["top_level_run"])
-        # Should automate next three lines
-        #print("vacc1_rate: ", global_dict["vacc1_rate"])
-        #print("max_nb_avail_doses: ", global_dict["max_nb_avail_doses"])
-        #print("epsilonSinv: ", global_dict["epsilonSinv"])
 
         # Individual R and counts of individuals infected (symptomatic) each day (incidence)
         h, hc = plot_individual_R(axes[0,0], axes[1,0], folder, global_dict)
         hd[global_dict['top_level_run']] = h
         hdc[global_dict['top_level_run']] = hc
-        #print("hd= ", hd)
 
         plot_infections_by_degree(dt, axes[0,1], axes[1,1], folder, global_dict)
         plot_latent_by_degree(dt, axes[2,0], folder, global_dict)
@@ -255,12 +260,12 @@ if __name__ == "__main__":
 
     hd  = list(hd.values()); hdc = list(hdc.values())
     fsz = 8
-    leg_text = "Daily vacc rate (dose 1)\nmax nb avail doses\nlatent time"
+    leg_text = "R0, beta_shape, beta_scale"
     lg = axes[0,0].legend(handles=hd, title=leg_text, loc='upper right', ncol=1, fontsize=fsz)
     lgc = axes[1,0].legend(handles=hdc, title=leg_text, loc='upper right', ncol=1, fontsize=fsz)
     #print(help(lg.set_title))
     lg.get_title().set_fontsize(str(fsz))
     lgc.get_title().set_fontsize(str(fsz))
     plt.tight_layout()
-    plt.savefig(f'plot_multi_generation_times_project{case}.pdf')
+    plt.savefig(f'plot_multis_project{case}.pdf')
 

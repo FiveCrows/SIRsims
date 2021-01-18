@@ -156,6 +156,20 @@ Other experiment to perform:
   - Regarding vaccination: I could vaccinate when beta(t) is below a fixed threshold (this could define boundary between presymptomatic and symptomatic if we do not know s(\tau), the probably of being presymptomatic. 
   - Another question: should we consider the latent phase (the exposed state of SEIR)? Based on the beta(tau) curves, the latent phase is very small. 
 ----------------------------------------------------------------------
+2021-01-17
+From Ferretti: Quantifying SARS-COV-2 transmission ...
+Distribution parameters: 
+s(\tau): incubation period (infection to symptomatic): 
+  lognormal meanlog: 1.644, 95% CI: [1.495-1.798] (avg: 0.747+0.899=1.646)
+  lognormal sdlog: 0.363, 95% CI: [0.201-0.521] (avg: 0.1+0.26=0.36)
+w(tau): generation time
+  Weibull shape: 2.826, 95% CI: 1.75-4.7  (avg: 0.875+2.350=3.225)
+  Weibull scale: 5.665, 95% CI: 4.7-6.9   (avg: 2.35+3.45=5.8)
+Proportion asymptomatic: Pa   0.4, prior: beta (alpha=1.5, beta=1.75, mode: 0.4, mean: 0.46)
+Relative infectiousness of asymptomatics: x_a:   0.1  prior: beta(1.5, 5.5)
+Fraction of transmission that relates to environment: 0.1
+Environment infectiousness: box function after time lag l (ell): 3 (I am ignoring this for now)
+----------------------------------------------------------------------
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------

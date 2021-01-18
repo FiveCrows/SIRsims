@@ -181,15 +181,19 @@ if __name__ == "__main__":
     timestamp = datetime.now().strftime("%m_%d_%H_%M_%S")
 
     #===== SET UP PARAMETERS ============
-    project_nb = 18    # <<<< Set to create a new run
+    project_nb = 19    # <<<< Set to create a new run
     nb_repeat_runs = 1   # <<<< Set to create a new run
     search_params = {}
-    search_params['vacc1_rate'] = [5000 ,10000, 20000]
-    search_params['max_nb_avail_doses'] = [50000, 100000, 200000]
-    search_params['epsilonSinv'] = [0.5, 2., 4.0]
-    search_params['muinv'] = [3.0, 5.0]
+    search_params['vacc1_rate'] = [0]
+    #search_params['vacc1_rate'] = [5000 ,10000, 20000]
+    #search_params['max_nb_avail_doses'] = [50000, 100000, 200000]
+    #search_params['epsilonSinv'] = [0.5, 2., 4.0]
+    search_params['muinv'] = [3.0]
     search_params['R0'] = [2., 2.5, 3.0]
-    run_description = f"Project{project_nb}: Variable beta, muinv=5d, repeat=2, vary R0, vacc1_rate, max_nb_avail_doses, mu. All other parameter are identical to Project16, each case is run only once since we are exploring parameter space. Pdfs are calculated on the fly rather than precomputed, in preparation for varibility and allowance for superspeading."
+    search_params['beta_shape'] = [2., 5.]
+    search_params['beta_scale'] = [3., 5., 7.]
+    run_description = f"Project{project_nb}: No vaccinations. Test the shape of the infectivity profile as a function of the Weibull shape and scale parameter values. Test three values of R0." 
+
     #===== END SET UP PARAMETERS ============
     
     global_dict = setupGlobalDict(project_nb)

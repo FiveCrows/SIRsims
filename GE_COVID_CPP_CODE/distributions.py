@@ -37,6 +37,22 @@ def weibull(shape, scale, n):
     wei = scale * np.random.weibull(shape, size=n)
     return wei
 
+def lognormal(mean, std, n):
+    # mean, std of underlying normal distribution
+    lognorm = np.random.lognormal(mean, std, n)
+    return lognorm
+
+def weibullPDF(shape, scale, a, b, n):
+    # the range of the x-axis is a,b
+    x = np.linspace(a, b, n)
+    pdfs = (shape/scale)*(x/scale)**(shape-1.) * np.exp(-(x/scale)**shape)
+    mean = np.mean(np.dot(x,pdfs)) * (b-a)/(n-1.)
+    #for i in zip(x, pdfs):
+        #print(i)
+    #print(f"mean= {mean}")
+    return x, pdfs
+
+
 
 if __name__ == "__main__":
     shape = 2.826
@@ -51,3 +67,17 @@ if __name__ == "__main__":
     var = scale**2 *(sp.gamma(1.+2./shape) - (sp.gamma(1.+1./shape))**2)
     print("theor mean: ", mean)
     print("theor var: ", var)
+
+    print("\n=== lognormal ===")
+    e_mean = 1.644
+    e_std = 0.363
+    logn= lognormal(e_mean, e_std, 100000)
+    mean = np.exp(e_mean + e_std**2/2.)
+    var = (np.exp(e_std**2) -1) * np.exp(2*e_mean+e_std**2)
+    std = var**(0.5)
+    print(f"log(x), mean/std/var= {mean}, {std}, {std**2}")
+    a_mean = np.mean(logn)
+    a_std = np.std(logn)
+    print(f"log(x), actual mean/std/var= {a_mean}, {a_std}, {a_std**2}")
+
+

@@ -100,6 +100,8 @@ typedef struct Params {
 	float dt_btw_vacc; // Time between vacc1 and vacc2
 	int max_nb_avail_doses;  // maximum number of available doses
 	int nb_doses;      // 1 or 2 depending on the vaccine or experiment peformed
+	float beta_shape;  // shape parameter for infectivity profile
+	float beta_scale;  // scale parameter for infectivity profile
 	std::vector<double> betaISt;  // Time-dependent profile for beta. Hardcoded for now. 
 	float R0;  // Initial R0 in the absence of social behavioral due to COVID-2.
 } Params;
