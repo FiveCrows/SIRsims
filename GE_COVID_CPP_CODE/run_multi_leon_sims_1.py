@@ -154,7 +154,6 @@ def run_simulation(global_dict, project_nb):
             print("global_dict: ", global_dict)
             print("command: ", cmd)
             os.system(cmd)
-            quit()
             storeFiles(global_dict)
         except: 
             print("An error occurred during execution")
