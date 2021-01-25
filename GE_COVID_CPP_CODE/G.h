@@ -42,7 +42,7 @@ public:
 	void resetNodes(Params&, Network&);
 	void resetNew(Lists&);
 	void updateLists(Lists&, Network&);
-	void results(int, Lists&, Files&);
+	void printResults(int, Lists&, Files&);
 	//read
 	void readData(Params&, Lists& lists, Network&, Files&);
 	void readParameters(char* filenm, Params&);

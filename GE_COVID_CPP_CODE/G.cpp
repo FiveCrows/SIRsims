@@ -117,7 +117,7 @@ void G::runSimulation(Params& params, Lists& lists, Counts& c, Network& n, GSL& 
 
         init(params, c, n, gsl, lists, f);
 
-        while(lists.n_active>0) {
+        while(lists.n_active > 0) {
 	      spread(run, f, lists, n, params, gsl, c);
 		}
 
@@ -127,7 +127,7 @@ void G::runSimulation(Params& params, Lists& lists, Counts& c, Network& n, GSL& 
   		printf("total number recovered:  %d\n", c.count_recov);
   		printf("total number vacc 1:  %d\n", c.count_vacc1);
   		printf("total number vacc 2:  %d\n", c.count_vacc2);
-        results(run, lists, f);
+        printResults(run, lists, f);
 
 		printTransitionStats();
 		writeStates(c);
@@ -778,7 +778,7 @@ void G::updateLists(Lists& l, Network& n)
 }
 
 //----------------------------------------------------------------------
-void G::results(int run, Lists& l, Files& f)
+void G::printResults(int run, Lists& l, Files& f)
 {
   //Cumulative values
   for(int i=0;i<NAGE;i++)
