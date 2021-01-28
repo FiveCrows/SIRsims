@@ -171,7 +171,7 @@ def run_simulation(global_dict, project_nb):
 
     # preprocess transition files
     # Transition files can be deleted, in principle
-    cmd = f"cd {global_dict['dest_folder']}; python breakup_transition.py; popd"
+    cmd = f"cd {global_dict['dest_folder']}; python breakup_transition.py;"
     print("cmd= ", cmd)
     os.system(cmd)
 
@@ -185,12 +185,16 @@ if __name__ == "__main__":
     search_params = {}
     search_params['vacc1_rate'] = [0]
     #search_params['vacc1_rate'] = [5000 ,10000, 20000]
-    #search_params['max_nb_avail_doses'] = [50000, 100000, 200000]
+    search_params['max_nb_avail_doses'] = [50000]
+    search_params['epsilonSinv'] = [2.]
     #search_params['epsilonSinv'] = [0.5, 2., 4.0]
     search_params['muinv'] = [3.0]
     search_params['R0'] = [2., 2.5, 3.0]
+    search_params['R0'] = [2.]
     search_params['beta_shape'] = [2., 5.]
+    search_params['beta_shape'] = [2.]
     search_params['beta_scale'] = [3., 5., 7.]
+    search_params['beta_scale'] = [3.]
     run_description = f"Project{project_nb}: No vaccinations. Test the shape of the infectivity profile as a function of the Weibull shape and scale parameter values. Test three values of R0." 
 
     #===== END SET UP PARAMETERS ============
