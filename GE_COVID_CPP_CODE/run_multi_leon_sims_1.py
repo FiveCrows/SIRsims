@@ -171,7 +171,7 @@ def run_simulation(global_dict, project_nb):
 
     # preprocess transition files
     # Transition files can be deleted, in principle
-    cmd = f"pushd {global_dict['dest_folder']}; python breakup_transition.py; popd"
+    cmd = f"cd {global_dict['dest_folder']}; python breakup_transition.py; popd"
     print("cmd= ", cmd)
     os.system(cmd)
 

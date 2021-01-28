@@ -50,7 +50,8 @@ class Partitioner():
         binList = self.binMembers(members)
         partition = {i:[] for i in range(len(self.bins))}
         for i, bin_num in enumerate(binList):
-            partition[bin_num -1].append(members[i][0])        
+            #add each member to the partition by id
+            partition[bin_num].append(members[i][0])        
         return dict(zip([member.sp_id for member in members], binList)), partition        
     
 
@@ -103,7 +104,7 @@ class autoBinLambdaPartitioner(Partitioner):
         self.num_bins = num_bins        
         self.num_sets = num_bins
 
-    def WithAutoBound(self, members: list):
+    def partitionGroupWithAutoBound(self, members: list):
         #its simpler than it looks. it just splits the numpy array into 
         sort = sorted([self.f(person) for person in members])        
         split = [list(x) for x in np.array_split(sort, self.num_bins)]
@@ -114,7 +115,8 @@ class autoBinLambdaPartitioner(Partitioner):
         return(dict(enumerate(split)))
         
     def binMembers(self, members: list):
-        binList = np.digitize(list(map(self.f, members)), self.bin_bounds)
+        binList = np.digitize(list(map(self.f, members)), self.bin_bounds)-1   
+        print(binList)     
         return binList
         
 

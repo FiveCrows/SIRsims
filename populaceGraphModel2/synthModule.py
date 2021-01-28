@@ -185,7 +185,8 @@ class StructuredEnvironment(Environment):
         self.partitioner = partitioner
         self.contact_matrix = contact_matrix
         #self.total_matrix_contact = contact_matrix.sum()
-        self.id_to_partition, self.partition = partitioner.partitionGroup(members)                        
+        self.id_to_partition, self.partition = partitioner.partitionGroup(members)          
+        super().__init__(attributes, members)              
 
     def returnReciprocatedCM(self):
         '''

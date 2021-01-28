@@ -10,7 +10,7 @@ import stats
 import read_data as rd
 
 #----------------------------------------------------------------
-run_index = 12    # <<<< Set to create a new run
+run_index = 0    # <<<< Set to create a new run
 #----------------------------------------------------------------
 
 # Run this file on a multiple simulation outputs without pandas

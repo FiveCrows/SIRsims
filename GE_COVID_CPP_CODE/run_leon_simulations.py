@@ -13,7 +13,7 @@ dirs = list(os.scandir("graphs"))
 dirs = ["data_ge"]
 print(dirs)
 
-source_folder = "data_ge/"
+source_folder = "data_ge"# changed from data_ge / to prevent duplicate / in dest_folder
 dest_folder = source_folder + "/results/" 
 script_file = "run_leon_simulations.py"
 param_file = "data_ge/parameters_0.txt"
@@ -34,13 +34,16 @@ def run_simulation(global_dict):
     os.makedirs(dest_folder, exist_ok=True)
     rpf.readParamFile(param_file, global_dict)
     shutil.copy(param_file, dest_folder)
-    shutil.copy("vaccines.csv", source_folder)  # might not exist
+    try:
+        shutil.copy("vaccines.csv", source_folder)  # might not exist
+    except:
+        print("shutil.copy does not exist")
     cmd = "./seir %s %s >& %s" % (source_folder, dest_folder, output_file)
     global_dict[cmd] = "./seir %s %s >& %s" % (source_folder, dest_folder, output_file)
     print("-----------------------------------------------")
     print(cmd)
     os.system(cmd)
-    shutil.copy(output_file, dest_folder)
+    shutil.copy(output_file, dest_folder)# error here
     state_transition_file = global_dict["state_transition_file"]
     shutil.copy(state_transition_file, dest_folder)
     os.remove(output_file)

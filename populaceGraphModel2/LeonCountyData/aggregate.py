@@ -54,6 +54,7 @@ def buildPkl(slim):
     print("ok, here") # .transpose()
     for index in range(len(populace)):
         person = quickPopList[index]
+        populace[index].sp_id = index
         for category in attributes:
             try:
                 pops_by_category[category][person[category]].append(index)
