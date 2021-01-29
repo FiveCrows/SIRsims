@@ -1,0 +1,38 @@
+Install and run the code: 
+Starting from the current folder that contains this file: 
+
+1) make
+2) Edit "run_multi_leon_sims_1.py" and 
+   (a) change the project number 
+   (b) specificy the nb_repeat_runs (for randomization)
+   (c) specify search grid (follow template below). To find out the 
+       allowable parameters, type "./seir --help" on the command line. 
+
+    search_params['muinv'] = [3.0]
+    search_params['R0'] = [2., 2.5, 3.0]
+
+2) Run the script:  
+      python first_time_setup.py
+
+3) Run the script:  
+      python run_multi_leon_sims_1.py
+
+4) Run analysis script
+   (a) Edit the script and change the project number
+   (b) Run the script: 
+       python plot_multi_generation_times.py
+
+Strong suggestion: copy the plotting/analysis scripts you want into the 
+src/ folder under the appropriate project number. Different projects will 
+require different scripts. 
+
+Beware: scripts that run from the root directory will not run from within 
+the project without manually editing the script. This will be automated at 
+some point. Not today. 
+
+Beware: the plotting script uses various global variables. They will not be in 
+the global_dict UNLESS you define them in search_params. So defining them all in 
+a file that is imported prior to running the script is best. The reason is 
+that while the variables in parameters_0.txt are automatically included in 
+the global_dict, the same is not true for additional parameters I use.  Why? 
+Because I did not wish to modify the structure of the input file. 
