@@ -110,13 +110,12 @@ class autoBinLambdaPartitioner(Partitioner):
         split = [list(x) for x in np.array_split(sort, self.num_bins)]
         #let the bounds be the first of each bin, and also the last of the last bin 
         bounds = [partition[0] for partition in split]
-        bounds.append(split[-1][-1])
+        bounds = bounds[1:]
         super(autoBinLambdaPartitioner, self).__init__(bounds)
         return(dict(enumerate(split)))
         
     def binMembers(self, members: list):
-        binList = np.digitize(list(map(self.f, members)), self.bin_bounds)-1   
-        print(binList)     
+        binList = np.digitize(list(map(self.f, members)), self.bin_bounds)   
         return binList
         
 

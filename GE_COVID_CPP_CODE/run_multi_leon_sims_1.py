@@ -180,7 +180,7 @@ if __name__ == "__main__":
     timestamp = datetime.now().strftime("%m_%d_%H_%M_%S")
 
     #===== SET UP PARAMETERS ============
-    project_nb = 19    # <<<< Set to create a new run
+    project_nb = 1    # <<<< Set to create a new run
     nb_repeat_runs = 1   # <<<< Set to create a new run
     search_params = {}
     search_params['vacc1_rate'] = [0]
