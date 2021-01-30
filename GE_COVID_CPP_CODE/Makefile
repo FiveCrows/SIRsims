@@ -1,4 +1,6 @@
 GCC= g++
+# For Gordon. Added extern "C" in header.h. Might not work for Bryan
+#CPPFLAGS= -fgnu-runtime -std=c++14 -Wall -lm -lgsl -lgslcblas -O2 -Wno-unused-result 
 CPPFLAGS= -std=c++14 -Wall -lm -lgsl -lgslcblas -O2 -Wno-unused-result 
 #CPPFLAGS= -g -std=c++14 -Wall -lm -lgsl -lgslcblas -O2 -Wno-unused-result 
 SOURCES_ORIG=  main.c read.c utilities.c spread.c
