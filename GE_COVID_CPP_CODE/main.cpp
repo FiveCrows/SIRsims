@@ -1,7 +1,7 @@
 #include "head.h"
 #include "G.h"
 #include "cxxopts.hpp"
-
+#include <gsl/gsl_rng.h>
 
 #if 0
 void parse(int argc, char* argv[])
@@ -49,6 +49,21 @@ int main(int argc, char *argv[])
   Counts counts;
   Network network;
   GSL gsl;
+
+
+  gsl_rng_env_setup();
+  gsl_rng * r;  /* global generator */
+  const gsl_rng_type * T;
+  T =  gsl_rng_default;
+  r = gsl_rng_alloc (T);
+
+  printf ("generator type: %s\n", gsl_rng_name (r));
+  printf ("seed = %lu\n", gsl_rng_default_seed);
+  printf ("first value = %lu\n", gsl_rng_get (r));
+
+  gsl_rng_free (r);
+  
+  
 
   G* g = new G(params, files, lists, counts, network, gsl);
   g->initialize(argc,argv, files, params, lists, network, gsl);

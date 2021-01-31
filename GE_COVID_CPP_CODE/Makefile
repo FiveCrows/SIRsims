@@ -11,7 +11,7 @@ SOURCES_SEIR= main.cpp G.cpp
 SOURCES_DIST= distributions.cpp
 
 .PHONY: seir sir orig sepir distribution
-seir:
+seir:	
 	$(GCC) $(CPPFLAGS) $(SOURCES_SEIR) -o seir
 
 distribution: 
