@@ -10,10 +10,10 @@ from datetime import datetime
 
 """
 # Global Parameters to adjust at the bottom of this file
-    project_nb = 15    # <<<< Set to create a new run
+    project_nb = 0    # <<<< Set to create a new run
     nb_repeat_runs = 1   # <<<< Set to create a new run
 """
-
+project_nb = 0
 #----------------------------------------------------------
 # Code posted at
 # https://stackoverflow.com/questions/5228158/cartesian-product-of-a-dictionary-of-lists
@@ -128,7 +128,7 @@ def run_simulation(global_dict, project_nb):
         global_dict["top_level_run"] = top_level_run
         run = top_level_run * nb_repeat_runs + repeat_run
         global_dict["run"] = run
-        global_dict["leaf_folder"] = "results_run%04d/" % run
+        global_dict["leaf_folder"] = "results_run%00d/" % run
         global_dict["repeat_run"] = repeat_run
         dfolder = global_dict["dest_folder"] + global_dict["leaf_folder"]
         os.makedirs(dfolder, exist_ok=True)  # necessary
