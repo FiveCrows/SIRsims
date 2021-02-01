@@ -49,15 +49,29 @@ def breakupFile(folder):
 
     #--------------------
     
-    L_IS = from_to.get_group((L,IS)).reset_index()
-    IS_R = from_to.get_group((IS,R)).reset_index()
-    IS_L = from_to.get_group((IS,L)).reset_index()
-    L_L  = from_to.get_group((L,L)).reset_index()
+    try:
+        L_IS = from_to.get_group((L,IS)).reset_index()
+        L_IS.to_csv(folder+"L_IS.csv", float_format="%2.3f")
+    except:
+        pass
+  
+    try:
+        IS_R = from_to.get_group((IS,R)).reset_index()
+        IS_R.to_csv(folder+"IS_R.csv", float_format="%2.3f")
+    except:
+        pass
+
+    try:
+        IS_L = from_to.get_group((IS,L)).reset_index()
+        IS_L.to_csv(folder+"IS_L.csv", float_format="%2.3f")
+    except:
+        pass
     
-    L_IS.to_csv(folder+"L_IS.csv", float_format="%2.3f")
-    IS_R.to_csv(folder+"IS_R.csv", float_format="%2.3f")
-    IS_L.to_csv(folder+"IS_L.csv", float_format="%2.3f")
-    L_L.to_csv(folder+"L_L.csv", float_format="%2.3f")
+    try:
+        L_L  = from_to.get_group((L,L)).reset_index()
+        L_L.to_csv(folder+"L_L.csv", float_format="%2.3f")
+    except:
+        pass
     
 #-----------------------------------------------------------
 if __name__ == "__main__":
