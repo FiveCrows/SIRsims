@@ -14,7 +14,16 @@ from timings import *
 
 
 #----------------------------------------------------------------
-run_index = [19]    # <<<< Process one or multiple runs
+# specify project number via command line argument
+
+nb_arguments = len(sys.argv) -1
+if nb_arguments == 1:
+    print("Project: ", sys.argv[1])
+    run_index = [int(sys.argv[1])]
+else:
+    print("missing argument, EXIT")
+    run_index = -1 # force error
+    quit()
 #----------------------------------------------------------------
 
 # Run this file on a multiple simulation outputs without pandas
