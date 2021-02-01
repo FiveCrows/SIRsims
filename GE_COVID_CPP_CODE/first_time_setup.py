@@ -19,6 +19,6 @@ os.system("python run_multi_leon_sims_1.py")
 print("\n=============================================================")
 print(  "===== run_multi_leon_sims_1.py script completed =============\n")
 
-os.system("python plot_multi_generation_times.py")
+os.system("python plot_multi_generation_times.py 1")
 print("\n==============================================================")
 print(  "===== plot_multi_generation_times.py script completed ========\n")
