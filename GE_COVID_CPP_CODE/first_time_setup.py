@@ -5,11 +5,10 @@ cmd = "mkdir -p data_ge/results"
 os.system(cmd)
 
 if os.path.exists("data_ge/bak_gz/network.txt.gz"):
-    os.system("cd data_ge; cp bak_gz/network.txt.gz ..; gunzip network.txt.gz")
+    os.system("cd data_ge; gunzip -c network.txt.gz > network.txt")
 
 if os.path.exists("data_ge/bak_gz/bak_gz/nodes.txt.gz"):
-    os.system("cd data_ge; cp bak_gz/nodes.txt.gz ..; gunzip nodes.txt.gz")
+    os.system("cd data_ge; gunzip -c nodes.txt.gz > nodes.txt")
 
-os.system("cd data_ge; gunzip network.txt.gz nodes.txt.gz")
 
 
