@@ -61,7 +61,7 @@ def storeFiles(global_dict):
     print("dfolder= ", dfolder)
     os.makedirs(dfolder, exist_ok=True)
     shutil.copy(gd["param_file"], dfolder)
-    shutil.copy("vaccines.csv", sfolder)  # might not exist
+    #shutil.copy("vaccines.csv", sfolder)  # might not exist
     state_transition_file = gd["state_transition_file"]
     print("state_tran= ", state_transition_file)
     shutil.copy(gd["source_folder"]+"/parameters_0.txt", dfolder)
