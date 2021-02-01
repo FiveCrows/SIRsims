@@ -805,9 +805,13 @@ void G::readData(Params& params, Lists& lists, Network& network, Files& files)
   readNetwork(params, lists, network, files);
   printf("readNodes\n");
   readNodes(params, files, network);
-  printf("readVaccinations\n");
+
+  // I am NO LONGER READING VACCINATIONS from a file since I manage them 
+  // within the program. This was a debugging tool. The call requires
+  // access to the file "vaccines.csv", stored within the argument "files"
+  //printf("readVaccinations\n");
   // Add parameter to parameter file. Run vaccinations, 0/1
-  readVaccinations(params, files, network, lists);
+  //readVaccinations(params, files, network, lists);
 }
 //----------------------------------------------------------------------
 void G::readParameters(char* parameter_file, Params& params)
