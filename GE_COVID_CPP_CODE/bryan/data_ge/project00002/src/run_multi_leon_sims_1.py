@@ -103,14 +103,12 @@ def run_simulation(global_dict, project_nb):
 
     ## Make sure the key is in global_dict (so I need a function)
     ## The keys of search_params should be command line arguments
-    search_params = global_dict["search_params"]
+    search_params = global_dict["search_params"]    
     out_dicts = dict_product(search_params)
-
+    #print(list(out_dicts))
     #----------------------------------------------------------
     nb_repeat_runs = global_dict["nb_repeat_runs"]
 
-    # ATTENTION: Cannot print out_dicts, since it is an iterator
-    # This problem might not happen in Julia
     """
     for top_level_run, dct in enumerate(out_dicts):
      for repeat_run in range(nb_repeat_runs):
@@ -147,6 +145,7 @@ def run_simulation(global_dict, project_nb):
 
         # Construct command line
         try:
+            print(list(global_dict.items()))
             # destination folder 
             dfolder = global_dict["dest_folder"] + global_dict["leaf_folder"] 
             cmd = "./seir %s > %s" % (args, dfolder + global_dict["output_file"])
@@ -184,8 +183,8 @@ if __name__ == "__main__":
     project_nb = 2    # <<<< Set to create a new run
     nb_repeat_runs = 1   # <<<< Set to create a new run
     search_params = {}
-    #search_params['vacc1_rate'] = [0]
-    search_params['vacc1_rate'] = [5000 ,10000, 20000]
+    search_params['vacc1_rate'] = [0]
+    #search_params['vacc1_rate'] = [5000 ,10000, 20000]
     search_params['max_nb_avail_doses'] = [50000]
     search_params['epsilonSinv'] = [2.]
     #search_params['epsilonSinv'] = [0.5, 2., 4.0]

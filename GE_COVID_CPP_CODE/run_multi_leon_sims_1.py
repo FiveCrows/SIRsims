@@ -10,10 +10,10 @@ from datetime import datetime
 
 """
 # Global Parameters to adjust at the bottom of this file
-    project_nb = 0    # <<<< Set to create a new run
+    project_nb = 15    # <<<< Set to create a new run
     nb_repeat_runs = 1   # <<<< Set to create a new run
 """
-project_nb = 0
+
 #----------------------------------------------------------
 # Code posted at
 # https://stackoverflow.com/questions/5228158/cartesian-product-of-a-dictionary-of-lists
@@ -128,7 +128,7 @@ def run_simulation(global_dict, project_nb):
         global_dict["top_level_run"] = top_level_run
         run = top_level_run * nb_repeat_runs + repeat_run
         global_dict["run"] = run
-        global_dict["leaf_folder"] = "results_run%00d/" % run
+        global_dict["leaf_folder"] = "results_run%04d/" % run
         global_dict["repeat_run"] = repeat_run
         dfolder = global_dict["dest_folder"] + global_dict["leaf_folder"]
         os.makedirs(dfolder, exist_ok=True)  # necessary
@@ -149,7 +149,8 @@ def run_simulation(global_dict, project_nb):
         try:
             # destination folder 
             dfolder = global_dict["dest_folder"] + global_dict["leaf_folder"] 
-            cmd = "./seir %s >& %s" % (args, dfolder + global_dict["output_file"])
+            cmd = "./seir %s > %s" % (args, dfolder + global_dict["output_file"])
+            cmd = "/bin/bash -c  %s" %(cmd)
             global_dict["cmd"] = cmd
             print("global_dict: ", global_dict)
             print("command: ", cmd)
@@ -180,7 +181,7 @@ if __name__ == "__main__":
     timestamp = datetime.now().strftime("%m_%d_%H_%M_%S")
 
     #===== SET UP PARAMETERS ============
-    project_nb = 1    # <<<< Set to create a new run
+    project_nb = 2    # <<<< Set to create a new run
     nb_repeat_runs = 1   # <<<< Set to create a new run
     search_params = {}
     search_params['vacc1_rate'] = [0]

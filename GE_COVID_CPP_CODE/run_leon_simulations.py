@@ -39,6 +39,7 @@ def run_simulation(global_dict):
     except:
         print("shutil.copy does not exist")
     cmd = "./seir %s %s >& %s" % (source_folder, dest_folder, output_file)
+    cmd = ""
     global_dict[cmd] = "./seir %s %s >& %s" % (source_folder, dest_folder, output_file)
     print("-----------------------------------------------")
     print(cmd)

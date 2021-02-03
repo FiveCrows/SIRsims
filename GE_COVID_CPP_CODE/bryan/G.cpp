@@ -343,7 +343,7 @@ void G::vaccinations(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, f
 {
   // SOME KIND OF ERROR. MUST LOOK CAREFULLY AT DEFINITIONS OF RATES
   // Poisson  Pois(lambda), mean(lambda). So lambda is in number/time=rate
-	// printf("par.vacc1_rate= %f\n", par.vacc1_rate);
+	printf("par.vacc1_rate= %f\n", par.vacc1_rate);
   int n_to_vaccinate = gsl_ran_poisson(gsl.r_rng, par.vacc1_rate*par.dt);
   
 	//printf("Pois, n_to_vaccinate: %d\n", n_to_vaccinate);
