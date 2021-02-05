@@ -149,7 +149,7 @@ def run_simulation(global_dict, project_nb):
             # destination folder 
             dfolder = global_dict["dest_folder"] + global_dict["leaf_folder"] 
             cmd = "./seir %s > %s" % (args, dfolder + global_dict["output_file"])
-            cmd = "/bin/bash -c  %s" %(cmd)
+            cmd = "/bin/bash -c  '%s'" %(cmd)
             global_dict["cmd"] = cmd
             print("global_dict: ", global_dict)
             print("command: ", cmd)

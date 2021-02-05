@@ -345,7 +345,7 @@ void G::vaccinations(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, f
   // Poisson  Pois(lambda), mean(lambda). So lambda is in number/time=rate
 	//printf("par.vacc1_rate= %f\n", par.vacc1_rate);
   int n_to_vaccinate = gsl_ran_poisson(gsl.r_rng, par.vacc1_rate*par.dt);
-  printf("nb vaccinated: {}".format( n_to_vaccinate))
+  
 	//printf("Pois, n_to_vaccinate: %d\n", n_to_vaccinate);
   vaccinateNextBatch(net, l, c, par, gsl, n_to_vaccinate, cur_time);
 }

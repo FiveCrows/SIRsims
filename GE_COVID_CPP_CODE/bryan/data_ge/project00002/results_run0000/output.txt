@@ -33,6 +33,13 @@ N, 260542,   # population size
 ==> readFloat: dt_btw_vacc, 28.000000,    # Time between vacc1 and vacc2
 ==> readFloat: EOF, 28.000000, 
 read dt_btw_vacc: 28.000000
+arg: par.vacc1_rate= 0.000000
+arg: par.max_nb_avail_doses= 50000
+arg: par.nb_doses= 2.000000
+arg: epsilonS-1= 2.000000 days
+arg: par.epsilon_symptomatic= 0.500000 [1/days]
+arg: beta_shape= 2.000000
+arg: beta_scale= 3.000000
 **** node_file: data_ge/nodes.txt
 **** network_file: data_ge/network.txt
 memory: 22927696 bytes
@@ -6056,1222 +6063,1804 @@ nb recovered: 0
 added 260 latent_symptomatic individuals
 time= 0.000000=
 Counts: t,S,L,IS,R,V1,V2: 0.0, 260282, 260, 0, 0, 0, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 966 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 0/32767
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 0/50000
 continue processing NextBatch
 time= 0.000000=
-Counts: t,S,L,IS,R,V1,V2: 0.0, 260282, 248, 12, 0, 966, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1032 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 966/32767
+Counts: t,S,L,IS,R,V1,V2: 0.0, 260282, 246, 14, 0, 1, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 1/50000
 continue processing NextBatch
 time= 0.100000=
-Counts: t,S,L,IS,R,V1,V2: 0.1, 260282, 229, 31, 0, 1998, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1022 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 1998/32767
+Counts: t,S,L,IS,R,V1,V2: 0.1, 260282, 236, 24, 0, 2, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 2/50000
 continue processing NextBatch
 time= 0.200000=
-Counts: t,S,L,IS,R,V1,V2: 0.2, 260282, 220, 40, 0, 3020, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 981 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 3020/32767
+Counts: t,S,L,IS,R,V1,V2: 0.2, 260280, 226, 36, 0, 3, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 3/50000
 continue processing NextBatch
 time= 0.300000=
-Counts: t,S,L,IS,R,V1,V2: 0.3, 260282, 206, 54, 0, 4001, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 941 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 4001/32767
+Counts: t,S,L,IS,R,V1,V2: 0.3, 260277, 219, 46, 0, 4, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 4/50000
 continue processing NextBatch
 time= 0.400000=
-Counts: t,S,L,IS,R,V1,V2: 0.4, 260282, 196, 64, 0, 4942, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 938 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 4942/32767
+Counts: t,S,L,IS,R,V1,V2: 0.4, 260273, 213, 56, 0, 5, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 5/50000
 continue processing NextBatch
 time= 0.500000=
-Counts: t,S,L,IS,R,V1,V2: 0.5, 260282, 188, 72, 0, 5880, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1071 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 5880/32767
+Counts: t,S,L,IS,R,V1,V2: 0.5, 260264, 213, 65, 0, 6, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 6/50000
 continue processing NextBatch
 time= 0.600000=
-Counts: t,S,L,IS,R,V1,V2: 0.6, 260282, 184, 76, 0, 6951, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 997 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 6951/32767
+Counts: t,S,L,IS,R,V1,V2: 0.6, 260256, 209, 77, 0, 7, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 7/50000
 continue processing NextBatch
 time= 0.700000=
-Counts: t,S,L,IS,R,V1,V2: 0.7, 260282, 175, 85, 0, 7948, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 920 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 7948/32767
+Counts: t,S,L,IS,R,V1,V2: 0.7, 260248, 208, 86, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
 continue processing NextBatch
 time= 0.800000=
-Counts: t,S,L,IS,R,V1,V2: 0.8, 260282, 171, 89, 0, 8868, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 985 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 8868/32767
+Counts: t,S,L,IS,R,V1,V2: 0.8, 260222, 222, 98, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
 continue processing NextBatch
 time= 0.900000=
-Counts: t,S,L,IS,R,V1,V2: 0.9, 260282, 166, 94, 0, 9853, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1036 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 9853/32767
+Counts: t,S,L,IS,R,V1,V2: 0.9, 260204, 226, 112, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
 continue processing NextBatch
 time= 1.000000=
-Counts: t,S,L,IS,R,V1,V2: 1.0, 260282, 157, 103, 0, 10889, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1017 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 10889/32767
+Counts: t,S,L,IS,R,V1,V2: 1.0, 260183, 234, 125, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
 continue processing NextBatch
 time= 1.100000=
-Counts: t,S,L,IS,R,V1,V2: 1.1, 260282, 147, 113, 0, 11906, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 994 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 11906/32767
+Counts: t,S,L,IS,R,V1,V2: 1.1, 260155, 251, 136, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
 continue processing NextBatch
 time= 1.200000=
-Counts: t,S,L,IS,R,V1,V2: 1.2, 260282, 138, 122, 0, 12900, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 986 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 12900/32767
+Counts: t,S,L,IS,R,V1,V2: 1.2, 260137, 261, 144, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
 continue processing NextBatch
 time= 1.300000=
-Counts: t,S,L,IS,R,V1,V2: 1.3, 260282, 132, 128, 0, 13886, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 971 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 13886/32767
+Counts: t,S,L,IS,R,V1,V2: 1.3, 260109, 272, 161, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
 continue processing NextBatch
 time= 1.400000=
-Counts: t,S,L,IS,R,V1,V2: 1.4, 260282, 124, 136, 0, 14857, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1008 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 14857/32767
+Counts: t,S,L,IS,R,V1,V2: 1.4, 260073, 300, 169, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
 continue processing NextBatch
 time= 1.500000=
-Counts: t,S,L,IS,R,V1,V2: 1.5, 260282, 119, 141, 0, 15865, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 958 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 15865/32767
+Counts: t,S,L,IS,R,V1,V2: 1.5, 260030, 330, 182, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
 continue processing NextBatch
 time= 1.600000=
-Counts: t,S,L,IS,R,V1,V2: 1.6, 260282, 115, 145, 0, 16823, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1001 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 16823/32767
+Counts: t,S,L,IS,R,V1,V2: 1.6, 259996, 348, 198, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
 continue processing NextBatch
 time= 1.700000=
-Counts: t,S,L,IS,R,V1,V2: 1.7, 260282, 108, 152, 0, 17824, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 953 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 17824/32767
+Counts: t,S,L,IS,R,V1,V2: 1.7, 259947, 373, 222, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
 continue processing NextBatch
 time= 1.800000=
-Counts: t,S,L,IS,R,V1,V2: 1.8, 260282, 107, 153, 0, 18777, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 933 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 18777/32767
+Counts: t,S,L,IS,R,V1,V2: 1.8, 259886, 420, 236, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
 continue processing NextBatch
 time= 1.900000=
-Counts: t,S,L,IS,R,V1,V2: 1.9, 260282, 103, 157, 0, 19710, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 934 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 19710/32767
+Counts: t,S,L,IS,R,V1,V2: 1.9, 259830, 459, 253, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
 continue processing NextBatch
 time= 2.000000=
-Counts: t,S,L,IS,R,V1,V2: 2.0, 260282, 96, 164, 0, 20644, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 991 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 20644/32767
+Counts: t,S,L,IS,R,V1,V2: 2.0, 259776, 495, 271, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
 continue processing NextBatch
 time= 2.100000=
-Counts: t,S,L,IS,R,V1,V2: 2.1, 260282, 91, 169, 0, 21635, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1033 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 21635/32767
+Counts: t,S,L,IS,R,V1,V2: 2.1, 259701, 528, 313, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
 continue processing NextBatch
 time= 2.200000=
-Counts: t,S,L,IS,R,V1,V2: 2.2, 260282, 86, 174, 0, 22668, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1037 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 22668/32767
+Counts: t,S,L,IS,R,V1,V2: 2.2, 259627, 572, 343, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
 continue processing NextBatch
 time= 2.300000=
-Counts: t,S,L,IS,R,V1,V2: 2.3, 260282, 81, 179, 0, 23705, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 990 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 23705/32767
+Counts: t,S,L,IS,R,V1,V2: 2.3, 259546, 631, 365, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
 continue processing NextBatch
 time= 2.400000=
-Counts: t,S,L,IS,R,V1,V2: 2.4, 260282, 77, 183, 0, 24695, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1040 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 24695/32767
+Counts: t,S,L,IS,R,V1,V2: 2.4, 259478, 668, 396, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
 continue processing NextBatch
 time= 2.500000=
-Counts: t,S,L,IS,R,V1,V2: 2.5, 260282, 73, 187, 0, 25735, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1049 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 25735/32767
+Counts: t,S,L,IS,R,V1,V2: 2.5, 259391, 730, 421, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
 continue processing NextBatch
 time= 2.600000=
-Counts: t,S,L,IS,R,V1,V2: 2.6, 260282, 69, 191, 0, 26784, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1015 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 26784/32767
+Counts: t,S,L,IS,R,V1,V2: 2.6, 259291, 796, 455, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
 continue processing NextBatch
 time= 2.700000=
-Counts: t,S,L,IS,R,V1,V2: 2.7, 260282, 68, 192, 0, 27799, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 987 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 27799/32767
+Counts: t,S,L,IS,R,V1,V2: 2.7, 259178, 871, 493, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
 continue processing NextBatch
 time= 2.799999=
-Counts: t,S,L,IS,R,V1,V2: 2.8, 260282, 64, 196, 0, 28786, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1043 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 28786/32767
+Counts: t,S,L,IS,R,V1,V2: 2.8, 259053, 949, 540, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
 continue processing NextBatch
 time= 2.899999=
-Counts: t,S,L,IS,R,V1,V2: 2.9, 260282, 60, 200, 0, 29829, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 940 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 29829/32767
+Counts: t,S,L,IS,R,V1,V2: 2.9, 258946, 1009, 587, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
 continue processing NextBatch
 time= 2.999999=
-Counts: t,S,L,IS,R,V1,V2: 3.0, 260282, 56, 204, 0, 30769, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 991 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 30769/32767
+Counts: t,S,L,IS,R,V1,V2: 3.0, 258810, 1105, 627, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
 continue processing NextBatch
 time= 3.099999=
-Counts: t,S,L,IS,R,V1,V2: 3.1, 260282, 53, 207, 0, 31760, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1050 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 31760/32767
+Counts: t,S,L,IS,R,V1,V2: 3.1, 258671, 1203, 668, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
 continue processing NextBatch
 time= 3.199999=
-Counts: t,S,L,IS,R,V1,V2: 3.2, 260282, 51, 209, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 980 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 3.2, 258542, 1263, 737, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 3.299999=
-Counts: t,S,L,IS,R,V1,V2: 3.3, 260282, 47, 213, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1004 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 3.3, 258392, 1347, 803, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 3.399999=
-Counts: t,S,L,IS,R,V1,V2: 3.4, 260282, 44, 216, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 995 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 3.4, 258234, 1443, 865, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 3.499999=
-Counts: t,S,L,IS,R,V1,V2: 3.5, 260282, 41, 219, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 985 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 3.5, 258081, 1517, 944, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 3.599999=
-Counts: t,S,L,IS,R,V1,V2: 3.6, 260282, 41, 219, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 984 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 3.6, 257904, 1629, 1009, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 3.699999=
-Counts: t,S,L,IS,R,V1,V2: 3.7, 260282, 39, 221, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1074 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 3.7, 257727, 1732, 1083, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 3.799999=
-Counts: t,S,L,IS,R,V1,V2: 3.8, 260282, 35, 225, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1022 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 3.8, 257552, 1822, 1168, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 3.899998=
-Counts: t,S,L,IS,R,V1,V2: 3.9, 260282, 34, 226, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1037 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 3.9, 257383, 1915, 1244, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 3.999998=
-Counts: t,S,L,IS,R,V1,V2: 4.0, 260282, 33, 227, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1002 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 4.0, 257181, 2023, 1338, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 4.099998=
-Counts: t,S,L,IS,R,V1,V2: 4.1, 260282, 33, 227, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 962 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 4.1, 256984, 2139, 1419, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 4.199998=
-Counts: t,S,L,IS,R,V1,V2: 4.2, 260282, 31, 229, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1002 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 4.2, 256789, 2224, 1529, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 4.299998=
-Counts: t,S,L,IS,R,V1,V2: 4.3, 260282, 29, 231, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 963 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 4.3, 256589, 2306, 1647, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 4.399998=
-Counts: t,S,L,IS,R,V1,V2: 4.4, 260282, 26, 234, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1021 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 4.4, 256375, 2401, 1766, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 4.499998=
-Counts: t,S,L,IS,R,V1,V2: 4.5, 260282, 26, 234, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1001 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 4.5, 256171, 2500, 1871, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 4.599998=
-Counts: t,S,L,IS,R,V1,V2: 4.6, 260282, 25, 235, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1068 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 4.6, 255947, 2606, 1989, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 4.699998=
-Counts: t,S,L,IS,R,V1,V2: 4.7, 260282, 24, 236, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 974 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 4.7, 255722, 2720, 2100, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 4.799998=
-Counts: t,S,L,IS,R,V1,V2: 4.8, 260282, 23, 237, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1009 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 4.8, 255495, 2797, 2250, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 4.899998=
-Counts: t,S,L,IS,R,V1,V2: 4.9, 260282, 19, 241, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 983 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 4.9, 255305, 2845, 2392, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 4.999998=
-Counts: t,S,L,IS,R,V1,V2: 5.0, 260282, 18, 242, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 984 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 5.0, 255102, 2923, 2517, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 5.099998=
-Counts: t,S,L,IS,R,V1,V2: 5.1, 260282, 18, 242, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 945 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 5.1, 254896, 2999, 2647, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 5.199997=
-Counts: t,S,L,IS,R,V1,V2: 5.2, 260282, 18, 242, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1005 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 5.2, 254715, 3047, 2780, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 5.299997=
-Counts: t,S,L,IS,R,V1,V2: 5.3, 260282, 18, 242, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 992 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 5.3, 254526, 3099, 2917, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 5.399997=
-Counts: t,S,L,IS,R,V1,V2: 5.4, 260282, 16, 244, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1016 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 5.4, 254348, 3111, 3083, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 5.499997=
-Counts: t,S,L,IS,R,V1,V2: 5.5, 260282, 15, 245, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1007 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 5.5, 254166, 3129, 3247, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 5.599997=
-Counts: t,S,L,IS,R,V1,V2: 5.6, 260282, 14, 246, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 953 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 5.6, 253996, 3131, 3415, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 5.699997=
-Counts: t,S,L,IS,R,V1,V2: 5.7, 260282, 14, 246, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 957 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 5.7, 253845, 3129, 3568, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 5.799997=
-Counts: t,S,L,IS,R,V1,V2: 5.8, 260282, 14, 246, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1028 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 5.8, 253693, 3152, 3697, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 5.899997=
-Counts: t,S,L,IS,R,V1,V2: 5.9, 260282, 14, 246, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 954 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 5.9, 253558, 3142, 3842, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 5.999997=
-Counts: t,S,L,IS,R,V1,V2: 6.0, 260282, 14, 246, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 996 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 6.0, 253445, 3092, 4005, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 6.099997=
-Counts: t,S,L,IS,R,V1,V2: 6.1, 260282, 14, 246, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1028 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 6.1, 253322, 3060, 4160, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 6.199996=
-Counts: t,S,L,IS,R,V1,V2: 6.2, 260282, 13, 247, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 990 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 6.2, 253221, 3019, 4302, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 6.299996=
-Counts: t,S,L,IS,R,V1,V2: 6.3, 260282, 13, 247, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1043 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 6.3, 253130, 2959, 4453, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 6.399996=
-Counts: t,S,L,IS,R,V1,V2: 6.4, 260282, 12, 248, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 992 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 6.4, 253036, 2913, 4593, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 6.499996=
-Counts: t,S,L,IS,R,V1,V2: 6.5, 260282, 11, 249, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1037 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 6.5, 252951, 2875, 4716, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 6.599996=
-Counts: t,S,L,IS,R,V1,V2: 6.6, 260282, 11, 249, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1019 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 6.6, 252878, 2813, 4851, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 6.699996=
-Counts: t,S,L,IS,R,V1,V2: 6.7, 260282, 11, 249, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 967 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 6.7, 252812, 2736, 4994, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 6.799996=
-Counts: t,S,L,IS,R,V1,V2: 6.8, 260282, 10, 250, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 991 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 6.8, 252742, 2673, 5127, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 6.899996=
-Counts: t,S,L,IS,R,V1,V2: 6.9, 260282, 10, 250, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1005 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 6.9, 252680, 2617, 5245, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 6.999996=
-Counts: t,S,L,IS,R,V1,V2: 7.0, 260282, 10, 250, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 980 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 7.0, 252618, 2551, 5373, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 7.099996=
-Counts: t,S,L,IS,R,V1,V2: 7.1, 260282, 9, 251, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 968 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 7.1, 252560, 2489, 5493, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 7.199996=
-Counts: t,S,L,IS,R,V1,V2: 7.2, 260282, 9, 251, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1030 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 7.2, 252520, 2408, 5614, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 7.299995=
-Counts: t,S,L,IS,R,V1,V2: 7.3, 260282, 9, 251, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1019 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 7.3, 252484, 2317, 5741, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 7.399995=
-Counts: t,S,L,IS,R,V1,V2: 7.4, 260282, 9, 251, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 986 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 7.4, 252458, 2236, 5848, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 7.499995=
-Counts: t,S,L,IS,R,V1,V2: 7.5, 260282, 9, 251, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1057 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 7.5, 252428, 2152, 5962, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 7.599995=
-Counts: t,S,L,IS,R,V1,V2: 7.6, 260282, 9, 251, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1010 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 7.6, 252408, 2073, 6061, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 7.699995=
-Counts: t,S,L,IS,R,V1,V2: 7.7, 260282, 9, 251, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 973 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 7.7, 252380, 1999, 6163, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 7.799995=
-Counts: t,S,L,IS,R,V1,V2: 7.8, 260282, 8, 252, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1001 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 7.8, 252358, 1934, 6250, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 7.899995=
-Counts: t,S,L,IS,R,V1,V2: 7.9, 260282, 8, 252, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 995 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 7.9, 252346, 1849, 6347, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 7.999995=
-Counts: t,S,L,IS,R,V1,V2: 8.0, 260282, 7, 253, 0, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1039 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 8.0, 252331, 1766, 6445, 0, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 8.099995=
-Counts: t,S,L,IS,R,V1,V2: 8.1, 260282, 7, 241, 12, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1035 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 8.1, 252315, 1701, 6512, 14, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 8.199995=
-Counts: t,S,L,IS,R,V1,V2: 8.2, 260282, 6, 223, 31, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1027 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 8.2, 252307, 1621, 6590, 24, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 8.299995=
-Counts: t,S,L,IS,R,V1,V2: 8.3, 260282, 6, 214, 40, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1004 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 8.3, 252301, 1556, 6649, 36, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 8.399996=
-Counts: t,S,L,IS,R,V1,V2: 8.4, 260282, 6, 200, 54, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1008 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 8.4, 252296, 1492, 6708, 46, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 8.499996=
-Counts: t,S,L,IS,R,V1,V2: 8.5, 260282, 5, 191, 64, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 987 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 8.5, 252288, 1425, 6773, 56, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 8.599997=
-Counts: t,S,L,IS,R,V1,V2: 8.6, 260282, 5, 183, 72, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1013 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 8.6, 252282, 1358, 6837, 65, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 8.699997=
-Counts: t,S,L,IS,R,V1,V2: 8.7, 260282, 5, 179, 76, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1075 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 8.7, 252276, 1303, 6886, 77, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 8.799997=
-Counts: t,S,L,IS,R,V1,V2: 8.8, 260282, 5, 170, 85, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 996 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 8.8, 252274, 1238, 6944, 86, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 8.899998=
-Counts: t,S,L,IS,R,V1,V2: 8.9, 260282, 4, 167, 89, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1013 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 8.9, 252271, 1182, 6991, 98, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 8.999998=
-Counts: t,S,L,IS,R,V1,V2: 9.0, 260282, 4, 162, 94, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1030 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 9.0, 252267, 1134, 7029, 112, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 9.099998=
-Counts: t,S,L,IS,R,V1,V2: 9.1, 260282, 4, 153, 103, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 994 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 9.1, 252264, 1070, 7083, 125, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 9.199999=
-Counts: t,S,L,IS,R,V1,V2: 9.2, 260282, 4, 143, 113, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1003 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 9.2, 252262, 1022, 7122, 136, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 9.299999=
-Counts: t,S,L,IS,R,V1,V2: 9.3, 260282, 4, 134, 122, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 969 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 9.3, 252261, 963, 7174, 144, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 9.400000=
-Counts: t,S,L,IS,R,V1,V2: 9.4, 260282, 4, 128, 128, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1002 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 9.4, 252258, 920, 7203, 161, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 9.500000=
-Counts: t,S,L,IS,R,V1,V2: 9.5, 260282, 4, 115, 141, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1061 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 9.5, 252256, 876, 7228, 182, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 9.600000=
-Counts: t,S,L,IS,R,V1,V2: 9.6, 260282, 3, 112, 145, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1031 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 9.6, 252255, 832, 7257, 198, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 9.700001=
-Counts: t,S,L,IS,R,V1,V2: 9.7, 260282, 3, 105, 152, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1014 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 9.7, 252255, 794, 7271, 222, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 9.800001=
-Counts: t,S,L,IS,R,V1,V2: 9.8, 260282, 3, 104, 153, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1032 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 9.8, 252254, 756, 7296, 236, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 9.900002=
-Counts: t,S,L,IS,R,V1,V2: 9.9, 260282, 3, 100, 157, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1010 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 9.9, 252254, 707, 7328, 253, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 10.000002=
-Counts: t,S,L,IS,R,V1,V2: 10.0, 260282, 3, 93, 164, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1030 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 10.0, 252253, 665, 7353, 271, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 10.100002=
-Counts: t,S,L,IS,R,V1,V2: 10.1, 260282, 3, 88, 169, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 994 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 10.1, 252253, 638, 7338, 313, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 10.200003=
-Counts: t,S,L,IS,R,V1,V2: 10.2, 260282, 3, 83, 174, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1034 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 10.2, 252253, 606, 7340, 343, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 10.300003=
-Counts: t,S,L,IS,R,V1,V2: 10.3, 260282, 3, 78, 179, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 976 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 10.3, 252253, 582, 7342, 365, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 10.400003=
-Counts: t,S,L,IS,R,V1,V2: 10.4, 260282, 2, 75, 183, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1014 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 10.4, 252253, 555, 7338, 396, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 10.500004=
-Counts: t,S,L,IS,R,V1,V2: 10.5, 260282, 1, 72, 187, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1030 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 10.5, 252253, 525, 7343, 421, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 10.600004=
-Counts: t,S,L,IS,R,V1,V2: 10.6, 260282, 1, 68, 191, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 939 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 10.6, 252253, 500, 7334, 455, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 10.700005=
-Counts: t,S,L,IS,R,V1,V2: 10.7, 260282, 1, 67, 192, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 983 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 10.7, 252253, 471, 7325, 493, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 10.800005=
-Counts: t,S,L,IS,R,V1,V2: 10.8, 260282, 1, 63, 196, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1001 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 10.8, 252253, 448, 7301, 540, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 10.900005=
-Counts: t,S,L,IS,R,V1,V2: 10.9, 260282, 1, 59, 200, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 998 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 10.9, 252253, 429, 7273, 587, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 11.000006=
-Counts: t,S,L,IS,R,V1,V2: 11.0, 260282, 1, 55, 204, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 991 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 11.0, 252252, 414, 7249, 627, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 11.100006=
-Counts: t,S,L,IS,R,V1,V2: 11.1, 260282, 1, 52, 207, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 995 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 11.1, 252252, 394, 7228, 668, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 11.200006=
-Counts: t,S,L,IS,R,V1,V2: 11.2, 260282, 1, 50, 209, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 989 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 11.2, 252252, 375, 7178, 737, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 11.300007=
-Counts: t,S,L,IS,R,V1,V2: 11.3, 260282, 1, 46, 213, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1030 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 11.3, 252252, 356, 7131, 803, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 11.400007=
-Counts: t,S,L,IS,R,V1,V2: 11.4, 260282, 1, 43, 216, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 921 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 11.4, 252252, 331, 7094, 865, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 11.500008=
-Counts: t,S,L,IS,R,V1,V2: 11.5, 260282, 1, 40, 219, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1043 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 11.5, 252252, 318, 7028, 944, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 11.600008=
-Counts: t,S,L,IS,R,V1,V2: 11.6, 260282, 1, 40, 219, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 988 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 11.6, 252252, 306, 6975, 1009, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 11.700008=
-Counts: t,S,L,IS,R,V1,V2: 11.7, 260282, 1, 38, 221, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 974 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 11.7, 252252, 294, 6913, 1083, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 11.800009=
-Counts: t,S,L,IS,R,V1,V2: 11.8, 260282, 1, 34, 225, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 998 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 11.8, 252252, 273, 6849, 1168, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 11.900009=
-Counts: t,S,L,IS,R,V1,V2: 11.9, 260282, 1, 33, 226, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1049 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 11.9, 252252, 255, 6791, 1244, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 12.000010=
-Counts: t,S,L,IS,R,V1,V2: 12.0, 260282, 1, 32, 227, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 966 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 12.0, 252252, 245, 6707, 1338, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 12.100010=
-Counts: t,S,L,IS,R,V1,V2: 12.1, 260282, 0, 33, 227, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1020 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 12.1, 252252, 234, 6637, 1419, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 12.200010=
-Counts: t,S,L,IS,R,V1,V2: 12.2, 260282, 0, 31, 229, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 995 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 12.2, 252252, 225, 6536, 1529, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 12.300011=
-Counts: t,S,L,IS,R,V1,V2: 12.3, 260282, 0, 29, 231, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 980 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 12.3, 252252, 214, 6429, 1647, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 12.400011=
-Counts: t,S,L,IS,R,V1,V2: 12.4, 260282, 0, 26, 234, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1010 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 12.4, 252252, 209, 6315, 1766, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 12.500011=
-Counts: t,S,L,IS,R,V1,V2: 12.5, 260282, 0, 26, 234, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 939 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 12.5, 252252, 197, 6222, 1871, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 12.600012=
-Counts: t,S,L,IS,R,V1,V2: 12.6, 260282, 0, 25, 235, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 947 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 12.6, 252252, 189, 6112, 1989, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 12.700012=
-Counts: t,S,L,IS,R,V1,V2: 12.7, 260282, 0, 24, 236, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 989 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 12.7, 252252, 175, 6015, 2100, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 12.800013=
-Counts: t,S,L,IS,R,V1,V2: 12.8, 260282, 0, 23, 237, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 931 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 12.8, 252252, 165, 5875, 2250, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 12.900013=
-Counts: t,S,L,IS,R,V1,V2: 12.9, 260282, 0, 19, 241, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 996 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 12.9, 252252, 156, 5742, 2392, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 13.000013=
-Counts: t,S,L,IS,R,V1,V2: 13.0, 260282, 0, 18, 242, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 934 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 13.0, 252252, 151, 5622, 2517, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 13.100014=
-Counts: t,S,L,IS,R,V1,V2: 13.1, 260282, 0, 18, 242, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 976 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 13.1, 252252, 145, 5498, 2647, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 13.200014=
-Counts: t,S,L,IS,R,V1,V2: 13.2, 260282, 0, 18, 242, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 967 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 13.2, 252252, 138, 5372, 2780, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 13.300014=
-Counts: t,S,L,IS,R,V1,V2: 13.3, 260282, 0, 18, 242, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1014 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 13.3, 252252, 131, 5242, 2917, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 13.400015=
-Counts: t,S,L,IS,R,V1,V2: 13.4, 260282, 0, 16, 244, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1004 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 13.4, 252252, 122, 5085, 3083, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 13.500015=
-Counts: t,S,L,IS,R,V1,V2: 13.5, 260282, 0, 15, 245, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1028 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 13.5, 252252, 118, 4925, 3247, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 13.600016=
-Counts: t,S,L,IS,R,V1,V2: 13.6, 260282, 0, 14, 246, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 963 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 13.6, 252252, 116, 4759, 3415, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 13.700016=
-Counts: t,S,L,IS,R,V1,V2: 13.7, 260282, 0, 14, 246, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1002 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 13.7, 252252, 109, 4613, 3568, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 13.800016=
-Counts: t,S,L,IS,R,V1,V2: 13.8, 260282, 0, 14, 246, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1034 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 13.8, 252252, 101, 4492, 3697, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 13.900017=
-Counts: t,S,L,IS,R,V1,V2: 13.9, 260282, 0, 14, 246, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1028 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 13.9, 252252, 98, 4350, 3842, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 14.000017=
-Counts: t,S,L,IS,R,V1,V2: 14.0, 260282, 0, 14, 246, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 998 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 14.0, 252252, 93, 4192, 4005, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 14.100018=
-Counts: t,S,L,IS,R,V1,V2: 14.1, 260282, 0, 14, 246, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1031 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 14.1, 252252, 89, 4041, 4160, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 14.200018=
-Counts: t,S,L,IS,R,V1,V2: 14.2, 260282, 0, 13, 247, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 947 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 14.2, 252252, 85, 3903, 4302, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 14.300018=
-Counts: t,S,L,IS,R,V1,V2: 14.3, 260282, 0, 13, 247, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 990 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 14.3, 252252, 80, 3757, 4453, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 14.400019=
-Counts: t,S,L,IS,R,V1,V2: 14.4, 260282, 0, 12, 248, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1029 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 14.4, 252252, 76, 3621, 4593, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 14.500019=
-Counts: t,S,L,IS,R,V1,V2: 14.5, 260282, 0, 11, 249, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1039 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 14.5, 252252, 72, 3502, 4716, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 14.600019=
-Counts: t,S,L,IS,R,V1,V2: 14.6, 260282, 0, 11, 249, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1029 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 14.6, 252252, 69, 3370, 4851, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 14.700020=
-Counts: t,S,L,IS,R,V1,V2: 14.7, 260282, 0, 11, 249, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1010 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 14.7, 252252, 65, 3231, 4994, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 14.800020=
-Counts: t,S,L,IS,R,V1,V2: 14.8, 260282, 0, 10, 250, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1069 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 14.8, 252252, 63, 3100, 5127, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 14.900021=
-Counts: t,S,L,IS,R,V1,V2: 14.9, 260282, 0, 10, 250, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 997 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 14.9, 252252, 60, 2985, 5245, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 15.000021=
-Counts: t,S,L,IS,R,V1,V2: 15.0, 260282, 0, 10, 250, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 992 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 15.0, 252252, 56, 2861, 5373, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 15.100021=
-Counts: t,S,L,IS,R,V1,V2: 15.1, 260282, 0, 9, 251, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1056 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 15.1, 252252, 54, 2743, 5493, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 15.200022=
-Counts: t,S,L,IS,R,V1,V2: 15.2, 260282, 0, 9, 251, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 984 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 15.2, 252252, 52, 2624, 5614, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 15.300022=
-Counts: t,S,L,IS,R,V1,V2: 15.3, 260282, 0, 9, 251, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1015 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 15.3, 252252, 48, 2501, 5741, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 15.400023=
-Counts: t,S,L,IS,R,V1,V2: 15.4, 260282, 0, 9, 251, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 962 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 15.4, 252252, 48, 2394, 5848, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 15.500023=
-Counts: t,S,L,IS,R,V1,V2: 15.5, 260282, 0, 9, 251, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1027 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 15.5, 252252, 42, 2286, 5962, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 15.600023=
-Counts: t,S,L,IS,R,V1,V2: 15.6, 260282, 0, 9, 251, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1010 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 15.6, 252252, 41, 2188, 6061, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 15.700024=
-Counts: t,S,L,IS,R,V1,V2: 15.7, 260282, 0, 9, 251, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1013 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 15.7, 252252, 38, 2089, 6163, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 15.800024=
-Counts: t,S,L,IS,R,V1,V2: 15.8, 260282, 0, 8, 252, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1001 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 15.8, 252252, 36, 2004, 6250, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 15.900024=
-Counts: t,S,L,IS,R,V1,V2: 15.9, 260282, 0, 8, 252, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 971 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 15.9, 252252, 35, 1908, 6347, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 16.000025=
-Counts: t,S,L,IS,R,V1,V2: 16.0, 260282, 0, 7, 253, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 963 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 16.0, 252252, 32, 1813, 6445, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 16.100025=
-Counts: t,S,L,IS,R,V1,V2: 16.1, 260282, 0, 7, 253, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1033 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 16.1, 252252, 32, 1732, 6526, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 16.200026=
-Counts: t,S,L,IS,R,V1,V2: 16.2, 260282, 0, 6, 254, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1000 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 16.2, 252252, 29, 1647, 6614, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 16.300026=
-Counts: t,S,L,IS,R,V1,V2: 16.3, 260282, 0, 6, 254, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 951 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 16.3, 252252, 26, 1579, 6685, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 16.400026=
-Counts: t,S,L,IS,R,V1,V2: 16.4, 260282, 0, 6, 254, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1040 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 16.4, 252252, 24, 1512, 6754, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 16.500027=
-Counts: t,S,L,IS,R,V1,V2: 16.5, 260282, 0, 5, 255, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1001 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 16.5, 252252, 23, 1438, 6829, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 16.600027=
-Counts: t,S,L,IS,R,V1,V2: 16.6, 260282, 0, 5, 255, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1038 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 16.6, 252252, 21, 1367, 6902, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 16.700027=
-Counts: t,S,L,IS,R,V1,V2: 16.7, 260282, 0, 5, 255, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1000 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 16.7, 252252, 21, 1306, 6963, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 16.800028=
-Counts: t,S,L,IS,R,V1,V2: 16.8, 260282, 0, 5, 255, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 973 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 16.8, 252252, 21, 1239, 7030, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 16.900028=
-Counts: t,S,L,IS,R,V1,V2: 16.9, 260282, 0, 4, 256, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 993 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 16.9, 252252, 20, 1181, 7089, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 17.000029=
-Counts: t,S,L,IS,R,V1,V2: 17.0, 260282, 0, 4, 256, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 956 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 17.0, 252252, 20, 1129, 7141, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 17.100029=
-Counts: t,S,L,IS,R,V1,V2: 17.1, 260282, 0, 4, 256, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 992 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 17.1, 252252, 19, 1063, 7208, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 17.200029=
-Counts: t,S,L,IS,R,V1,V2: 17.2, 260282, 0, 4, 256, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1021 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 17.2, 252252, 19, 1013, 7258, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 17.300030=
-Counts: t,S,L,IS,R,V1,V2: 17.3, 260282, 0, 4, 256, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1027 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 17.3, 252252, 18, 954, 7318, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 17.400030=
-Counts: t,S,L,IS,R,V1,V2: 17.4, 260282, 0, 4, 256, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 983 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 17.4, 252252, 18, 908, 7364, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 17.500031=
-Counts: t,S,L,IS,R,V1,V2: 17.5, 260282, 0, 4, 256, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 981 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 17.5, 252252, 14, 866, 7410, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 17.600031=
-Counts: t,S,L,IS,R,V1,V2: 17.6, 260282, 0, 3, 257, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 986 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 17.6, 252252, 12, 823, 7455, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 17.700031=
-Counts: t,S,L,IS,R,V1,V2: 17.7, 260282, 0, 3, 257, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1046 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 17.7, 252252, 12, 785, 7493, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 17.800032=
-Counts: t,S,L,IS,R,V1,V2: 17.8, 260282, 0, 3, 257, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1013 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 17.8, 252252, 12, 746, 7532, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 17.900032=
-Counts: t,S,L,IS,R,V1,V2: 17.9, 260282, 0, 3, 257, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1043 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 17.9, 252252, 11, 698, 7581, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 18.000032=
-Counts: t,S,L,IS,R,V1,V2: 18.0, 260282, 0, 3, 257, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 952 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 18.0, 252252, 11, 655, 7624, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 18.100033=
-Counts: t,S,L,IS,R,V1,V2: 18.1, 260282, 0, 3, 257, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 985 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 18.1, 252252, 11, 628, 7651, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 18.200033=
-Counts: t,S,L,IS,R,V1,V2: 18.2, 260282, 0, 3, 257, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1034 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 18.2, 252252, 11, 596, 7683, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 18.300034=
-Counts: t,S,L,IS,R,V1,V2: 18.3, 260282, 0, 3, 257, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 984 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 18.3, 252252, 11, 572, 7707, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 18.400034=
-Counts: t,S,L,IS,R,V1,V2: 18.4, 260282, 0, 2, 258, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 996 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 18.4, 252252, 10, 546, 7734, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 18.500034=
-Counts: t,S,L,IS,R,V1,V2: 18.5, 260282, 0, 1, 259, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1015 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 18.5, 252252, 10, 516, 7764, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 18.600035=
-Counts: t,S,L,IS,R,V1,V2: 18.6, 260282, 0, 1, 259, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1009 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 18.6, 252252, 7, 494, 7789, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 18.700035=
-Counts: t,S,L,IS,R,V1,V2: 18.7, 260282, 0, 1, 259, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1002 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 18.7, 252252, 7, 465, 7818, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 18.800035=
-Counts: t,S,L,IS,R,V1,V2: 18.8, 260282, 0, 1, 259, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1013 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 18.8, 252252, 6, 443, 7841, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 18.900036=
-Counts: t,S,L,IS,R,V1,V2: 18.9, 260282, 0, 1, 259, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1006 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 18.9, 252252, 5, 425, 7860, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 19.000036=
-Counts: t,S,L,IS,R,V1,V2: 19.0, 260282, 0, 1, 259, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1004 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 19.0, 252252, 4, 410, 7876, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 19.100037=
-Counts: t,S,L,IS,R,V1,V2: 19.1, 260282, 0, 1, 259, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 968 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 19.1, 252252, 4, 390, 7896, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 19.200037=
-Counts: t,S,L,IS,R,V1,V2: 19.2, 260282, 0, 1, 259, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 997 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 19.2, 252252, 4, 371, 7915, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 19.300037=
-Counts: t,S,L,IS,R,V1,V2: 19.3, 260282, 0, 1, 259, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 957 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 19.3, 252252, 4, 352, 7934, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 19.400038=
-Counts: t,S,L,IS,R,V1,V2: 19.4, 260282, 0, 1, 259, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 971 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 19.4, 252252, 4, 327, 7959, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 19.500038=
-Counts: t,S,L,IS,R,V1,V2: 19.5, 260282, 0, 1, 259, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 948 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 19.5, 252252, 4, 314, 7972, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 19.600039=
-Counts: t,S,L,IS,R,V1,V2: 19.6, 260282, 0, 1, 259, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1023 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 19.6, 252252, 4, 302, 7984, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 19.700039=
-Counts: t,S,L,IS,R,V1,V2: 19.7, 260282, 0, 1, 259, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 996 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 19.7, 252252, 3, 291, 7996, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 19.800039=
-Counts: t,S,L,IS,R,V1,V2: 19.8, 260282, 0, 1, 259, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 959 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 19.8, 252252, 3, 270, 8017, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 19.900040=
-Counts: t,S,L,IS,R,V1,V2: 19.9, 260282, 0, 1, 259, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1007 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 19.9, 252252, 3, 252, 8035, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 20.000040=
-Counts: t,S,L,IS,R,V1,V2: 20.0, 260282, 0, 1, 259, 32810, 0
-par.vacc1_rate= 10000.000000
-n_vaccinated: 1028 
-par.vacc1_rate: 10000.000000par.dt: 0.100000par.dt*par.vacc1_rate: 1000.000000top of NextBatch: 32810/32767
-c.count_vacc1 > par.max_nb_avail_doses
+Counts: t,S,L,IS,R,V1,V2: 20.0, 252252, 3, 242, 8045, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
 time= 20.100040=
-Counts: t,S,L,IS,R,V1,V2: 20.1, 260282, 0, 0, 260, 32810, 0
-total number latent symp:  260
+Counts: t,S,L,IS,R,V1,V2: 20.1, 252252, 2, 232, 8056, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 20.200041=
+Counts: t,S,L,IS,R,V1,V2: 20.2, 252252, 2, 223, 8065, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 20.300041=
+Counts: t,S,L,IS,R,V1,V2: 20.3, 252252, 2, 212, 8076, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 20.400042=
+Counts: t,S,L,IS,R,V1,V2: 20.4, 252252, 2, 207, 8081, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 20.500042=
+Counts: t,S,L,IS,R,V1,V2: 20.5, 252252, 2, 195, 8093, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 20.600042=
+Counts: t,S,L,IS,R,V1,V2: 20.6, 252252, 2, 187, 8101, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 20.700043=
+Counts: t,S,L,IS,R,V1,V2: 20.7, 252252, 2, 173, 8115, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 20.800043=
+Counts: t,S,L,IS,R,V1,V2: 20.8, 252252, 2, 163, 8125, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 20.900043=
+Counts: t,S,L,IS,R,V1,V2: 20.9, 252252, 1, 155, 8134, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 21.000044=
+Counts: t,S,L,IS,R,V1,V2: 21.0, 252252, 1, 150, 8139, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 21.100044=
+Counts: t,S,L,IS,R,V1,V2: 21.1, 252252, 1, 144, 8145, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 21.200045=
+Counts: t,S,L,IS,R,V1,V2: 21.2, 252252, 1, 137, 8152, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 21.300045=
+Counts: t,S,L,IS,R,V1,V2: 21.3, 252252, 1, 130, 8159, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 21.400045=
+Counts: t,S,L,IS,R,V1,V2: 21.4, 252252, 1, 121, 8168, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 21.500046=
+Counts: t,S,L,IS,R,V1,V2: 21.5, 252252, 1, 117, 8172, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 21.600046=
+Counts: t,S,L,IS,R,V1,V2: 21.6, 252252, 1, 115, 8174, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 21.700047=
+Counts: t,S,L,IS,R,V1,V2: 21.7, 252252, 1, 108, 8181, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 21.800047=
+Counts: t,S,L,IS,R,V1,V2: 21.8, 252252, 0, 101, 8189, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 21.900047=
+Counts: t,S,L,IS,R,V1,V2: 21.9, 252252, 0, 98, 8192, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 22.000048=
+Counts: t,S,L,IS,R,V1,V2: 22.0, 252252, 0, 93, 8197, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 22.100048=
+Counts: t,S,L,IS,R,V1,V2: 22.1, 252252, 0, 89, 8201, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 22.200048=
+Counts: t,S,L,IS,R,V1,V2: 22.2, 252252, 0, 85, 8205, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 22.300049=
+Counts: t,S,L,IS,R,V1,V2: 22.3, 252252, 0, 80, 8210, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 22.400049=
+Counts: t,S,L,IS,R,V1,V2: 22.4, 252252, 0, 76, 8214, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 22.500050=
+Counts: t,S,L,IS,R,V1,V2: 22.5, 252252, 0, 72, 8218, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 22.600050=
+Counts: t,S,L,IS,R,V1,V2: 22.6, 252252, 0, 69, 8221, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 22.700050=
+Counts: t,S,L,IS,R,V1,V2: 22.7, 252252, 0, 65, 8225, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 22.800051=
+Counts: t,S,L,IS,R,V1,V2: 22.8, 252252, 0, 63, 8227, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 22.900051=
+Counts: t,S,L,IS,R,V1,V2: 22.9, 252252, 0, 60, 8230, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 23.000051=
+Counts: t,S,L,IS,R,V1,V2: 23.0, 252252, 0, 56, 8234, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 23.100052=
+Counts: t,S,L,IS,R,V1,V2: 23.1, 252252, 0, 54, 8236, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 23.200052=
+Counts: t,S,L,IS,R,V1,V2: 23.2, 252252, 0, 52, 8238, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 23.300053=
+Counts: t,S,L,IS,R,V1,V2: 23.3, 252252, 0, 48, 8242, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 23.400053=
+Counts: t,S,L,IS,R,V1,V2: 23.4, 252252, 0, 48, 8242, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 23.500053=
+Counts: t,S,L,IS,R,V1,V2: 23.5, 252252, 0, 42, 8248, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 23.600054=
+Counts: t,S,L,IS,R,V1,V2: 23.6, 252252, 0, 41, 8249, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 23.700054=
+Counts: t,S,L,IS,R,V1,V2: 23.7, 252252, 0, 38, 8252, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 23.800055=
+Counts: t,S,L,IS,R,V1,V2: 23.8, 252252, 0, 36, 8254, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 23.900055=
+Counts: t,S,L,IS,R,V1,V2: 23.9, 252252, 0, 35, 8255, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 24.000055=
+Counts: t,S,L,IS,R,V1,V2: 24.0, 252252, 0, 32, 8258, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 24.100056=
+Counts: t,S,L,IS,R,V1,V2: 24.1, 252252, 0, 32, 8258, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 24.200056=
+Counts: t,S,L,IS,R,V1,V2: 24.2, 252252, 0, 29, 8261, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 24.300056=
+Counts: t,S,L,IS,R,V1,V2: 24.3, 252252, 0, 26, 8264, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 24.400057=
+Counts: t,S,L,IS,R,V1,V2: 24.4, 252252, 0, 24, 8266, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 24.500057=
+Counts: t,S,L,IS,R,V1,V2: 24.5, 252252, 0, 23, 8267, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 24.600058=
+Counts: t,S,L,IS,R,V1,V2: 24.6, 252252, 0, 21, 8269, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 24.700058=
+Counts: t,S,L,IS,R,V1,V2: 24.7, 252252, 0, 21, 8269, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 24.800058=
+Counts: t,S,L,IS,R,V1,V2: 24.8, 252252, 0, 21, 8269, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 24.900059=
+Counts: t,S,L,IS,R,V1,V2: 24.9, 252252, 0, 20, 8270, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 25.000059=
+Counts: t,S,L,IS,R,V1,V2: 25.0, 252252, 0, 20, 8270, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 25.100060=
+Counts: t,S,L,IS,R,V1,V2: 25.1, 252252, 0, 19, 8271, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 25.200060=
+Counts: t,S,L,IS,R,V1,V2: 25.2, 252252, 0, 19, 8271, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 25.300060=
+Counts: t,S,L,IS,R,V1,V2: 25.3, 252252, 0, 18, 8272, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 25.400061=
+Counts: t,S,L,IS,R,V1,V2: 25.4, 252252, 0, 18, 8272, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 25.500061=
+Counts: t,S,L,IS,R,V1,V2: 25.5, 252252, 0, 14, 8276, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 25.600061=
+Counts: t,S,L,IS,R,V1,V2: 25.6, 252252, 0, 12, 8278, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 25.700062=
+Counts: t,S,L,IS,R,V1,V2: 25.7, 252252, 0, 12, 8278, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 25.800062=
+Counts: t,S,L,IS,R,V1,V2: 25.8, 252252, 0, 12, 8278, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 25.900063=
+Counts: t,S,L,IS,R,V1,V2: 25.9, 252252, 0, 11, 8279, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 26.000063=
+Counts: t,S,L,IS,R,V1,V2: 26.0, 252252, 0, 11, 8279, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 26.100063=
+Counts: t,S,L,IS,R,V1,V2: 26.1, 252252, 0, 11, 8279, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 26.200064=
+Counts: t,S,L,IS,R,V1,V2: 26.2, 252252, 0, 11, 8279, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 26.300064=
+Counts: t,S,L,IS,R,V1,V2: 26.3, 252252, 0, 11, 8279, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 26.400064=
+Counts: t,S,L,IS,R,V1,V2: 26.4, 252252, 0, 10, 8280, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 26.500065=
+Counts: t,S,L,IS,R,V1,V2: 26.5, 252252, 0, 10, 8280, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 26.600065=
+Counts: t,S,L,IS,R,V1,V2: 26.6, 252252, 0, 7, 8283, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 26.700066=
+Counts: t,S,L,IS,R,V1,V2: 26.7, 252252, 0, 7, 8283, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 26.800066=
+Counts: t,S,L,IS,R,V1,V2: 26.8, 252252, 0, 6, 8284, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 26.900066=
+Counts: t,S,L,IS,R,V1,V2: 26.9, 252252, 0, 5, 8285, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 27.000067=
+Counts: t,S,L,IS,R,V1,V2: 27.0, 252252, 0, 4, 8286, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 27.100067=
+Counts: t,S,L,IS,R,V1,V2: 27.1, 252252, 0, 4, 8286, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 27.200068=
+Counts: t,S,L,IS,R,V1,V2: 27.2, 252252, 0, 4, 8286, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 27.300068=
+Counts: t,S,L,IS,R,V1,V2: 27.3, 252252, 0, 4, 8286, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 27.400068=
+Counts: t,S,L,IS,R,V1,V2: 27.4, 252252, 0, 4, 8286, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 27.500069=
+Counts: t,S,L,IS,R,V1,V2: 27.5, 252252, 0, 4, 8286, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 27.600069=
+Counts: t,S,L,IS,R,V1,V2: 27.6, 252252, 0, 4, 8286, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 27.700069=
+Counts: t,S,L,IS,R,V1,V2: 27.7, 252252, 0, 3, 8287, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 27.800070=
+Counts: t,S,L,IS,R,V1,V2: 27.8, 252252, 0, 3, 8287, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 27.900070=
+Counts: t,S,L,IS,R,V1,V2: 27.9, 252252, 0, 3, 8287, 8, 0
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 28.000071=
+Counts: t,S,L,IS,R,V1,V2: 28.0, 252252, 0, 3, 8287, 8, 1
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 28.100071=
+Counts: t,S,L,IS,R,V1,V2: 28.1, 252252, 0, 2, 8288, 8, 2
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 28.200071=
+Counts: t,S,L,IS,R,V1,V2: 28.2, 252252, 0, 2, 8288, 8, 3
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 28.300072=
+Counts: t,S,L,IS,R,V1,V2: 28.3, 252252, 0, 2, 8288, 8, 4
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 28.400072=
+Counts: t,S,L,IS,R,V1,V2: 28.4, 252252, 0, 2, 8288, 8, 5
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 28.500072=
+Counts: t,S,L,IS,R,V1,V2: 28.5, 252252, 0, 2, 8288, 8, 6
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 28.600073=
+Counts: t,S,L,IS,R,V1,V2: 28.6, 252252, 0, 2, 8288, 8, 7
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 28.700073=
+Counts: t,S,L,IS,R,V1,V2: 28.7, 252252, 0, 2, 8288, 8, 8
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 28.800074=
+Counts: t,S,L,IS,R,V1,V2: 28.8, 252252, 0, 2, 8288, 8, 8
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 28.900074=
+Counts: t,S,L,IS,R,V1,V2: 28.9, 252252, 0, 1, 8289, 8, 8
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 29.000074=
+Counts: t,S,L,IS,R,V1,V2: 29.0, 252252, 0, 1, 8289, 8, 8
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 29.100075=
+Counts: t,S,L,IS,R,V1,V2: 29.1, 252252, 0, 1, 8289, 8, 8
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 29.200075=
+Counts: t,S,L,IS,R,V1,V2: 29.2, 252252, 0, 1, 8289, 8, 8
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 29.300076=
+Counts: t,S,L,IS,R,V1,V2: 29.3, 252252, 0, 1, 8289, 8, 8
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 29.400076=
+Counts: t,S,L,IS,R,V1,V2: 29.4, 252252, 0, 1, 8289, 8, 8
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 29.500076=
+Counts: t,S,L,IS,R,V1,V2: 29.5, 252252, 0, 1, 8289, 8, 8
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 29.600077=
+Counts: t,S,L,IS,R,V1,V2: 29.6, 252252, 0, 1, 8289, 8, 8
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 29.700077=
+Counts: t,S,L,IS,R,V1,V2: 29.7, 252252, 0, 1, 8289, 8, 8
+par.vacc1_rate= 0.000000
+n_vaccinated: 0 
+par.vacc1_rate: 0.000000par.dt: 0.100000par.dt*par.vacc1_rate: 0.000000top of NextBatch: 8/50000
+continue processing NextBatch
+time= 29.800077=
+Counts: t,S,L,IS,R,V1,V2: 29.8, 252252, 0, 0, 8290, 8, 8
+total number latent symp:  8290
 total number latent presymp:  0
-total number infectious symp:  260
-total number recovered:  260
-total number vacc 1:  32810
-total number vacc 2:  0
-Execution time 1 seconds
+total number infectious symp:  8290
+total number recovered:  8290
+total number vacc 1:  8
+total number vacc 2:  8
+Execution time 2 seconds
