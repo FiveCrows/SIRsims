@@ -51,7 +51,7 @@ public:
 	void readVaccinations(Params&, Files&, Network&, Lists&);
 	//utilities
 	void allocateMemory(Params&, Lists&);
-	void initRandom(int, GSL&);
+	void initRandom(GSL&);
 	void openFiles(Files&);
 	void setBeta(Params&);
 	void addToList(List*, int);

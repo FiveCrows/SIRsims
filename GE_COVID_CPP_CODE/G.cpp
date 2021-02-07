@@ -40,7 +40,6 @@ G::G(Params& p, Files& f, Lists& l, Counts& c, Network& n, GSL& gsl) : par(p), f
 //----------------------------------------------------------------------
 void G::initialize(int argc, char** argv, Files& files, Params& params, Lists& lists, Network& network, GSL& gsl)
 {
-  int seed;
 
   params.n_runs = 100;
   params.n_runs = 10;
@@ -49,8 +48,7 @@ void G::initialize(int argc, char** argv, Files& files, Params& params, Lists& l
   params.n_runs = 1;
   //parameters = 0;
 
-  seed = time(NULL);
-  initRandom(seed, gsl);
+  initRandom(gsl);
 
   // the Results folder contains parameters.txt, result files
   // the Data folder contains network data
@@ -211,7 +209,7 @@ void G::seedInfection(Params& par, Counts& c, Network& n, GSL& gsl, Lists& l, Fi
 	 // susceptibles have been subject to a random permution 
 	 id = p->data[i];  
 	 // Nodes in randomized order to randomize batch vaccinations
-	 l.permuted_nodes.push_back(p->data[i]);
+	 l.permuted_nodes.push_back(id);
      n.node[i].state = S;
      addToList(&l.susceptible, id); 
   }
@@ -253,12 +251,14 @@ void G::seedInfection(Params& par, Counts& c, Network& n, GSL& gsl, Lists& l, Fi
   printf("N= %d, ninfected= %d\n", par.N, ninfected);
 
   for (int i=0; i < ninfected; i++) { 
-  	seed = p->data[i];  // randomized infections
-  	n.node[seed].state = L;
-    addToList(&l.latent_symptomatic, seed); // orig 
+  	int id = p->data[i];  // randomized infections
+  	n.node[id].state = L;
+    addToList(&l.latent_symptomatic, id); // orig 
 	// Not sure. 
-	//removeFromList(&l.susceptibles, i);  // i is index to remove
+    // I must remove initial L from susceptible list
+	removeFromList(&l.susceptibles, id);  // i is index to remove
   }
+
  
 
   // Count number in recovered state
@@ -496,7 +496,7 @@ void G::secondVaccination(Params& par, Lists& l, GSL& gsl, Network &net, Counts&
 
 			// Higher vaccine effectiveness increases the recovery rate
 	        net.node[id].mu   = par.mu / (1.-par.vacc2_recov_eff); 
-			i = removeFromList(&l.vacc1, i);
+			i = removeFromList(&l.vacc1, i);  // CHECK RTURN VALUE wrt Loop index above
 		    stateTransition(id, id, V1, V2, net.node[id].t_V1, cur_time);
 		}
 	}
@@ -617,7 +617,7 @@ void G::latency(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, float 
 		c.count_i_symp += 1;
 	    net.node[id].state = IS;
 	    net.node[id].t_IS = cur_time;
-	    i = removeFromList(&l.latent_symptomatic, i);
+	    i = removeFromList(&l.latent_symptomatic, i);   // CHECK return i wrt loop index i 
 		stateTransition(id, id, L, IS, net.node[id].t_L, cur_time);
 	  }
   }
@@ -643,11 +643,11 @@ void G::IsTransition(Params& par, Lists& l, Network& net, Counts& c, GSL& gsl, f
 #ifdef CONST_INFECTION_TIME
 	if ((cur_time-net.node[id].t_IS) >= INFECTION_TIME) {
 #else
- #if EXP
+  #if EXP
     double prob = 1. - exp(-par.dt*net.node[id].mu);
- #else
+  #else
     double prob = par.dt * par.mu * net.node[id].mu;
- #endif
+  #endif
     if (gsl_rng_uniform(gsl.random_gsl) < prob) { //days to R/Home
 #endif
       addToList(&l.new_recovered, id);
@@ -655,7 +655,10 @@ void G::IsTransition(Params& par, Lists& l, Network& net, Counts& c, GSL& gsl, f
       net.node[id].state  = R;
 	  net.node[id].t_R    = cur_time;
       l.n_active--;
-      i = removeFromList(&l.infectious_symptomatic, i);
+      // Why return (i-1)th element of the list? l.infections_symptomatic.n is decremented
+	  // i is decremented because n is decremented. If i remained the same, 
+	  // the loop above would execute once too many times
+      i = removeFromList(&l.infectious_symptomatic, i); // Check return i wrt loop index i above
 
 	  stateTransition(id, id, IS, R, net.node[id].t_IS, cur_time);
 	}
@@ -859,7 +862,6 @@ void G::readParameters(char* parameter_file, Params& params)
   params.vacc2_recov_eff = params.vacc2_eff < 0.99 ? 
   		params.vacc1_eff : 0.99;
 
-  params.vacc2_rate   = readFloat(f);
   params.dt_btw_vacc  = readFloat(f);
   printf("read dt_btw_vacc: %f\n", params.dt_btw_vacc);
 
@@ -1035,9 +1037,10 @@ void G::allocateMemory(Params& p, Lists& l)
   l.new_vacc2.v = (int*) malloc(p.N * sizeof * l.new_vacc2.v);
 }
 //----------------------------------------------------------------------
-void G::initRandom(int seed, GSL& gsl)
+void G::initRandom(GSL& gsl)
 {
   //GSL gsl;
+  int seed = time(NULL);
   gsl_rng_env_setup();
   gsl.T = gsl_rng_default;
   gsl.random_gsl = gsl_rng_alloc(gsl.T);
@@ -1093,7 +1096,7 @@ int G::removeFromList(List *list, int i)
   list->n--;
   list->v[i] = list->v[list->n];
 
-  return i-1;
+  return i-1;   // Why return i-1?
 }
 
 //----------------------------------------------------------------------
