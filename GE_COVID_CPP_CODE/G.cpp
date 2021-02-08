@@ -8,7 +8,7 @@
 #include <vector>
 using namespace std;
 
-#define EXP 1       // Exponential distribution of infection times
+#define EXP 0       // Exponential distribution of infection times
 #define CONST_INFECTION_TIME    // constant recovery time
 
 #define INFECTION_TIME 8
@@ -345,7 +345,7 @@ void G::vaccinations(Params& par, Lists& l, GSL& gsl, Network &net, Counts& c, f
   // Poisson  Pois(lambda), mean(lambda). So lambda is in number/time=rate
 	//printf("par.vacc1_rate= %f\n", par.vacc1_rate);
   int n_to_vaccinate = gsl_ran_poisson(gsl.r_rng, par.vacc1_rate*par.dt);
-  printf("nb vaccinated: {}".format( n_to_vaccinate))
+  
 	//printf("Pois, n_to_vaccinate: %d\n", n_to_vaccinate);
   vaccinateNextBatch(net, l, c, par, gsl, n_to_vaccinate, cur_time);
 }
@@ -536,7 +536,7 @@ void G::infect(int source, int type, Network& net, Params& params, GSL& gsl, Lis
 	  // transmission distribution is not a function of the individual. So superspreading is not modeled. 
 	  // Furthermore, the distribution is not exponential (that is more realistic)
 #ifdef INDIV_VAR
-	 double t = (files.it - node.ti_L) * par.dt;
+	 double t = (files.t - node.ti_L) * par.dt;  // changed files.it to files.t
      double betaISt = gsl_ran_weibull_pdf(t, params.beta_scale, params.beta_shape);
 	 float beta = par.R0 * betaISt * node.w[j];
 #else
@@ -549,6 +549,8 @@ void G::infect(int source, int type, Network& net, Params& params, GSL& gsl, Lis
 
 #if EXP
 	    prob = 1.-exp(-prob);   // == prob as prob -> zero
+		printf("No longer to use EXP of 1\n"); 
+		exit(1)
 #endif
 	  // If the target is to be infected, there are two cases: 
 	  // Either it is already infected, so I record the "potential infection"

@@ -150,10 +150,10 @@ def run_simulation(global_dict, project_nb):
             # destination folder 
             dfolder = global_dict["dest_folder"] + global_dict["leaf_folder"] 
             cmd = "./seir %s > %s" % (args, dfolder + global_dict["output_file"])
-            cmd = "/bin/bash -c  %s" %(cmd)
+            cmd = "/bin/bash -c  '%s'" % (cmd)
             global_dict["cmd"] = cmd
             print("global_dict: ", global_dict)
-            print("command: ", cmd)
+            print("==> command: ", cmd)
             os.system(cmd)
             storeFiles(global_dict)
         except: 
@@ -184,8 +184,8 @@ if __name__ == "__main__":
     project_nb = 2    # <<<< Set to create a new run
     nb_repeat_runs = 1   # <<<< Set to create a new run
     search_params = {}
-    search_params['vacc1_rate'] = [0]
-    #search_params['vacc1_rate'] = [5000 ,10000, 20000]
+    #search_params['vacc1_rate'] = [0]
+    search_params['vacc1_rate'] = [5000 ,10000, 20000]
     search_params['max_nb_avail_doses'] = [50000]
     search_params['epsilonSinv'] = [2.]
     #search_params['epsilonSinv'] = [0.5, 2., 4.0]

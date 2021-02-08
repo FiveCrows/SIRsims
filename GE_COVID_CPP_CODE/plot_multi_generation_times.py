@@ -271,5 +271,5 @@ if __name__ == "__main__":
     lg.get_title().set_fontsize(str(fsz))
     lgc.get_title().set_fontsize(str(fsz))
     plt.tight_layout()
-    plt.savefig(f'plot_multi_generation_times_project{case}.pdf')
+    plt.savefig('./plot_multi_generation_times_project{case}.pdf')
 
