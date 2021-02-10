@@ -14,8 +14,13 @@ globals().update(json.load(open('defaultParameters')))
 model = PopulaceGraph(slim = False)
 netBuilder = NetBuilder()
 model.networkEnvs(netBuilder)
-model.weightNetwork(env_type_scalars, prevention_adoptions, prevention_efficacies)
 
+ip = parts.autoBinLambdaPartitioner.incomePartitioner(model.environments, 20)
+#produces partitition bounds
+ip.partitionGroupWithAutoBound(model.populace)
+rat.plotContactMatrix(model, ip, model.environments)
+plt.show()
+model.weightNetwork(env_type_scalars, prevention_adoptions, prevention_efficacies)
 #get and plot a distribution of incomes for each household 
 envs = model.environments
 households = rat.filterEnvByType(envs,'household')
@@ -30,7 +35,4 @@ households = rat.filterEnvByType(envs,'household')
 #plt.show()
 
 #create a partitioner to group people by income. 
-ip = parts.autoBinLambdaPartitioner.incomePartitioner(model.environments, 10)
-ip.partitionGroupWithAutoBound(model.populace)
-rat.plotContactMatrix(model, ip, model.environments.keys())
 
