@@ -33,12 +33,12 @@ def plotContactMatrix(model, partitioner, env_indices, title = "untitled", ax = 
     ax.imshow(contact_matrix)
     
     plt.title("Contact Matrix for {}".format(title))
-    labels = partitioner.labels
+    labels = None # partitioner.labels
     axisticks= list(range(15))
     plt.xticks(axisticks, labels, rotation= 'vertical')
     plt.yticks(axisticks, labels)
-    plt.xlabel('Age Group')
-    plt.ylabel('Age Group')                
+    #plt.xlabel('Age Group')
+    #plt.ylabel('Age Group')                
 
 def getContactMatrix(model, partitioner, env_indices):
     n_sets = partitioner.num_sets
@@ -49,7 +49,7 @@ def getContactMatrix(model, partitioner, env_indices):
         env = model.environments[index]
         #assigns each person to a set
         placements, partition = partitioner.partitionGroup(env.member_records)
-        setSizes += np.array([len(partition[index]) for index in partition])
+        setSizes += np.array([len(group) for group in partition.values()])
         for edge in env.edges:
             cm[placements[edge[0]], placements[edge[1]]] += 1
     cm = np.nan_to_num([np.array(row)/setSizes for row in cm])

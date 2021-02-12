@@ -11,7 +11,7 @@ autoBinLambdaPartitioner is written to group people into bins of uniform size. I
 """
 import numpy as np 
 import pandas as pd
-
+import math 
 
 class Partitioner():
     def __init__(self, bin_bounds, customNames = None):
@@ -23,17 +23,20 @@ class Partitioner():
         :param enumerator: dict
         The enumerator should map each possible values for the given attribute to the index of a partition set
 
+        :param bin_bounds: list
+        This list should include each boundary between bins,
+        but the first and last bound are implicity at inf
         :param labels: list
         A list of names for plotting with partitioned sets
         """        
         self.bin_bounds = bin_bounds
-        self.num_sets = len(self.bin_bounds)-1
-        self.num_bins = self.num_sets #redundency because I'm too lazy to refactor
+        self.num_bins = len(self.bin_bounds)-1
         self.bins = [(bin_bounds[i], bin_bounds[i+1]) for i in range(self.num_bins)]
+        
         self.binNames = customNames or self.nameBins()
-
+        print(self.bins)
     def nameBins(self):
-        names = ['{}:{}'.format(self.bin_bounds[i], self.bin_bounds[i+1]) for i in range(self.num_bins)]
+        names = ['{}:{}'.format(self.bin_bounds[i], self.bin_bounds[i+1]) for i in range(self.num_bins-2)]
         return names
 
     def binMembers(self, members: [float]):
@@ -48,10 +51,10 @@ class Partitioner():
         '''
         
         binList = self.binMembers(members)
-        partition = {i:[] for i in range(len(self.bins))}
+        partition = {i:[] for i in range(len(self.bin_bounds)+1)}
         for i, bin_num in enumerate(binList):
             #add each member to the partition by id
-            partition[bin_num].append(members[i][0])        
+            partition[bin_num].append(members[i][0])
         return dict(zip([member.sp_id for member in members], binList)), partition        
     
 
@@ -110,7 +113,7 @@ class autoBinLambdaPartitioner(Partitioner):
         split = [list(x) for x in np.array_split(sort, self.num_bins)]
         #let the bounds be the first of each bin, and also the last of the last bin 
         bounds = [partition[0] for partition in split]
-        bounds = bounds[1:]
+        bounds = [-math.inf]+ bounds[1:] + [math.inf]
         super(autoBinLambdaPartitioner, self).__init__(bounds)
         return(dict(enumerate(split)))
         
@@ -137,7 +140,7 @@ class customPartitioner(Partitioner):
         """
         #attribute = self.attribute
         binList = np.digitize(list(map(self.attribute_lambda, members)), self.bins)
-        partition = {i:[] for i in range(len(self.bins))}
+        partition = {i:[] for i in range(len(self.bins_bounds+1))}
         for i, bin_num in enumerate(binList):
             partition[bin_num].append(members[i])        
         return dict(zip(members, binList)), partition
