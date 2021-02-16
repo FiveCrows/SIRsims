@@ -1011,22 +1011,23 @@ class PopulaceGraph:
 
         ages_d = {}
 
-        for k,v in statuses.items():
-            ages_d[k] = self.SIRperBracket(v)
+        #for k,v in statuses.items():
+            #ages_d[k] = self.SIRperBracket(v)
 
         
         #-----------
         # Create a dictionary to store all the data and save it to a file 
         data = {}
-        u = Utils()
+        #utils not found
+        #u = Utils()
         SIR_results    = {'S':sr.S(), 'I':sr.I(), 'R':sr.R(), 't':sr.t()}
-        SIR_results    = u.interpolateSIR(SIR_results)
-        data['SIR']    = SIR_results
+        #SIR_results    = u.interpolateSIR(SIR_results)
+        #data['SIR']    = SIR_results
         data['title']  = title
         data['params'] = {'gamma':gamma, 'tau':tau}
         data['preventions'] = self.preventions
         data['prevention_adoptions']  = self.prevention_adoptions
-        data['ages_SIR']    = ages_d # ages_d[time][k] ==> S,I,R counts for age bracket k
+        #data['ages_SIR']    = ages_d # ages_d[time][k] ==> S,I,R counages_dts for age bracket k
         data['vacc_dict']   = self.createVaccinationDict()
         data['global_dict'] = self.global_dict
         data['initial_nb_recovered'] = len(self.initial_vaccinated)
@@ -1035,7 +1036,8 @@ class PopulaceGraph:
         x = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         filename = "%s, gamma=%s, tau=%s, %s" % (title, gamma, tau, x)
         print("saveResults: filename: ", filename)
-        self.saveResults(filename, data)
+        #has error
+        #self.saveResults(filename, data)
 
     #------------------------------
     def weightNetwork(self, env_type_scalars, prevention_adoptions, prevention_efficacies):

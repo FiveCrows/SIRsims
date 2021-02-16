@@ -1,5 +1,6 @@
 ##################################################################
-#This script is here to reveal information about the incomes of the population
+#This script is here to reveal information about income
+# contact relations of the population
 ##################################################################
 import matplotlib as plt
 from modelingToolkit import *
@@ -15,16 +16,22 @@ model = PopulaceGraph(slim = False)
 netBuilder = NetBuilder()
 model.networkEnvs(netBuilder)
 
-ip = parts.autoBinLambdaPartitioner.incomePartitioner(model.environments, 20)
+#construct ip, a partitioner by income 
+num_income_brackets = 20
+ip = parts.autoBinLambdaPartitioner.incomePartitioner(model.environments, num_income_brackets)
+school_children = list(filter(lambda x: x.school_id !=1, model.populace))
+school_partition = ip.partitionGroupWithAutoBound(school_children)
 #produces partitition bounds
-ip.partitionGroupWithAutoBound(model.populace)
-rat.plotContactMatrix(model, ip, model.environments)
+
+#plot Contact between income groups for different env types
+rat.plotContactMatrix(model, school_partition, model.schools)
 plt.show()
 model.weightNetwork(env_type_scalars, prevention_adoptions, prevention_efficacies)
 #get and plot a distribution of incomes for each household 
-envs = model.environments
-households = rat.filterEnvByType(envs,'household')
-
+model.infectPopulace(init_infection_rate)
+model.simulate(gamma,tau)
+rat.plotBars(model, full_partition, ip)
+plt.show()
 #plot a distribution of incomes
 
 #hh_incomes = [hh.income for hh in households.values()]
@@ -34,5 +41,5 @@ households = rat.filterEnvByType(envs,'household')
 #sns.distplot(personal_incomes, kde = True, axlabel = 'person_incomes')
 #plt.show()
 
-#create a partitioner to group people by income. 
+
 

@@ -40,16 +40,18 @@ def plotContactMatrix(model, partitioner, env_indices, title = "untitled", ax = 
     #plt.xlabel('Age Group')
     #plt.ylabel('Age Group')                
 
-def getContactMatrix(model, partitioner, env_indices):
-    n_sets = partitioner.num_sets
+def getContactMatrix(model, partition, env_indices):
+    n_sets = partition.num_sets
     cm = np.zeros([n_sets, n_sets])
     setSizes = np.zeros(n_sets)
     #add every
-    for index in env_indices:
+    #remove none if present 
+    env_indices.pop(None,None)
+    for index in env_indices:        
         env = model.environments[index]
-        #assigns each person to a set
-        placements, partition = partitioner.partitionGroup(env.member_records)
-        setSizes += np.array([len(group) for group in partition.values()])
+        #assigns each person to a set        
+        setSizes += np.array([len(group) for group in partition.sets.values()])
+        placements = partition.get_placements()
         for edge in env.edges:
             cm[placements[edge[0]], placements[edge[1]]] += 1
     cm = np.nan_to_num([np.array(row)/setSizes for row in cm])
@@ -87,7 +89,7 @@ def getPeakPrevalences(self):
     return [max(sim[0].I()) for sim in self.sims]
 
 #If a structuredEnvironment is specified, the partition of the environment is applied, otherwise, a partition must be passed
-def plotBars(self, partitioner, env_indices, SIRstatus = 'R', normalized = False):
+def plotBars(model, partition, partitioner, SIRstatus = 'R', normalized = False):
     """
     Will show a bar chart that details the final status of each partition set in the environment, at the end of the simulation
     :param environment: must be a structured environment
@@ -96,44 +98,39 @@ def plotBars(self, partitioner, env_indices, SIRstatus = 'R', normalized = False
     #TODO finish implementing None environment as entire graph
     """
 
-    partition = partitioner
-    for index in env_indices:
-        if isinstance(environment, StructuredEnvironment):
-            partitioned_people = environment.partition
-            partition = environment.partitioner
+    
+    simCount = len(model.sims)
+    partitionCount = partitioner.num_sets
+    barGroupWidth = 0.8
+    barWidth = barGroupWidth/simCount
+    index = np.arange(partitionCount)
 
-        simCount = len(self.sims)
-        partitionCount = partition.num_sets
-        barGroupWidth = 0.8
-        barWidth = barGroupWidth/simCount
-        index = np.arange(partitionCount)
-
-        offset = 0
-        for sim in self.sims:
+    offset = 0        
+    for sim in model.sims:
             title = sim[0]
             sim = sim[1]
 
             totals = []
             end_time = sim.t()[-1]
-            for index in partitioned_people:
-                set = partitioned_people[index]
+            for index in partition:
+                set = partition[index]
                 if len(set) == 0:
                     #no bar if no people
                     totals.append(0)
                     continue
                 total = sum(status == SIRstatus for status in sim.get_statuses(set, end_time).values()) / len(set)
                 if normalized == True:  total = total/len(set)
-                totals.append[total]
+                totals.append(total)
 
             #totals = sorted(totals)
             xCoor = [offset + x for x in list(range(len(totals)))]
             plt.bar(xCoor,totals, barWidth, label = title)
             offset = offset+barWidth
-    plt.legend()
-    plt.ylabel("Fraction of people with status {}".format(SIRstatus))
-    plt.xlabel("Age groups of 5 years")
+    #plt.legend()
+    #plt.ylabel("Fraction of people with status {}".format(SIRstatus))
+    #plt.xlabel("Age groups of 5 years")
     plt.show()
-    plt.savefig(self.basedir+"/evasionChart.pdf")
+    plt.savefig(model.basedir+"/evasionChart.pdf")
 
 def getR0(self):
     sim = self.sims[-1]

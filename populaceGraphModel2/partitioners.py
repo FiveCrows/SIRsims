@@ -13,8 +13,52 @@ import numpy as np
 import pandas as pd
 import math 
 
+class Partition():
+    def __init__(self, sets, labels, attribute):    
+        """
+        Partition objects describe how people can be 
+        seperated into sets.         
+        :param sets: a dict of partition sets
+        :param labels: labels to describe the partition sets
+        :param attribute: a name for the attribute by which the sets are partitioned
+        
+        """        
+        self.attribute = attribute
+        self.sets = sets        
+        self.num_sets = len(sets)
+        self.placements = None
+
+    def get_placements(self):
+        """
+        placements is the inverse dict.
+        given an individual, it maps their set.
+        """
+        placements = self.placements or invert_dict(self.sets)
+        self.placements = placements
+        return placements
+
+    def invert_dict(dict):
+        """for get placements
+        seperated so the 'or' can be used
+        """
+        {v: k for k, v in self.sets.items()}
+
+class OrdinalPartition(Partition):
+    """
+    a partition by groups of numbers, 
+    so sets can be named by number ranges
+    """
+    def __init__(self, sets, bounds, attribute):
+        self.bounds = bounds
+        super().__init__( sets, self.nameBins(), attribute)
+    def nameBins(self):
+        names = ['{}:{}'.format(self.bounds[i], self.bounds[i+1]) for i in range(len(self.bounds)-1)]
+        return names
+
+
+
 class Partitioner():
-    def __init__(self, bin_bounds, customNames = None):
+    def __init__(self, bounds, customNames = None):
         """
         Objects of this class can be used to split a list of people into disjoint sets
         :param the name of the attribute: lambda or string
@@ -23,20 +67,20 @@ class Partitioner():
         :param enumerator: dict
         The enumerator should map each possible values for the given attribute to the index of a partition set
 
-        :param bin_bounds: list
+        :param bounds: list
         This list should include each boundary between bins,
         but the first and last bound are implicity at inf
         :param labels: list
         A list of names for plotting with partitioned sets
         """        
-        self.bin_bounds = bin_bounds
-        self.num_bins = len(self.bin_bounds)-1
-        self.bins = [(bin_bounds[i], bin_bounds[i+1]) for i in range(self.num_bins)]
-        
+
+        self.bounds = bounds
+        self.num_bins = len(self.bounds)-1
+        self.bins = [(bounds[i], bounds[i+1]) for i in range(self.num_bins)]        
         self.binNames = customNames or self.nameBins()
-        print(self.bins)
+        
     def nameBins(self):
-        names = ['{}:{}'.format(self.bin_bounds[i], self.bin_bounds[i+1]) for i in range(self.num_bins-2)]
+        names = ['{}:{}'.format(self.bounds[i], self.bounds[i+1]) for i in range(self.num_bins-2)]
         return names
 
     def binMembers(self, members: [float]):
@@ -51,12 +95,12 @@ class Partitioner():
         '''
         
         binList = self.binMembers(members)
-        partition = {i:[] for i in range(len(self.bin_bounds)+1)}
+        partition = {i:[] for i in range(len(self.bounds)-1)}
         for i, bin_num in enumerate(binList):
             #add each member to the partition by id
             partition[bin_num].append(members[i][0])
-        return dict(zip([member.sp_id for member in members], binList)), partition        
-    
+        sets = dict(zip([member.sp_id for member in members], binList)), partition        
+        return(Partition(sets, self.binNames, self.binBounds))
 
 
 class directPartitioner(Partitioner):
@@ -66,7 +110,7 @@ class directPartitioner(Partitioner):
     @classmethod
     def agePartitionerA(cls):
         """
-        returns a useful partitioner object for agesbins of 5 years, plus seventy five and up
+        returns a useS partitioner object for agesbins of 5 years, plus seventy five and up
         """
         bins = [i*5 for i in range(16)]
         bins.append(100)        
@@ -78,7 +122,9 @@ class directPartitioner(Partitioner):
 
 
     def binMembers(self, members: list):
-        binList = np.digitize(list(map(lambda x: x.__getattribute__(self.attribute), members)), self.bin_bounds)
+
+        binList = np.digitize(list(map(lambda x: x.__getattribute__(self.attribute), members)), self.bounds)
+        binList = [i-1 for i in binList] #so that the bin numbering starts with zero
         return binList    
 
 
@@ -100,25 +146,27 @@ class autoBinLambdaPartitioner(Partitioner):
         :param num_bins: int
         """
         #to group evenly people into some number of bins by their income
-        return cls(lambda pers: households[pers.sp_hh_id].income, num_bins)
+        return cls(lambda pers: households[pers.sp_hh_id].income, num_bins, 'income')
 
-    def __init__(self, f, num_bins: int):
+    def __init__(self, f, num_bins: int, attribute = None):
         self.f = f
         self.num_bins = num_bins        
         self.num_sets = num_bins
-
+        self.attribute = attribute
     def partitionGroupWithAutoBound(self, members: list):
-        #its simpler than it looks. it just splits the numpy array into 
+        #it's simpler than it looks. it just splits the numpy array  
         sort = sorted([self.f(person) for person in members])        
         split = [list(x) for x in np.array_split(sort, self.num_bins)]
         #let the bounds be the first of each bin, and also the last of the last bin 
         bounds = [partition[0] for partition in split]
-        bounds = [-math.inf]+ bounds[1:] + [math.inf]
+        bounds = [-math.inf]+ bounds[1:] + [math.inf]        
         super(autoBinLambdaPartitioner, self).__init__(bounds)
-        return(dict(enumerate(split)))
+        sets = (dict(enumerate(split)))
+        return(OrdinalPartition(sets, bounds, self.attribute))
         
     def binMembers(self, members: list):
-        binList = np.digitize(list(map(self.f, members)), self.bin_bounds)   
+        binList = np.digitize(list(map(self.f, members)), self.bounds)   
+        binList = [i-1 for i in binList]
         return binList
         
 
@@ -140,16 +188,21 @@ class customPartitioner(Partitioner):
         """
         #attribute = self.attribute
         binList = np.digitize(list(map(self.attribute_lambda, members)), self.bins)
+        #start indexing from 0 instead of 1
+        binList = [i-1 for i in binList]
         partition = {i:[] for i in range(len(self.bins_bounds+1))}
+
         for i, bin_num in enumerate(binList):
             partition[bin_num].append(members[i])        
-        return dict(zip(members, binList)), partition
+        sets =  dict(zip(members, binList)), partition
+        return(OrdinalPartition(sets, self.binNames, self.binBounds))
             
 
-class enumPartitioner(Partitioner):
-    '''
-    depricated partitioner class
-    '''
+class nominalPartitioner(Partitioner):
+    """
+    can be used for partitioning nominal, unordered sets
+    """
+    
     
     def __init__(self,attribute , binBounds: list, labels=None):
         """
