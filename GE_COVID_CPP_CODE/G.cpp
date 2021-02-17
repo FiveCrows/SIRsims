@@ -176,7 +176,7 @@ void G::writeStates(Counts& c)
 //----------------------------------------------------------------------
 void G::init(Params& p, Counts& c, Network& n, GSL& gsl, Lists& l, Files& f)
 {
-  resetVariables(l, f);
+  resetVariables(l, f, p);
   resetNodes(p, n);
   
   //Start
@@ -677,7 +677,7 @@ void G::updateTime()
   files.it++;
 }
 //----------------------------------------------------------------------
-void G::resetVariables(Lists& l, Files& files)
+void G::resetVariables(Lists& l, Files& files, Params& p)
 {  
   l.susceptible.n = 0;
   l.latent_asymptomatic.n = 0;
@@ -722,20 +722,34 @@ void G::resetVariables(Lists& l, Files& files)
   // We will use a Weibull Distribution with scale 5.665 and shape 2.826, 
   // from the paper by Ferretti (2020), "Quantifying SARS-COV-2" transmission 
   // suggests epidemic control with digital contact tracing."
-  par.betaISt.resize(3000);
-  double shape = 2.826;
-  double scale = 5.665;
+  int n_pdf = 200;
+  p.betaISt.resize(n_pdf);
+  //double shape = 2.826;
+  //double scale = 5.665;
   double sum = 0.0;
 
-  // 3000 is overkill, but it allows me to avoid an if statement in getBetISt()
-  for (int i=0; i < 3000; i++) {
-	 double t = i * par.dt;
-     par.betaISt[i] = gsl_ran_weibull_pdf(t, scale, shape);
-     printf("beta: %f\n", par.betaISt[i]);
-     sum += par.betaISt[i];
-	 printf("beta[%f]= %f\n", i*par.dt, par.betaISt[i]);
+  for (int i=0; i < n_pdf; i++) {
+	 double t = i * p.dt;
+     p.betaISt[i] = gsl_ran_weibull_pdf(t, p.beta_scale, p.beta_shape);
+     printf("beta: %f\n", p.betaISt[i]);
+     sum += p.betaISt[i];
+	 printf("beta[%f]= %f\n", i*p.dt, p.betaISt[i] * p.dt);
   }
-  printf("integral of betaISt= %f\n", sum*par.dt);
+  printf("integral of betaISt= %f\n", sum*p.dt);
+  printf("Save infection profile to output file:\n");
+  FILE* fd = fopen("infection_profile.csv", "w");
+  fprintf(fd, "t,generation_time_profile,R0");
+
+  // Must multiply R0 by p.betaISt[i] to get the infection profile
+  for (int i=0; i < p.betaISt.size(); i++) {
+  	fprintf(fd, "%4.2e, %11.4e, %3.1f\n", i*p.dt, p.betaISt[i], p.R0);
+  }
+
+  fclose(fd);
+
+  // Next: distribute scale according to a gamma across the population
+  // Distribution R0 according to a negative Binomial (check Wallinga and ???)
+
 }
 //----------------------------------------------------------------------
 void G::resetNodes(Params& par, Network& net)

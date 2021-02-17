@@ -12,6 +12,8 @@ import stats
 import read_data as rd
 from timings import *
 
+xlim_max = 40
+
 
 #----------------------------------------------------------------
 # specify project number via command line argument
@@ -82,7 +84,7 @@ def plot_individual_R(ax, axc, folder, global_dict):
     ax.set_xlabel('Days')
     ax.set_ylabel('Avg Indiv. R(t)')
     ax.set_title('Individual R')
-    ax.set_xlim(0,100)
+    ax.set_xlim(0,xlim_max)
     ax.set_ylim(0,8)
     ax.grid(True)
     #leg_text = "Daily vacc rate (dose 1)\nmax nb avail doses\nlatent time"
@@ -91,7 +93,7 @@ def plot_individual_R(ax, axc, folder, global_dict):
     axc.set_xlabel('Days')
     axc.set_ylabel('Avg Indiv. R count')
     axc.set_title('Nb of samples of indiv R(t)')
-    axc.set_xlim(0,100)
+    axc.set_xlim(0,xlim_max)
     axc.grid(True)
     return h, hc  # handles
 
@@ -134,9 +136,9 @@ def plot_generation_times_2(ax1, ax2, ax3, folder, global_dict): #, IS_L, IS_R, 
     ax1.grid(True)
     ax2.grid(True)
     ax3.grid(True)
-    ax1.set_xlim(0,100)
-    ax2.set_xlim(0,100)
-    ax3.set_xlim(0,100)
+    ax1.set_xlim(0,xlim_max)
+    ax2.set_xlim(0,xlim_max)
+    ax3.set_xlim(0,xlim_max)
     ax1.set_ylim(0,7)
     ax2.set_ylim(0,7)
     ax3.set_ylim(0,10)
@@ -167,7 +169,7 @@ def plot_infections_by_degree(delta_time, ax, axv, folder, global_dict):
         ax.plot(times, infected/N, color=col, lw=lw) #, label=f"{vacc1_rate}") 
         ax.plot(times, recov/N, color=col, lw=lw, alpha=alpha) #, label="R")
         ax.grid(True)
-        ax.set_xlim(0,100)
+        ax.set_xlim(0,xlim_max)
         eps_S = global_dict["epsilonS-1"]
         ax.set_title(f"Frac Infected (latent period:{eps_S} days\n(frac of tot pop size)")
 
@@ -185,7 +187,7 @@ def plot_infections_by_degree(delta_time, ax, axv, folder, global_dict):
     axv.grid(True)
     axv.set_title(f"Number of people vaccinated\n1st and 2nd dose")
     axv.set_xlabel("Time")
-    axv.set_xlim(0,100)
+    axv.set_xlim(0,xlim_max)
 
 def plot_latent_by_degree(delta_time, ax, folders, global_dict):
     if 1:
@@ -206,11 +208,14 @@ def plot_latent_by_degree(delta_time, ax, folders, global_dict):
         latent, infected, recov = rd.get_SEIR(by, run0, delta_t=0.1, plot_data=False)
         times = delta_time * np.asarray(range(len(latent)))
         ax.plot(times, latent/N, color=col, lw=lw, alpha=alpha)
-    ax.set_xlim(0,100)
+    ax.set_xlim(0,xlim_max)
     ax.set_title("Fraction Latent")
     ax.grid(True)
 
 
+#----------------------------------------------------------------------
+def plot_infection_curve(ax1, ax2, folder, global_dict)
+    pass
 #----------------------------------------------------------------------
 if __name__ == "__main__":
 
@@ -222,12 +227,14 @@ if __name__ == "__main__":
     # Store the plots in variables. Rearrange later if possible.
 
     dt = 0.1  # time step in units of days
-    r, c = 4,2
+    r, c = 5,2
     fig, axes = plt.subplots(r, c, figsize=(12,10))
     #axes = np.asarray(axes).reshape(-1)
 
     handles_R = {}
     hd = {}; hdc = {}
+
+    # Run all or a subset of files in a given project
 
     for ic,case in enumerate(run_index):
       folders = glob.glob("data_ge/project*%05d/result*/" % case)
@@ -261,6 +268,9 @@ if __name__ == "__main__":
         plot_infections_by_degree(dt, axes[0,1], axes[1,1], folder, global_dict)
         plot_latent_by_degree(dt, axes[2,0], folder, global_dict)
         plot_generation_times_2(axes[2,1], axes[3,0], axes[3,1], folder, global_dict)
+
+        # Plot infectivity curve
+        plot_infection_curve(axes[4,0], axes[4,1], folder, global_dict)
 
     hd  = list(hd.values()); hdc = list(hdc.values())
     fsz = 8

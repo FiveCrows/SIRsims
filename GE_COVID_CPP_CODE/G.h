@@ -38,7 +38,7 @@ public:
 	void homeTransition();
 	void hospitals();
 	void updateTime();
-	void resetVariables(Lists&, Files&);
+	void resetVariables(Lists&, Files&, Params& p);
 	void resetNodes(Params&, Network&);
 	void resetNew(Lists&);
 	void updateLists(Lists&, Network&);

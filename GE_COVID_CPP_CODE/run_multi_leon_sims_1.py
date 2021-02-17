@@ -48,6 +48,7 @@ def setupGlobalDict(project_nb):
     global_dict["script_file"]   = script_file
     global_dict["timestamp"]     = timestamp
     global_dict["param_file"]    = param_file
+    global_dict["infection_profile_file"]    = "infection_profile.csv"
     global_dict["state_transition_file"] = "transition_stats.csv"
     global_dict["counts_file"]   = "counts.csv"
     return global_dict
@@ -91,6 +92,7 @@ def storeFiles(global_dict):
     shutil.copy("timings.py", src_code_folder)
     shutil.copy("Makefile", src_code_folder)
     shutil.copy("breakup_transition.py", gd['dest_folder'])
+    shutil.copy(gd["infection_profile_file"], gd['dfolder'])
     print("copy breakup_transition to ", gd['dest_folder'])
 
 
