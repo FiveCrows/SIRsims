@@ -256,7 +256,7 @@ void G::seedInfection(Params& par, Counts& c, Network& n, GSL& gsl, Lists& l, Fi
     addToList(&l.latent_symptomatic, id); // orig 
 	// Not sure. 
     // I must remove initial L from susceptible list
-	removeFromList(&l.susceptibles, id);  // i is index to remove
+	removeFromList(&l.susceptible, id);  // i is index to remove
   }
 
  
