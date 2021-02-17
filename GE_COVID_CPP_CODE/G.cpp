@@ -661,7 +661,6 @@ void G::IsTransition(Params& par, Lists& l, Network& net, Counts& c, GSL& gsl, f
 	  // i is decremented because n is decremented. If i remained the same, 
 	  // the loop above would execute once too many times
       i = removeFromList(&l.infectious_symptomatic, i); // Check return i wrt loop index i above
-
 	  stateTransition(id, id, IS, R, net.node[id].t_IS, cur_time);
 	}
   }

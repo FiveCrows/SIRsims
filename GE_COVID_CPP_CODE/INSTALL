@@ -1,9 +1,15 @@
 Install and run the code: 
 Starting from the current folder that contains this file: 
 
-1) make
+Note: Bryan can run in the main GE_* directory, or in a directory called "bryan". 
+This directory could be created by running the code: 
+
+  ./installation_in_new_folder.x bryan
+  python first_time_setup.py 
+
+1) make  (Brian would run make -f BA_Makefile)
 2) Edit "run_multi_leon_sims_1.py" and 
-   (a) change the project number 
+   (a) change the project number  (after __name__ == "__main__")
    (b) specificy the nb_repeat_runs (for randomization)
    (c) specify search grid (follow template below). To find out the 
        allowable parameters, type "./seir --help" on the command line. 
@@ -20,7 +26,10 @@ Starting from the current folder that contains this file:
 4) Run analysis script
    (a) Edit the script and change the project number
    (b) Run the script: 
-       python plot_multi_generation_times.py
+       python plot_multi_generation_times.py project#
+	   (e.g. python plot_multi_generation_times.py project#)
+	   which generates the file plot_multi_generation_times_project3.pdf, wich 
+	   contains the plot. 
 
 Strong suggestion: copy the plotting/analysis scripts you want into the 
 src/ folder under the appropriate project number. Different projects will 
@@ -36,3 +45,4 @@ a file that is imported prior to running the script is best. The reason is
 that while the variables in parameters_0.txt are automatically included in 
 the global_dict, the same is not true for additional parameters I use.  Why? 
 Because I did not wish to modify the structure of the input file. 
+

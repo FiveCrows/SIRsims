@@ -181,24 +181,27 @@ if __name__ == "__main__":
     timestamp = datetime.now().strftime("%m_%d_%H_%M_%S")
 
     #===== SET UP PARAMETERS ============
-    project_nb = 2    # <<<< Set to create a new run
+    project_nb = 3    # <<<< Set to create a new run
     nb_repeat_runs = 1   # <<<< Set to create a new run
     search_params = {}
     #search_params['vacc1_rate'] = [0]
-    search_params['vacc1_rate'] = [5000 ,10000, 20000]
+    search_params['vacc1_rate'] = [5000, 10000, 20000]
+    search_params['vacc1_rate'] = [5000]
     search_params['max_nb_avail_doses'] = [50000]
     search_params['epsilonSinv'] = [2.]
     #search_params['epsilonSinv'] = [0.5, 2., 4.0]
     search_params['muinv'] = [3.0]
     search_params['R0'] = [2., 2.5, 3.0]
-    search_params['R0'] = [2.]
+    search_params['R0'] = [3.0]
     search_params['beta_shape'] = [2., 5.]
     search_params['beta_shape'] = [2.]
     search_params['beta_scale'] = [3., 5., 7.]
     search_params['beta_scale'] = [3.]
     run_description = f"Project{project_nb}: No vaccinations. Test the shape of the infectivity profile as a function of the Weibull shape and scale parameter values. Test three values of R0." 
 
-    #===== END SET UP PARAMETERS ============
+    #===== END SET UP PARAMETERS ==================
+
+    #===== NO more CHANGES AFTER THIS POINT =======
     
     global_dict = setupGlobalDict(project_nb)
     global_dict['nb_repeat_runs'] = nb_repeat_runs
@@ -207,3 +210,4 @@ if __name__ == "__main__":
     global_dict['run_description'] = run_description
 
     run_simulation(global_dict, project_nb)
+
