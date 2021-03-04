@@ -528,6 +528,14 @@ class PopulaceGraph:
             print(self.environments[keys[k]].env_type)  # list of one element [12]. Meaning?
 
     #-------------------------------------------------
+
+    def filterEnvironments(self, func):
+        '''
+        For example, to pick out schools, or workplaces, 
+        :param func: the function to filter by
+        '''
+        return list(filter(func, self.environments.values()))
+
     def resetVaccinatedInfected(self):
         # By default nobody in the population is recovered. 
         # Vaccination is modeled by setting a person's status to recovered
@@ -673,7 +681,6 @@ class PopulaceGraph:
 
     #--------------------------------------------
 
-
     #--------------------------------------------
     def setupMaskingReductions(self, avg_std):
         """
@@ -685,8 +692,6 @@ class PopulaceGraph:
         reduction[np.where(reduction < 0.)] = 0.
         reduction[np.where(reduction > 1.)] = 1.
         self.mask_reductions = reduction
-
-
 
     #-----------------------------------------
     def infectPopulace(self, perc):
@@ -701,7 +706,6 @@ class PopulaceGraph:
         # how to get the keys of a list subject to conditionals. 
         self.initial_infected = np.where(infected_01 == 1)[0]
         #print("self.initial_infected= ", self.initial_infected); quit()
-
     #-------------------------------------------------
     # Why this more sophisticated version, with same signature as the two-line version above?
     def vaccinatePopulace(self, perc):
@@ -1091,8 +1095,6 @@ class PopulaceGraph:
         print("Graph parameters:")
         print("  - Node count: ", self.graph.number_of_nodes())
         print("  - Edge count: ", self.graph.number_of_edges())
-
-    #-------------------------------------------
 
 
     #---------------------------------------------------------------------------

@@ -17,46 +17,6 @@ def filterEnvByType(envs, env_type):
     #return list(filter(lambda env: env.env_type == env_type, envs.values()))
     return dict(filter(lambda env: env[1].env_type == env_type, envs.items()))
 
-def plotContactMatrix(model, partitioner, env_indices, title = "untitled", ax = plt):
-    '''
-    This function plots the contact matrix for a structured environment
-    :param p_env: must be a structured environment
-
-    :param partitioner: Partitioner
-        for specifying the partition of the contact matrix 
-    
-    :param
-
-    '''
-    
-    contact_matrix = getContactMatrix(model,partitioner,env_indices)        
-    ax.imshow(contact_matrix)
-    
-    plt.title("Contact Matrix for {}".format(title))
-    labels = None # partitioner.labels
-    axisticks= list(range(15))
-    plt.xticks(axisticks, labels, rotation= 'vertical')
-    plt.yticks(axisticks, labels)
-    #plt.xlabel('Age Group')
-    #plt.ylabel('Age Group')                
-
-def getContactMatrix(model, partition, env_indices):
-    n_sets = partition.num_sets
-    cm = np.zeros([n_sets, n_sets])
-    setSizes = np.zeros(n_sets)
-    #add every
-    #remove none if present 
-    env_indices.pop(None,None)
-    for index in env_indices:        
-        env = model.environments[index]
-        #assigns each person to a set        
-        setSizes += np.array([len(group) for group in partition.sets.values()])
-        placements = partition.get_placements()
-        for edge in env.edges:
-            cm[placements[edge[0]], placements[edge[1]]] += 1
-    cm = np.nan_to_num([np.array(row)/setSizes for row in cm])
-    return cm
-
 def plotSIR(self, memberSelection = None):
     """
     For members of the entire graph, will generate three charts in one plot, representing the frequency of S,I, and R, for all nodes in each simulation
